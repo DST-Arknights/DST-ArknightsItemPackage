@@ -17,3 +17,17 @@ for i = 1, #ark_item do
       end
   end
 end
+
+local otherI18n = {
+  ['zh'] = {
+    goldName = '龙门币'
+  }
+}
+
+local function getOtherI18n(path)
+  return common.getI18n(otherI18n, path)
+end
+
+return {
+  getOtherI18n = getOtherI18n,
+}
