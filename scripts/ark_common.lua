@@ -5,7 +5,11 @@ end
 
 local function getI18n(source, path)
     local lang = TUNING.ARK_ITEM_CONFIG.language
-    return utils.get(source, lang .. '.' .. path) or 'undefined path ' .. path
+    local result = utils.get(source, lang .. '.' .. path)
+    if not result then
+        print('[Ark Item] i18n not found:', lang, path)
+    end
+    return result
 end
 
 return {
