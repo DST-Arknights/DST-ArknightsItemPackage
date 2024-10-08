@@ -23,8 +23,6 @@ return {{
     ['zh'] = {
       name = '芯片助剂',
       description = '这是一块芯片助剂',
-      strings = {
-      }
     },
   }
 }}
