@@ -11,8 +11,8 @@ for i = 1, #ark_item do
       STRINGS.NAMES[prefab] = name
       local description = common.getI18n(item.i18n, 'description')
       STRINGS.CHARACTERS.GENERIC.DESCRIBE[prefab] = description
-      local itemStrings, success = common.getI18n(item.i18n, 'STRINGS')
-      if (success) then
+      local itemStrings = common.getI18n(item.i18n, 'STRINGS')
+      if (itemStrings) then
           utils.mergeTable(STRINGS, itemStrings)
       end
   end

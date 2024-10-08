@@ -5,9 +5,7 @@ end
 
 local function getI18n(source, path)
     local lang = TUNING.ARK_ITEM_CONFIG.language
-    local result = utils.get(source, lang .. '.' .. path)
-    -- 第二个参数返回是否成功
-    return result or 'undefined path ' .. path, result ~= nil
+    return utils.get(source, lang .. '.' .. path) or 'undefined path ' .. path
 end
 
 return {
