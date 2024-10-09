@@ -3,13 +3,10 @@ GLOBAL.setmetatable(env, {
 })
 local ark_items = require('ark_item_prefabs')
 local common = require('ark_common')
-PrefabFiles = {"ark_item"}
+PrefabFiles = {"ark_item", "ark_processing_station"}
 
 Assets = {
-  Asset("ATLAS", "images/ark_ui/ark_gold.xml"),
-  Asset("ATLAS", "images/ark_ui/ark_gray.xml"),
 }
-print('语言:', locale)
 TUNING.ARK_ITEM_CONFIG = {
   language = locale or 'zh',
 }
@@ -19,3 +16,5 @@ modimport('scripts/modmain/ark_item_drop')
 modimport('scripts/modmain/ark_currency')
 modimport('scripts/modmain/ark_item_ui')
 modimport('scripts/modmain/ark_item_i18n')
+modimport('scripts/modmain/ark_item_tech')
+modimport('scripts/modmain/ark_item_recipes2')

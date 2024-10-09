@@ -3,7 +3,8 @@ local utils = require("ark_utils")
 local common = require("ark_common")
 
 local function makeArkItem(config)
-    local assets = {Asset("ANIM", "anim/ark_item.zip"), Asset("ATLAS", "images/ark_item/" .. config.prefab .. ".xml")}
+    local assetsCode = common.getPrefabAssetsCode(config.prefab, false)
+    local assets = {Asset("ANIM", assetsCode.anim), Asset("ATLAS", assetsCode.atlas)}
     local prefabs = {}
     if config.recipe then
         for i = 1, #config.recipe do
@@ -23,8 +24,8 @@ local function makeArkItem(config)
 
         MakeInventoryPhysics(inst)
 
-        inst.AnimState:SetBank("ark_item")
-        inst.AnimState:SetBuild("ark_item")
+        inst.AnimState:SetBank(assetsCode.animBank)
+        inst.AnimState:SetBuild(assetsCode.animBuild)
         inst.AnimState:PlayAnimation(config.prefab)
         inst:AddTag("ark_item")
         inst:AddTag("ark_item_" .. config.prefab)
@@ -42,8 +43,8 @@ local function makeArkItem(config)
         inst.components.stackable.maxsize = TUNING.STACK_SIZE_TINYITEM
 
         inst:AddComponent("inventoryitem")
-        inst.components.inventoryitem.imagename = config.prefab
-        inst.components.inventoryitem.atlasname = "images/ark_item/" .. config.prefab .. ".xml"
+        inst.components.inventoryitem.imagename = assetsCode.image
+        inst.components.inventoryitem.atlasname = assetsCode.atlas
 
         inst.components.floater:SetScale(1.0)
         inst.components.floater:SetVerticalOffset(0.1)
