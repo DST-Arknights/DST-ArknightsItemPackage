@@ -69,7 +69,7 @@ local function fn()
   MakeHauntableWork(inst)
   inst.scrapbook_specialinfo = "ARK_PROCESSING_STATION"
 
-  inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_PROCESSING_STATION
+  inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_PROCESSING_STATION_ONE
 
   inst.components.prototyper.onturnon = complete_onturnon
   inst.components.prototyper.onturnoff = complete_onturnoff
@@ -82,4 +82,5 @@ local function fn()
   return inst
 end
 
-return Prefab("ark_processing_station", fn, assets, prefabs)
+return Prefab("ark_processing_station", fn, assets, prefabs),
+  MakePlacer("ark_processing_station_placer", "crafting_table", "crafting_table", "idle_full")

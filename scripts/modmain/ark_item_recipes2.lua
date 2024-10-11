@@ -6,8 +6,8 @@ local FILTER_NAME = 'ARK_PROCESSING_STATION'
 STRINGS.UI.CRAFTING_FILTERS[FILTER_NAME] = i18n.getOtherI18n('ark_processing_station_prototype')
 
 AddPrototyperDef('ark_processing_station', {
-  icon_atlas = "images/hud.xml",
-  icon_image = "tab_celestial.tex",
+  icon_atlas = "images/ark_item/xpzj.xml",
+  icon_image = "xpzj.tex",
   is_crafting_station = true,
   action_str = FILTER_NAME,
   filter_text = STRINGS.UI.CRAFTING_FILTERS[FILTER_NAME]
@@ -25,11 +25,30 @@ for i = 1, #ark_item_prefabs do
         table.insert(ingredients, Ingredient(ingredient.prefab, ingredient.count))
       end
       local assetsCode = common.getPrefabAssetsCode(item.prefab)
-      AddRecipe2(common.genArkItemPrefabCode(item.prefab), ingredients, TECH.ARK_PROCESSING_STATION, {
+      local recipeCode = common.genArkItemPrefabCode(item.prefab)
+      local recipeDesc = common.getI18n(item.i18n, 'description') or common.getI18n(item.i18n, 'recipeDescription')
+      STRINGS.RECIPE_DESC[string.upper(recipeCode)] = recipeDesc
+      AddRecipe2(recipeCode, ingredients, TECH.ARK_PROCESSING_ONE, {
         nounlock = true,
         atlas = assetsCode.atlas,
-        images = assetsCode.image
+        image = assetsCode.image
       })
     end
   end
 end
+
+-- 制造站
+AddRecipe2('ark_processing_station', {
+  Ingredient('cutstone', 2),
+  Ingredient('boards', 2),
+  Ingredient('goldnugget', 2),
+  Ingredient('twigs', 2),
+}, TECH.SCIENCE_TWO, {
+  placer = 'ark_processing_station_placer',
+  atlas = "images/ark_item/xpzj.xml",
+  image = "xpzj.tex",
+})
+
+
+AddRecipeToFilter("ark_processing_station", "PROTOTYPERS")
+AddRecipeToFilter("ark_processing_station", "STRUCTURES")
