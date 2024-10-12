@@ -1,6 +1,22 @@
-return {{
+return {
+  {
+    prefab = 'ark_item_gold',
+    recipe = {
+      {{
+        prefab = 'ark_gold',
+        count = 100,
+      }},
+    },
+    i18n = {
+      ['zh'] = {
+        name = '一小捆龙门币',
+        description = '使用可以增加一小捆龙门币',
+      },
+    }
+  },
+  {
   -- 物品名称
-  prefab = 'xpzj',
+  prefab = 'ark_item_xpzj',
   -- 合成途径, 有多种
   recipe = {
     {{

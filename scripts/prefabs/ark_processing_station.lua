@@ -1,5 +1,5 @@
 local assets = {Asset("ANIM", "anim/crafting_table.zip"), Asset("MINIMAP_IMAGE", "tab_crafting_table"),
-  Asset("SCRIPT", "scripts/prefabs/ruinsrespawner.lua")}
+  }
 local prefabs = {}
 
 local function complete_onturnon(inst)

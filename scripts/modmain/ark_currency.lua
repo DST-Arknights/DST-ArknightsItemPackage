@@ -1,40 +1,40 @@
 local utils = require("ark_utils")
 
-local arkCurrnencyData
-local defaultUserCurrnencyDdata = {
+local arkCurrencyData
+local defaultUserCurrencyData = {
     gold = 0
 }
 
 local function getUserCurrencyData(userid)
-    if not arkCurrnencyData[userid] then
-        arkCurrnencyData[userid] = defaultUserCurrnencyDdata
+    if not arkCurrencyData[userid] then
+        arkCurrencyData[userid] = defaultUserCurrencyData
     end
-    return arkCurrnencyData[userid]
+    return arkCurrencyData[userid]
 end
 local function setUserCurrencyData(userid, data)
-    arkCurrnencyData[userid] = data
+    arkCurrencyData[userid] = data
 end
 
 local function OnSave()
-    local json_data = json.encode(arkCurrnencyData)
-    TheSim:SetPersistentString("ark_currnency_data", json_data, false, function()
+    local json_data = json.encode(arkCurrencyData)
+    TheSim:SetPersistentString("ark_currency_data", json_data, false, function()
         print("Save Ark Currency Data Successfully!")
     end)
 end
 
 local function OnLoad()
-    TheSim:GetPersistentString("ark_currnency_data", function(load_success, data)
+    TheSim:GetPersistentString("ark_currency_data", function(load_success, data)
         if load_success and data ~= nil then
             local status, saved_data = pcall(function()
                 return json.decode(data)
             end)
             if status and saved_data then
-                arkCurrnencyData = saved_data
+                arkCurrencyData = saved_data
                 print("Load Ark Currency Data Successfully!")
                 return
             end
         end
-        arkCurrnencyData = {}
+        arkCurrencyData = {}
         print("Failed to load Ark Currency Data!")
     end)
 end
@@ -62,21 +62,28 @@ local function OnKilled(inst, data)
     local userCurrencyData = getUserCurrencyData(inst.userid)
     userCurrencyData.gold = userCurrencyData.gold + gold
     -- 给指定用户的客户端发送金币变化的消息, sendRPCToClient
+    inst:PushEvent("refreshcrafting")
     SendModRPCToClient(GetClientModRPC('ark_item', "ark_currency_dirty"), inst.userid, inst, json.encode(userCurrencyData))
 
 end
 
-local function AddKillListener(inst)
+local function playerPostInit(inst)
+    function inst:GetCurrency()
+        return getUserCurrencyData(inst.userid)
+    end
     if inst ~= nil and inst:HasTag("player") then
         inst:ListenForEvent("killed", OnKilled)
     end
 end
 
-AddPlayerPostInit(AddKillListener)
+AddPlayerPostInit(playerPostInit)
 
 AddClientModRPCHandler("ark_item", "ark_currency_dirty", function(player, dataStr)
     print("接收到金币变化的消息", player, dataStr)
     local data = json.decode(dataStr)
+    if not TheWorld.ismastersim then
+        arkCurrencyData[player.userid] = data
+    end
     if player.arkCurrency then
         player.arkCurrency:SetCurrency(data)
     end

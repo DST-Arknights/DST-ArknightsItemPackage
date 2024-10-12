@@ -9,7 +9,7 @@ local function makeArkItem(config)
     if config.recipe then
         for i = 1, #config.recipe do
             for j = 1, #config.recipe[i] do
-                table.insert(prefabs, common.genArkItemPrefabCode(config.recipe[i][j].prefab))
+                table.insert(prefabs, config.recipe[i][j].prefab)
             end
         end
     end
@@ -53,7 +53,7 @@ local function makeArkItem(config)
         return inst
     end
 
-    return Prefab(common.genArkItemPrefabCode(config.prefab), fn, assets, prefabs)
+    return Prefab(config.prefab, fn, assets, prefabs)
 end
 
 local ret = {}

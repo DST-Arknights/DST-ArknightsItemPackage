@@ -30,7 +30,7 @@ for i = 1, #ark_item do
   local item = ark_item[i]
   if item.i18n then
       print('item i18n:', item.prefab)
-      local prefab = string.upper(common.genArkItemPrefabCode(item.prefab))
+      local prefab = string.upper(item.prefab)
       local name = common.getI18n(item.i18n, 'name')
       STRINGS.NAMES[prefab] = name
       local description = common.getI18n(item.i18n, 'description')

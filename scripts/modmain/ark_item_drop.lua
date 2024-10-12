@@ -25,8 +25,7 @@ for k, v in pairs(dropMap) do
         for i = 1, #v do
           local adapter = inst.components.lootdropper and inst.components.lootdropper[v[i].adapter]
           if adapter then
-            local prefab = common.genArkItemPrefabCode(v[i].prefab)
-            adapter(inst.components.lootdropper, prefab, unpack(v[i].args))
+            adapter(inst.components.lootdropper, v[i].prefab, unpack(v[i].args))
           end
         end
     end)
