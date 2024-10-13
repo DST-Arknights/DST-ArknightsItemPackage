@@ -21,10 +21,7 @@ return {
   recipe = {
     {{
       prefab = 'goldnugget',
-      count = 1,
-    }, {
-      prefab = 'goldnugget',
-      count = 1,
+      count = 3,
     }},
   },
   -- 掉落生物

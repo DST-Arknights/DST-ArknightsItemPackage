@@ -22,7 +22,7 @@ local UIArkCurrency = Class(Widget, function(self, owner)
 
 end)
 
-function UIArkCurrency:SetCurrency(currency)
+function UIArkCurrency:SetArkCurrency(currency)
     self.goldText:SetString(tostring(currency.gold))
 end
 

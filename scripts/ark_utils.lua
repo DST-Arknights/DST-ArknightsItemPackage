@@ -9,7 +9,7 @@ local function get(source, path)
   return source
 end
 
-local function printTable(t, indent, maxDepth)
+local function printTable(t, maxDepth, indent)
   indent = indent or 0
   maxDepth = maxDepth or 2
   local indentStr = string.rep("  ", indent)
@@ -22,7 +22,7 @@ local function printTable(t, indent, maxDepth)
   for k, v in pairs(t) do
     if type(v) == "table" then
       print(indentStr .. tostring(k) .. ":")
-      printTable(v, indent + 1, maxDepth)
+      printTable(v, maxDepth, indent + 1)
     else
       print(indentStr .. tostring(k) .. ": " .. tostring(v))
     end
@@ -80,6 +80,7 @@ local function mergeTable(t1, t2)
       t1[k] = v
     end
   end
+  return t1
 end
 
 return {
