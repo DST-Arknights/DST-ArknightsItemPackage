@@ -49,7 +49,13 @@ AddRecipe2('ark_processing_station', {
   atlas = "images/ark_ui/modicon.xml",
   image = "modicon.tex",
 })
-
-
 AddRecipeToFilter("ark_processing_station", "PROTOTYPERS")
-AddRecipeToFilter("ark_processing_station", "STRUCTURES")
+
+-- 背包
+AddRecipe2('ark_item_pack', {
+  Ingredient('goldnugget', 1),
+}, TECH.SCIENCE_ONE, {
+  atlas = "images/ark_ui/modicon.xml",
+  image = "modicon.tex",
+})
+AddRecipeToFilter("ark_item_pack", "CLOTHING")

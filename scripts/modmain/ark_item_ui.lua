@@ -42,7 +42,6 @@ local function positionCurrencyUI(controls)
 end
 
 AddClassPostConstruct("widgets/controls", function(controls)
-    print('AddClassPostConstruct--------------------------------')
     controls.inst:DoTaskInTime(.1, function()
         local arkCurrency = controls.top_root:AddChild(UIArkCurrency(controls.owner))
         controls.owner.arkCurrency = arkCurrency
