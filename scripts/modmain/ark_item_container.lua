@@ -31,13 +31,15 @@ end
 for k, v in pairs(containers.params) do
   containers.MAXITEMSLOTS = math.max(containers.MAXITEMSLOTS, v.widget.slotpos ~= nil and #v.widget.slotpos or 0)
 end
+
+local function isArkItemPackWidget(widget) return widget == containers.params.ark_item_pack.widget end
 local function newcontainerwidgetbutton(self)
 
   local oldOpen = self.Open
   self.Open = function(self, container, doer)
     local res = {oldOpen(self, container, doer)}
     local widget = container.replica.container:GetWidget()
-    if widget ~= containers.params.ark_item_pack.widget or not widget.musha_scroll or self.options_scroll_list then
+    if not isArkItemPackWidget(widget) or not widget.musha_scroll or self.options_scroll_list then
       return unpack(res)
     end
 
@@ -125,7 +127,7 @@ local function newcontainerwidgetbutton(self)
   end
 
   local oldClose = self.Close
-  self.Close = function(self)
+  self.Close = function(self, doer)
     local widget = self.container and self.container.replica.container:GetWidget()
     if not widget or widget ~= containers.params.ark_item_pack.widget or not self.isopen then
       return oldClose(self)
@@ -142,3 +144,78 @@ local function newcontainerwidgetbutton(self)
   end
 end
 AddClassPostConstruct("widgets/containerwidget", newcontainerwidgetbutton)
+
+AddComponentPostInit("container", function(self)
+  local _Close = self.Close
+  self.Close = function(self, doer)
+    local res = {_Close(self, doer)}
+    local widget = self:GetWidget()
+    -- 关闭的时候, 如果有owner, 保持 opencontainers 中有它
+    local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem.owner
+    if isArkItemPackWidget(widget) and doer and doer.components.inventory ~= nil and owner then
+      doer.components.inventory.opencontainers[self.inst] = true
+    end
+    return unpack(res)
+  end
+end)
+
+AddComponentPostInit("inventory", function(self)
+  local _GiveItem = self.GiveItem
+  self.GiveItem = function(self, item, ...)
+    local res = {_GiveItem(self, item, ...)}
+    local widget = item.components.container and item.components.container:GetWidget()
+    if isArkItemPackWidget(widget) then
+      if not self.opencontainers[item] then
+        self.opencontainers[item] = true
+      end
+    end
+    return unpack(res)
+  end
+  local _RemoveItem = self.RemoveItem
+  self.RemoveItem = function(self, item, ...)
+    local res = {_RemoveItem(self, item, ...)}
+    local widget = item.components.container and item.components.container:GetWidget()
+    if isArkItemPackWidget(widget) then
+      local isOpen = item.components.container:IsOpen()
+      if not isOpen and self.opencontainers[item] then
+        self.opencontainers[item] = nil
+      end
+    end
+    return unpack(res)
+  end
+  local _MoveItemFromAllOfSlot = self.MoveItemFromAllOfSlot
+  self.MoveItemFromAllOfSlot = function(self, slot, container, opener)
+    print('触发了MoveItemFromAllOfSlot')
+    local widget = container.replica.container:GetWidget()
+    if not isArkItemPackWidget(widget) then
+      return _MoveItemFromAllOfSlot(self, slot, container, opener)
+    end
+    local item = self:GetItemInSlot(slot)
+    if item ~= nil and container ~= nil then
+        container = container.components.container
+        if container ~= nil then
+
+            container.currentuser = self.inst
+
+            local targetslot =
+                self.inst.components.constructionbuilderuidata ~= nil and
+                self.inst.components.constructionbuilderuidata:GetContainer() == container.inst and
+                self.inst.components.constructionbuilderuidata:GetSlotForIngredient(item.prefab) or
+                nil
+
+            if container:CanTakeItemInSlot(item, targetslot) then
+                item = self:RemoveItemBySlot(slot)
+                item.prevcontainer = nil
+                item.prevslot = nil
+                if not container:GiveItem(item, targetslot, nil, false) then
+                    self.ignoresound = true
+                    self:GiveItem(item, slot)
+                    self.ignoresound = false
+                end
+            end
+
+            container.currentuser = nil
+        end
+    end
+  end
+end)

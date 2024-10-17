@@ -40,10 +40,7 @@ end
 table.insert(Assets, Asset("ATLAS", "images/ark_ui/modicon.xml"))
 -- 制造站
 AddRecipe2('ark_processing_station', {
-  Ingredient('cutstone', 2),
-  Ingredient('boards', 2),
   Ingredient('goldnugget', 2),
-  Ingredient('twigs', 2),
 }, TECH.SCIENCE_TWO, {
   placer = 'ark_processing_station_placer',
   atlas = "images/ark_ui/modicon.xml",
