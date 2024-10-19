@@ -23,6 +23,11 @@ local otherI18n = {
       },
       CHARACTERS = {
         GENERIC = {
+          ACTIONFAIL = {
+            GENERIC = {
+              ARK_ITEM_PACK = '承受不了更多的源石空间',
+            },
+          },
           DESCRIBE = {
             ARK_PROCESSING_STATION = '加工合成罗德岛材料的设备',
             ARK_GOLD = '龙门币',
@@ -41,7 +46,6 @@ end
 for i = 1, #ark_item do
   local item = ark_item[i]
   if item.i18n then
-      print('item i18n:', item.prefab)
       local prefab = string.upper(item.prefab)
       local name = common.getI18n(item.i18n, 'name')
       STRINGS.NAMES[prefab] = name

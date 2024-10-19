@@ -4,7 +4,7 @@ table.insert(Assets, Asset("ATLAS", "images/ark_ui/ark_currency_bg.xml"))
 table.insert(Assets, Asset("ATLAS", "images/ark_ui/ark_currency_gold_icon.xml"))
 
 local PADDING = 4;
-local RIGHT_PADDING = 200;
+local RIGHT_PADDING = 230;
 
 local screenSize = nil
 local cacheUiW = nil
