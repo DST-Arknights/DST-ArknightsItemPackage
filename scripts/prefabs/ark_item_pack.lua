@@ -1,7 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/ark_item_pack.zip"),
-    Asset("ANIM", "anim/ui_backpack_2x4.zip"),
+    Asset("ANIM", "anim/ark_item.zip"),
     Asset("ATLAS", "images/ark_item/ark_item_pack.xml"),
 }
 
@@ -46,8 +45,8 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("ark_item_pack")
-    inst.AnimState:SetBuild("ark_item_pack")
+    inst.AnimState:SetBank("ark_item")
+    inst.AnimState:SetBuild("ark_item")
     inst.AnimState:PlayAnimation("ark_item_pack")
 
     inst:AddTag("ark_item_pack")

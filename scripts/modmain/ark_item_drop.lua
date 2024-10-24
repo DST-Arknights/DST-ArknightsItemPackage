@@ -1,10 +1,10 @@
-local ark_item = require('ark_item_prefabs')
 local common = require('ark_common')
+local arkItemDeclare = common.getAllArkItemDeclare()
 
 local dropMap = {}
 
-for i = 1, #ark_item do
-    local item = ark_item[i]
+for i = 1, #arkItemDeclare do
+    local item = arkItemDeclare[i]
     if item.drop then
         for j = 1, #item.drop do
             local drop = item.drop[j]

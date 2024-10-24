@@ -1,4 +1,6 @@
 local utils = require('ark_utils')
+local i18nDeclare = require('ark_item_i18n_declare')
+local arkItemDeclare = require('ark_item_declare')
 
 local function getI18n(source, path)
     local lang = TUNING.ARK_ITEM_CONFIG.language
@@ -7,6 +9,10 @@ local function getI18n(source, path)
         print('[Ark Item] [waring] i18n not found:', lang, path)
     end
     return data
+end
+
+local function getCommonI18n(path)
+    return getI18n(i18nDeclare, path)
 end
 
 local function getPrefabAssetsCode(prefab, withTex)
@@ -27,7 +33,23 @@ local function getPrefabAssetsCode(prefab, withTex)
     }
 end
 
+local declareCache = nil
+local function getAllArkItemDeclare()
+    if declareCache then
+        return declareCache
+    end
+    declareCache = {}
+    for _, group in ipairs(arkItemDeclare) do
+        for _, item in ipairs(group.items) do
+            table.insert(declareCache, item)
+        end
+    end
+    return declareCache
+end
+
 return {
     getPrefabAssetsCode = getPrefabAssetsCode,
-    getI18n = getI18n
+    getI18n = getI18n,
+    getCommonI18n = getCommonI18n,
+    getAllArkItemDeclare = getAllArkItemDeclare
 }

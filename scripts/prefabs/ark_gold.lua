@@ -1,4 +1,4 @@
-local assets = {Asset("ANIM", 'anim/ark_gold.zip'), Asset("ATLAS", 'images/ark_item/ark_gold.xml')}
+local assets = {Asset("ANIM", 'anim/ark_item.zip'), Asset("ATLAS", 'images/ark_item/ark_gold.xml')}
 
 local prefabs = {}
 local function fn()
@@ -11,10 +11,9 @@ local function fn()
 
   MakeInventoryPhysics(inst)
 
-  inst.AnimState:SetBank('ark_gold')
-  inst.AnimState:SetBuild('ark_gold')
-  inst.AnimState:PlayAnimation('ark_gold')
-  inst:AddTag("ark_item")
+  inst.AnimState:SetBank('ark_item')
+  inst.AnimState:SetBuild('ark_item')
+  inst.AnimState:PlayAnimation('ark_item_gold')
   inst:AddTag("ark_gold")
 
   MakeInventoryFloatable(inst)

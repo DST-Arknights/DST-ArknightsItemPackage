@@ -1,35 +1,734 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
-    <folder id="0" name="ark_item_xpzj">
-        <file id="0" name="ark_item_xpzj/xpzj.png" width="88" height="94" pivot_x="0.5" pivot_y="0.5"/>
-    </folder>
-    <folder id="1" name="ark_gold">
-        <file id="0" name="ark_gold/gold.png" width="180" height="136" pivot_x="0.5" pivot_y="0.5"/>
-    </folder>
-    <entity id="0" name="ark_item">
-        <animation id="0" name="ark_item_xpzj" length="1000">
-            <mainline>
-                <key id="0">
-                    <object_ref id="0" name="xpzj" folder="0" file="0" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
-                </key>
-            </mainline>
-            <timeline id="0" name="xpzj">
-                <key id="0" spin="0">
-                    <object folder="0" file="0" angle="0"/>
-                </key>
-            </timeline>
-        </animation>
-        <animation id="1" name="ark_item_gold" length="1000">
-            <mainline>
-                <key id="0">
-                    <object_ref id="0" name="gold" folder="1" file="0" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
-                </key>
-            </mainline>
-            <timeline id="0" name="gold">
-                <key id="0" spin="0">
-                    <object folder="1" file="0" angle="0"/>
-                </key>
-            </timeline>
-        </animation>
-    </entity>
+  <folder id="0">
+    <file id="0" name="ark_item_gold.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="1" name="ark_item_mtl_asc_di.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="2" name="ark_item_mtl_sl_alcohol1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="3" name="ark_item_mtl_sl_alcohol2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="4" name="ark_item_mtl_sl_bn.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="5" name="ark_item_mtl_sl_boss1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="6" name="ark_item_mtl_sl_boss2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="7" name="ark_item_mtl_sl_boss3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="8" name="ark_item_mtl_sl_boss4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="9" name="ark_item_mtl_sl_ccf.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="10" name="ark_item_mtl_sl_ds.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="11" name="ark_item_mtl_sl_g1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="12" name="ark_item_mtl_sl_g2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="13" name="ark_item_mtl_sl_g3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="14" name="ark_item_mtl_sl_g4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="15" name="ark_item_mtl_sl_ht.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="16" name="ark_item_mtl_sl_htt.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="17" name="ark_item_mtl_sl_iam3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="18" name="ark_item_mtl_sl_iam4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="19" name="ark_item_mtl_sl_iron1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="20" name="ark_item_mtl_sl_iron2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="21" name="ark_item_mtl_sl_iron3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="22" name="ark_item_mtl_sl_iron4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="23" name="ark_item_mtl_sl_ketone1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="24" name="ark_item_mtl_sl_ketone2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="25" name="ark_item_mtl_sl_ketone3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="26" name="ark_item_mtl_sl_ketone4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="27" name="ark_item_mtl_sl_manganese1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="28" name="ark_item_mtl_sl_manganese2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="29" name="ark_item_mtl_sl_oc3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="30" name="ark_item_mtl_sl_oc4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="31" name="ark_item_mtl_sl_oeu.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="32" name="ark_item_mtl_sl_pg1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="33" name="ark_item_mtl_sl_pg2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="34" name="ark_item_mtl_sl_pgel3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="35" name="ark_item_mtl_sl_pgel4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="36" name="ark_item_mtl_sl_plcf.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="37" name="ark_item_mtl_sl_pp.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="38" name="ark_item_mtl_sl_rma7012.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="39" name="ark_item_mtl_sl_rma7024.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="40" name="ark_item_mtl_sl_rs.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="41" name="ark_item_mtl_sl_rush1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="42" name="ark_item_mtl_sl_rush2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="43" name="ark_item_mtl_sl_rush3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="44" name="ark_item_mtl_sl_rush4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="45" name="ark_item_mtl_sl_shj.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="46" name="ark_item_mtl_sl_ss.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="47" name="ark_item_mtl_sl_strg1.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="48" name="ark_item_mtl_sl_strg2.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="49" name="ark_item_mtl_sl_strg3.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="50" name="ark_item_mtl_sl_strg4.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="51" name="ark_item_mtl_sl_xw.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="52" name="ark_item_mtl_sl_xwb.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="53" name="ark_item_mtl_sl_zy.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="54" name="ark_item_mtl_sl_zyk.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+    <file id="55" name="ark_item_pack.png" pivot_x="0.5" pivot_y="0.5" width="128" height="128"/>
+  </folder>
+  <entity id="0" name="ark_item">
+    <animation id="0" name="ark_item_gold" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_gold" folder="0" file="0" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_gold">
+        <key id="0" spin="0">
+          <object folder="0" file="0"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="1" name="ark_item_mtl_asc_di" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_asc_di" folder="0" file="1" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_asc_di">
+        <key id="0" spin="0">
+          <object folder="0" file="1"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="2" name="ark_item_mtl_sl_alcohol1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_alcohol1" folder="0" file="2" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_alcohol1">
+        <key id="0" spin="0">
+          <object folder="0" file="2"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="3" name="ark_item_mtl_sl_alcohol2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_alcohol2" folder="0" file="3" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_alcohol2">
+        <key id="0" spin="0">
+          <object folder="0" file="3"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="4" name="ark_item_mtl_sl_bn" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_bn" folder="0" file="4" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_bn">
+        <key id="0" spin="0">
+          <object folder="0" file="4"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="5" name="ark_item_mtl_sl_boss1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_boss1" folder="0" file="5" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_boss1">
+        <key id="0" spin="0">
+          <object folder="0" file="5"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="6" name="ark_item_mtl_sl_boss2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_boss2" folder="0" file="6" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_boss2">
+        <key id="0" spin="0">
+          <object folder="0" file="6"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="7" name="ark_item_mtl_sl_boss3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_boss3" folder="0" file="7" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_boss3">
+        <key id="0" spin="0">
+          <object folder="0" file="7"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="8" name="ark_item_mtl_sl_boss4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_boss4" folder="0" file="8" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_boss4">
+        <key id="0" spin="0">
+          <object folder="0" file="8"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="9" name="ark_item_mtl_sl_ccf" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ccf" folder="0" file="9" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ccf">
+        <key id="0" spin="0">
+          <object folder="0" file="9"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="10" name="ark_item_mtl_sl_ds" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ds" folder="0" file="10" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ds">
+        <key id="0" spin="0">
+          <object folder="0" file="10"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="11" name="ark_item_mtl_sl_g1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_g1" folder="0" file="11" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_g1">
+        <key id="0" spin="0">
+          <object folder="0" file="11"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="12" name="ark_item_mtl_sl_g2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_g2" folder="0" file="12" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_g2">
+        <key id="0" spin="0">
+          <object folder="0" file="12"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="13" name="ark_item_mtl_sl_g3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_g3" folder="0" file="13" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_g3">
+        <key id="0" spin="0">
+          <object folder="0" file="13"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="14" name="ark_item_mtl_sl_g4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_g4" folder="0" file="14" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_g4">
+        <key id="0" spin="0">
+          <object folder="0" file="14"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="15" name="ark_item_mtl_sl_ht" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ht" folder="0" file="15" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ht">
+        <key id="0" spin="0">
+          <object folder="0" file="15"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="16" name="ark_item_mtl_sl_htt" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_htt" folder="0" file="16" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_htt">
+        <key id="0" spin="0">
+          <object folder="0" file="16"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="17" name="ark_item_mtl_sl_iam3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_iam3" folder="0" file="17" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_iam3">
+        <key id="0" spin="0">
+          <object folder="0" file="17"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="18" name="ark_item_mtl_sl_iam4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_iam4" folder="0" file="18" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_iam4">
+        <key id="0" spin="0">
+          <object folder="0" file="18"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="19" name="ark_item_mtl_sl_iron1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_iron1" folder="0" file="19" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_iron1">
+        <key id="0" spin="0">
+          <object folder="0" file="19"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="20" name="ark_item_mtl_sl_iron2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_iron2" folder="0" file="20" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_iron2">
+        <key id="0" spin="0">
+          <object folder="0" file="20"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="21" name="ark_item_mtl_sl_iron3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_iron3" folder="0" file="21" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_iron3">
+        <key id="0" spin="0">
+          <object folder="0" file="21"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="22" name="ark_item_mtl_sl_iron4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_iron4" folder="0" file="22" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_iron4">
+        <key id="0" spin="0">
+          <object folder="0" file="22"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="23" name="ark_item_mtl_sl_ketone1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ketone1" folder="0" file="23" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ketone1">
+        <key id="0" spin="0">
+          <object folder="0" file="23"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="24" name="ark_item_mtl_sl_ketone2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ketone2" folder="0" file="24" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ketone2">
+        <key id="0" spin="0">
+          <object folder="0" file="24"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="25" name="ark_item_mtl_sl_ketone3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ketone3" folder="0" file="25" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ketone3">
+        <key id="0" spin="0">
+          <object folder="0" file="25"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="26" name="ark_item_mtl_sl_ketone4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ketone4" folder="0" file="26" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ketone4">
+        <key id="0" spin="0">
+          <object folder="0" file="26"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="27" name="ark_item_mtl_sl_manganese1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_manganese1" folder="0" file="27" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_manganese1">
+        <key id="0" spin="0">
+          <object folder="0" file="27"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="28" name="ark_item_mtl_sl_manganese2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_manganese2" folder="0" file="28" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_manganese2">
+        <key id="0" spin="0">
+          <object folder="0" file="28"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="29" name="ark_item_mtl_sl_oc3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_oc3" folder="0" file="29" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_oc3">
+        <key id="0" spin="0">
+          <object folder="0" file="29"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="30" name="ark_item_mtl_sl_oc4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_oc4" folder="0" file="30" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_oc4">
+        <key id="0" spin="0">
+          <object folder="0" file="30"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="31" name="ark_item_mtl_sl_oeu" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_oeu" folder="0" file="31" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_oeu">
+        <key id="0" spin="0">
+          <object folder="0" file="31"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="32" name="ark_item_mtl_sl_pg1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_pg1" folder="0" file="32" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_pg1">
+        <key id="0" spin="0">
+          <object folder="0" file="32"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="33" name="ark_item_mtl_sl_pg2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_pg2" folder="0" file="33" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_pg2">
+        <key id="0" spin="0">
+          <object folder="0" file="33"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="34" name="ark_item_mtl_sl_pgel3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_pgel3" folder="0" file="34" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_pgel3">
+        <key id="0" spin="0">
+          <object folder="0" file="34"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="35" name="ark_item_mtl_sl_pgel4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_pgel4" folder="0" file="35" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_pgel4">
+        <key id="0" spin="0">
+          <object folder="0" file="35"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="36" name="ark_item_mtl_sl_plcf" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_plcf" folder="0" file="36" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_plcf">
+        <key id="0" spin="0">
+          <object folder="0" file="36"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="37" name="ark_item_mtl_sl_pp" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_pp" folder="0" file="37" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_pp">
+        <key id="0" spin="0">
+          <object folder="0" file="37"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="38" name="ark_item_mtl_sl_rma7012" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rma7012" folder="0" file="38" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rma7012">
+        <key id="0" spin="0">
+          <object folder="0" file="38"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="39" name="ark_item_mtl_sl_rma7024" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rma7024" folder="0" file="39" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rma7024">
+        <key id="0" spin="0">
+          <object folder="0" file="39"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="40" name="ark_item_mtl_sl_rs" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rs" folder="0" file="40" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rs">
+        <key id="0" spin="0">
+          <object folder="0" file="40"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="41" name="ark_item_mtl_sl_rush1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rush1" folder="0" file="41" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rush1">
+        <key id="0" spin="0">
+          <object folder="0" file="41"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="42" name="ark_item_mtl_sl_rush2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rush2" folder="0" file="42" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rush2">
+        <key id="0" spin="0">
+          <object folder="0" file="42"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="43" name="ark_item_mtl_sl_rush3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rush3" folder="0" file="43" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rush3">
+        <key id="0" spin="0">
+          <object folder="0" file="43"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="44" name="ark_item_mtl_sl_rush4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_rush4" folder="0" file="44" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_rush4">
+        <key id="0" spin="0">
+          <object folder="0" file="44"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="45" name="ark_item_mtl_sl_shj" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_shj" folder="0" file="45" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_shj">
+        <key id="0" spin="0">
+          <object folder="0" file="45"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="46" name="ark_item_mtl_sl_ss" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_ss" folder="0" file="46" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_ss">
+        <key id="0" spin="0">
+          <object folder="0" file="46"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="47" name="ark_item_mtl_sl_strg1" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_strg1" folder="0" file="47" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_strg1">
+        <key id="0" spin="0">
+          <object folder="0" file="47"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="48" name="ark_item_mtl_sl_strg2" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_strg2" folder="0" file="48" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_strg2">
+        <key id="0" spin="0">
+          <object folder="0" file="48"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="49" name="ark_item_mtl_sl_strg3" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_strg3" folder="0" file="49" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_strg3">
+        <key id="0" spin="0">
+          <object folder="0" file="49"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="50" name="ark_item_mtl_sl_strg4" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_strg4" folder="0" file="50" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_strg4">
+        <key id="0" spin="0">
+          <object folder="0" file="50"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="51" name="ark_item_mtl_sl_xw" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_xw" folder="0" file="51" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_xw">
+        <key id="0" spin="0">
+          <object folder="0" file="51"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="52" name="ark_item_mtl_sl_xwb" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_xwb" folder="0" file="52" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_xwb">
+        <key id="0" spin="0">
+          <object folder="0" file="52"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="53" name="ark_item_mtl_sl_zy" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_zy" folder="0" file="53" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_zy">
+        <key id="0" spin="0">
+          <object folder="0" file="53"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="54" name="ark_item_mtl_sl_zyk" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_mtl_sl_zyk" folder="0" file="54" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_mtl_sl_zyk">
+        <key id="0" spin="0">
+          <object folder="0" file="54"/>
+        </key>
+      </timeline>
+    </animation>
+    <animation id="55" name="ark_item_pack" length="1000">
+      <mainline>
+        <key id="0">
+          <object_ref id="0" name="ark_item_pack" folder="0" file="55" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+        </key>
+      </mainline>
+      <timeline id="0" name="ark_item_pack">
+        <key id="0" spin="0">
+          <object folder="0" file="55"/>
+        </key>
+      </timeline>
+    </animation>
+  </entity>
 </spriter_data>
