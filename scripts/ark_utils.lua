@@ -83,6 +83,18 @@ local function mergeTable(t1, t2)
   return t1
 end
 
+local function cloneTable(t)
+  local newTable = {}
+  for k, v in pairs(t) do
+    if type(v) == 'table' then
+      newTable[k] = cloneTable(v)
+    else
+      newTable[k] = v
+    end
+  end
+  return newTable
+end
+
 return {
   get = get,
   printTable = printTable,
@@ -91,4 +103,5 @@ return {
   concatArray = concatArray,
   uniqueArray = uniqueArray,
   mergeTable = mergeTable,
+  cloneTable = cloneTable
 }

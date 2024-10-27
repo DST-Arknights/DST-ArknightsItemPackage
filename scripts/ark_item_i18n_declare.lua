@@ -1,6 +1,8 @@
 return {
   ['zh'] = {
-    goldName = '龙门币',
+    ark_currency_gold = '龙门币',
+    ark_currency_diamond_shd = '合成玉',
+    ark_currency_diamond = '源石',
     itemInvSlotDescriptionPrefix = '只能放',
     STRINGS = {
       UI = {

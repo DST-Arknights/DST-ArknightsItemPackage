@@ -4,14 +4,18 @@ local Text = require "widgets/text"
 local UIAnim = require "widgets/uianim"
 local Widget = require "widgets/widget"
 local TEMPLATES = require "widgets/redux/templates"
-local ark_item_declare = require("ark_item_declare")
 local common = require("ark_common")
 
 local itemSlotRealIndexMap = {}
+
+local function canPutItemInArkItemPack(item)
+  return item and item:HasTag("ark_item_pack_item")
+end
+
 local function itemtestfn(container, item, slot)
   -- 只有指定物品能放在指定位置
   if not slot then
-    return item:HasTag("ark_item")
+    return canPutItemInArkItemPack(item)
   end
   local res = itemSlotRealIndexMap[item.prefab] == slot
   return res
@@ -27,8 +31,8 @@ containers.params.ark_item_pack = {
     musha_scroll = {
       num_columns = 6,
       num_visible_rows = 8,
-      widget_width = 75,
-      widget_height = 75
+      widget_width = 80,
+      widget_height = 86
     },
     pos = Vector3(-340, -60, 0)
   },
@@ -38,60 +42,43 @@ containers.params.ark_item_pack = {
   type = "ark_item_pack"
 }
 
-local allItems = {}
-local itemSlotReal = {}
 local numColumns = containers.params.ark_item_pack.widget.musha_scroll.num_columns
 local slotPos = containers.params.ark_item_pack.widget.slotpos
 local slotBg = containers.params.ark_item_pack.widget.slotbg
-for i, group in ipairs(ark_item_declare) do
-  local groupTotalNum = math.ceil(#group.items / numColumns) * numColumns
-  for j = 1, groupTotalNum do
-    if group.items[j] then
-      table.insert(slotPos, Vector3(0, 0, 0))
-      local assets = common.getPrefabAssetsCode(group.items[j].prefab)
-      table.insert(slotBg, {
-        atlas = assets.slotbgatlas,
-        image = assets.slotbgimage
-      })
-      itemSlotRealIndexMap[group.items[j].prefab] = #slotPos
-      table.insert(allItems, group.items[j])
-      table.insert(Assets, Asset("ATLAS", assets.slotbgatlas))
-      table.insert(itemSlotReal, true)
-    else
-      table.insert(itemSlotReal, false)
-    end
+
+local allItemsInPack = {}
+for _, item in ipairs(common.getAllArkItemDeclare()) do
+  if not item.disablePutInPack then
+    table.insert(allItemsInPack, item)
   end
+end
+
+for i, item in ipairs(allItemsInPack) do
+  table.insert(slotPos, Vector3(0, 0, 0))
+  local assets = common.getPrefabAssetsCode(item.prefab)
+  table.insert(slotBg, {
+    atlas = assets.slotbgatlas,
+    image = assets.slotbgimage
+  })
+  table.insert(Assets, Asset("ATLAS", assets.slotbgatlas))
+  itemSlotRealIndexMap[item.prefab] = i
 end
 
 local function GroupInv(inv)
-  local result = {}
-  local idx = 1
-  for i, v in ipairs(itemSlotReal) do
-    if v then
-      if not inv[idx].tile then
-        inv[idx]:SetHoverText(common.getCommonI18n('itemInvSlotDescriptionPrefix') .. ' '.. STRINGS.NAMES[string.upper(allItems[idx].prefab)])
-      end
-      inv[idx]:SetLabel(STRINGS.NAMES[string.upper(allItems[idx].prefab)])
-      table.insert(result, inv[idx])
-      idx = idx + 1
-    else
-      local widget = Widget("option" .. i)
-      local img = Image("images/none.xml", "none.tex")
-      -- img:SetSize(75, 75)
-      widget:AddChild(img)
-      -- 返回一个空widget
-      table.insert(result, widget)
-    end
+  for i, v in ipairs(inv) do
+    inv[i] = inv[i] or Widget("option" .. i)
+    inv[i]:SetHoverText(common.getCommonI18n('itemInvSlotDescriptionPrefix') .. ' ' .. STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
+    inv[i]:SetLabel(STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
   end
-  return result
+  return inv
 end
 
 local function isArkItemPack(inst) return inst.replica.container and inst.replica.container.type == "ark_item_pack" end
-local function newcontainerwidgetbutton(self)
 
-  local oldOpen = self.Open
+AddClassPostConstruct("widgets/containerwidget", function(self)
+  local _Open = self.Open
   self.Open = function(self, container, doer)
-    local res = {oldOpen(self, container, doer)}
+    local res = {_Open(self, container, doer)}
     local widget = container.replica.container:GetWidget()
     if not isArkItemPack(container) or not widget.musha_scroll or self.options_scroll_list then
       return unpack(res)
@@ -132,8 +119,12 @@ local function newcontainerwidgetbutton(self)
     end
     local items = GroupInv(self.inv)
     self.options_scroll_list = self:AddChild(TEMPLATES.ScrollingGrid(items, {
-      scroll_context = { items = items, widget = self, container = container },
-      peek_height = 0,
+      scroll_context = {
+        items = items,
+        widget = self,
+        container = container
+      },
+      peek_height = 6,
       peek_percent = nil,
       widget_width = widget_width,
       widget_height = widget_height,
@@ -182,7 +173,7 @@ local function newcontainerwidgetbutton(self)
     self.inst:ListenForEvent("itemget", self.musha_scroll_onitemgetfn, container)
   end
 
-  local oldClose = self.Close
+  local _Close = self.Close
   self.Close = function(self, doer)
     if self.container and isArkItemPack(self.container) and self.isopen then
       if self.musha_scroll_onitemgetfn then
@@ -194,10 +185,9 @@ local function newcontainerwidgetbutton(self)
         self.options_scroll_list = nil
       end
     end
-    return oldClose(self)
+    return _Close(self)
   end
-end
-AddClassPostConstruct("widgets/containerwidget", newcontainerwidgetbutton)
+end)
 
 AddClientModRPCHandler('ark_item', 'inventoryBounce', function(slot)
   local slotInv = ThePlayer.HUD.controls.inv.inv[slot]
@@ -214,54 +204,76 @@ end)
 
 AddComponentPostInit("container", function(self)
   local _GiveItem = self.GiveItem
-  self.GiveItem = function(self, item, slot, ...)
+  function self:GiveItem(item, slot, ...)
     local res = _GiveItem(self, item, slot, ...)
-    if isArkItemPack(self.inst) then
-      local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem.owner
-      if not self:IsOpen() and owner then
-        -- 从inventory中找到自己的index
-        local index = nil
-        for k, v in pairs(owner.components.inventory.itemslots) do
-          if v == self.inst then
-            index = k
-            break
-          end
-        end
-        if index then
-          SendModRPCToClient(GetClientModRPC("ark_item", "inventoryBounce"), owner.userid, index)
+    if not isArkItemPack(self.inst) then
+      return res
+    end
+    local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem.owner
+    if not self:IsOpen() and owner then
+      -- 从inventory中找到自己的index
+      local index = nil
+      for k, v in pairs(owner.components.inventory.itemslots) do
+        if v == self.inst then
+          index = k
+          break
         end
       end
+      if index then
+        SendModRPCToClient(GetClientModRPC("ark_item", "inventoryBounce"), owner.userid, index)
+      end
     end
+    -- if res then
+    --   -- 同步replica _ark_items变量
+    --   for i, v in pairs(self.slots) do
+    --     print('sync item', i, v)
+    --     self.inst.replica.container._ark_items[i]:set(v)
+    --   end
+    -- end
     return res
   end
   local _Close = self.Close
-  self.Close = function(self, doer)
+  function self:Close(doer)
     local res = {_Close(self, doer)}
+    if not isArkItemPack(self.inst) then
+      return unpack(res)
+    end
     -- 关闭的时候, 如果有owner, 保持 opencontainers 中有它
     local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem.owner
-    if isArkItemPack(self.inst) and doer and doer.components.inventory ~= nil and owner then
-      doer.components.inventory.opencontainers[self.inst] = true
+    if owner and owner.components.inventory ~= nil then
+      owner.components.inventory.opencontainers[self.inst] = true
     end
     return unpack(res)
   end
+
   local _MoveItemFromAllOfSlot = self.MoveItemFromAllOfSlot
   function self:MoveItemFromAllOfSlot(slot, container, opener)
+    if not isArkItemPack(self.inst) then
+      return _MoveItemFromAllOfSlot(self, slot, container, opener)
+    end
     local item = self:GetItemInSlot(slot)
     self._moveOutItem = item
     _MoveItemFromAllOfSlot(self, slot, container, opener)
     self._moveOutItem = nil
   end
+
   local MoveItemFromHalfOfSlot = self.MoveItemFromHalfOfSlot
   function self:MoveItemFromHalfOfSlot(slot, container, opener)
+    if not isArkItemPack(self.inst) then
+      return MoveItemFromHalfOfSlot(self, slot, container, opener)
+    end
     local item = self:GetItemInSlot(slot)
     self._moveOutItem = item
     MoveItemFromHalfOfSlot(self, slot, container, opener)
     self._moveOutItem = nil
   end
+
   local _IsOpenedBy = self.IsOpenedBy
   function self:IsOpenedBy(doer)
+    if not isArkItemPack(self.inst) then
+      return _IsOpenedBy(self, doer)
+    end
     if self._tempOpenedBy then
-      print('IsOpenedBy', self._tempOpenedBy)
       return true
     end
     return _IsOpenedBy(self, doer)
@@ -281,7 +293,7 @@ AddComponentPostInit("inventory", function(self)
         end
       end
     end
-    if item:HasTag("ark_item") then
+    if canPutItemInArkItemPack(item) then
       local ark_item_pack = self:GetOpenedArkItemPack()
       if ark_item_pack then
         self._opened_ark_item_pack_overflow = ark_item_pack
@@ -304,6 +316,7 @@ AddComponentPostInit("inventory", function(self)
       local isOpen = item.components.container:IsOpen()
       if not isOpen and self.opencontainers[item] then
         self.opencontainers[item] = nil
+        item.replica.container:RemoveOpener(self.inst)
       end
     end
     return unpack(res)
@@ -364,40 +377,72 @@ AddComponentPostInit("inventory", function(self)
   end
 end)
 
--- 重新计算最大值
-for k, v in pairs(containers.params) do
-  containers.MAXITEMSLOTS = math.max(containers.MAXITEMSLOTS, v.widget.slotpos ~= nil and #v.widget.slotpos or 0)
-end
-
-local inventoryReplica = require "components/inventory_replica"
-
-local _GetOverflowContainer = inventoryReplica.GetOverflowContainer
-function inventoryReplica:GetOverflowContainer()
-  local items = inventoryReplica.GetItems(self)
-  for i, v in pairs(items) do
-    if v:HasTag("ark_item_pack") then
-      return v.replica.container
+AddClassPostConstruct('components/inventory_replica', function(self)
+  local _GetOverflowContainer = self.GetOverflowContainer
+  function self:GetOverflowContainer()
+    local items = self:GetItems()
+    for i, v in pairs(items) do
+      if isArkItemPack(v) then
+        return v.replica.container
+      end
     end
+    return _GetOverflowContainer(self)
   end
-  return _GetOverflowContainer(self)
-end
+  local _Has = self.Has
+end)
 
--- TODO: hook inventory_replica 的has函数, 使其支持ark_item
-local _Has = inventoryReplica.Has
-function inventoryReplica:Has(prefab, amount, checkallcontainers)
-  print('inventory_replica:Has', prefab, amount, checkallcontainers)
-  return _Has(self, prefab, amount, true)
-end
+-- AddClassPostConstruct('components/container_replica', function(self)
+--   if not self.type == 'ark_item_pack' then
+--     print('不是ark_item_pack, 不需要构造网络变量')
+--     return
+--   end
+--   print('构造了ark_item_pack网络变量, _numslots', self._numslots)
+--   self._ark_items = {}
+--   for i = 1, #slotPos do
+--     print('构造了'.. i .. '个网络变量', self.inst)
+--     table.insert(self._ark_items, net_entity(self.inst.GUID, "container._ark_items[" .. tostring(i) .. "]" , "ark_item_pack_" .. tostring(i) .. "dirty"))
+--     if not TheNet:IsDedicated() then
+--       self.inst:ListenForEvent("ark_item_pack_" .. tostring(i) .. "dirty", function(a, b, c)
+--         print('网络变量' .. i .. '更新了,', a, b, c)
+--       end)
+--     end
+--   end
 
-local function IsBusy(inst) return inst._busy or inst._parent == nil end
+--   local _Has = self.Has
+--   function self:Has(item, amount)
+--     local res, num = _Has(self, item, amount)
+--     if not self.classified then
+--       print('Has item', item, amount, res, num)
+--       -- 循环遍历网络变量
+--       for i, v in ipairs(self._ark_items) do
+--         print('Has item', i, v:value())
+--       end
+--     end
+--     return res, num
+--   end
+-- end)
+
 AddPrefabPostInit("inventory_classified", function(self)
+  local _SetSlotItem = self.SetSlotItem
+
+  local _GetOverflowContainer = self.GetOverflowContainer
+  function self:GetOverflowContainer()
+    local items = self:GetItems()
+    for i, v in pairs(items) do
+      if isArkItemPack(v) then
+        return v.replica.container
+      end
+    end
+    return _GetOverflowContainer(self)
+  end
+
   local _MoveItemFromHalfOfSlot = self.MoveItemFromHalfOfSlot
   function self:MoveItemFromHalfOfSlot(slot, container)
-    if IsBusy(self) then
+    if self._busy or self._parent == nil then
       return
     end
     local item = self:GetItemInSlot(slot)
-    if item and item:HasTag('ark_item') then
+    if canPutItemInArkItemPack(item) then
       local container_classified = container ~= nil and container.replica.container ~= nil
                                      and container.replica.container.classified or nil
       if not container_classified then
@@ -410,11 +455,11 @@ AddPrefabPostInit("inventory_classified", function(self)
 
   local _MoveItemFromAllOfSlot = self.MoveItemFromAllOfSlot
   function self:MoveItemFromAllOfSlot(slot, container)
-    if IsBusy(self) then
+    if self._busy or self._parent == nil then
       return
     end
     local item = self:GetItemInSlot(slot)
-    if item and item:HasTag('ark_item') then
+    if canPutItemInArkItemPack(item) then
       local container_classified = container ~= nil and container.replica.container ~= nil
                                      and container.replica.container.classified or nil
       if not container_classified then
@@ -426,3 +471,31 @@ AddPrefabPostInit("inventory_classified", function(self)
   end
 
 end)
+
+-- local _Text_SetMultilineTruncatedString = Text.SetMultilineTruncatedString
+-- function Text:SetMultilineTruncatedString(str, maxlines, maxwidth, maxcharsperline, ellipses, shrink_to_fit, min_shrink_font_size, linebreak_string)
+--   local inCraftingMenuDetails = false
+--   if self.parent and self.parent.parent and self.parent.parent.name == 'CraftingMenuDetails' then
+--     maxlines = 5
+--     inCraftingMenuDetails = true
+--   end
+--   local num_lines = _Text_SetMultilineTruncatedString(self, str, maxlines, maxwidth, maxcharsperline, ellipses, shrink_to_fit, min_shrink_font_size, linebreak_string)
+--   if inCraftingMenuDetails then
+--     local region_x,region_y  = self:GetRegionSize()
+--     -- 如果y大于某个值, 那么把它向下偏移一点
+--     print ('region_y', region_y)
+--     if region_y > 50 then
+--       -- 获取原来的位置
+--       local x, y, z = self:GetPositionXYZ()
+--       print('x, y, z', x, y, z)
+--       print('new y', y - (region_y - 50 / 2))
+--       self:SetPosition(300, y - (region_y - 50 / 2), 0)
+--     end
+--   end
+--   return num_lines
+-- end
+
+-- 重新计算最大值
+for k, v in pairs(containers.params) do
+  containers.MAXITEMSLOTS = math.max(containers.MAXITEMSLOTS, v.widget.slotpos ~= nil and #v.widget.slotpos or 0)
+end

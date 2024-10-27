@@ -33,18 +33,19 @@ local function getPrefabAssetsCode(prefab, withTex)
     }
 end
 
-local declareCache = nil
+-- local declareCache = nil
 local function getAllArkItemDeclare()
-    if declareCache then
-        return declareCache
-    end
-    declareCache = {}
-    for _, group in ipairs(arkItemDeclare) do
-        for _, item in ipairs(group.items) do
-            table.insert(declareCache, item)
-        end
-    end
-    return declareCache
+    return arkItemDeclare
+    -- if declareCache then
+    --     return declareCache
+    -- end
+    -- declareCache = {}
+    -- for _, group in ipairs(arkItemDeclare) do
+    --     for _, item in ipairs(group.items) do
+    --         table.insert(declareCache, item)
+    --     end
+    -- end
+    -- return declareCache
 end
 
 return {

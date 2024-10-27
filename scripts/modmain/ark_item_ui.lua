@@ -1,10 +1,12 @@
 local UIArkCurrency = require("widgets/ui_ark_currency")
 
 table.insert(Assets, Asset("ATLAS", "images/ark_ui/ark_currency_bg.xml"))
-table.insert(Assets, Asset("ATLAS", "images/ark_ui/ark_currency_gold_icon.xml"))
+table.insert(Assets, Asset("ATLAS", "images/ark_ui/icon_gold.xml"))
+table.insert(Assets, Asset("ATLAS", "images/ark_ui/icon_diamond.xml"))
+table.insert(Assets, Asset("ATLAS", "images/ark_ui/icon_diamond_shd.xml"))
 
 local PADDING = 4;
-local RIGHT_PADDING = 230;
+local RIGHT_PADDING = 80;
 
 local screenSize = nil
 local cacheUiW = nil
@@ -19,14 +21,14 @@ local function positionCurrencyUI(controls)
     local screenW = curScreenSize[1] / hudScale.x
     local screenH = curScreenSize[2] / hudScale.y
     if not cacheUiW or not cacheUiH then
-        local originUiW, originUiH = controls.owner.arkCurrency.bg:GetSize()
-        local scale = controls.owner.arkCurrency.bg:GetScale()
+        local originUiW, originUiH = controls.arkCurrency.bg:GetSize()
+        local scale = controls.arkCurrency.bg:GetScale()
         cacheUiW = originUiW * scale.x
         cacheUiH = originUiH * scale.y
     end
     local positionX = screenW / 2 - RIGHT_PADDING - cacheUiW / 2 - PADDING
     local positionY = - cacheUiH / 2 - PADDING
-    controls.owner.arkCurrency:SetPosition(positionX, positionY, 0)
+    controls.arkCurrency:SetPosition(positionX, positionY, 0)
     local miniMap = controls.minimap_small
     if miniMap then
         local x, y, z = miniMap:GetPosition():Get()
@@ -44,7 +46,7 @@ end
 AddClassPostConstruct("widgets/controls", function(controls)
     controls.inst:DoTaskInTime(.1, function()
         local arkCurrency = controls.top_root:AddChild(UIArkCurrency(controls.owner))
-        controls.owner.arkCurrency = arkCurrency
+        controls.arkCurrency = arkCurrency
         positionCurrencyUI(controls)
         local _OnUpdate = controls.OnUpdate
         controls.OnUpdate = function(self, dt, ...)
