@@ -377,6 +377,34 @@ AddComponentPostInit("inventory", function(self)
   end
 end)
 
+AddComponentPostInit('stackable', function (self)
+  local _Put = self.Put
+  function self:Put(item, source_pos)
+    if not canPutItemInArkItemPack(item) then
+      return _Put(self, item, source_pos)
+    end
+    local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem.owner
+    if owner then
+      if isArkItemPack(owner) then
+        local inventory = owner.components.inventoryitem and owner.components.inventoryitem.owner.components.inventory
+        if inventory then
+          local index = nil
+          for k, v in pairs(inventory.itemslots) do
+            if v == owner then
+              index = k
+              break
+            end
+          end
+          if index then
+            SendModRPCToClient(GetClientModRPC("ark_item", "inventoryBounce"), owner.components.inventoryitem.owner.userid, index)
+          end
+        end
+      end
+    end
+    return _Put(self, item, source_pos)
+  end
+end)
+
 AddClassPostConstruct('components/inventory_replica', function(self)
   local _GetOverflowContainer = self.GetOverflowContainer
   function self:GetOverflowContainer()
