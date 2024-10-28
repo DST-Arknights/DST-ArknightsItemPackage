@@ -543,6 +543,35 @@ return {
     }
   }, {
     prefab = 'ark_item_mtl_sl_g1',
+    drop = {{
+      prefab = 'rock1',
+      adapter = 'AddLoot',
+      value = 2
+    }, {
+      prefab = 'rock1',
+      adapter = 'AddChanceLoot',
+      value = 0.1
+    }, {
+      prefab = 'rock2',
+      adapter = 'AddChanceLoot',
+      value = 0.1
+    }, {
+      prefab = 'rock_flintless',
+      adapter = 'AddLoot',
+      value = 4
+    }, {
+      prefab = 'rock_flintless_med',
+      adapter = 'AddLoot',
+      value = 2
+    }, {
+      prefab = 'rock_flintless_low',
+      adapter = 'AddLoot',
+      value = 1
+    }, {
+      prefab = 'cavein_boulder',
+      adapter = 'AddLoot',
+      value = 2
+    }},
     i18n = {
       ['zh'] = {
         name = '源岩',
