@@ -1,6 +1,6 @@
 local assets =
 {
-    Asset("ANIM", "anim/ark_item.zip"),
+    Asset("ANIM", "anim/ark_item_pack.zip"),
     Asset("ATLAS", "images/ark_item/ark_item_pack.xml"),
 }
 
@@ -16,9 +16,6 @@ local function onburnt(inst)
         inst.components.container:DropEverything()
         inst.components.container:Close()
     end
-
-    SpawnPrefab("ash").Transform:SetPosition(inst.Transform:GetWorldPosition())
-
     inst:Remove()
 end
 
@@ -34,6 +31,17 @@ local function onextinguish(inst)
     end
 end
 
+local function OnPlayerNear(inst)
+    inst.AnimState:PushAnimation("open")
+    inst.AnimState:PushAnimation("open_idle", true)
+end
+
+local function OnPlayerFar(inst)
+    inst.AnimState:PushAnimation("close")
+    inst.AnimState:PushAnimation("close_idle", true)
+end
+
+
 local function fn()
     local inst = CreateEntity()
 
@@ -45,9 +53,10 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("ark_item")
-    inst.AnimState:SetBuild("ark_item")
-    inst.AnimState:PlayAnimation("ark_item_pack")
+    inst.AnimState:SetBank("ark_item_pack")
+    inst.AnimState:SetBuild("ark_item_pack")
+    inst.AnimState:SetScale(0.75, 0.75)
+    inst.AnimState:PlayAnimation("close_idle")
 
     inst:AddTag("ark_item_pack")
 
@@ -70,9 +79,16 @@ local function fn()
     inst.components.inventoryitem.canonlygoinpocket = true
     inst.components.inventoryitem.atlasname = 'images/ark_item/ark_item_pack.xml'
     inst.components.inventoryitem.imagename = 'ark_item_pack'
+
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("ark_item_pack")
-    
+
+    local playerprox = inst:AddComponent("playerprox")
+    playerprox:SetTargetMode(playerprox.TargetModes.AnyPlayer)
+    playerprox:SetOnPlayerNear(OnPlayerNear)
+    playerprox:SetOnPlayerFar(OnPlayerFar)
+    playerprox:SetDist(1.7, 1.7)
+
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)
     inst.components.burnable:SetOnBurntFn(onburnt)
