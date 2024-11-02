@@ -6,6 +6,10 @@ PrefabFiles = {"ark_item", "ark_processing_station", 'ark_item_pack', 'ark_gold'
 
 Assets = {
   Asset("ATLAS", "images/ark_item_prototyper.xml"),
+  Asset("ATLAS", "images/ark_pack_item_ui/scrollbar_bar.xml"),
+  Asset("ATLAS", "images/ark_pack_item_ui/scrollbar_handle.xml"),
+  Asset("ANIM", "anim/ark_item_pack_bg.zip"),
+  Asset("ANIM", "anim/ark_item_pack_slot.zip"),
 }
 TUNING.ARK_ITEM_CONFIG = {
   language = locale or 'zh',

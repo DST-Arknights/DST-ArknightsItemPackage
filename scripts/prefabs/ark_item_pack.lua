@@ -82,6 +82,7 @@ local function fn()
 
     inst:AddComponent("container")
     inst.components.container:WidgetSetup("ark_item_pack")
+    inst.components.container:EnableInfiniteStackSize(true)
 
     local playerprox = inst:AddComponent("playerprox")
     playerprox:SetTargetMode(playerprox.TargetModes.AnyPlayer)

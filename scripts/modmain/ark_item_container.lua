@@ -22,8 +22,6 @@ containers.params.ark_item_pack = {
   widget = {
     slotpos = {},
     slotbg = {},
-    animbank = nil,
-    animbuild = nil,
     bgatlas = nil,
     bgimage = nil,
     musha_scroll = {
@@ -32,7 +30,12 @@ containers.params.ark_item_pack = {
       widget_width = 80,
       widget_height = 86
     },
-    pos = Vector3(-340, -60, 0)
+    pos = Vector3(-340, -60, 0),
+    animbuild_upgraded = 'ark_item_pack_bg',
+    animbuild = 'ark_item_pack_bg',
+    animbank_upgraded = 'ark_item_pack_bg',
+    animbank = 'ark_item_pack_bg',
+    animloop = true,
   },
   usespecificslotsforitems = true,
   itemtestfn = itemtestfn,
@@ -80,6 +83,17 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
   self.Open = function(self, container, doer)
     local res = {_Open(self, container, doer)}
     local widget = container.replica.container:GetWidget()
+    local isinfinitestacksize = container.replica.container:IsInfiniteStackSize()
+    print('背景动画设置', widget.animbank, widget.animbuild, widget.animbank_upgraded, widget.animbuild_upgraded, isinfinitestacksize)
+    if widget.animbank ~= nil then
+      local animbank = isinfinitestacksize and widget.animbank_upgraded or widget.animbank
+      print('背景动画', animbank)
+    end
+
+    if widget.animbuild ~= nil then
+        local animbuild = isinfinitestacksize and widget.animbuild_upgraded or widget.animbuild
+        print('背景动画', animbuild)
+      end
     if not isArkItemPack(container) or not widget.musha_scroll or self.options_scroll_list then
       return unpack(res)
     end
@@ -122,7 +136,11 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
       scroll_context = {
         items = items,
         widget = self,
-        container = container
+        container = container,
+        scroll_bar_bar_atlas = "images/ark_pack_item_ui/scrollbar_bar.xml",
+        scroll_bar_bar_image = "scrollbar_bar.tex",
+        scroll_bar_handle_atlas = "images/ark_pack_item_ui/scrollbar_handle.xml",
+        scroll_bar_handle_image = "scrollbar_handle.tex",
       },
       peek_height = 6,
       peek_percent = nil,
@@ -543,6 +561,19 @@ AddPrefabPostInit("inventory_classified", function(self)
   end
 
 end)
+
+local truescrolllist = require "widgets/truescrolllist"
+
+local _BuildScrollBar = truescrolllist.BuildScrollBar
+function truescrolllist:BuildScrollBar()
+  _BuildScrollBar(self)
+  if self.context.scroll_bar_bar_atlas and self.context.scroll_bar_bar_image then
+    self.scroll_bar_line:SetTexture(self.context.scroll_bar_bar_atlas, self.context.scroll_bar_bar_image)
+  end
+  if self.context.scroll_bar_handle_atlas and self.context.scroll_bar_handle_image then
+    self.position_marker.image:SetTexture(self.context.scroll_bar_handle_atlas, self.context.scroll_bar_handle_image)
+  end
+end
 
 -- 重新计算最大值
 for k, v in pairs(containers.params) do
