@@ -69,8 +69,8 @@ end
 local function GroupInv(inv)
   for i, v in ipairs(inv) do
     inv[i] = inv[i] or Widget("option" .. i)
-    inv[i]:SetHoverText(common.getCommonI18n('itemInvSlotDescriptionPrefix') .. ' '
-                          .. STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
+    -- inv[i]:SetHoverText(common.getCommonI18n('itemInvSlotDescriptionPrefix') .. ' '
+    --                       .. STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
     inv[i]:SetLabel(STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
   end
   return inv
@@ -83,17 +83,6 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
   self.Open = function(self, container, doer)
     local res = {_Open(self, container, doer)}
     local widget = container.replica.container:GetWidget()
-    local isinfinitestacksize = container.replica.container:IsInfiniteStackSize()
-    print('背景动画设置', widget.animbank, widget.animbuild, widget.animbank_upgraded, widget.animbuild_upgraded, isinfinitestacksize)
-    if widget.animbank ~= nil then
-      local animbank = isinfinitestacksize and widget.animbank_upgraded or widget.animbank
-      print('背景动画', animbank)
-    end
-
-    if widget.animbuild ~= nil then
-        local animbuild = isinfinitestacksize and widget.animbuild_upgraded or widget.animbuild
-        print('背景动画', animbuild)
-      end
     if not isArkItemPack(container) or not widget.musha_scroll or self.options_scroll_list then
       return unpack(res)
     end
@@ -137,12 +126,8 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
         items = items,
         widget = self,
         container = container,
-        scroll_bar_bar_atlas = "images/ark_pack_item_ui/scrollbar_bar.xml",
-        scroll_bar_bar_image = "scrollbar_bar.tex",
-        scroll_bar_handle_atlas = "images/ark_pack_item_ui/scrollbar_handle.xml",
-        scroll_bar_handle_image = "scrollbar_handle.tex",
       },
-      peek_height = 6,
+      peek_height = 26,
       peek_percent = nil,
       widget_width = widget_width,
       widget_height = widget_height,
@@ -567,12 +552,10 @@ local truescrolllist = require "widgets/truescrolllist"
 local _BuildScrollBar = truescrolllist.BuildScrollBar
 function truescrolllist:BuildScrollBar()
   _BuildScrollBar(self)
-  if self.context.scroll_bar_bar_atlas and self.context.scroll_bar_bar_image then
-    self.scroll_bar_line:SetTexture(self.context.scroll_bar_bar_atlas, self.context.scroll_bar_bar_image)
-  end
-  if self.context.scroll_bar_handle_atlas and self.context.scroll_bar_handle_image then
-    self.position_marker.image:SetTexture(self.context.scroll_bar_handle_atlas, self.context.scroll_bar_handle_image)
-  end
+  self.up_button:Hide()
+  self.down_button:Hide()
+  self.scroll_bar_line:Hide()
+  self.position_marker:Hide()
 end
 
 -- 重新计算最大值
