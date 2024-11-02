@@ -1,8 +1,7 @@
 local common = require('ark_common')
 local arkItemDeclare = common.getAllArkItemDeclare()
 
-for i = 1, #arkItemDeclare do
-    local item = arkItemDeclare[i]
+for _, item in ipairs(arkItemDeclare) do
     local assetsCode = common.getPrefabAssetsCode(item.prefab)
     RegisterInventoryItemAtlas(assetsCode.atlas, assetsCode.image)
 end

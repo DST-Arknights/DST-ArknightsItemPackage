@@ -19,6 +19,11 @@ return {
         ARK_GOLD = '龙门币',
         ARK_ITEM_PACK = '源石背包',
       },
+      ACTIONS = {
+        USE_ARK_CURRENCY = {
+          GENERIC = '使用'
+        }
+      },
       CHARACTERS = {
         GENERIC = {
           ACTIONFAIL = {

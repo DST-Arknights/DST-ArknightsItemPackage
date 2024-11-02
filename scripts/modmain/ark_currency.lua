@@ -76,7 +76,22 @@ local function genSetArkCurrencyPartial(currencyType)
   end
 end
 
+local function addArkCurrency(inst, currencyType, value)
+  local old = inst:GetArkCurrency()[currencyType] or 0
+  inst:SetArkCurrency({
+    [currencyType] = old + value
+  })
+end
+
+local function genAddArkCurrencyPartial(currencyType)
+  return function(self, value)
+    addArkCurrency(self, currencyType, value)
+  end
+end
+
+
 AddPlayerPostInit(function(self)
+  self:AddTag('ark_currency_user')
   function self:GetArkCurrency()
     if not arkCurrencyData[self.userid] then
       arkCurrencyData[self.userid] = utils.cloneTable(defaultUserCurrencyData)
@@ -90,14 +105,20 @@ AddPlayerPostInit(function(self)
   end
   self.GetArkGold = genGetArkCurrencyPartial("ark_gold")
   self.SetArkGold = genSetArkCurrencyPartial("ark_gold")
+  self.AddArkGold = genAddArkCurrencyPartial("ark_gold")
   self.GetArkDiamondShd = genGetArkCurrencyPartial("ark_diamond_shd")
   self.SetArkDiamondShd = genSetArkCurrencyPartial("ark_diamond_shd")
+  self.AddArkDiamondShd = genAddArkCurrencyPartial("ark_diamond_shd")
   self.GetArkDiamond = genGetArkCurrencyPartial("ark_diamond")
   self.SetArkDiamond = genSetArkCurrencyPartial("ark_diamond")
+  self.AddArkDiamond = genAddArkCurrencyPartial("ark_diamond")
   self.GetArkExggShd = genGetArkCurrencyPartial("ark_exgg_shd")
   self.SetArkExggShd = genSetArkCurrencyPartial("ark_exgg_shd")
+  self.AddArkExggShd = genAddArkCurrencyPartial("ark_exgg_shd")
   self.GetArkHggShd = genGetArkCurrencyPartial("ark_hgg_shd")
   self.SetArkHggShd = genSetArkCurrencyPartial("ark_hgg_shd")
+  self.AddArkHggShd = genAddArkCurrencyPartial("ark_hgg_shd")
+  self.AddArkCurrency = addArkCurrency
   self:ListenForEvent("killed", OnKilled)
 end)
 
@@ -163,3 +184,63 @@ AddClassPostConstruct('components/inventory_replica' , function(self)
     return _Has(self, item, amount, ...)
   end
 end)
+
+-- 使用货币
+AddAction("USE_ARK_CURRENCY", STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC, function(act)
+  print('USE_ARK_CURRENCY', act)
+  local target = act.target or act.invobject
+  if target.components.ark_currency then
+    return target.components.ark_currency:CanUse(act.doer)
+  end
+end)
+
+AddComponentAction('INVENTORY', 'ark_currency', function(inst, doer, actions, right)
+  if inst.components.ark_currency then
+    table.insert(actions, ACTIONS.USE_ARK_CURRENCY)
+  end
+end)
+
+AddStategraphActionHandler("wilson",ActionHandler(ACTIONS.USE_ARK_CURRENCY, 'useArkCurrency'))
+AddStategraphActionHandler("wilson_client",ActionHandler(ACTIONS.USE_ARK_CURRENCY,'useArkCurrency'))
+
+local useArkCurrencyState = State{
+  name = "useArkCurrency",
+  onenter = function(inst, data)
+    local action = inst:GetBufferedAction()
+    -- 是否在主世界
+		if action ~= nil and not TheWorld.ismastersim then
+			inst:PerformPreviewBufferedAction()
+		end
+    inst.components.locomotor:Stop()
+    inst.AnimState:PlayAnimation("give")
+  end,
+  timeline = {
+    TimeEvent(10 * FRAMES, function(inst)
+      if not TheWorld.ismastersim then
+        return
+      end
+      local action = inst:GetBufferedAction()
+      local target = action.target or action.invobject
+      local prices = target.components.ark_currency:GetAllPrices()
+      for _, v in pairs(prices) do
+        print('useArkCurrency', v, v.currencyType, v.value)
+        inst:AddArkCurrency(v.currencyType, v.value)
+      end
+      -- target 消耗一个
+      target.components.stackable:Get():Remove()
+      -- test
+      inst:ClearBufferedAction()
+      local action2 = inst:GetBufferedAction()
+      print('sg time event 2', action2) 
+    end),
+  },
+  events = {
+    EventHandler("animover", function(inst)
+      print('触发了 animover')
+      inst.sg:GoToState("idle")
+    end),
+  }
+}
+
+AddStategraphState("wilson", useArkCurrencyState)
+AddStategraphState("wilson_client", useArkCurrencyState)

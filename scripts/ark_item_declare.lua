@@ -1,24 +1,38 @@
 return {
   {
-  --   prefab = 'ark_item_gold1',
-  --   -- 不放入ark_item_pack
-  --   disablePutInPack = true,
-  --   recipe = {{{
-  --     prefab='ark_gold', count=1
-  --   }, {
-  --     prefab=CHARACTER_INGREDIENT.SANITY, count=5
-  --   }}},
-  --   i18n = {
-  --     ['zh'] = {
-  --       name = '一张龙门币',
-  --       description = '由龙门发行的货币，用途广泛。使用后获得1龙门币',
-  --       recipeDescription = '把这个送给朋友',
-  --     }
-  --   }
-  -- }, {
+    prefab = 'ark_gold',
+    disablePutInPack = true,
+    template = {
+      componentUseableAddArkCurrency = { currencyType = 'ark_gold', value = 1 }
+    },
+    i18n = {
+      ['zh'] = {
+        name = '龙门币',
+        description = '由龙门发行的货币，用途广泛。',
+      }
+    }
+  },
+  {
+    prefab = 'ark_item_gold1',
+    -- 不放入ark_item_pack
+    disablePutInPack = true,
+    template = {
+      componentUseableAddArkCurrency = { currencyType = 'ark_gold', value = 1 }
+    },
+    i18n = {
+      ['zh'] = {
+        name = '一张龙门币',
+        description = '由龙门发行的货币，用途广泛。使用后获得1龙门币',
+        recipeDescription = '把这个送给朋友',
+      }
+    }
+  }, {
     prefab = 'ark_item_gold2',
     -- 不放入ark_item_pack
     disablePutInPack = true,
+    template = {
+      componentUseableAddArkCurrency = { currencyType = 'ark_gold', value = 10000 }
+    },
     recipe = {{{
       prefab='ark_gold', count=10000
     }, {
@@ -35,6 +49,9 @@ return {
     prefab = 'ark_item_gold3',
     -- 不放入ark_item_pack
     disablePutInPack = true,
+    template = {
+      componentUseableAddArkCurrency = { currencyType = 'ark_gold', value = 100000 }
+    },
     recipe = {{{
       prefab='ark_gold', count=100000
     }, {

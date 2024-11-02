@@ -2,7 +2,7 @@ GLOBAL.setmetatable(env, {
   __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
 local common = require('ark_common')
-PrefabFiles = {"ark_item", "ark_processing_station", 'ark_item_pack', 'ark_gold'}
+PrefabFiles = {"ark_item", "ark_processing_station", 'ark_item_pack'}
 
 Assets = {
   Asset("ATLAS", "images/ark_item_prototyper.xml"),
@@ -21,4 +21,5 @@ modimport('scripts/modmain/ark_currency')
 modimport('scripts/modmain/ark_item_ui')
 modimport('scripts/modmain/ark_item_tech')
 modimport('scripts/modmain/ark_item_recipes2')
+modimport('scripts/modmain/ark_item_template')
 modimport('scripts/modmain/ark_item_container')
