@@ -36,7 +36,7 @@ AddComponentPostInit("inventory", function(self)
   self.Has = function(self, item, amount, ...)
     for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
       if item == type then
-        local left = self.components.ark_currency:GetArkCurrencyByType(type)
+        local left = self.inst.components.ark_currency:GetArkCurrencyByType(type)
         return left >= amount, left
       end
     end

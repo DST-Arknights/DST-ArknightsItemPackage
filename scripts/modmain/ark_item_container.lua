@@ -192,6 +192,16 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
   end
 end)
 
+AddClassPostConstruct('widgets/inventorybar', function (self)
+  local _Rebuild = self.Rebuild
+  self.Rebuild = function(self)
+    self.owner.replica.inventory._disableOverflowArkItemPack = true
+    local res = {_Rebuild(self)}
+    self.owner.replica.inventory._disableOverflowArkItemPack = nil
+    return unpack(res)
+  end
+end)
+
 AddClientModRPCHandler('ark_item', 'inventoryBounce', function(slot)
   if not ThePlayer then
     return
@@ -317,6 +327,9 @@ end)
 AddClassPostConstruct('components/inventory_replica', function(self)
   local _GetOverflowContainer = self.GetOverflowContainer
   function self:GetOverflowContainer()
+    if self._disableOverflowArkItemPack then
+      return _GetOverflowContainer(self)
+    end
     local items = self:GetItems()
     for i, v in pairs(items) do
       if isArkItemPack(v) then
