@@ -36,10 +36,9 @@ local UIArkCurrency = Class(Widget, function(self, owner)
 
 end)
 
-function UIArkCurrency:SetArkCurrency(currency)
-    self.gold.text:SetString(tostring(currency.ark_gold or 0))
-    self.diamondShd.text:SetString(tostring(currency.ark_diamond_shd or 0))
-    self.diamond.text:SetString(tostring(currency.ark_diamond or 0))
+function UIArkCurrency:Refresh()
+    self.gold.text:SetString(tostring(self.owner.replica.ark_currency:GetArkGold()))
+    self.diamondShd.text:SetString(tostring(self.owner.replica.ark_currency:GetArkDiamondShd()))
+    self.diamond.text:SetString(tostring(self.owner.replica.ark_currency:GetArkDiamond()))
 end
-
 return UIArkCurrency

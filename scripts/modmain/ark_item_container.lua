@@ -457,7 +457,7 @@ AddClassPostConstruct('components/container_replica', function(self)
     if not isArkItemPack(self.inst) then
       return _AttachOpener(self, opener)
     end
-    print(debugstack())
+    -- print(debugstack())
     count = count + 1
     print("AttachOpener", count)
     return _AttachOpener(self, opener)
@@ -472,9 +472,8 @@ AddClassPostConstruct('components/container_replica', function(self)
     if not self.ondetachopener then
       return
     end
-    print(debugstack())
+    -- print(debugstack())
     detachCount = detachCount + 1
-    print("DetachOpener", detachCount)
     return _DetachOpener(self, opener)
   end
 

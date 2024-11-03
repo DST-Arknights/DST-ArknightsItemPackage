@@ -47,6 +47,7 @@ AddClassPostConstruct("widgets/controls", function(controls)
     controls.inst:DoTaskInTime(.1, function()
         local arkCurrency = controls.top_root:AddChild(UIArkCurrency(controls.owner))
         controls.arkCurrency = arkCurrency
+        arkCurrency:Refresh()
         positionCurrencyUI(controls)
         local _OnUpdate = controls.OnUpdate
         controls.OnUpdate = function(self, dt, ...)
@@ -54,6 +55,5 @@ AddClassPostConstruct("widgets/controls", function(controls)
             positionCurrencyUI(self)
             return unpack(returnValues)
         end
-        SendModRPCToServer(GetModRPC("ark_item", "ark_currency_sync"))
     end)
 end)

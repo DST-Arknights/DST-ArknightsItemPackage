@@ -5,9 +5,8 @@ local function componentUseableAddArkCurrency(inst, args)
   args = args or {}
   assert(args.currencyType, 'currencyType is required')
   assert(args.value, 'value is required')
-  inst:AddComponent('ark_currency')
-  print('useableAddArkCurrency', inst, args)
-  inst.components.ark_currency:AddPrice(args)  
+  inst:AddComponent('ark_currency_item')
+  inst.components.ark_currency_item:AddPrice(args)  
 end
 
 local template = {

@@ -32,12 +32,12 @@ local function onextinguish(inst)
 end
 
 local function OnPlayerNear(inst)
-    inst.AnimState:PushAnimation("open")
+    inst.AnimState:PlayAnimation("open")
     inst.AnimState:PushAnimation("open_idle", true)
 end
 
 local function OnPlayerFar(inst)
-    inst.AnimState:PushAnimation("close")
+    inst.AnimState:PlayAnimation("close")
     inst.AnimState:PushAnimation("close_idle", true)
 end
 

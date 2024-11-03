@@ -46,12 +46,21 @@
                     <object_ref id="5" timeline="6" key="0" z_index="5"/>
                     <object_ref id="6" timeline="5" key="0" z_index="6"/>
                 </key>
-                <key id="4" time="400">
+                <key id="4" time="350">
+                    <object_ref id="0" timeline="0" key="2" z_index="0"/>
+                    <object_ref id="1" timeline="1" key="2" z_index="1"/>
+                    <object_ref id="2" timeline="2" key="2" z_index="2"/>
+                    <object_ref id="3" timeline="3" key="2" z_index="3"/>
+                    <object_ref id="4" timeline="4" key="2" z_index="4"/>
+                    <object_ref id="5" timeline="6" key="0" z_index="5"/>
+                    <object_ref id="6" timeline="5" key="0" z_index="6"/>
+                </key>
+                <key id="5" time="400">
                     <object_ref id="0" timeline="0" key="3" z_index="0"/>
                     <object_ref id="1" timeline="1" key="3" z_index="1"/>
                     <object_ref id="2" timeline="2" key="3" z_index="2"/>
                     <object_ref id="3" timeline="3" key="3" z_index="3"/>
-                    <object_ref id="4" timeline="4" key="2" z_index="4"/>
+                    <object_ref id="4" timeline="4" key="3" z_index="4"/>
                     <object_ref id="5" timeline="6" key="1" z_index="5"/>
                     <object_ref id="6" timeline="5" key="1" z_index="6"/>
                 </key>
@@ -117,9 +126,12 @@
                     <object folder="1" file="0" angle="0" scale_x="0.267551" scale_y="0.267551"/>
                 </key>
                 <key id="1" time="298">
-                    <object folder="1" file="0" angle="0"/>
+                    <object folder="1" file="0" angle="0" scale_x="0.661313" scale_y="0.661313"/>
                 </key>
-                <key id="2" time="400" spin="-1">
+                <key id="2" time="350">
+                    <object folder="1" file="0" angle="2.54902" scale_x="0.706877" scale_y="0.771099"/>
+                </key>
+                <key id="3" time="400" spin="-1">
                     <object folder="1" file="0" angle="5"/>
                 </key>
             </timeline>
@@ -166,6 +178,8 @@
                     <object_ref id="2" timeline="1" key="1" z_index="2"/>
                     <object_ref id="3" timeline="2" key="1" z_index="3"/>
                     <object_ref id="4" timeline="3" key="1" z_index="4"/>
+                    <object_ref id="5" timeline="6" key="2" z_index="5"/>
+                    <object_ref id="6" timeline="5" key="2" z_index="6"/>
                 </key>
                 <key id="3" time="80">
                     <object_ref id="0" timeline="0" key="2" z_index="0"/>
@@ -173,6 +187,8 @@
                     <object_ref id="2" timeline="1" key="2" z_index="2"/>
                     <object_ref id="3" timeline="2" key="2" z_index="3"/>
                     <object_ref id="4" timeline="3" key="2" z_index="4"/>
+                    <object_ref id="5" timeline="6" key="3" z_index="5"/>
+                    <object_ref id="6" timeline="5" key="3" z_index="6"/>
                 </key>
                 <key id="4" time="200">
                     <object_ref id="0" timeline="0" key="3" z_index="0"/>
@@ -180,6 +196,8 @@
                     <object_ref id="2" timeline="1" key="3" z_index="2"/>
                     <object_ref id="3" timeline="2" key="3" z_index="3"/>
                     <object_ref id="4" timeline="3" key="3" z_index="4"/>
+                    <object_ref id="5" timeline="6" key="4" z_index="5"/>
+                    <object_ref id="6" timeline="5" key="4" z_index="6"/>
                 </key>
             </mainline>
             <timeline id="0" name="portal_arm_ind-0">
@@ -198,7 +216,7 @@
             </timeline>
             <timeline id="1" name="portal_arm_ind-2">
                 <key id="0" spin="-1">
-                    <object folder="0" file="1" x="-270.881144" y="-345.928327" angle="275" scale_x="1.315789" scale_y="0.760233"/>
+                    <object folder="0" file="1" x="-266.881144" y="-345.928327" angle="275" scale_x="1.315789" scale_y="0.760233"/>
                 </key>
                 <key id="1" time="60" spin="0">
                     <object folder="0" file="1" y="4.105259" angle="270" scale_x="1.080436" scale_y="5.902774"/>
@@ -262,12 +280,30 @@
                 <key id="1" time="40" spin="0">
                     <object folder="1" file="1" angle="0" scale_x="0.027233"/>
                 </key>
+                <key id="2" time="60" spin="0">
+                    <object folder="1" file="1" angle="0" scale_x="0.027233"/>
+                </key>
+                <key id="3" time="80" spin="0">
+                    <object folder="1" file="1" angle="0" scale_x="0.027233"/>
+                </key>
+                <key id="4" time="200" spin="0">
+                    <object folder="1" file="1" angle="0" scale_x="-0.018674" scale_y="0.066104"/>
+                </key>
             </timeline>
             <timeline id="6" name="background-2_000">
                 <key id="0" spin="0">
                     <object folder="1" file="2" angle="0"/>
                 </key>
                 <key id="1" time="40" spin="0">
+                    <object folder="1" file="2" angle="0" scale_x="0.026907" scale_y="0.023253"/>
+                </key>
+                <key id="2" time="60" spin="0">
+                    <object folder="1" file="2" angle="0" scale_x="0.026907" scale_y="0.023253"/>
+                </key>
+                <key id="3" time="80" spin="0">
+                    <object folder="1" file="2" angle="0" scale_x="0.026907" scale_y="0.023253"/>
+                </key>
+                <key id="4" time="200" spin="0">
                     <object folder="1" file="2" angle="0" scale_x="0.026907" scale_y="0.023253"/>
                 </key>
             </timeline>
@@ -402,7 +438,7 @@
                     <object folder="0" file="6" x="-262.968248" y="-356.057155" angle="275" scale_x="1.369819" scale_y="0.760233"/>
                 </key>
                 <key id="6" time="300" spin="0">
-                    <object folder="0" file="7" x="-270.881144" y="-345.928327" angle="275" scale_x="1.315789" scale_y="0.760233"/>
+                    <object folder="0" file="7" x="-266.881144" y="-345.928327" angle="275" scale_x="1.315789" scale_y="0.760233"/>
                 </key>
                 <key id="7" time="350" spin="0">
                     <object folder="0" file="0" x="-261.571146" y="-360.552383" angle="275" scale_x="1.487473" scale_y="0.760233"/>
@@ -465,28 +501,28 @@
             </timeline>
             <timeline id="4" name="background-0_001">
                 <key id="0" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="1" time="50" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="2" time="100" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="3" time="150" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="4" time="200" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="5" time="250" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="6" time="300" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
                 <key id="7" time="350" spin="0">
-                    <object folder="1" file="0" angle="5" scale_x="1" scale_y="1"/>
+                    <object folder="1" file="0" angle="5"/>
                 </key>
             </timeline>
             <timeline id="5" name="background-1_000">
@@ -496,7 +532,7 @@
             </timeline>
             <timeline id="6" name="background-2_000">
                 <key id="0" spin="0">
-                    <object folder="1" file="2" angle="0"/>
+                    <object folder="1" file="2" angle="0" scale_x="0.630381"/>
                 </key>
             </timeline>
         </animation>
