@@ -1,1 +1,7 @@
-<Atlas><Texture filename="ark_item_prototyper.tex" /><Elements><Element name="ark_item_prototyper.tex" u1="0.0078125" u2="0.9921875" v1="0.0078125" v2="0.9921875" /></Elements></Atlas>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ark_item_prototyper.tex" />
+	<Elements>
+		<Element name="ark_item_prototyper.tex" u1="0.001" u2="0.999" v2="0.999" v1="0.001" variant="" />
+	</Elements>
+</Atlas>

@@ -124,3 +124,14 @@ local useArkCurrencyState = State {
 
 AddStategraphState("wilson", useArkCurrencyState)
 AddStategraphState("wilson_client", useArkCurrencyState)
+
+
+
+local IngredientUI = require "widgets/ingredientui"
+local _IngredientUI_ctor = IngredientUI._ctor
+function IngredientUI:_ctor(atlas, image, quantity, on_hand, has_enough, name, owner, recipe_type, quant_text_scale, ingredient_recipe)
+  _IngredientUI_ctor(self, atlas, image, quantity, on_hand, has_enough, name, owner, recipe_type, quant_text_scale, ingredient_recipe)
+  if utils.findIndex(TUNING.ARK_CURRENCY_TYPES, recipe_type) then
+    self.quant:SetString(string.format("-%d", quantity))
+  end
+end

@@ -1,4 +1,4 @@
-/images/*/*.tex
-/images/*/*.xml
+/images/**/*.tex
+/images/**/*.xml
 /anim/*
-/exported/*/*.zip
+/exported/**/*.zip

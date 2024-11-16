@@ -1,9 +1,6 @@
 local UIArkCurrency = require("widgets/ui_ark_currency")
 
-table.insert(Assets, Asset("ATLAS", "images/ark_ui/ark_currency_bg.xml"))
-table.insert(Assets, Asset("ATLAS", "images/ark_ui/icon_gold.xml"))
-table.insert(Assets, Asset("ATLAS", "images/ark_ui/icon_diamond.xml"))
-table.insert(Assets, Asset("ATLAS", "images/ark_ui/icon_diamond_shd.xml"))
+table.insert(Assets, Asset("ATLAS", "images/ark_item_ui.xml"))
 
 local PADDING = 6;
 local RIGHT_PADDING = 280;
@@ -20,7 +17,6 @@ local function positionCurrencyUI(controls)
     local screenH = curScreenSize[2] / hudScale.y
 
     local originUiW, originUiH = controls.arkCurrency.bg:GetSize()
-    local scale = controls.arkCurrency.bg:GetScale()
     local positionX = screenW / 2 - RIGHT_PADDING - originUiW / 2 - PADDING
     local positionY = - originUiH / 2 - PADDING
     controls.arkCurrency:SetPosition(positionX, positionY, 0)

@@ -192,15 +192,15 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
   end
 end)
 
-AddClassPostConstruct('widgets/inventorybar', function (self)
-  local _Rebuild = self.Rebuild
-  self.Rebuild = function(self)
-    self.owner.replica.inventory._disableOverflowArkItemPack = true
-    local res = {_Rebuild(self)}
-    self.owner.replica.inventory._disableOverflowArkItemPack = nil
-    return unpack(res)
-  end
-end)
+-- AddClassPostConstruct('widgets/inventorybar', function (self)
+--   local _Rebuild = self.Rebuild
+--   self.Rebuild = function(self)
+--     self.owner.replica.inventory._disableOverflowArkItemPack = true
+--     local res = {_Rebuild(self)}
+--     self.owner.replica.inventory._disableOverflowArkItemPack = nil
+--     return unpack(res)
+--   end
+-- end)
 
 AddClientModRPCHandler('ark_item', 'inventoryBounce', function(slot)
   if not ThePlayer then
@@ -324,22 +324,22 @@ AddComponentPostInit("inventory", function(self)
     return nil
   end
 end)
-AddClassPostConstruct('components/inventory_replica', function(self)
-  local _GetOverflowContainer = self.GetOverflowContainer
-  function self:GetOverflowContainer()
-    if self._disableOverflowArkItemPack then
-      return _GetOverflowContainer(self)
-    end
-    local items = self:GetItems()
-    for i, v in pairs(items) do
-      if isArkItemPack(v) then
-        return v.replica.container
-      end
-    end
-    return _GetOverflowContainer(self)
-  end
-  local _Has = self.Has
-end)
+-- AddClassPostConstruct('components/inventory_replica', function(self)
+--   local _GetOverflowContainer = self.GetOverflowContainer
+--   function self:GetOverflowContainer()
+--     if self._disableOverflowArkItemPack then
+--       return _GetOverflowContainer(self)
+--     end
+--     local items = self:GetItems()
+--     for i, v in pairs(items) do
+--       if isArkItemPack(v) then
+--         return v.replica.container
+--       end
+--     end
+--     return _GetOverflowContainer(self)
+--   end
+--   local _Has = self.Has
+-- end)
 
 AddComponentPostInit('stackable', function(self)
   local _Put = self.Put
@@ -353,20 +353,6 @@ AddComponentPostInit('stackable', function(self)
         if owner.components.container._indexInInventory then
           SendModRPCToClient(GetClientModRPC("ark_item", "inventoryBounce"), owner.userid, owner.components.container._indexInInventory)
         end
-        -- local inventory = owner.components.inventoryitem and owner.components.inventoryitem.owner.components.inventory
-        -- if inventory then
-        --   local index = nil
-        --   for k, v in pairs(inventory.itemslots) do
-        --     if v == owner then
-        --       index = k
-        --       break
-        --     end
-        --   end
-        --   if index then
-        --     SendModRPCToClient(GetClientModRPC("ark_item", "inventoryBounce"),
-        --       owner.components.inventoryitem.owner.userid, index, self.owner)
-        --   end
-        -- end
       end
     end
     return _Put(self, item, source_pos)
@@ -396,7 +382,7 @@ AddComponentPostInit("container", function(self)
       return unpack(res)
     end
     -- StackTraceToLog()
-    self.inst.replica.container.__ArkIsOpen:set(true)
+    -- self.inst.replica.container.__ArkIsOpen:set(true)
     return unpack(res)
   end
 
@@ -411,7 +397,7 @@ AddComponentPostInit("container", function(self)
       self.inst.replica.container._allowRemoveOpener = true
     end
     local res = {_Close(self, doer)}
-    self.inst.replica.container.__ArkIsOpen:set(false)
+    -- self.inst.replica.container.__ArkIsOpen:set(false)
     if not owner then
       self.inst.replica.container._allowRemoveOpener = nil
     elseif owner and owner.components.inventory then
@@ -454,110 +440,110 @@ AddComponentPostInit("container", function(self)
   end
 end)
 
-AddClassPostConstruct('components/container_replica', function(self)
-  self.__ArkIsOpen = net_bool(self.inst.GUID, "container_replica.__ArkIsOpen", "container_replica.__ArkIsOpen_dirty")
-  if not TheWorld.ismastersim then
-    self.inst:ListenForEvent("container_replica.__ArkIsOpen_dirty", function()
-      if not self.__ArkIsOpen:value() then
-        self:Close()
-      end
-    end)
-  end
+-- AddClassPostConstruct('components/container_replica', function(self)
+--   self.__ArkIsOpen = net_bool(self.inst.GUID, "container_replica.__ArkIsOpen", "container_replica.__ArkIsOpen_dirty")
+--   if not TheWorld.ismastersim then
+--     self.inst:ListenForEvent("container_replica.__ArkIsOpen_dirty", function()
+--       if not self.__ArkIsOpen:value() then
+--         self:Close()
+--       end
+--     end)
+--   end
 
-  local count = 0
-  local _AttachOpener = self.AttachOpener
-  function self:AttachOpener(opener)
-    if not isArkItemPack(self.inst) then
-      return _AttachOpener(self, opener)
-    end
-    -- print(debugstack())
-    count = count + 1
-    print("AttachOpener", count)
-    return _AttachOpener(self, opener)
-  end
+--   local count = 0
+--   local _AttachOpener = self.AttachOpener
+--   function self:AttachOpener(opener)
+--     if not isArkItemPack(self.inst) then
+--       return _AttachOpener(self, opener)
+--     end
+--     -- print(debugstack())
+--     count = count + 1
+--     print("AttachOpener", count)
+--     return _AttachOpener(self, opener)
+--   end
 
-  local detachCount = 0
-  local _DetachOpener = self.DetachOpener
-  function self:DetachOpener(opener)
-    if not isArkItemPack(self.inst) then
-      return _AttachOpener(self, opener)
-    end
-    if not self.ondetachopener then
-      return
-    end
-    -- print(debugstack())
-    detachCount = detachCount + 1
-    return _DetachOpener(self, opener)
-  end
+--   local detachCount = 0
+--   local _DetachOpener = self.DetachOpener
+--   function self:DetachOpener(opener)
+--     if not isArkItemPack(self.inst) then
+--       return _AttachOpener(self, opener)
+--     end
+--     if not self.ondetachopener then
+--       return
+--     end
+--     -- print(debugstack())
+--     detachCount = detachCount + 1
+--     return _DetachOpener(self, opener)
+--   end
 
-  local _IsOpenedBy = self.IsOpenedBy
-  function self:IsOpenedBy(doer)
-    if isArkItemPack(self.inst) then
-      return self._isopen
-    end
-    return _IsOpenedBy(self, doer)
-  end
+--   local _IsOpenedBy = self.IsOpenedBy
+--   function self:IsOpenedBy(doer)
+--     if isArkItemPack(self.inst) then
+--       return self._isopen
+--     end
+--     return _IsOpenedBy(self, doer)
+--   end
 
-  local _RemoveOpener = self.RemoveOpener
-  function self:RemoveOpener(opener)
-    if not isArkItemPack(self.inst) then
-      return _RemoveOpener(self, opener)
-    end
-    if self._allowRemoveOpener then
-      return _RemoveOpener(self, opener)
-    end
-  end
-end)
+--   local _RemoveOpener = self.RemoveOpener
+--   function self:RemoveOpener(opener)
+--     if not isArkItemPack(self.inst) then
+--       return _RemoveOpener(self, opener)
+--     end
+--     if self._allowRemoveOpener then
+--       return _RemoveOpener(self, opener)
+--     end
+--   end
+-- end)
 
-AddPrefabPostInit("inventory_classified", function(self)
-  local _SetSlotItem = self.SetSlotItem
+-- AddPrefabPostInit("inventory_classified", function(self)
+--   local _SetSlotItem = self.SetSlotItem
 
-  local _GetOverflowContainer = self.GetOverflowContainer
-  function self:GetOverflowContainer()
-    local items = self:GetItems()
-    for i, v in pairs(items) do
-      if isArkItemPack(v) then
-        return v.replica.container
-      end
-    end
-    return _GetOverflowContainer(self)
-  end
+--   local _GetOverflowContainer = self.GetOverflowContainer
+--   function self:GetOverflowContainer()
+--     local items = self:GetItems()
+--     for i, v in pairs(items) do
+--       if isArkItemPack(v) then
+--         return v.replica.container
+--       end
+--     end
+--     return _GetOverflowContainer(self)
+--   end
 
-  local _MoveItemFromHalfOfSlot = self.MoveItemFromHalfOfSlot
-  function self:MoveItemFromHalfOfSlot(slot, container)
-    if self._busy or self._parent == nil then
-      return
-    end
-    local item = self:GetItemInSlot(slot)
-    if canPutItemInArkItemPack(item) then
-      local container_classified = container ~= nil and container.replica.container ~= nil
-                                     and container.replica.container.classified or nil
-      if not container_classified then
-        SendRPCToServer(RPC.MoveInvItemFromHalfOfSlot, slot, container)
-        return
-      end
-    end
-    _MoveItemFromHalfOfSlot(self, slot, container)
-  end
+--   local _MoveItemFromHalfOfSlot = self.MoveItemFromHalfOfSlot
+--   function self:MoveItemFromHalfOfSlot(slot, container)
+--     if self._busy or self._parent == nil then
+--       return
+--     end
+--     local item = self:GetItemInSlot(slot)
+--     if canPutItemInArkItemPack(item) then
+--       local container_classified = container ~= nil and container.replica.container ~= nil
+--                                      and container.replica.container.classified or nil
+--       if not container_classified then
+--         SendRPCToServer(RPC.MoveInvItemFromHalfOfSlot, slot, container)
+--         return
+--       end
+--     end
+--     _MoveItemFromHalfOfSlot(self, slot, container)
+--   end
 
-  local _MoveItemFromAllOfSlot = self.MoveItemFromAllOfSlot
-  function self:MoveItemFromAllOfSlot(slot, container)
-    if self._busy or self._parent == nil then
-      return
-    end
-    local item = self:GetItemInSlot(slot)
-    if canPutItemInArkItemPack(item) then
-      local container_classified = container ~= nil and container.replica.container ~= nil
-                                     and container.replica.container.classified or nil
-      if not container_classified then
-        SendRPCToServer(RPC.MoveInvItemFromAllOfSlot, slot, container)
-        return
-      end
-    end
-    _MoveItemFromAllOfSlot(self, slot, container)
-  end
+--   local _MoveItemFromAllOfSlot = self.MoveItemFromAllOfSlot
+--   function self:MoveItemFromAllOfSlot(slot, container)
+--     if self._busy or self._parent == nil then
+--       return
+--     end
+--     local item = self:GetItemInSlot(slot)
+--     if canPutItemInArkItemPack(item) then
+--       local container_classified = container ~= nil and container.replica.container ~= nil
+--                                      and container.replica.container.classified or nil
+--       if not container_classified then
+--         SendRPCToServer(RPC.MoveInvItemFromAllOfSlot, slot, container)
+--         return
+--       end
+--     end
+--     _MoveItemFromAllOfSlot(self, slot, container)
+--   end
 
-end)
+-- end)
 
 local truescrolllist = require "widgets/truescrolllist"
 

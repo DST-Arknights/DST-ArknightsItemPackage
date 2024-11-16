@@ -41,7 +41,7 @@ AddRecipe2('ark_processing_station', {
   Ingredient('goldnugget', 2),
 }, TECH.SCIENCE_TWO, {
   placer = 'ark_processing_station_placer',
-  atlas = "images/ark_item/ark_item_pack.xml",
+  atlas = "images/ark_item_pack.xml",
   image = "ark_item_pack.tex",
 })
 AddRecipeToFilter("ark_processing_station", "PROTOTYPERS")
@@ -50,7 +50,7 @@ AddRecipeToFilter("ark_processing_station", "PROTOTYPERS")
 AddRecipe2('ark_item_pack', {
   Ingredient('goldnugget', 1),
 }, TECH.SCIENCE_ONE, {
-  atlas = "images/ark_item/ark_item_pack.xml",
+  atlas = "images/ark_item_pack.xml",
   image = "ark_item_pack.tex",
 })
 AddRecipeToFilter("ark_item_pack", "CLOTHING")

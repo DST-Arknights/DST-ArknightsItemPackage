@@ -20,17 +20,19 @@ end
 local UIArkCurrency = Class(Widget, function(self, owner)
     Widget._ctor(self, "ArkCurrencyUi")
     self.owner = owner
-    self.bg = self:AddChild(Image("images/ark_ui/ark_currency_bg.xml", "ark_currency_bg.tex"))
+    self.bg = self:AddChild(Image("images/ui.xml", "blank.tex"))
+    self.bg:SetSize(160 * 3, 50)
+    self.bg:SetTint(0, 0, 0, 0.5)
    
-    self.gold = addCurrency(self, "images/ark_ui/icon_gold.xml", "icon_gold.tex")
+    self.gold = addCurrency(self, "images/ark_item_ui.xml", "icon_gold.tex")
     self.gold.bg:SetHoverText(common.getCommonI18n("ark_currency_gold"))
     self.gold:SetPosition(-160, 0, 0)
 
-    self.diamondShd = addCurrency(self, "images/ark_ui/icon_diamond_shd.xml", "icon_diamond_shd.tex")
+    self.diamondShd = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond_shd.tex")
     self.diamondShd:SetPosition(0, 0, 0)
     self.diamondShd.bg:SetHoverText(common.getCommonI18n("ark_currency_diamond_shd"))
 
-    self.diamond = addCurrency(self, "images/ark_ui/icon_diamond.xml", "icon_diamond.tex")
+    self.diamond = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond.tex")
     self.diamond:SetPosition(160, 0, 0)
     self.diamond.bg:SetHoverText(common.getCommonI18n("ark_currency_diamond"))
 

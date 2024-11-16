@@ -5,9 +5,9 @@ local arkItemDeclare = require('ark_item_declare')
 local function getI18n(source, path)
     local lang = TUNING.ARK_ITEM_CONFIG.language
     local data = utils.get(source, lang .. '.' .. path)
-    if not data then
-        print('[Ark Item] [waring] i18n not found:', lang, path)
-    end
+    -- if not data then
+    --     print('[Ark Item] [waring] i18n not found:', lang, path)
+    -- end
     return data
 end
 
@@ -26,26 +26,15 @@ local function getPrefabAssetsCode(prefab, withTex)
         anim = 'anim/ark_item.zip',
         animBank = 'ark_item',
         animBuild = 'ark_item',
-        atlas = 'images/ark_item/' .. prefab .. '.xml',
+        atlas = 'images/ark_item.xml',
         image = image, 
-        slotbgatlas = 'images/ark_item/' .. prefab .. '_slotbg.xml',
-        slotbgimage = prefab .. '_slotbg.tex'
+        slotbgatlas = 'images/ark_item_slotbg.xml',
+        slotbgimage = prefab .. '.tex'
     }
 end
 
--- local declareCache = nil
 local function getAllArkItemDeclare()
     return arkItemDeclare
-    -- if declareCache then
-    --     return declareCache
-    -- end
-    -- declareCache = {}
-    -- for _, group in ipairs(arkItemDeclare) do
-    --     for _, item in ipairs(group.items) do
-    --         table.insert(declareCache, item)
-    --     end
-    -- end
-    -- return declareCache
 end
 
 return {

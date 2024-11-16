@@ -95,6 +95,15 @@ local function cloneTable(t)
   return newTable
 end
 
+local function findIndex(arr, value)
+  for i, v in ipairs(arr) do
+    if v == value then
+      return i
+    end
+  end
+  return nil
+end
+
 return {
   get = get,
   printTable = printTable,
@@ -103,5 +112,6 @@ return {
   concatArray = concatArray,
   uniqueArray = uniqueArray,
   mergeTable = mergeTable,
-  cloneTable = cloneTable
+  cloneTable = cloneTable,
+  findIndex = findIndex,
 }

@@ -1,7 +1,7 @@
 local assets =
 {
     Asset("ANIM", "anim/ark_item_pack.zip"),
-    Asset("ATLAS", "images/ark_item/ark_item_pack.xml"),
+    Asset("ATLAS", "images/ark_item_pack.xml"),
 }
 
 
@@ -77,7 +77,7 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.canonlygoinpocket = true
-    inst.components.inventoryitem.atlasname = 'images/ark_item/ark_item_pack.xml'
+    inst.components.inventoryitem.atlasname = 'images/ark_item_pack.xml'
     inst.components.inventoryitem.imagename = 'ark_item_pack'
 
     inst:AddComponent("container")
