@@ -3,8 +3,6 @@ local utils = require("ark_utils")
 local function getVarName(currencyType) return '_currency_' .. currencyType end
 
 local ArkCurrency = Class(function(self, inst)
-      print(debugstack())
-
   self.inst = inst
   for _, currencyType in ipairs(TUNING.ARK_CURRENCY_TYPES) do
     local varName = getVarName(currencyType)

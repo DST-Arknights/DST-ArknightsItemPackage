@@ -9,25 +9,6 @@ local function get(source, path)
   return source
 end
 
-local function printTable(t, maxDepth, indent)
-  indent = indent or 0
-  maxDepth = maxDepth or 2
-  local indentStr = string.rep("  ", indent)
-
-  if indent > maxDepth then
-    print(indentStr .. "...")
-    return
-  end
-
-  for k, v in pairs(t) do
-    if type(v) == "table" then
-      print(indentStr .. tostring(k) .. ":")
-      printTable(v, maxDepth, indent + 1)
-    else
-      print(indentStr .. tostring(k) .. ": " .. tostring(v))
-    end
-  end
-end
 
 local function shuffleArray(array)
   local n = #array
@@ -106,7 +87,6 @@ end
 
 return {
   get = get,
-  printTable = printTable,
   shuffleArray = shuffleArray,
   truncateArray = truncateArray,
   concatArray = concatArray,

@@ -77,7 +77,6 @@ end)
 
 -- 使用货币
 AddAction("USE_ARK_CURRENCY", STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC, function(act)
-  print('USE_ARK_CURRENCY', act)
   local target = act.target or act.invobject
   if target.components.ark_currency_item then
     return target.components.ark_currency_item:CanUse(act.doer)
@@ -85,9 +84,7 @@ AddAction("USE_ARK_CURRENCY", STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC, function
 end)
 
 AddComponentAction('INVENTORY', 'ark_currency_item', function(inst, doer, actions, right)
-  if inst.components.ark_currency_item then
-    table.insert(actions, ACTIONS.USE_ARK_CURRENCY)
-  end
+  table.insert(actions, ACTIONS.USE_ARK_CURRENCY)
 end)
 
 AddStategraphActionHandler("wilson", ActionHandler(ACTIONS.USE_ARK_CURRENCY, 'useArkCurrency'))
@@ -112,7 +109,6 @@ local useArkCurrencyState = State {
     local target = action.target or action.invobject
     local prices = target.components.ark_currency_item:GetAllPrices()
     for _, v in pairs(prices) do
-      print('useArkCurrency', v, v.currencyType, v.value)
       inst.components.ark_currency:AddArkCurrencyByType(v.currencyType, v.value)
     end
     -- target 消耗一个

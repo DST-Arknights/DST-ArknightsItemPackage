@@ -32,6 +32,11 @@ local function makeArkItem(config)
     if not config.disablePutInPack then
       inst:AddTag("ark_item_pack_item")
     end
+    if config.tags then
+      for i = 1, #config.tags do
+        inst:AddTag(config.tags[i])
+      end
+    end
     MakeInventoryFloatable(inst)
 
     inst.entity:SetPristine()

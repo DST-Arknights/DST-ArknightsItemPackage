@@ -22,6 +22,6 @@ modimport('scripts/modmain/ark_item_ui')
 modimport('scripts/modmain/ark_item_tech')
 modimport('scripts/modmain/ark_item_recipes2')
 modimport('scripts/modmain/ark_item_template')
-modimport('scripts/modmain/ark_item_container_copy')
+modimport('scripts/modmain/ark_item_container')
 
 AddReplicableComponent("ark_currency")
