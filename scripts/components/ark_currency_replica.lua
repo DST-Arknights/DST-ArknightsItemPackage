@@ -17,6 +17,14 @@ local ArkCurrency = Class(function(self, inst)
       end)
     end
   end
+  if TheWorld.ismastersim then
+    self.inst:DoTaskInTime(0, function()
+      local wordData = TheWorld.components.ark_currency_data:GetPlayerCurrency(self.inst.userid)
+      if wordData then
+        self:SetArkCurrency(wordData)
+      end
+    end)
+  end
 end)
 
 function ArkCurrency:GetArkCurrency()

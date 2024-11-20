@@ -914,7 +914,7 @@ return {{
       hungervalue = TUNING.CALORIES_SMALL,
       healthvalue = TUNING.HEALING_LARGE,
       sanityvalue = -TUNING.SANITY_LARGE,
-      oneatenbuffs = 'healthregenbuff',
+      oneatenbuffs = {'healthregenbuff'},
     },
     componentCookable = {}
   },
