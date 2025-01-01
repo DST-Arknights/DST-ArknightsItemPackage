@@ -59,6 +59,9 @@
         <file id="55" name="ark_item_pack.png" width="128" height="128" pivot_x="0.5" pivot_y="0.5"/>
         <file id="56" name="ark_item_gold2.png" width="130" height="94" pivot_x="0.5" pivot_y="0.5"/>
         <file id="57" name="ark_item_gold3.png" width="273" height="212" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="58" name="ark_item_mtl_skill3.png" width="121" height="128" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="59" name="ark_item_mtl_skill2.png" width="121" height="128" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="60" name="ark_item_mtl_skill1.png" width="121" height="128" pivot_x="0.5" pivot_y="0.5"/>
     </folder>
     <entity id="0" name="ark_item">
         <animation id="0" name="ark_item_gold1" length="1000">
@@ -754,6 +757,42 @@
             <timeline id="0" name="ark_item_gold3">
                 <key id="0" spin="0">
                     <object folder="0" file="57" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="58" name="ark_item_mtl_skill1" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="ark_item_mtl_skill1" folder="0" file="60" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ark_item_mtl_skill1">
+                <key id="0" spin="0">
+                    <object folder="0" file="60"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="59" name="ark_item_mtl_skill2" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="ark_item_mtl_skill2" folder="0" file="59" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ark_item_mtl_skill2">
+                <key id="0" spin="0">
+                    <object folder="0" file="59"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="60" name="ark_item_mtl_skill3" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="ark_item_mtl_skill3" folder="0" file="58" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="ark_item_mtl_skill3">
+                <key id="0" spin="0">
+                    <object folder="0" file="58"/>
                 </key>
             </timeline>
         </animation>

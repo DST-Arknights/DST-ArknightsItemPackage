@@ -1181,5 +1181,32 @@ return {{
       description = '极少量的工业用有机化合物。可用于多种强化场合，也常作为制造站合成项目的原料。',
       recipeDescription = '通过再处理后用来粘结其它稳定结构。'
     }
+  }, {
+    prefab = 'ark_item_mtl_skill1',
+    i18n = {
+      ['zh'] = {
+        name = '技巧概要·卷1',
+        description = '记载了入门技巧的书籍，用于升级干员技能。',
+        recipeDescription = '记录着干员们所需的入门技艺，普通人只要经过简略学习就能完全掌握。'
+      }
+    }
+  }, {
+    prefab = 'ark_item_mtl_skill2',
+    i18n = {
+      ['zh'] = {
+        name = '技巧概要·卷2',
+        description = '记载了进阶技巧的书籍，用于升级干员技能。',
+        recipeDescription = '记录着干员们所需的进阶技艺，需要耗费一定时间研读并付诸实践才能扎实掌握。'
+      }
+    }
+  }, {
+    prefab = 'ark_item_mtl_skill3',
+    i18n = {
+      ['zh'] = {
+        name = '技巧概要·卷3',
+        description = '记载了专家技巧的书籍，用于升级干员技能。',
+        recipeDescription = '记录着干员们所需的专家级技艺，需要特定领域长久的经验积累才能一窥其中的奥妙。'
+      }
+    }
   }
 }}
