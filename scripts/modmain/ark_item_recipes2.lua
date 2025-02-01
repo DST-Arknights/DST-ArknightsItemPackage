@@ -54,3 +54,17 @@ AddRecipe2('ark_item_pack', {
   image = "ark_item_pack.tex",
 })
 AddRecipeToFilter("ark_item_pack", "CLOTHING")
+
+
+-- 添加训练站配方
+AddRecipe2("ark_training_station",
+  {Ingredient("boards", 4), Ingredient("goldnugget", 2)},
+  TECH.SCIENCE_TWO,
+  {
+    placer = 'ark_training_station_placer',
+    atlas = "images/ark_training_station.xml",
+    image = "ark_training_station.tex",
+  },
+  {"STRUCTURES"}
+)
+AddRecipeToFilter("ark_training_station", "PROTOTYPERS")

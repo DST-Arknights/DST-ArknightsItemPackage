@@ -3,7 +3,7 @@ local i18nDeclare = require('ark_item_i18n_declare')
 local arkItemDeclare = require('ark_item_declare')
 
 local function getI18n(source, path)
-    local lang = TUNING.ARK_ITEM_CONFIG.language
+    local lang = TUNING.ARK_CONFIG.language
     local data = utils.get(source, lang .. '.' .. path)
     -- if not data then
     --     print('[Ark Item] [waring] i18n not found:', lang, path)

@@ -9,16 +9,15 @@ Assets = {
   Asset("ANIM", "anim/ark_item_pack_bg.zip"),
   Asset("ANIM", "anim/ark_item_pack_slot.zip"),
 }
-TUNING.ARK_ITEM_CONFIG = {
+TUNING.ARK_CONFIG = {
   language = locale or 'zh',
 }
 -- 初始化配置
-modimport('scripts/modmain/ark_item_config')
+modimport('scripts/modmain/ark_config')
 modimport('scripts/modmain/ark_item_i18n_init')
 modimport('scripts/modmain/ark_item_resource')
 modimport('scripts/modmain/ark_item_drop')
 modimport('scripts/modmain/ark_currency')
-modimport('scripts/modmain/ark_item_ui')
 modimport('scripts/modmain/ark_item_tech')
 modimport('scripts/modmain/ark_item_recipes2')
 modimport('scripts/modmain/ark_item_template')
