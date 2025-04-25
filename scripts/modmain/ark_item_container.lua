@@ -6,6 +6,8 @@ local Widget = require "widgets/widget"
 local TEMPLATES = require "widgets/redux/templates"
 local common = require("ark_common")
 
+RegisterInventoryItemAtlas('images/ark_item_pack.xml', 'ark_item_pack.tex')
+
 local itemSlotRealIndexMap = {}
 
 local function canPutItemInArkItemPack(item) return item and item:HasTag("ark_item_pack_item") end
@@ -49,7 +51,7 @@ local slotPos = containers.params.ark_item_pack.widget.slotpos
 local slotBg = containers.params.ark_item_pack.widget.slotbg
 
 local allItemsInPack = {}
-for _, item in ipairs(common.getAllArkItemDeclare()) do
+for _, item in ipairs(require('ark_item_declare')) do
   if not item.disablePutInPack then
     table.insert(allItemsInPack, item)
   end
@@ -69,8 +71,6 @@ end
 local function GroupInv(inv)
   for i, v in ipairs(inv) do
     inv[i] = inv[i] or Widget("option" .. i)
-    -- inv[i]:SetHoverText(common.getCommonI18n('itemInvSlotDescriptionPrefix') .. ' '
-    --                       .. STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
     inv[i]:SetLabel(STRINGS.NAMES[string.upper(allItemsInPack[i].prefab)])
   end
   return inv

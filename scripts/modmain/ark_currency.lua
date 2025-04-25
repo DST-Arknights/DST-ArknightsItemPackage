@@ -1,4 +1,5 @@
 local utils = require("ark_utils")
+local UIArkCurrency = require("widgets/ui_ark_currency")
 
 TUNING.ARK_CURRENCY_TYPES = {"ark_gold", "ark_diamond_shd", "ark_diamond", "ark_exgg_shd", "ark_hgg_shd", "ark_lgg_shd"}
 

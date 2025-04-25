@@ -1,0 +1,812 @@
+===============================================================================
+EXTENSION NAME : linecounter
+EXTENSION VERSION : 0.2.7
+-------------------------------------------------------------------------------
+count time : 2025-02-02 21:03:49
+count workspace : c:\Users\Tohsa\projects\DST-ArknightsItemPackage
+total files : 384
+total code lines : 28580
+total comment lines : 2
+total blank lines : 416
+
+    statistics
+   |      extension|     total code|  total comment|    total blank|percent|
+   -------------------------------------------------------------------------
+   |            .md|             33|              0|             19|   0.12|
+   |           .lua|           4494|              0|            393|     16|
+   |               |             24|              2|              4|  0.084|
+   |           .xml|            184|              0|              0|   0.64|
+   |            .po|              0|              0|              0|    0.0|
+   |          .scml|          23845|              0|              0|     83|
+   -------------------------------------------------------------------------
+.gitignore, code is 4, comment is 1, blank is 0.
+anim\ark_gold.zip, it is a binary file.
+anim\ark_item.zip, it is a binary file.
+anim\ark_item_pack.zip, it is a binary file.
+anim\ark_item_pack_bg.zip, it is a binary file.
+anim\ark_item_pack_bg\anim.bin, it is a binary file.
+anim\ark_item_pack_bg\atlas-0.tex, it is a binary file.
+anim\ark_item_pack_bg\build.bin, it is a binary file.
+anim\ark_item_pack_bg\out\ark_item_pack_bg.scml, code is 1228, comment is 0, blank is 0.
+anim\ark_item_pack_bg\out\background\background-0.png, it is a binary file.
+anim\ark_item_pack_bg\out\background\background-1.png, it is a binary file.
+anim\ark_item_pack_bg\out\background\background-2.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-0.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-1.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-2.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-3.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-4.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-5.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-6.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-7.png, it is a binary file.
+anim\ark_item_pack_slot.zip, it is a binary file.
+anim\ark_item_pack_ui.zip, it is a binary file.
+anim\ark_training_station.zip, it is a binary file.
+exported\ark_item\ark_item.scml, code is 800, comment is 0, blank is 0.
+exported\ark_item\ark_item.zip, it is a binary file.
+exported\ark_item\ark_item_gold1.png, it is a binary file.
+exported\ark_item\ark_item_gold2.png, it is a binary file.
+exported\ark_item\ark_item_gold3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_asc_di.png, it is a binary file.
+exported\ark_item\ark_item_mtl_skill1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_skill2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_skill3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_alcohol1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_alcohol2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_bn.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ccf.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ds.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ht.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_htt.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iam3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iam4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_manganese1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_manganese2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_oc3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_oc4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_oeu.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pg1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pg2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pgel3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pgel4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_plcf.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pp.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rma7012.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rma7024.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rs.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_shj.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ss.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_xw.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_xwb.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_zy.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_zyk.png, it is a binary file.
+exported\ark_item\ark_item_pack.png, it is a binary file.
+exported\ark_item_pack\ark_item_pack.scml, code is 20791, comment is 0, blank is 0.
+exported\ark_item_pack\ark_item_pack.zip, it is a binary file.
+exported\ark_item_pack\body\body-1.png, it is a binary file.
+exported\ark_item_pack\body\body-2.png, it is a binary file.
+exported\ark_item_pack\body\body-3.png, it is a binary file.
+exported\ark_item_pack\body\body-4.png, it is a binary file.
+exported\ark_item_pack\body\body-5.png, it is a binary file.
+exported\ark_item_pack\body\body-6.png, it is a binary file.
+exported\ark_item_pack\body\body-7.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-0.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-11.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-13.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-15.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-18.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-2.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-21.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-23.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-25.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-4.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-6.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-9.png, it is a binary file.
+exported\ark_item_pack\fx_crack\fx_crack-0.png, it is a binary file.
+exported\ark_item_pack\fx_crack\fx_crack-1.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-0.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-10.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-12.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-14.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-2.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-4.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-6.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-8.png, it is a binary file.
+exported\ark_item_pack\fx_glow_out\fx_glow_out-0.png, it is a binary file.
+exported\ark_item_pack\fx_glow_out\fx_glow_out-1.png, it is a binary file.
+exported\ark_item_pack\fx_orb_out\fx_orb_out-0.png, it is a binary file.
+exported\ark_item_pack\fx_streak\fx_streak-0.png, it is a binary file.
+exported\ark_item_pack\portal_arch\portal_arch-0.png, it is a binary file.
+exported\ark_item_pack\portal_arch\portal_arch-2.png, it is a binary file.
+exported\ark_item_pack\portal_arch\portal_arch-4.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-0.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-10.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-12.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-14.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-2.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-4.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-6.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-8.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-0.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-10.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-12.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-14.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-2.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-4.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-6.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-8.png, it is a binary file.
+exported\ark_item_pack\portal_center_01\portal_center_01-0.png, it is a binary file.
+exported\ark_item_pack\portal_center_01\portal_center_01-2.png, it is a binary file.
+exported\ark_item_pack\portal_center_01\portal_center_01-4.png, it is a binary file.
+exported\ark_item_pack\portal_center_outline\portal_center_outline-0.png, it is a binary file.
+exported\ark_item_pack\portal_spiral\portal_spiral-0.png, it is a binary file.
+exported\ark_item_pack\portal_spiral\portal_spiral-2.png, it is a binary file.
+exported\ark_item_pack\portal_spiral\portal_spiral-4.png, it is a binary file.
+exported\ark_item_pack_bg\ark_item_pack_bg.scml, code is 540, comment is 0, blank is 0.
+exported\ark_item_pack_bg\ark_item_pack_bg.zip, it is a binary file.
+exported\ark_item_pack_bg\background\background-0.png, it is a binary file.
+exported\ark_item_pack_bg\background\background-1.png, it is a binary file.
+exported\ark_item_pack_bg\background\background-2.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-0.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-10.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-12.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-14.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-2.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-4.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-6.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-8.png, it is a binary file.
+exported\ark_item_pack_slot\ark_item_pack_slot.scml, code is 90, comment is 0, blank is 0.
+exported\ark_item_pack_slot\ark_item_pack_slot.zip, it is a binary file.
+exported\ark_item_pack_slot\ark_item_pack_solt.zip, it is a binary file.
+exported\ark_item_pack_slot\background.png, it is a binary file.
+exported\ark_item_pack_slot\close.png, it is a binary file.
+exported\ark_item_pack_slot\fx-0.png, it is a binary file.
+exported\ark_item_pack_slot\open-0.png, it is a binary file.
+exported\ark_item_pack_slot\open-1.png, it is a binary file.
+exported\ark_item_pack_slot\open-2.png, it is a binary file.
+exported\ark_training_station\ark_dev_training_station.zip, it is a binary file.
+exported\ark_training_station\ark_training_station.scml, code is 396, comment is 0, blank is 0.
+exported\ark_training_station\ark_training_station.zip, it is a binary file.
+exported\ark_training_station\zl-1.png, it is a binary file.
+exported\ark_training_station\zl-10.png, it is a binary file.
+exported\ark_training_station\zl-11.png, it is a binary file.
+exported\ark_training_station\zl-2.png, it is a binary file.
+exported\ark_training_station\zl-3.png, it is a binary file.
+exported\ark_training_station\zl-4.png, it is a binary file.
+exported\ark_training_station\zl-5.png, it is a binary file.
+exported\ark_training_station\zl-6.png, it is a binary file.
+exported\ark_training_station\zl-7.png, it is a binary file.
+exported\ark_training_station\zl-8.png, it is a binary file.
+exported\ark_training_station\zl-9.png, it is a binary file.
+images\ark_dev_training_station.tex, it is a binary file.
+images\ark_dev_training_station.xml, code is 1, comment is 0, blank is 0.
+images\ark_item.tex, it is a binary file.
+images\ark_item.xml, code is 67, comment is 0, blank is 0.
+images\ark_item_pack.tex, it is a binary file.
+images\ark_item_pack.xml, code is 7, comment is 0, blank is 0.
+images\ark_item_prototyper.tex, it is a binary file.
+images\ark_item_prototyper.xml, code is 7, comment is 0, blank is 0.
+images\ark_item_slotbg.tex, it is a binary file.
+images\ark_item_slotbg.xml, code is 60, comment is 0, blank is 0.
+images\ark_item_ui.tex, it is a binary file.
+images\ark_item_ui.xml, code is 9, comment is 0, blank is 0.
+images\ark_skill.tex, it is a binary file.
+images\ark_skill.xml, code is 29, comment is 0, blank is 0.
+images\ark_training_station.png, it is a binary file.
+images\ark_training_station.tex, it is a binary file.
+images\ark_training_station.xml, code is 1, comment is 0, blank is 0.
+images\map_icons\ark_dev_training_station.tex, it is a binary file.
+images\map_icons\ark_dev_training_station.xml, code is 1, comment is 0, blank is 0.
+images\map_icons\ark_training_station.png, it is a binary file.
+images\map_icons\ark_training_station.tex, it is a binary file.
+images\map_icons\ark_training_station.xml, code is 1, comment is 0, blank is 0.
+imageSource\ark_item\ark_gold.png, it is a binary file.
+imageSource\ark_item\ark_item_gold1.png, it is a binary file.
+imageSource\ark_item\ark_item_gold2.png, it is a binary file.
+imageSource\ark_item\ark_item_gold3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_asc_di.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_skill1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_skill2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_skill3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_alcohol1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_alcohol2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_bn.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ccf.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ds.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ht.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_htt.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iam3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iam4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_manganese1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_manganese2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_oc3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_oc4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_oeu.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pg1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pg2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pgel3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pgel4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_plcf.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pp.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rma7012.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rma7024.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rs.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_shj.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ss.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_xw.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_xwb.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_zy.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_zyk.png, it is a binary file.
+imageSource\ark_item_pack\ark_item_pack.png, it is a binary file.
+imageSource\ark_item_prototyper\ark_item_prototyper.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_asc_di.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_alcohol1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_alcohol2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_bn.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ccf.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ds.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ht.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_htt.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iam3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iam4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_manganese1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_manganese2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_oc3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_oc4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_oeu.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pg1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pg2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pgel3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pgel4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_plcf.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pp.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rma7012.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rma7024.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rs.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_shj.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ss.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_xw.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_xwb.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_zy.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_zyk.png, it is a binary file.
+imageSource\ark_item_ui\icon_diamond.png, it is a binary file.
+imageSource\ark_item_ui\icon_diamond_shd.png, it is a binary file.
+imageSource\ark_item_ui\icon_gold.png, it is a binary file.
+imageSource\ark_skill\auto_emit.png, it is a binary file.
+imageSource\ark_skill\frame.png, it is a binary file.
+imageSource\ark_skill\lock.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg1.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg2.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg3.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg4.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg5.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg6.png, it is a binary file.
+imageSource\ark_skill\skill_desc_icon_charge.png, it is a binary file.
+imageSource\ark_skill\skill_desc_icon_clock.png, it is a binary file.
+imageSource\ark_skill\specialized_0_small.png, it is a binary file.
+imageSource\ark_skill\specialized_1_small.png, it is a binary file.
+imageSource\ark_skill\specialized_2_small.png, it is a binary file.
+imageSource\ark_skill\specialized_3_small.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_0.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_1.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_2.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_3.png, it is a binary file.
+imageSource\ark_skill\sprite_skill_bullet.png, it is a binary file.
+imageSource\ark_skill\sprite_skill_notready.png, it is a binary file.
+imageSource\ark_skill\sprite_skill_ready.png, it is a binary file.
+imageSource\ark_skill\stop.png, it is a binary file.
+imageSource\ark_training_station\ark_training_station.png, it is a binary file.
+imageSource\map_icons\ark_training_station\ark_training_station.png, it is a binary file.
+imageSource\modicon\modicon.png, it is a binary file.
+LICENSE, code is 20, comment is 1, blank is 4.
+modicon.tex, it is a binary file.
+modicon.xml, code is 1, comment is 0, blank is 0.
+modinfo.lua, code is 6, comment is 0, blank is 0.
+modmain.lua, code is 61, comment is 0, blank is 13.
+README.md, code is 33, comment is 0, blank is 19.
+scripts\ark_common.lua, code is 75, comment is 0, blank is 11.
+scripts\ark_constants.lua, code is 264, comment is 0, blank is 2.
+scripts\ark_i18n.lua, code is 79, comment is 0, blank is 0.
+scripts\ark_item_declare.lua, code is 1441, comment is 0, blank is 0.
+scripts\ark_utils.lua, code is 124, comment is 0, blank is 16.
+scripts\components\ark_currency.lua, code is 77, comment is 0, blank is 23.
+scripts\components\ark_currency_data.lua, code is 29, comment is 0, blank is 6.
+scripts\components\ark_currency_item.lua, code is 14, comment is 0, blank is 4.
+scripts\components\ark_currency_replica.lua, code is 70, comment is 0, blank is 23.
+scripts\components\ark_exp.lua, code is 64, comment is 0, blank is 7.
+scripts\components\ark_skill.lua, code is 243, comment is 0, blank is 30.
+scripts\languages\ark_chinese_s.po, code is 0, comment is 0, blank is 0.
+scripts\modmain\ark_config.lua, code is 5, comment is 0, blank is 1.
+scripts\modmain\ark_currency.lua, code is 150, comment is 0, blank is 16.
+scripts\modmain\ark_exp.lua, code is 24, comment is 0, blank is 4.
+scripts\modmain\ark_item.lua, code is 272, comment is 0, blank is 26.
+scripts\modmain\ark_item_container.lua, code is 320, comment is 0, blank is 32.
+scripts\modmain\ark_skill.lua, code is 198, comment is 0, blank is 17.
+scripts\prefabs\ark_item.lua, code is 58, comment is 0, blank is 12.
+scripts\prefabs\ark_item_pack.lua, code is 77, comment is 0, blank is 27.
+scripts\prefabs\ark_processing_station.lua, code is 63, comment is 0, blank is 23.
+scripts\prefabs\ark_training_station.lua, code is 53, comment is 0, blank is 14.
+scripts\widgets\ark_exp_ui.lua, code is 151, comment is 0, blank is 20.
+scripts\widgets\ark_skill.lua, code is 288, comment is 0, blank is 35.
+scripts\widgets\ark_skill_desc.lua, code is 228, comment is 0, blank is 18.
+scripts\widgets\ark_skill_ui.lua, code is 23, comment is 0, blank is 6.
+scripts\widgets\ui_ark_currency.lua, code is 37, comment is 0, blank is 7.
+===============================================================================
+===============================================================================
+EXTENSION NAME : linecounter
+EXTENSION VERSION : 0.2.7
+-------------------------------------------------------------------------------
+count time : 2025-02-02 21:09:46
+count workspace : c:\Users\Tohsa\projects\DST-ArknightsItemPackage
+total files : 384
+total code lines : 28580
+total comment lines : 2
+total blank lines : 416
+
+    statistics
+   |      extension|     total code|  total comment|    total blank|percent|
+   -------------------------------------------------------------------------
+   |           .xml|            184|              0|              0|   0.64|
+   |           .lua|           4494|              0|            393|     16|
+   |               |             24|              2|              4|  0.084|
+   |            .md|             33|              0|             19|   0.12|
+   |          .scml|          23845|              0|              0|     83|
+   |            .po|              0|              0|              0|    0.0|
+   -------------------------------------------------------------------------
+.gitignore, code is 4, comment is 1, blank is 0.
+anim\ark_gold.zip, it is a binary file.
+anim\ark_item.zip, it is a binary file.
+anim\ark_item_pack.zip, it is a binary file.
+anim\ark_item_pack_bg.zip, it is a binary file.
+anim\ark_item_pack_bg\anim.bin, it is a binary file.
+anim\ark_item_pack_bg\atlas-0.tex, it is a binary file.
+anim\ark_item_pack_bg\build.bin, it is a binary file.
+anim\ark_item_pack_bg\out\ark_item_pack_bg.scml, code is 1228, comment is 0, blank is 0.
+anim\ark_item_pack_bg\out\background\background-0.png, it is a binary file.
+anim\ark_item_pack_bg\out\background\background-1.png, it is a binary file.
+anim\ark_item_pack_bg\out\background\background-2.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-0.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-1.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-2.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-3.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-4.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-5.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-6.png, it is a binary file.
+anim\ark_item_pack_bg\out\portal_arm_ind\portal_arm_ind-7.png, it is a binary file.
+anim\ark_item_pack_slot.zip, it is a binary file.
+anim\ark_item_pack_ui.zip, it is a binary file.
+anim\ark_training_station.zip, it is a binary file.
+exported\ark_item\ark_item.scml, code is 800, comment is 0, blank is 0.
+exported\ark_item\ark_item.zip, it is a binary file.
+exported\ark_item\ark_item_gold1.png, it is a binary file.
+exported\ark_item\ark_item_gold2.png, it is a binary file.
+exported\ark_item\ark_item_gold3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_asc_di.png, it is a binary file.
+exported\ark_item\ark_item_mtl_skill1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_skill2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_skill3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_alcohol1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_alcohol2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_bn.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_boss4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ccf.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ds.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_g4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ht.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_htt.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iam3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iam4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_iron4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ketone4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_manganese1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_manganese2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_oc3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_oc4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_oeu.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pg1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pg2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pgel3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pgel4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_plcf.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_pp.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rma7012.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rma7024.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rs.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_rush4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_shj.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_ss.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg1.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg2.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg3.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_strg4.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_xw.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_xwb.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_zy.png, it is a binary file.
+exported\ark_item\ark_item_mtl_sl_zyk.png, it is a binary file.
+exported\ark_item\ark_item_pack.png, it is a binary file.
+exported\ark_item_pack\ark_item_pack.scml, code is 20791, comment is 0, blank is 0.
+exported\ark_item_pack\ark_item_pack.zip, it is a binary file.
+exported\ark_item_pack\body\body-1.png, it is a binary file.
+exported\ark_item_pack\body\body-2.png, it is a binary file.
+exported\ark_item_pack\body\body-3.png, it is a binary file.
+exported\ark_item_pack\body\body-4.png, it is a binary file.
+exported\ark_item_pack\body\body-5.png, it is a binary file.
+exported\ark_item_pack\body\body-6.png, it is a binary file.
+exported\ark_item_pack\body\body-7.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-0.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-11.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-13.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-15.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-18.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-2.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-21.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-23.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-25.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-4.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-6.png, it is a binary file.
+exported\ark_item_pack\fx_beam_comp\fx_beam_comp-9.png, it is a binary file.
+exported\ark_item_pack\fx_crack\fx_crack-0.png, it is a binary file.
+exported\ark_item_pack\fx_crack\fx_crack-1.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-0.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-10.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-12.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-14.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-2.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-4.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-6.png, it is a binary file.
+exported\ark_item_pack\fx_energy\fx_energy-8.png, it is a binary file.
+exported\ark_item_pack\fx_glow_out\fx_glow_out-0.png, it is a binary file.
+exported\ark_item_pack\fx_glow_out\fx_glow_out-1.png, it is a binary file.
+exported\ark_item_pack\fx_orb_out\fx_orb_out-0.png, it is a binary file.
+exported\ark_item_pack\fx_streak\fx_streak-0.png, it is a binary file.
+exported\ark_item_pack\portal_arch\portal_arch-0.png, it is a binary file.
+exported\ark_item_pack\portal_arch\portal_arch-2.png, it is a binary file.
+exported\ark_item_pack\portal_arch\portal_arch-4.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-0.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-10.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-12.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-14.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-2.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-4.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-6.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind\portal_arm_ind-8.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-0.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-10.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-12.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-14.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-2.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-4.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-6.png, it is a binary file.
+exported\ark_item_pack\portal_arm_ind_outline\portal_arm_ind_outline-8.png, it is a binary file.
+exported\ark_item_pack\portal_center_01\portal_center_01-0.png, it is a binary file.
+exported\ark_item_pack\portal_center_01\portal_center_01-2.png, it is a binary file.
+exported\ark_item_pack\portal_center_01\portal_center_01-4.png, it is a binary file.
+exported\ark_item_pack\portal_center_outline\portal_center_outline-0.png, it is a binary file.
+exported\ark_item_pack\portal_spiral\portal_spiral-0.png, it is a binary file.
+exported\ark_item_pack\portal_spiral\portal_spiral-2.png, it is a binary file.
+exported\ark_item_pack\portal_spiral\portal_spiral-4.png, it is a binary file.
+exported\ark_item_pack_bg\ark_item_pack_bg.scml, code is 540, comment is 0, blank is 0.
+exported\ark_item_pack_bg\ark_item_pack_bg.zip, it is a binary file.
+exported\ark_item_pack_bg\background\background-0.png, it is a binary file.
+exported\ark_item_pack_bg\background\background-1.png, it is a binary file.
+exported\ark_item_pack_bg\background\background-2.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-0.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-10.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-12.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-14.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-2.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-4.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-6.png, it is a binary file.
+exported\ark_item_pack_bg\portal_arm_ind\portal_arm_ind-8.png, it is a binary file.
+exported\ark_item_pack_slot\ark_item_pack_slot.scml, code is 90, comment is 0, blank is 0.
+exported\ark_item_pack_slot\ark_item_pack_slot.zip, it is a binary file.
+exported\ark_item_pack_slot\ark_item_pack_solt.zip, it is a binary file.
+exported\ark_item_pack_slot\background.png, it is a binary file.
+exported\ark_item_pack_slot\close.png, it is a binary file.
+exported\ark_item_pack_slot\fx-0.png, it is a binary file.
+exported\ark_item_pack_slot\open-0.png, it is a binary file.
+exported\ark_item_pack_slot\open-1.png, it is a binary file.
+exported\ark_item_pack_slot\open-2.png, it is a binary file.
+exported\ark_training_station\ark_dev_training_station.zip, it is a binary file.
+exported\ark_training_station\ark_training_station.scml, code is 396, comment is 0, blank is 0.
+exported\ark_training_station\ark_training_station.zip, it is a binary file.
+exported\ark_training_station\zl-1.png, it is a binary file.
+exported\ark_training_station\zl-10.png, it is a binary file.
+exported\ark_training_station\zl-11.png, it is a binary file.
+exported\ark_training_station\zl-2.png, it is a binary file.
+exported\ark_training_station\zl-3.png, it is a binary file.
+exported\ark_training_station\zl-4.png, it is a binary file.
+exported\ark_training_station\zl-5.png, it is a binary file.
+exported\ark_training_station\zl-6.png, it is a binary file.
+exported\ark_training_station\zl-7.png, it is a binary file.
+exported\ark_training_station\zl-8.png, it is a binary file.
+exported\ark_training_station\zl-9.png, it is a binary file.
+images\ark_dev_training_station.tex, it is a binary file.
+images\ark_dev_training_station.xml, code is 1, comment is 0, blank is 0.
+images\ark_item.tex, it is a binary file.
+images\ark_item.xml, code is 67, comment is 0, blank is 0.
+images\ark_item_pack.tex, it is a binary file.
+images\ark_item_pack.xml, code is 7, comment is 0, blank is 0.
+images\ark_item_prototyper.tex, it is a binary file.
+images\ark_item_prototyper.xml, code is 7, comment is 0, blank is 0.
+images\ark_item_slotbg.tex, it is a binary file.
+images\ark_item_slotbg.xml, code is 60, comment is 0, blank is 0.
+images\ark_item_ui.tex, it is a binary file.
+images\ark_item_ui.xml, code is 9, comment is 0, blank is 0.
+images\ark_skill.tex, it is a binary file.
+images\ark_skill.xml, code is 29, comment is 0, blank is 0.
+images\ark_training_station.png, it is a binary file.
+images\ark_training_station.tex, it is a binary file.
+images\ark_training_station.xml, code is 1, comment is 0, blank is 0.
+images\map_icons\ark_dev_training_station.tex, it is a binary file.
+images\map_icons\ark_dev_training_station.xml, code is 1, comment is 0, blank is 0.
+images\map_icons\ark_training_station.png, it is a binary file.
+images\map_icons\ark_training_station.tex, it is a binary file.
+images\map_icons\ark_training_station.xml, code is 1, comment is 0, blank is 0.
+imageSource\ark_item\ark_gold.png, it is a binary file.
+imageSource\ark_item\ark_item_gold1.png, it is a binary file.
+imageSource\ark_item\ark_item_gold2.png, it is a binary file.
+imageSource\ark_item\ark_item_gold3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_asc_di.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_skill1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_skill2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_skill3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_alcohol1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_alcohol2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_bn.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_boss4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ccf.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ds.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_g4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ht.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_htt.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iam3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iam4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_iron4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ketone4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_manganese1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_manganese2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_oc3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_oc4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_oeu.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pg1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pg2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pgel3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pgel4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_plcf.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_pp.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rma7012.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rma7024.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rs.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_rush4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_shj.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_ss.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg1.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg2.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg3.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_strg4.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_xw.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_xwb.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_zy.png, it is a binary file.
+imageSource\ark_item\ark_item_mtl_sl_zyk.png, it is a binary file.
+imageSource\ark_item_pack\ark_item_pack.png, it is a binary file.
+imageSource\ark_item_prototyper\ark_item_prototyper.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_asc_di.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_alcohol1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_alcohol2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_bn.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_boss4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ccf.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ds.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_g4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ht.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_htt.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iam3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iam4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_iron4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ketone4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_manganese1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_manganese2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_oc3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_oc4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_oeu.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pg1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pg2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pgel3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pgel4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_plcf.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_pp.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rma7012.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rma7024.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rs.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_rush4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_shj.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_ss.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg1.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg2.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg3.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_strg4.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_xw.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_xwb.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_zy.png, it is a binary file.
+imageSource\ark_item_slotbg\ark_item_mtl_sl_zyk.png, it is a binary file.
+imageSource\ark_item_ui\icon_diamond.png, it is a binary file.
+imageSource\ark_item_ui\icon_diamond_shd.png, it is a binary file.
+imageSource\ark_item_ui\icon_gold.png, it is a binary file.
+imageSource\ark_skill\auto_emit.png, it is a binary file.
+imageSource\ark_skill\frame.png, it is a binary file.
+imageSource\ark_skill\lock.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg1.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg2.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg3.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg4.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg5.png, it is a binary file.
+imageSource\ark_skill\skill_desc_bg6.png, it is a binary file.
+imageSource\ark_skill\skill_desc_icon_charge.png, it is a binary file.
+imageSource\ark_skill\skill_desc_icon_clock.png, it is a binary file.
+imageSource\ark_skill\specialized_0_small.png, it is a binary file.
+imageSource\ark_skill\specialized_1_small.png, it is a binary file.
+imageSource\ark_skill\specialized_2_small.png, it is a binary file.
+imageSource\ark_skill\specialized_3_small.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_0.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_1.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_2.png, it is a binary file.
+imageSource\ark_skill\specialized_tiny_3.png, it is a binary file.
+imageSource\ark_skill\sprite_skill_bullet.png, it is a binary file.
+imageSource\ark_skill\sprite_skill_notready.png, it is a binary file.
+imageSource\ark_skill\sprite_skill_ready.png, it is a binary file.
+imageSource\ark_skill\stop.png, it is a binary file.
+imageSource\ark_training_station\ark_training_station.png, it is a binary file.
+imageSource\map_icons\ark_training_station\ark_training_station.png, it is a binary file.
+imageSource\modicon\modicon.png, it is a binary file.
+LICENSE, code is 20, comment is 1, blank is 4.
+modicon.tex, it is a binary file.
+modicon.xml, code is 1, comment is 0, blank is 0.
+modinfo.lua, code is 6, comment is 0, blank is 0.
+modmain.lua, code is 61, comment is 0, blank is 13.
+README.md, code is 33, comment is 0, blank is 19.
+scripts\ark_common.lua, code is 75, comment is 0, blank is 11.
+scripts\ark_constants.lua, code is 264, comment is 0, blank is 2.
+scripts\ark_i18n.lua, code is 79, comment is 0, blank is 0.
+scripts\ark_item_declare.lua, code is 1441, comment is 0, blank is 0.
+scripts\ark_utils.lua, code is 124, comment is 0, blank is 16.
+scripts\components\ark_currency.lua, code is 77, comment is 0, blank is 23.
+scripts\components\ark_currency_data.lua, code is 29, comment is 0, blank is 6.
+scripts\components\ark_currency_item.lua, code is 14, comment is 0, blank is 4.
+scripts\components\ark_currency_replica.lua, code is 70, comment is 0, blank is 23.
+scripts\components\ark_exp.lua, code is 64, comment is 0, blank is 7.
+scripts\components\ark_skill.lua, code is 243, comment is 0, blank is 30.
+scripts\languages\ark_chinese_s.po, code is 0, comment is 0, blank is 0.
+scripts\modmain\ark_config.lua, code is 5, comment is 0, blank is 1.
+scripts\modmain\ark_currency.lua, code is 150, comment is 0, blank is 16.
+scripts\modmain\ark_exp.lua, code is 24, comment is 0, blank is 4.
+scripts\modmain\ark_item.lua, code is 272, comment is 0, blank is 26.
+scripts\modmain\ark_item_container.lua, code is 320, comment is 0, blank is 32.
+scripts\modmain\ark_skill.lua, code is 198, comment is 0, blank is 17.
+scripts\prefabs\ark_item.lua, code is 58, comment is 0, blank is 12.
+scripts\prefabs\ark_item_pack.lua, code is 77, comment is 0, blank is 27.
+scripts\prefabs\ark_processing_station.lua, code is 63, comment is 0, blank is 23.
+scripts\prefabs\ark_training_station.lua, code is 53, comment is 0, blank is 14.
+scripts\widgets\ark_exp_ui.lua, code is 151, comment is 0, blank is 20.
+scripts\widgets\ark_skill.lua, code is 288, comment is 0, blank is 35.
+scripts\widgets\ark_skill_desc.lua, code is 228, comment is 0, blank is 18.
+scripts\widgets\ark_skill_ui.lua, code is 23, comment is 0, blank is 6.
+scripts\widgets\ui_ark_currency.lua, code is 37, comment is 0, blank is 7.
+===============================================================================

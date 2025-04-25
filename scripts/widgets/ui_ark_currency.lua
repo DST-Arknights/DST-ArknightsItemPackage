@@ -25,13 +25,13 @@ local UIArkCurrency = Class(Widget, function(self, owner)
     self.bg:SetSize(160 * 3, 28)
     self.bg:SetTint(0, 0, 0, 0.5)
    
-    self.gold = addCurrency(self, "images/ark_item_ui.xml", "icon_gold.tex", common.getCommonI18n("ark_currency_gold"))
+    self.gold = addCurrency(self, "images/ark_item_ui.xml", "icon_gold.tex", STRINGS.NAMES.ARK_GOLD)
     self.gold:SetPosition(-160, 0, 0)
 
-    self.diamondShd = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond_shd.tex", common.getCommonI18n("ark_currency_diamond_shd"))
+    self.diamondShd = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond_shd.tex", STRINGS.NAMES.ARK_DIAMOND_SHD)
     self.diamondShd:SetPosition(0, 0, 0)
 
-    self.diamond = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond.tex", common.getCommonI18n("ark_currency_diamond"))
+    self.diamond = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond.tex", STRINGS.NAMES.ARK_DIAMOND)
     self.diamond:SetPosition(160, 0, 0)
 
 end)

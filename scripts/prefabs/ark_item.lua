@@ -1,6 +1,6 @@
 local utils = require("ark_utils")
 local common = require("ark_common")
-local arkItemDeclare = common.getAllArkItemDeclare()
+local arkItemDeclare = require("ark_item_declare")
 
 local function makeArkItem(config)
   local assetsCode = common.getPrefabAssetsCode(config.prefab, false)

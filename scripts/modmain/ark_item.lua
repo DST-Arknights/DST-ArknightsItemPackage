@@ -1,5 +1,42 @@
+local arkItemDeclare = require "ark_item_declare"
 local common = require "ark_common"
-local arkItemDeclare = common.getAllArkItemDeclare()
+local utils = require "ark_utils"
+
+local function addItemRecipe(item)
+  if not item.recipe then return end
+  for i = 1, #item.recipe do
+    local recipe = item.recipe[i]
+    local ingredients = {}
+    for k = 1, #recipe do
+      local ingredient = recipe[k]
+      table.insert(ingredients, Ingredient(ingredient.prefab, ingredient.count))
+    end
+    local assetsCode = common.getPrefabAssetsCode(item.prefab)
+    local recipeCode = item.prefab
+    AddRecipe2(recipeCode, ingredients, TECH.ARK_ITEM_ONE, {
+      nounlock = true,
+      atlas = assetsCode.atlas,
+      image = assetsCode.image
+    })
+  end
+end
+
+local dropMap = {}
+local function addItemDrop(item)
+  if not item.drop then return end
+  for i = 1, #item.drop do
+    local drop = item.drop[i]
+    if not dropMap[drop.prefab] then
+      dropMap[drop.prefab] = {}
+    end
+    table.insert(dropMap[drop.prefab], {
+      prefab = item.prefab,
+      adapter = drop.adapter or 'AddChanceLoot',
+      value = drop.value or 1
+    })
+  end
+end
+
 
 local function componentArkCurrentItem(inst, args)
   if not TheWorld.ismastersim then
@@ -103,17 +140,6 @@ end)
 
 end
 
-local function ComponentCookable(inst, args)
-  if not TheWorld.ismastersim then
-    return inst
-  end
-  args = args or {}
-  inst:AddComponent("cookable")
-  -- inst.components.cookable.product = args.product or nil
-  -- inst.components.cookable:SetOnCookedFn(args.oncookedfn or nil)
-  
-end
-
 -- 作为燃料添加后爆炸
 local function componentFuelExplosive(inst, args)
   if not TheWorld.ismastersim then
@@ -184,12 +210,6 @@ local template = {
   -- @param args
   ComponentExplosive = ComponentExplosive,
 
-  -- 可烹饪组件
-  -- @param inst
-  -- @param args.product 烹饪后的物品
-  -- @param args.oncookedfn 烹饪后的回调函数
-  ComponentCookable = ComponentCookable,
-
   -- 作为燃料添加后爆炸
   -- @param inst
   -- @param args
@@ -202,15 +222,77 @@ local template = {
 
 }
 
-for _, item in ipairs(arkItemDeclare) do
-  if item.template then
-    for k, args in pairs(item.template) do
-      if type(template[k]) == 'function' then
-        print('item '.. item.prefab .. ' add template ' .. k)
-        AddPrefabPostInit(item.prefab, function(inst)
-          template[k](inst, args)
-        end)
-      end
+local function addItemTemplate(item)
+  if not item.template then return end
+  for k, args in pairs(item.template) do
+    if type(template[k]) == 'function' then
+      print('item '.. item.prefab .. ' add template ' .. k)
+      AddPrefabPostInit(item.prefab, function(inst)
+        template[k](inst, args)
+      end)
     end
   end
 end
+
+for i = 1, #arkItemDeclare do
+  local item = arkItemDeclare[i]
+  local assetsCode = common.getPrefabAssetsCode(item.prefab)
+  RegisterInventoryItemAtlas(assetsCode.atlas, assetsCode.image)
+  addItemRecipe(item)
+  addItemDrop(item)
+  addItemTemplate(item)
+  if item.ingredientValues then
+    -- cancook 默认为true
+    local cancook = true
+    if item.ingredientValues.cancook ~= nil then
+      cancook = item.ingredientValues.cancook
+    end
+    -- candry 默认为false
+    local candry = false
+    if item.ingredientValues.candry ~= nil then
+      candry = item.ingredientValues.candry
+    end
+    GLOBAL.AddIngredientValues(item.prefab, item.ingredientValues.tags, cancook, candry)
+  end
+end
+
+
+AddComponentPostInit("lootdropper", function(self)
+  function self:AddLoot(prefab, num)
+      if not self.loot then
+          self.loot = {}
+      end
+      for i = 1, num do
+          table.insert(self.loot, prefab)
+      end
+  end
+end)
+
+for k, v in pairs(dropMap) do
+  AddPrefabPostInit(k, function(inst)
+      for i = 1, #v do
+        local adapter = inst.components.lootdropper and inst.components.lootdropper[v[i].adapter]
+        if adapter then
+          adapter(inst.components.lootdropper, v[i].prefab, v[i].value)
+        end
+      end
+  end)
+end
+
+AddPrototyperDef('ark_processing_station', {
+  icon_atlas = "images/ark_item_prototyper.xml",
+  icon_image = "ark_item_prototyper.tex",
+  is_crafting_station = true,
+  action_str = 'ARK_PROCESSING_STATION',
+  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_PROCESSING_STATION
+})
+
+-- 制造站
+AddRecipe2('ark_processing_station', {
+  Ingredient('goldnugget', 2),
+}, TECH.SCIENCE_TWO, {
+  placer = 'ark_processing_station_placer',
+  atlas = "images/ark_item_pack.xml",
+  image = "ark_item_pack.tex",
+})
+AddRecipeToFilter("ark_processing_station", "PROTOTYPERS")

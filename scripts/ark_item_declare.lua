@@ -980,7 +980,7 @@ return {{
     ['zh'] = {
       name = '糖',
       description = '机械化制作的少量糖块，可用于多种强化场合，也常作为制造站合成项目的原料。',
-      recipeDescription = '啊啊，这个味道……会带来不错的好心情。不是用来当零食吃的。'
+      recipeDescription = ' 啊啊，这个味道……会带来不错的好心情。不是用来当零食吃的。'
     }
   }
 }, {
@@ -994,6 +994,11 @@ return {{
     },
     componentCookable = {}
   },
+  drop = {{
+    prefab = 'bee',
+    adapter = 'AddLoot',
+    value = 1
+  }},
   i18n = {
     ['zh'] = {
       name = '代糖',
@@ -1019,6 +1024,11 @@ return {{
     prefab = CHARACTER_INGREDIENT.SANITY,
     count = 20
   }}},
+  drop = {{
+    prefab = 'rock_moon_shell',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }},
   i18n = {
     ['zh'] = {
       name = '异铁块',
@@ -1038,6 +1048,15 @@ return {{
     prefab = CHARACTER_INGREDIENT.SANITY,
     count = 10
   }}},
+  drop = {{
+    prefab = 'rock_moon',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'rock_moon_shell',
+    adapter = 'AddLoot',
+    value = 1
+  }},
   i18n = {
     ['zh'] = {
       name = '异铁组',
@@ -1057,6 +1076,23 @@ return {{
     prefab = CHARACTER_INGREDIENT.SANITY,
     count = 5
   }}},
+  drop = {{
+    prefab = 'rock2',
+    adapter = 'AddChanceLoot',
+    value = 0.15
+  }, {
+    prefab = 'rock1',
+    adapter = 'AddChanceLoot',
+    value = 0.35
+  }, {
+    prefab = 'rock_moon',
+    adapter = 'AddChanceLoot',
+    value = 0.7
+  }, {
+    prefab = 'rock_moon_shell',
+    adapter = 'AddLoot',
+    value = 1
+  }},
   i18n = {
     ['zh'] = {
       name = '异铁',
@@ -1066,6 +1102,23 @@ return {{
   }
 }, {
   prefab = 'ark_item_mtl_sl_iron1',
+  drop = {{
+    prefab = 'rock2',
+    adapter = 'AddChanceLoot',
+    value = 0.25
+  }, {
+    prefab = 'rock1',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'rock_moon',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'rock_moon_shell',
+    adapter = 'AddLoot',
+    value = 1
+  }},
   i18n = {
     ['zh'] = {
       name = '异铁碎片',
@@ -1094,6 +1147,23 @@ return {{
   template = {
     componentFuelExplosive = {}
   },
+  drop = {{
+    prefab = 'bearger',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  },{
+    prefab = 'dragonfly',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  },{
+    prefab = 'deerclops',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  },{
+    prefab = 'moose',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  }},
   i18n = {
     ['zh'] = {
       name = '酮阵列',
@@ -1113,9 +1183,51 @@ return {{
     prefab = CHARACTER_INGREDIENT.SANITY,
     count = 10
   }}},
-  template = {
-    componentFuelExplosive = {}
+  ingredientValues = {
+    tags = {
+      meat = 4
+    },
   },
+  template = {
+    componentFuelExplosive = {},
+  },
+  drop = {{
+    prefab = 'beefalo',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'spat',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'crabking',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'koalefant_summer',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'koalefant_winter',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'bearger',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'dragonfly',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'deerclops',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'moose',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  }},
   i18n = {
     ['zh'] = {
       name = '酮凝集组',
@@ -1151,6 +1263,104 @@ return {{
       time = 10
     }
   },
+  drop = {{
+    prefab = 'pigman',
+    adapter = 'AddLoot',
+    value = 1
+  },{
+    prefab = 'pigguard',
+    adapter = 'AddLoot',
+    value = 1
+  },{
+    prefab = 'bunnyman',
+    adapter = 'AddLoot',
+    value = 1
+  },{
+    prefab = 'walrus',
+    adapter = 'AddLoot',
+    value = 1
+  },{
+    prefab = 'little_walrus',
+    adapter = 'AddLoot',
+    value = 1
+  },{
+    prefab = 'tallbird',
+    adapter = 'AddLoot',
+    value = 1
+  -- },{
+  --   prefab = 'werepig',
+  --   adapter = 'AddLoot',
+  --   value = 1
+  },{
+    prefab = 'babybeefalo',
+    adapter = 'AddLoot',
+    value = 1
+  },{
+    prefab = 'beefalo',
+    adapter = 'AddLoot',
+    value = 3
+  },{
+    prefab = 'spat',
+    adapter = 'AddLoot',
+    value = 3
+  },{
+    prefab = 'crabking',
+    adapter = 'AddLoot',
+    value = 3
+  },{
+    prefab = 'koalefant_summer',
+    adapter = 'AddLoot',
+    value = 4
+  },{
+    prefab = 'koalefant_summer',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'koalefant_winter',
+    adapter = 'AddLoot',
+    value = 4
+  },{
+    prefab = 'koalefant_winter',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'bearger',
+    adapter = 'AddLoot',
+    value = 4
+  },{
+    prefab = 'bearger',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'dragonfly',
+    adapter = 'AddLoot',
+    value = 4
+  },{
+    prefab = 'dragonfly',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'deerclops',
+    adapter = 'AddLoot',
+    value = 4
+  },{
+    prefab = 'deerclops',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  },{
+    prefab = 'moose',
+    adapter = 'AddLoot',
+    value = 4
+  },{
+    prefab = 'moose',
+    adapter = 'AddChanceLoot',
+    value = 0.4
+  }},
+  ingredientValues = {
+    tags = {
+      meat = 4
+    },
+  },
   i18n = {
     ['zh'] = {
       name = '酮凝集',
@@ -1173,8 +1383,24 @@ return {{
     MakeSmallBurnable = {
       time = 5
     },
-    ComponentCookable = {}
   },
+  drop = {{
+    prefab = 'rabbit',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  },{
+    prefab = 'mole',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  },{
+    prefab = 'monkey',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  },{
+    prefab = 'penguin',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  },},
   i18n = {
     ['zh'] = {
       name = '双酮',
