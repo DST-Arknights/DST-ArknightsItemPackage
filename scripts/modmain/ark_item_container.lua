@@ -6,11 +6,11 @@ local Widget = require "widgets/widget"
 local TEMPLATES = require "widgets/redux/templates"
 local common = require("ark_common")
 
-RegisterInventoryItemAtlas('images/ark_item_pack.xml', 'ark_item_pack.tex')
+RegisterInventoryItemAtlas('images/ark_backpack.xml', 'ark_backpack.tex')
 
 local itemSlotRealIndexMap = {}
 
-local function canPutItemInArkItemPack(item) return item and item:HasTag("ark_item_pack_item") end
+local function canPutItemInArkItemPack(item) return item and item:HasTag("ark_backpack_item") end
 
 local function itemtestfn(container, item, slot)
   -- 只有指定物品能放在指定位置
@@ -20,7 +20,7 @@ local function itemtestfn(container, item, slot)
   local res = itemSlotRealIndexMap[item.prefab] == slot
   return res
 end
-containers.params.ark_item_pack = {
+containers.params.ark_backpack = {
   widget = {
     slotpos = {},
     slotbg = {},
@@ -33,22 +33,22 @@ containers.params.ark_item_pack = {
       widget_height = 86
     },
     pos = Vector3(340, -60, 0),
-    animbuild_upgraded = 'ark_item_pack_bg',
-    animbuild = 'ark_item_pack_bg',
-    animbank_upgraded = 'ark_item_pack_bg',
-    animbank = 'ark_item_pack_bg',
+    animbuild_upgraded = 'ark_backpack_bg',
+    animbuild = 'ark_backpack_bg',
+    animbank_upgraded = 'ark_backpack_bg',
+    animbank = 'ark_backpack_bg',
     animloop = true,
   },
   usespecificslotsforitems = true,
   itemtestfn = itemtestfn,
   issidewidget = false,
-  type = "ark_item_pack",
+  type = "ark_backpack",
   openlimit = 1
 }
 
-local numColumns = containers.params.ark_item_pack.widget.musha_scroll.num_columns
-local slotPos = containers.params.ark_item_pack.widget.slotpos
-local slotBg = containers.params.ark_item_pack.widget.slotbg
+local numColumns = containers.params.ark_backpack.widget.musha_scroll.num_columns
+local slotPos = containers.params.ark_backpack.widget.slotpos
+local slotBg = containers.params.ark_backpack.widget.slotbg
 
 local allItemsInPack = {}
 for _, item in ipairs(require('ark_item_declare')) do
@@ -76,7 +76,7 @@ local function GroupInv(inv)
   return inv
 end
 
-local function isArkItemPack(inst) return inst.replica.container and inst.replica.container.type == "ark_item_pack" end
+local function isArkItemPack(inst) return inst.replica.container and inst.replica.container.type == "ark_backpack" end
 
 AddClassPostConstruct("widgets/containerwidget", function(self)
   local _Open = self.Open
@@ -257,20 +257,20 @@ AddComponentPostInit("inventory", function(self)
       if not isOpen and self.opencontainers[item] then
         self.opencontainers[item] = nil
       end
-      self._ark_item_pack = nil
-      self._ark_item_pack_index = nil
+      self._ark_backpack = nil
+      self._ark_backpack_index = nil
     end
     return unpack(res)
   end
 
   self.findArkItemPack = function(self)
-    if self._ark_item_pack then
-      return self._ark_item_pack, self._ark_item_pack_index
+    if self._ark_backpack then
+      return self._ark_backpack, self._ark_backpack_index
     end
     for k, v in pairs(self.itemslots) do
       if isArkItemPack(v) then
-        self._ark_item_pack = v
-        self._ark_item_pack_index = k
+        self._ark_backpack = v
+        self._ark_backpack_index = k
         return v, k
       end
     end

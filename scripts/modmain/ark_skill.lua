@@ -29,68 +29,93 @@ AddClientModRPCHandler("arkSkill", "SyncSkillStatus", function (skillIndex, ...)
 end)
 
 
-AddModRPCHandler("arkSkill", "HandEmitSkill", function(player, skillIndex)
+AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, skillIndex)
   if player and player.components.ark_skill then
-    player.components.ark_skill:HandEmitSkill(skillIndex)
+    player.components.ark_skill:ManualActivateSkill(skillIndex)
   end
 end)
 
 
-local function SetupArkSkillHotKey(config)
-  -- 记下原本的热键
-  local originalHotKey = {}
-  for i, skillConfig in pairs(config.skills) do
-    originalHotKey[i] = skillConfig.hotKey
+
+AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, skillIndex)
+  if player and player.components.ark_skill then
+    player.components.ark_skill:ManualCancelSkill(skillIndex)
   end
-  local localHotKey = nil
-  function ThePlayer:SaveArkSkillLocalHotKey(idx, hotKey)
-    localHotKey = localHotKey or {}
-    if hotKey == nil then
-      table.remove(localHotKey, idx)
-    else
-      localHotKey[idx] = hotKey
-    end
-    TheSim:SetPersistentString("ark_skill_local_hot_key" .. ThePlayer.userid .. ThePlayer.prefab,
-      json.encode(localHotKey), false)
+end)
+
+
+local function getStorageKey(player)
+  return "ark_skill_local_hot_key" .. player.userid .. player.prefab
+end
+
+local function SetupArkSkillHotKey(config)
+  local hotKeyManager = {
+    default = {},  -- 默认热键配置
+    custom = nil,   -- 自定义热键配置
+  }
+
+  -- 保存默认热键配置
+  for i, skillConfig in pairs(config.skills) do
+    hotKeyManager.default[i] = skillConfig.hotKey
   end
 
+  -- 保存自定义热键
+  function ThePlayer:SaveArkSkillLocalHotKey(idx, hotKey)
+    hotKeyManager.custom = hotKeyManager.custom or {}
+    
+    if hotKey == nil then
+      table.remove(hotKeyManager.custom, idx)
+    else
+      hotKeyManager.custom[idx] = hotKey
+    end
+
+    TheSim:SetPersistentString(getStorageKey(ThePlayer), 
+      json.encode(hotKeyManager.custom), false)
+  end
+
+  -- 获取热键配置
   function ThePlayer:GetArkSkillLocalHotKey(idx)
     return config.skills[idx].hotKey
   end
 
+  -- 加载自定义热键配置
   function ThePlayer:LoadArkSkillLocalHotKey()
-    TheSim:GetPersistentString("ark_skill_local_hot_key" .. ThePlayer.userid .. ThePlayer.prefab,
+    TheSim:GetPersistentString(getStorageKey(ThePlayer),
       function(load_success, str)
         if not load_success then
-          localHotKey = {}
+          hotKeyManager.custom = {}
           return
         end
-        local ok, data = pcall(function()
-          return json.decode(str)
-        end)
+
+        local ok, data = pcall(json.decode, str)
         if not ok then
-          localHotKey = {}
+          hotKeyManager.custom = {}
           return
         end
-        localHotKey = data
+
+        hotKeyManager.custom = data
       end)
   end
+
+  -- 刷新热键配置
   function ThePlayer:RefreshArkSkillLocalHotKey()
-    -- 先恢复原本的热键
-    for i, hotKey in pairs(originalHotKey) do
+    -- 恢复默认热键
+    for i, hotKey in pairs(hotKeyManager.default) do
       config.skills[i].hotKey = hotKey
     end
-    if not localHotKey then
-      return
-    end
-    for i, hotKey in pairs(localHotKey) do
-      if not config.skills[i] then
-        break
+
+    -- 应用自定义热键
+    if not hotKeyManager.custom then return end
+    
+    for i, hotKey in pairs(hotKeyManager.custom) do
+      if config.skills[i] then
+        config.skills[i].hotKey = hotKey
       end
-      config.skills[i].hotKey = hotKey
     end
   end
 end
+
+local arkSkillLevelUpImages = {}
 
 AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
   if not config or not ThePlayer.HUD or ThePlayer.HUD.controls.arkSkillUi then
@@ -114,6 +139,15 @@ AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
       end
     end
   end
+  -- 替换高清资源
+  for _, skill in pairs(config.skills) do
+    local resolveAtlas = resolvefilepath(skill.atlas)
+    if not arkSkillLevelUpImages[resolveAtlas] then
+      arkSkillLevelUpImages[resolveAtlas] = {}
+    end
+    arkSkillLevelUpImages[resolveAtlas][skill.image] = true
+  end
+
   -- 安装热键
   local _OnRawKey = ThePlayer.HUD.OnRawKey
   function ThePlayer.HUD:OnRawKey(key, down)
@@ -130,27 +164,56 @@ AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
     if not skillIndex then
       return _OnRawKey(self, key, down)
     end
-    SendModRPCToServer(GetModRPC("arkSkill", "HandEmitSkill"), skillIndex,
-      TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL))
+    local skill = controls.arkSkillUi:GetSkill(skillIndex)
+    skill:TryActivateSkill()
     return true
   end
 end)
 
-local arkSkillLevelUpImages = {}
-function GLOBAL.SetupArkCharacterSkillConfig(prefab, config)
-  TUNING.ARK_SKILL_CONFIG = TUNING.ARK_SKILL_CONFIG or {}
-  TUNING.ARK_SKILL_CONFIG[prefab] = config
+-- 修改技能升级图标的尺寸, 维持高清
+AddClassPostConstruct("widgets/spinner", function(self)
+  local SetSelectedIndex = self.SetSelectedIndex
+  function self:SetSelectedIndex(index)
+    SetSelectedIndex(self, index)
+    local fgimage = self.fgimage
+    local atlas = fgimage.atlas
+    local texture = fgimage.texture
+    if arkSkillLevelUpImages[atlas] and arkSkillLevelUpImages[atlas][texture] then
+      fgimage:SetSize(60, 60)
+    end
+  end
+end)
+
+
+-- AddPrototyperDef('ark_training_room', {
+--   icon_atlas = "images/ark_item_prototyper.xml",
+--   icon_image = "ark_item_prototyper.tex",
+--   is_crafting_station = true,
+--   action_str = 'ARK_WORKSHOP',
+--   filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
+-- })
+
+-- -- 添加训练室配方
+-- AddRecipe2("ark_training_room",
+--   {Ingredient("boards", 4), Ingredient("goldnugget", 2)},
+--   TECH.SCIENCE_TWO,
+--   {
+--     placer = 'ark_training_room_placer',
+--     atlas = "images/ark_training_room.xml",
+--     image = "ark_training_room.tex",
+--   },
+--   {"STRUCTURES"}
+-- )
+-- AddRecipeToFilter("ark_training_room", "PROTOTYPERS")
+
+function GLOBAL.ARK_GLOBAL.SetupArkSkillConfig(prefab, config)
+  TUNING.ARK_SKILL[string.upper(prefab)] = config
   local skills = config.skills
   for i, skill in ipairs(skills) do
     if i > CONSTANTS.MAX_SKILL_LIMIT then
       break
     end
-    
-    local resolveAtlas = resolvefilepath(skill.atlas)
-    if not arkSkillLevelUpImages[resolveAtlas] then
-      arkSkillLevelUpImages[resolveAtlas] = {}
-    end 
-    arkSkillLevelUpImages[resolveAtlas][skill.image] = true
+
     for j, levelConfig in ipairs(skill.levels) do
       if j > CONSTANTS.MAX_SKILL_LEVEL then
         break
@@ -169,47 +232,15 @@ function GLOBAL.SetupArkCharacterSkillConfig(prefab, config)
         })
         local upperName = string.upper(prefabName)
         STRINGS.NAMES[upperName] = STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name
-        local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. common.formatSkillLevelString(j-1) .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. common.formatSkillLevelString(j))
+        local currentLevel = STRINGS.UI.ARK_SKILL.LEVEL[tostring(j-1)] or tostring(j-1)
+        local nextLevel = STRINGS.UI.ARK_SKILL.LEVEL[tostring(j)] or tostring(j)
+        local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevel .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevel)
         STRINGS.RECIPE_DESC[upperName] = desc
       end
     end
   end
 end
 
--- 修改技能升级图标的尺寸, 维持高清
-AddClassPostConstruct("widgets/spinner", function(self)
-  print('spinner inject')
-  local SetSelectedIndex = self.SetSelectedIndex
-  function self:SetSelectedIndex(index)
-    print('SetSelectedIndex', index)
-    SetSelectedIndex(self, index)
-    local fgimage = self.fgimage
-    local atlas = fgimage.atlas
-    local texture = fgimage.texture
-    if arkSkillLevelUpImages[atlas] and arkSkillLevelUpImages[atlas][texture] then
-      fgimage:SetSize(60, 60)
-    end
-  end
-end)
-
-
-AddPrototyperDef('ark_training_station', {
-  icon_atlas = "images/ark_item_prototyper.xml",
-  icon_image = "ark_item_prototyper.tex",
-  is_crafting_station = true,
-  action_str = 'ARK_PROCESSING_STATION',
-  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_PROCESSING_STATION
-})
-
--- 添加训练站配方
-AddRecipe2("ark_training_station",
-  {Ingredient("boards", 4), Ingredient("goldnugget", 2)},
-  TECH.SCIENCE_TWO,
-  {
-    placer = 'ark_training_station_placer',
-    atlas = "images/ark_training_station.xml",
-    image = "ark_training_station.tex",
-  },
-  {"STRUCTURES"}
-)
-AddRecipeToFilter("ark_training_station", "PROTOTYPERS")
+function GLOBAL.ARK_GLOBAL.GetArkSkillConfig(prefab)
+  return TUNING.ARK_SKILL[string.upper(prefab)]
+end

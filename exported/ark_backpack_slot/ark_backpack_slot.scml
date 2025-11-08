@@ -8,7 +8,7 @@
         <file id="4" name="open-1.png" width="52" height="51" pivot_x="0.5" pivot_y="0.5"/>
         <file id="5" name="open-2.png" width="49" height="51" pivot_x="0.5" pivot_y="0.5"/>
     </folder>
-    <entity id="0" name="ark_item_pack_slot">
+    <entity id="0" name="ark_backpack_slot">
         <animation id="0" name="open" length="600">
             <mainline>
                 <key id="0">

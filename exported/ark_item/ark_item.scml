@@ -56,7 +56,7 @@
         <file id="52" name="ark_item_mtl_sl_xwb.png" width="189" height="191" pivot_x="0.5" pivot_y="0.5"/>
         <file id="53" name="ark_item_mtl_sl_zy.png" width="103" height="73" pivot_x="0.5" pivot_y="0.5"/>
         <file id="54" name="ark_item_mtl_sl_zyk.png" width="187" height="143" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="55" name="ark_item_pack.png" width="128" height="128" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="55" name="ark_backpack.png" width="128" height="128" pivot_x="0.5" pivot_y="0.5"/>
         <file id="56" name="ark_item_gold2.png" width="130" height="94" pivot_x="0.5" pivot_y="0.5"/>
         <file id="57" name="ark_item_gold3.png" width="273" height="212" pivot_x="0.5" pivot_y="0.5"/>
         <file id="58" name="ark_item_mtl_skill3.png" width="121" height="128" pivot_x="0.5" pivot_y="0.5"/>
@@ -724,13 +724,13 @@
                 </key>
             </timeline>
         </animation>
-        <animation id="55" name="ark_item_pack" length="1000">
+        <animation id="55" name="ark_backpack" length="1000">
             <mainline>
                 <key id="0">
-                    <object_ref id="0" name="ark_item_pack" folder="0" file="55" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                    <object_ref id="0" name="ark_backpack" folder="0" file="55" abs_x="0" abs_y="0" abs_pivot_x="0.5" abs_pivot_y="0.5" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
                 </key>
             </mainline>
-            <timeline id="0" name="ark_item_pack">
+            <timeline id="0" name="ark_backpack">
                 <key id="0" spin="0">
                     <object folder="0" file="55" angle="0"/>
                 </key>

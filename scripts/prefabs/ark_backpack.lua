@@ -1,7 +1,7 @@
 local assets =
 {
-    Asset("ANIM", "anim/ark_item_pack.zip"),
-    Asset("ATLAS", "images/ark_item_pack.xml"),
+    Asset("ANIM", "anim/ark_backpack.zip"),
+    Asset("ATLAS", "images/ark_backpack.xml"),
 }
 
 
@@ -53,12 +53,12 @@ local function fn()
 
     MakeInventoryPhysics(inst)
 
-    inst.AnimState:SetBank("ark_item_pack")
-    inst.AnimState:SetBuild("ark_item_pack")
+    inst.AnimState:SetBank("ark_backpack")
+    inst.AnimState:SetBuild("ark_backpack")
     inst.AnimState:SetScale(0.75, 0.75)
     inst.AnimState:PlayAnimation("close_idle")
 
-    inst:AddTag("ark_item_pack")
+    inst:AddTag("ark_backpack")
 
     inst.MiniMapEntity:SetIcon("backpack.png")
 
@@ -77,11 +77,11 @@ local function fn()
 
     inst:AddComponent("inventoryitem")
     inst.components.inventoryitem.canonlygoinpocket = true
-    inst.components.inventoryitem.atlasname = 'images/ark_item_pack.xml'
-    inst.components.inventoryitem.imagename = 'ark_item_pack'
+    inst.components.inventoryitem.atlasname = 'images/ark_backpack.xml'
+    inst.components.inventoryitem.imagename = 'ark_backpack'
 
     inst:AddComponent("container")
-    inst.components.container:WidgetSetup("ark_item_pack")
+    inst.components.container:WidgetSetup("ark_backpack")
     inst.components.container:EnableInfiniteStackSize(true)
 
     local playerprox = inst:AddComponent("playerprox")
@@ -101,4 +101,4 @@ local function fn()
     return inst
 end
 
-return Prefab("ark_item_pack", fn, assets, prefabs)
+return Prefab("ark_backpack", fn, assets, prefabs)

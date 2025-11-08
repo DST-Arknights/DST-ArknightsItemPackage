@@ -85,7 +85,7 @@
         <file id="5" name="body/body-5.png" width="181" height="286" pivot_x="1" pivot_y="1"/>
         <file id="6" name="body/body-6.png" width="178" height="288" pivot_x="1" pivot_y="0"/>
     </folder>
-    <entity id="0" name="ark_item_pack">
+    <entity id="0" name="ark_backpack">
         <animation id="0" name="open_idle" length="2134" interval="100">
             <mainline>
                 <key id="0">

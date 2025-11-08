@@ -15,7 +15,7 @@
         <file id="1" name="background/background-1.png" width="458" height="388" pivot_x="0.5" pivot_y="0.5"/>
         <file id="2" name="background/background-2.png" width="812" height="886" pivot_x="0.5" pivot_y="0.5"/>
     </folder>
-    <entity id="0" name="ark_item_pack_bg">
+    <entity id="0" name="ark_backpack_bg">
         <animation id="0" name="open" length="400" interval="100">
             <mainline>
                 <key id="0">

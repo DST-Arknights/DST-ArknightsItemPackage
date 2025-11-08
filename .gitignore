@@ -2,3 +2,4 @@
 /images/**/*.xml
 /anim/*
 /exported/**/*.zip
+/shaders

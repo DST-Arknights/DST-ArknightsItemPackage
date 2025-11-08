@@ -1,0 +1,56 @@
+#if defined( GL_ES )
+precision highp float;
+#endif
+
+uniform sampler2D SAMPLER[1];
+uniform vec4 IMAGE_PARAMS;  // x=左下X, y=左下Y, z=右上X, w=右上Y
+uniform vec4 IMAGE_PARAMS2; // x=圆半径(像素单位)
+
+varying vec2 PS_TEXCOORD;
+varying vec4 PS_COLOUR;
+
+void main()
+{
+    float radius = IMAGE_PARAMS2.x;
+    vec2 fragCoord = gl_FragCoord.xy;
+    vec4 color = texture2D(SAMPLER[0], PS_TEXCOORD);
+    float radius_sq = radius * radius;
+    
+    // ================== 左下角处理 ==================
+    vec2 bl_center = vec2(IMAGE_PARAMS.x + radius, IMAGE_PARAMS.y + radius);
+    if(fragCoord.x < bl_center.x && fragCoord.y < bl_center.y) {
+        vec2 delta = fragCoord - bl_center;
+        if(dot(delta, delta) > radius_sq) {
+            color = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+    }
+    
+    // ================== 右下角处理 ==================
+    vec2 br_center = vec2(IMAGE_PARAMS.z - radius, IMAGE_PARAMS.y + radius);
+    if(fragCoord.x > br_center.x && fragCoord.y < br_center.y) {
+        vec2 delta = fragCoord - br_center;
+        if(dot(delta, delta) > radius_sq) {
+            color = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+    }
+    
+    // ================== 左上角处理 ==================
+    vec2 tl_center = vec2(IMAGE_PARAMS.x + radius, IMAGE_PARAMS.w - radius);
+    if(fragCoord.x < tl_center.x && fragCoord.y > tl_center.y) {
+        vec2 delta = fragCoord - tl_center;
+        if(dot(delta, delta) > radius_sq) {
+            color = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+    }
+    
+    // ================== 右上角处理 ==================
+    vec2 tr_center = vec2(IMAGE_PARAMS.z - radius, IMAGE_PARAMS.w - radius);
+    if(fragCoord.x > tr_center.x && fragCoord.y > tr_center.y) {
+        vec2 delta = fragCoord - tr_center;
+        if(dot(delta, delta) > radius_sq) {
+            color = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+    }
+    color.rgba *= PS_COLOUR.rgba;
+    gl_FragColor = color;
+}

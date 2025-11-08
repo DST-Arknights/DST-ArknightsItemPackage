@@ -238,27 +238,23 @@ local EXP_CONFIG =  {
   }
 }
 
-local SKILL_STATUS = {
-  LOCKED = 1,
-  CHARGING = 2,
-  BUFFING = 3,
-  BULLETING = 4,
-}
-
 return {
-  SKILL_STATUS = SKILL_STATUS,
-  CHARGE_TYPE = {
+  SKILL_STATUS = {
+    LOCKED = 1,
+    ENERGY_RECOVERING = 2,
+    BUFFING = 3,
+    BULLETING = 4,
+  },
+  ENERGY_RECOVERY_MODE = {
     NONE = "none",
     AUTO = "auto",
     ATTACK = "attack",
-    UNDER_ATTACK = "under_attack",
+    DEFENSIVE = "defensive",
   },
-  EMIT_TYPE = {
+  ACTIVATION_MODE = {
     PASSIVE = "passive",
-    HAND = "hand",
+    MANUAL = "manual",
     AUTO = "auto",
-    ATTACK = "attack",
-    UNDER_ATTACK = "under_attack",
   },
   MAX_SKILL_LIMIT = 6,
   MAX_SKILL_LEVEL = 10,

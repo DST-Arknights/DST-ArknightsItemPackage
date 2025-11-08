@@ -30,7 +30,7 @@ local function makeArkItem(config)
     inst:AddTag("ark_item")
     inst:AddTag("ark_item_" .. config.prefab)
     if not config.disablePutInPack then
-      inst:AddTag("ark_item_pack_item")
+      inst:AddTag("ark_backpack_item")
     end
     if config.tags then
       for i = 1, #config.tags do

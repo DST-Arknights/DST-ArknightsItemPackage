@@ -1,0 +1,1101 @@
+msgid ""
+msgstr ""
+"Language: zh\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT Version: 2.0"
+
+#. STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
+msgctxt "STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP"
+msgid "Workshop"
+msgstr "加工站"
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_UPDATE
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_UPDATE"
+msgid "Update"
+msgstr "升级"
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_SPECIALIZATION
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_SPECIALIZATION"
+msgid "Specialization"
+msgstr "专精"
+
+#. STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.AUTO
+msgctxt "STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.AUTO"
+msgid "Auto"
+msgstr "自动触发"
+
+#. STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.PASSIVE
+msgctxt "STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.PASSIVE"
+msgid "Passive"
+msgstr "被动"
+
+#. STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.MANUAL
+msgctxt "STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.MANUAL"
+msgid "Manual"
+msgstr "手动触发"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.NONE
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.NONE"
+msgid "None"
+msgstr "无"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO"
+msgid "Auto Recovery"
+msgstr "自动回复"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK"
+msgid "Attack Recovery"
+msgstr "攻击回复"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE"
+msgid "Defensive Recovery"
+msgstr "受击回复"
+
+#. STRINGS.UI.ARK_SKILL.SECONDS
+msgctxt "STRINGS.UI.ARK_SKILL.SECONDS"
+msgid "Seconds"
+msgstr "秒"
+
+#. STRINGS.UI.ARK_SKILL.HOT_KEY
+msgctxt "STRINGS.UI.ARK_SKILL.HOT_KEY"
+msgid "Hot Key"
+msgstr "快捷键"
+
+#. STRINGS.UI.ARK_SKILL.SETTING
+msgctxt "STRINGS.UI.ARK_SKILL.SETTING"
+msgid "Setting"
+msgstr "设置"
+
+#. STRINGS.UI.ARK_SKILL.NONE
+msgctxt "STRINGS.UI.ARK_SKILL.NONE"
+msgid "None"
+msgstr "无"
+
+#. STRINGS.UI.ARK_SKILL.LOCKED
+msgctxt "STRINGS.UI.ARK_SKILL.LOCKED"
+msgid "Locked"
+msgstr "未解锁"
+
+#. STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY
+msgctxt "STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY"
+msgid "Press any key"
+msgstr "请按下任意键"
+
+#. STRINGS.UI.ARK_SKILL.CANCEL
+msgctxt "STRINGS.UI.ARK_SKILL.CANCEL"
+msgid "Cancel"
+msgstr "取消"
+
+#. STRINGS.UI.ARK_SKILL.RESET
+msgctxt "STRINGS.UI.ARK_SKILL.RESET"
+msgid "Reset"
+msgstr "重置"
+
+#. STRINGS.UI.ARK_SKILL.HOT_KEY_CONFLICT
+msgctxt "STRINGS.UI.ARK_SKILL.HOT_KEY_CONFLICT"
+msgid "Hot Key Conflict"
+msgstr "冲突的按键"
+
+#. STRINGS.UI.ARK_SKILL.SKILL
+msgctxt "STRINGS.UI.ARK_SKILL.SKILL"
+msgid "Skill"
+msgstr "技能"
+
+#. STRINGS.UI.ARK_SKILL.CURRENT_LEVEL
+msgctxt "STRINGS.UI.ARK_SKILL.CURRENT_LEVEL"
+msgid "Current Level"
+msgstr "当前等级"
+
+#. STRINGS.UI.ARK_SKILL.NEXT_LEVEL
+msgctxt "STRINGS.UI.ARK_SKILL.NEXT_LEVEL"
+msgid "Next Level"
+msgstr "下一级"
+
+#. STRINGS.UI.ARK_SKILL.SKILL_MAX_LEVEL
+msgctxt "STRINGS.UI.ARK_SKILL.SKILL_MAX_LEVEL"
+msgid "Skill level maxed"
+msgstr "该技能已满级"
+
+#. STRINGS.UI.ARK_SKILL.LOCKED_DESC.DEFAULT
+msgctxt "STRINGS.UI.ARK_SKILL.LOCKED_DESC.DEFAULT"
+msgid "Locked skill"
+msgstr "该技能已锁定"
+
+#. STRINGS.UI.ARK_SKILL.LEVEL.8
+msgctxt "STRINGS.UI.ARK_SKILL.LEVEL.8"
+msgid "Rank Ⅰ"
+msgstr "Rank Ⅰ"
+
+#. STRINGS.UI.ARK_SKILL.LEVEL.9
+msgctxt "STRINGS.UI.ARK_SKILL.LEVEL.9"
+msgid "Rank Ⅱ"
+msgstr "Rank Ⅱ"
+
+#. STRINGS.UI.ARK_SKILL.LEVEL.10
+msgctxt "STRINGS.UI.ARK_SKILL.LEVEL.10"
+msgid "Rank Ⅲ"
+msgstr "Rank Ⅲ"
+
+#. STRINGS.NAMES.ARK_WORKSHOP
+msgctxt "STRINGS.NAMES.ARK_WORKSHOP"
+msgid "Workshop"
+msgstr "加工站"
+
+#. STRINGS.NAMES.ARK_GOLD
+msgctxt "STRINGS.NAMES.ARK_GOLD"
+msgid "LMD"
+msgstr "龙门币"
+
+#. STRINGS.NAMES.ARK_DIAMOND_SHD
+msgctxt "STRINGS.NAMES.ARK_DIAMOND_SHD"
+msgid "Orundum"
+msgstr "合成玉"
+
+#. STRINGS.NAMES.ARK_DIAMOND
+msgctxt "STRINGS.NAMES.ARK_DIAMOND"
+msgid "Originite Prime"
+msgstr "源石"
+
+#. STRINGS.NAMES.ARK_BACKPACK
+msgctxt "STRINGS.NAMES.ARK_BACKPACK"
+msgid "Backpack"
+msgstr "背包"
+
+#. STRINGS.NAMES.ARK_TRAINING_ROOM
+msgctxt "STRINGS.NAMES.ARK_TRAINING_ROOM"
+msgid "Training Room"
+msgstr "训练室"
+
+#. STRINGS.RECIPE_DESC.ARK_WORKSHOP
+msgctxt "STRINGS.RECIPE_DESC.ARK_WORKSHOP"
+msgid "A facility that processes resources at Rhodes Island."
+msgstr "罗德岛的资源生产设施。"
+
+#. STRINGS.RECIPE_DESC.ARK_BACKPACK
+msgctxt "STRINGS.RECIPE_DESC.ARK_BACKPACK"
+msgid "A backpack that stores items and resources."
+msgstr "存储物品和资源的背包。"
+
+#. STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM
+msgctxt "STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM"
+msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
+msgstr "罗德岛干员的训练设施。升级你的技能吧！"
+
+#. STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC
+msgctxt "STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC"
+msgid "Use"
+msgstr "使用"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK"
+msgid "The backpack is full."
+msgstr "背包已满。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP"
+msgid "A facility that processes resources at Rhodes Island."
+msgstr "罗德岛的资源生产设施。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_TRAINING_ROOM
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_TRAINING_ROOM"
+msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
+msgstr "罗德岛干员的训练设施。升级你的技能吧！"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD"
+msgid "A widely used currency issued by Lungmen."
+msgstr "由龙门发行的货币，用途广泛。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK"
+msgid "A backpack that stores items and resources."
+msgstr "存储物品和资源的背包。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1"
+msgid "Foundational unit of Rhodes economy"
+msgstr "博士兜里叮当作响的希望"
+
+#. STRINGS.NAMES.ARK_ITEM_GOLD1
+msgctxt "STRINGS.NAMES.ARK_ITEM_GOLD1"
+msgid "A piece of LMD."
+msgstr "一张龙门币"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD1"
+msgid "A widely used currency issued by Lungmen. Using it will give you 1 LMD."
+msgstr "由龙门发行的货币，用途广泛。使用后获得1龙门币"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD2"
+msgid "Clinking stack that melts Reunion's hostility"
+msgstr "能让整合运动放下武器的重量"
+
+#. STRINGS.NAMES.ARK_ITEM_GOLD2
+msgctxt "STRINGS.NAMES.ARK_ITEM_GOLD2"
+msgid "A stack of LMD."
+msgstr "一叠龙门币"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD2"
+msgid "A widely used currency issued by Lungmen. Using it will give you 10,000 LMD."
+msgstr "由龙门发行的货币，用途广泛。使用后获得一万龙门币"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD3"
+msgid "The currency that even Emperor respects"
+msgstr "连大帝都会压低墨镜打量的大货"
+
+#. STRINGS.NAMES.ARK_ITEM_GOLD3
+msgctxt "STRINGS.NAMES.ARK_ITEM_GOLD3"
+msgid "A crate of LMD."
+msgstr "一箱龙门币"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD3"
+msgid "A widely used currency issued by Lungmen. Using it will give you 100,000 LMD."
+msgstr "由龙门发行的货币，用途广泛。使用后获得十万龙门币"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_SHJ
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_SHJ"
+msgid ""
+msgstr "烧结核凝晶"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SHJ
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SHJ"
+msgid ""
+msgstr "对工艺要求极高的现代科技产物。用于高级强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SHJ
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SHJ"
+msgid ""
+msgstr "特定高温环境下具有分子识别能力的材料。作为助剂能选择性地吸附源石，为精密加工源石材料、降低源石器件耗能提供新可能。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_OEU
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_OEU"
+msgid ""
+msgstr "晶体电子单元"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OEU
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OEU"
+msgid ""
+msgstr "昂贵的源石工业产品，用于重要的强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OEU
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OEU"
+msgid ""
+msgstr "泰拉源石科技的结晶，泰拉工业现代化的代表。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_DS
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_DS"
+msgid ""
+msgstr "D32钢"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_DS
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_DS"
+msgid ""
+msgstr "自然界中不应存在的人造金属材料，呈固态。用于高级强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_DS
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_DS"
+msgid ""
+msgstr "强度超群，无法击穿。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BN
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BN"
+msgid ""
+msgstr "双极纳米片"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BN
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BN"
+msgid ""
+msgstr "现代工业的创造力结晶。用于高级强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BN
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BN"
+msgid ""
+msgstr "对范围内源石敏感的装置。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PP
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PP"
+msgid ""
+msgstr "聚合剂"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PP
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PP"
+msgid ""
+msgstr "复杂的液态工业产物。用于高级强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PP
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PP"
+msgid ""
+msgstr "精密穿戴着装中常用的材料。强大的聚合粘接效果足以阻断源石的挥发。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ZYK
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ZYK"
+msgid ""
+msgstr "转质盐聚块"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZYK
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZYK"
+msgid ""
+msgstr "经过精炼处理的化合物结晶块。用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZYK
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZYK"
+msgid ""
+msgstr "稳定的结晶体，可为材料提供多种功能。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_HTT
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_HTT"
+msgid ""
+msgstr "环烃预制体"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HTT
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HTT"
+msgid ""
+msgstr "由多种优良材料预加工而成的工业用材。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HTT
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HTT"
+msgid ""
+msgstr "在合成流程中加入多种优良材料而得到的工业产品。在防护领域具有广阔应用前景。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ZY
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ZY"
+msgid ""
+msgstr "转质盐组"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZY"
+msgid ""
+msgstr "经过粗炼处理的化合物结晶。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZY
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZY"
+msgid ""
+msgstr "注意为工业用盐，绝对不可以食用。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_HT
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_HT"
+msgid ""
+msgstr "环烃聚质"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HT
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HT"
+msgid ""
+msgstr "一种耐热性、耐化学性俱优的工业材料。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HT
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HT"
+msgid ""
+msgstr "在实验室内诞生的新型透明材料，将成为许多传统材料的优质替代品。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PLCF
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PLCF"
+msgid ""
+msgstr "切削原液"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PLCF
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PLCF"
+msgid ""
+msgstr "由多种活性溶剂配置而成的原液。用于高级强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PLCF
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PLCF"
+msgid ""
+msgstr "一种生物性稳定良好的原液。储存时需要注意避免其他杂质的混入。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_XWB
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_XWB"
+msgid ""
+msgstr "固化纤维板"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XWB
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XWB"
+msgid ""
+msgstr "经过塑形固化处理的特种纤维板。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XWB
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XWB"
+msgid ""
+msgstr "用特殊工艺制作的复合纤维板。在许多工业流程中不可替代。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_CCF
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_CCF"
+msgid ""
+msgstr "化合切削液"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_CCF
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_CCF"
+msgid ""
+msgstr "一种金属加工时必备的工业试剂。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_CCF
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_CCF"
+msgid ""
+msgstr "在加工过程中起到润滑吸热效用，可提高金属制品的成品合格率。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_XW
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_XW"
+msgid ""
+msgstr "褐素纤维"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XW
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XW"
+msgid ""
+msgstr "具备高强度与高模量的特种纤维束。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XW
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XW"
+msgid ""
+msgstr "源石工业的衍生产物，因其优异的性能在工业领域被广泛应用。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RS
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RS"
+msgid ""
+msgstr "精炼溶剂"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RS
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RS"
+msgid ""
+msgstr "经特殊工艺制作而成特殊涂料。用于高级强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RS
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RS"
+msgid ""
+msgstr "由高分子聚合物支撑的涂料。除了基础防护功能外，还兼有某些特性。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_SS
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_SS"
+msgid ""
+msgstr "半自然溶剂"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SS
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SS"
+msgid ""
+msgstr "一种物理性能优异，耐酸碱性良好的活性溶剂。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SS
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SS"
+msgid ""
+msgstr "在对传统溶剂制品进行现代化加工后，该溶剂呈现出了优良性质。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_OC4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_OC4"
+msgid ""
+msgstr "晶体电路"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC4"
+msgid ""
+msgstr "重要的源石工业材料，可用于多种强化场合，是制作源石晶体单元的基础元件。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC4"
+msgid ""
+msgstr "现代源石电子产业的核心产品。晶体电路的大量使用也是泰拉工业现代化的体现。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_OC3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_OC3"
+msgid ""
+msgstr "晶体元件"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC3"
+msgid ""
+msgstr "重要的源石工业材料，可用于多种强化场合，可以制作与合成更高级的源石电子元件。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC3"
+msgid ""
+msgstr "用源石晶体外壳制作的工业原材料。现代源石电子工业的基础产品。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM4"
+msgid ""
+msgstr "炽合金块"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM4"
+msgid ""
+msgstr "产量稀少的电子工业用特殊高熔点合金。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM4"
+msgid ""
+msgstr "由炽合金进一步加工得到的合金材料。有着无可替代的作用。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM3"
+msgid ""
+msgstr "炽合金"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM3"
+msgid ""
+msgstr "电子工业用特殊高熔点合金。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM3"
+msgid ""
+msgstr "由数种稀有泰拉金属熔炼成的合金材料。是不可或缺的材料。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL4"
+msgid ""
+msgstr "聚合凝胶"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL4"
+msgid ""
+msgstr "一种具备极高强度的可塑性材料。可用于多种强化场合。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL4"
+msgid ""
+msgstr "以凝胶为源材料，历经大量实验与反复测试诞生的人工材料。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL3"
+msgid ""
+msgstr "凝胶"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL3"
+msgid ""
+msgstr "一种高强度的可塑性材料。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL3"
+msgid ""
+msgstr "于实验室中意外诞生的人工材料。广泛运用于高新项目。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL2"
+msgid ""
+msgstr "白马醇"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL2"
+msgid ""
+msgstr "片状有机化合物。可用于多种强化场合，也常作为制作双极纳米片的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL2"
+msgid ""
+msgstr "扭转醇精加工后的产物，名字来自发现其产出方式的厂家。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL1"
+msgid ""
+msgstr "扭转醇"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL1"
+msgid ""
+msgstr "片状有机化合物。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL1"
+msgid ""
+msgstr "优秀的化工中介体，常在两种形状间转换以储存和放出传导物质。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE2"
+msgid ""
+msgstr "三水锰矿"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE2"
+msgid ""
+msgstr "用于提炼冶炼用的金属矿物。可用于多种强化场合，也常作为制作D32钢的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE2"
+msgid ""
+msgstr "少有厂家愿意用于生产工业催化剂的珍贵金属矿物。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE1"
+msgid ""
+msgstr "轻锰矿"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE1"
+msgid ""
+msgstr "用于提炼冶炼用的金属矿物。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE1"
+msgid ""
+msgstr "用以产出极为泛用的工业催化剂的金属矿物。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PG2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PG2"
+msgid ""
+msgstr "五水研磨石"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG2"
+msgid ""
+msgstr "用于精加工武器零件的高级研磨石。可用于多种强化场合，也常作为制作D32钢的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG2"
+msgid ""
+msgstr "相较普通研磨石，物质结构更加稳定的工具材料。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PG1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PG1"
+msgid ""
+msgstr "研磨石"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG1"
+msgid ""
+msgstr "用于加工武器零件的研磨石。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG1"
+msgid ""
+msgstr "不起爆、不粉化、不开裂。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7024
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7024"
+msgid ""
+msgstr "RMA70-24"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7024
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7024"
+msgid ""
+msgstr "一种十分敏感且有优秀传导效果的矿物。可用于多种强化场合，也常作为制作D32钢的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7024
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7024"
+msgid ""
+msgstr "自然态呈复杂多面体的矿物。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7012
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7012"
+msgid ""
+msgstr "RMA70-12"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7012
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7012"
+msgid ""
+msgstr "一种敏感且有良好传导效果的矿物。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7012
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7012"
+msgid ""
+msgstr "在被发现其现代工业价值之前，就已经被发现了其在**施展中的价值。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G4"
+msgid ""
+msgstr "提纯源岩"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G4"
+msgid ""
+msgstr "从地表开采出的岩石固块组提纯出的物质，可用于多种强化场合，也常作为制作聚合剂的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G4"
+msgid ""
+msgstr "无论是谁，看着规则的切割面都会不禁发出感慨吧。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G3"
+msgid ""
+msgstr "固源岩组"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G3"
+msgid ""
+msgstr "从地表开采出的岩石固块组，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G3"
+msgid ""
+msgstr "固源岩的压缩定型产物，可自然形成。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G2"
+msgid ""
+msgstr "固源岩"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G2"
+msgid ""
+msgstr "从地表开采出的岩石固块，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G2"
+msgid ""
+msgstr "内含有密集的微孔，常作为源石气体分解物的吸附剂。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G1"
+msgid ""
+msgstr "源岩"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G1"
+msgid ""
+msgstr "从地表开采出的岩石，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G1"
+msgid ""
+msgstr "富含有机物，常见于源石挥发殆尽后的地区。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS4"
+msgid ""
+msgstr "改量装置"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS4"
+msgid ""
+msgstr "收缴来的高等机械装置，可用于多种强化场合，也常作为制作双极纳米片的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS4"
+msgid ""
+msgstr "从中能感受到制作者所投入的狂热与执着……"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS3"
+msgid ""
+msgstr "全新装置"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS3"
+msgid ""
+msgstr "收缴来的全新机械装置，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS3"
+msgid ""
+msgstr "一套全新装配而成的装置。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS2"
+msgid ""
+msgstr "装置"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS2"
+msgid ""
+msgstr "收缴来的常规机械装置，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS2"
+msgid ""
+msgstr "一套相对完整的装置，含有大量密集的可用电子元件。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS1"
+msgid ""
+msgstr "破损装置"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS1"
+msgid ""
+msgstr "收缴来的破损机械装置，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS1"
+msgid ""
+msgstr "经历了激烈的战斗后已经损坏，不过其内部元件依旧具备一定的使用价值。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH4"
+msgid ""
+msgstr "聚酸酯块"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH4"
+msgid ""
+msgstr "工业制造所需的成块聚酸酯，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH4"
+msgid ""
+msgstr "精炼提纯后的材料。也许会成为新一代材料的试金石也说不定哦。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH3"
+msgid ""
+msgstr "聚酸酯组"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH3"
+msgid ""
+msgstr "工业制造所需的一组聚酸酯，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH3"
+msgid ""
+msgstr "进一步加工后的材料，可以用于加工一些特殊材料。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH2"
+msgid ""
+msgstr "聚酸酯"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH2"
+msgid ""
+msgstr "工业制造所需的零散聚酸酯，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH2"
+msgid ""
+msgstr "用来制作所需要的部分基础物件。是一些缓释药物中的常用成分。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH1"
+msgid ""
+msgstr "酯原料"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH1"
+msgid ""
+msgstr "工业制造所需的酯原料，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH1"
+msgid ""
+msgstr "这只是原料，几乎派不上什么大用场。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG4"
+msgid ""
+msgstr "糖聚块"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG4"
+msgid ""
+msgstr "机械化制作的大量糖块，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG4"
+msgid ""
+msgstr "严禁在加工前偷吃！这不是食品，也不会作为食品售卖！不会！"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG3"
+msgid ""
+msgstr "糖组"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG3"
+msgid ""
+msgstr "机械化制作的中等量糖块，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG3"
+msgid ""
+msgstr "广受欢迎的糖块组合包。在被加工成材料之前，份量总是有所减少。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG2"
+msgid ""
+msgstr "糖"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG2"
+msgid ""
+msgstr "机械化制作的少量糖块，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG2"
+msgid ""
+msgstr " 啊啊，这个味道……会带来不错的好心情。不是用来当零食吃的。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG1"
+msgid ""
+msgstr "代糖"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG1"
+msgid ""
+msgstr "机械化制作的廉价天然糖替代产物，可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG1"
+msgid ""
+msgstr "有着微弱的甜味，也许可以吃。同时其溶液也常用于化工用途。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON4"
+msgid ""
+msgstr "异铁块"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON4"
+msgid ""
+msgstr "价值高昂的工业材料。可用于多种强化场合，也常作为制作聚合剂的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON4"
+msgid ""
+msgstr "在极为苛刻的条件下，由多套异铁组熔铸成型的异铁块。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON3"
+msgid ""
+msgstr "异铁组"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON3"
+msgid ""
+msgstr "珍贵的工业材料。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON3"
+msgid ""
+msgstr "多块异铁在极少数非人为因素影响下，偶然产生的异铁组合。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON2"
+msgid ""
+msgstr "异铁"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON2"
+msgid ""
+msgstr "罕见的工业材料。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON2"
+msgid ""
+msgstr "在少数惰化流程中，异铁碎片偶尔会产生相变，聚合为异铁。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON1"
+msgid ""
+msgstr "异铁碎片"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON1"
+msgid ""
+msgstr "普普通通的工业材料。可用于多种强化场合，也常作为制造站合成项目的原料"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON1"
+msgid ""
+msgstr "大规模金属原料加工的副产物，常被用于材料金属熔炼与阶段性再处理。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE4"
+msgid ""
+msgstr "酮阵列"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE4"
+msgid ""
+msgstr "大量的工业用有机化合物。可用于多种强化场合，也常作为制作聚合剂的原料之一。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE4"
+msgid ""
+msgstr "由工程干员严格监控的大量不稳定实验性酮制剂。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE3"
+msgid ""
+msgstr "酮凝集组"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE3"
+msgid ""
+msgstr "中等量的工业用有机化合物。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE3"
+msgid ""
+msgstr "工程干员理当精准操作，以免浪费材料。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE2"
+msgid ""
+msgstr "酮凝集"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE2"
+msgid ""
+msgstr "少量的工业用有机化合物。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE2"
+msgid ""
+msgstr "经过特殊处理后产出的少量多态酮制剂。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE1"
+msgid ""
+msgstr "双酮"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE1"
+msgid ""
+msgstr "极少量的工业用有机化合物。可用于多种强化场合，也常作为制造站合成项目的原料。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE1"
+msgid ""
+msgstr "通过再处理后用来粘结其它稳定结构。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SKILL1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SKILL1"
+msgid ""
+msgstr "技巧概要·卷1"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL1"
+msgid ""
+msgstr "记载了入门技巧的书籍，用于升级干员技能。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL1"
+msgid ""
+msgstr "记录着干员们所需的入门技艺，普通人只要经过简略学习就能完全掌握。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SKILL2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SKILL2"
+msgid ""
+msgstr "技巧概要·卷2"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL2"
+msgid ""
+msgstr "记载了进阶技巧的书籍，用于升级干员技能。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL2"
+msgid ""
+msgstr "记录着干员们所需的进阶技艺，需要耗费一定时间研读并付诸实践才能扎实掌握。"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SKILL3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SKILL3"
+msgid ""
+msgstr "技巧概要·卷3"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL3"
+msgid ""
+msgstr "记载了专家技巧的书籍，用于升级干员技能。"
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL3"
+msgid ""
+msgstr "记录着干员们所需的专家级技艺，需要特定领域长久的经验积累才能一窥其中的奥妙。"

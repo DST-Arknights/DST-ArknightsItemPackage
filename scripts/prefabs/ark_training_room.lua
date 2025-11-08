@@ -1,8 +1,8 @@
 local common = require("ark_common")
 
-local assets = {Asset("ANIM", "anim/ark_training_station.zip"),
-  Asset("ATLAS", "images/ark_training_station.xml"),
-  Asset("ATLAS", "images/map_icons/ark_training_station.xml"),
+local assets = {Asset("ANIM", "anim/ark_training_room.zip"),
+  Asset("ATLAS", "images/ark_training_room.xml"),
+  Asset("ATLAS", "images/map_icons/ark_training_room.xml"),
   }
 
 local function fn()
@@ -15,14 +15,14 @@ local function fn()
 
   MakeObstaclePhysics(inst, .4)
 
-  inst.AnimState:SetBank("ark_training_station")
-  inst.AnimState:SetBuild("ark_training_station")
+  inst.AnimState:SetBank("ark_training_room")
+  inst.AnimState:SetBuild("ark_training_room")
   inst.AnimState:PlayAnimation("idle", true)
 
-  inst.MiniMapEntity:SetIcon("ark_training_station.tex")
+  inst.MiniMapEntity:SetIcon("ark_training_room.tex")
 
   inst:AddTag("structure")
-  inst:AddTag("ark_training_station")
+  inst:AddTag("ark_training_room")
 
   inst.entity:SetPristine()
 
@@ -34,9 +34,8 @@ local function fn()
   inst:AddComponent("lootdropper")
   inst:AddComponent("workable")
   inst:AddComponent("prototyper")
-  inst.scrapbook_specialinfo = "ARK_TRAINING_STATION"
 
-  inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_TRAINING_STATION_ONE
+  inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_TRAINING_ROOM_ONE
   inst.components.prototyper.onactivate = function(inst, doer, recipe)
     if not doer or not doer.components.ark_skill or not recipe then
       return
@@ -63,5 +62,5 @@ local function fn()
   return inst
 end
 
-return Prefab("ark_training_station", fn, assets),
-  MakePlacer('ark_training_station_placer', 'ark_training_station', 'ark_training_station', 'idle')
+return Prefab("ark_training_room", fn, assets),
+  MakePlacer('ark_training_room_placer', 'ark_training_room', 'ark_training_room', 'idle')

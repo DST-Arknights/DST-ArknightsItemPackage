@@ -48,6 +48,9 @@ end)
 AddComponentPostInit("builder", function(self)
   local _RemoveIngredients = self.RemoveIngredients
   self.RemoveIngredients = function(self, ingredients, recname, ...)
+    if self.freebuildmode then
+      return
+    end
     local recipe = AllRecipes[recname]
     if recipe then
       for k, v in pairs(recipe.ingredients) do

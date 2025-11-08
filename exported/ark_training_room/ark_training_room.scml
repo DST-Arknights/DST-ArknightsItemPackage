@@ -13,7 +13,7 @@
         <file id="9" name="zl-10.png" width="58" height="197" pivot_x="1" pivot_y="0.5"/>
         <file id="10" name="zl-11.png" width="31" height="195" pivot_x="0.5" pivot_y="0.5"/>
     </folder>
-    <entity id="0" name="ark_training_station">
+    <entity id="0" name="ark_training_room">
         <animation id="0" name="idle" length="600">
             <mainline>
                 <key id="0">

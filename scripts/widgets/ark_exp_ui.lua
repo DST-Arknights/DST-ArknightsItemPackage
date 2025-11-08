@@ -27,8 +27,8 @@ local function TestExpSync(self)
         local data = testData[currentIndex]
         if data then
             -- 打印当前状态便于调试
-            print(string.format("Test Data %d: elite=%d, level=%d, leftExp=%d", 
-                currentIndex, data.elite, data.level, data.leftExp))
+            -- print(string.format("Test Data %d: elite=%d, level=%d, leftExp=%d", 
+            --     currentIndex, data.elite, data.level, data.leftExp))
             self:SetData(1, 1, data.elite, data.level, data.leftExp)
             currentIndex = currentIndex + 1
             if currentIndex > #testData then
@@ -123,7 +123,6 @@ end
 
 function ArkExp:GetWorldSize()
     local scale = self:GetScale()
-    print('scale', scale.x, scale.y, scale[2])
     return Vector3(self.width * scale.x, self.height * scale.y, 0)
 end
 
@@ -138,8 +137,8 @@ function ArkExp:SetData(rarity, potential, elite, level, leftExp)
     local progress = nextLevelExp and math.min(leftExp / nextLevelExp, 1) or 0
     
     -- 打印调试信息
-    print(string.format("SetData: elite=%d, level=%d, leftExp=%d, nextLevelExp=%s, progress=%.2f", 
-        elite, level, leftExp, tostring(nextLevelExp), progress))
+    -- print(string.format("SetData: elite=%d, level=%d, leftExp=%d, nextLevelExp=%s, progress=%.2f", 
+    --     elite, level, leftExp, tostring(nextLevelExp), progress))
     
     -- 立即更新即时进度条
     self.progressBarFill:SetScissor(0, self.height/-2, progress * self.width, self:GetWorldSize().y)
@@ -150,11 +149,11 @@ function ArkExp:SetData(rarity, potential, elite, level, leftExp)
         -- 等级变动时，从0开始动画
         self.currentProgress = 0
         self.targetProgress = progress
-        print(string.format("Level changed, starting animation from 0 to %.2f", progress))
+        -- print(string.format("Level changed, starting animation from 0 to %.2f", progress))
     else
         -- 普通经验值变化，直接设置目标
         self.targetProgress = progress
-        print(string.format("Normal exp change: setting target progress to %.2f", progress))
+        -- print(string.format("Normal exp change: setting target progress to %.2f", progress))
     end
     
     -- 更新当前等级信息

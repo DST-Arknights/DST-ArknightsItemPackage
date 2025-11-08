@@ -252,7 +252,7 @@ for i = 1, #arkItemDeclare do
     if item.ingredientValues.candry ~= nil then
       candry = item.ingredientValues.candry
     end
-    GLOBAL.AddIngredientValues(item.prefab, item.ingredientValues.tags, cancook, candry)
+    AddIngredientValues({item.prefab}, item.ingredientValues.tags, cancook, candry)
   end
 end
 
@@ -279,20 +279,20 @@ for k, v in pairs(dropMap) do
   end)
 end
 
-AddPrototyperDef('ark_processing_station', {
+AddPrototyperDef('ark_workshop', {
   icon_atlas = "images/ark_item_prototyper.xml",
   icon_image = "ark_item_prototyper.tex",
   is_crafting_station = true,
-  action_str = 'ARK_PROCESSING_STATION',
-  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_PROCESSING_STATION
+  action_str = 'ARK_WORKSHOP',
+  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
 })
 
 -- 制造站
-AddRecipe2('ark_processing_station', {
+AddRecipe2('ark_workshop', {
   Ingredient('goldnugget', 2),
 }, TECH.SCIENCE_TWO, {
-  placer = 'ark_processing_station_placer',
-  atlas = "images/ark_item_pack.xml",
-  image = "ark_item_pack.tex",
+  placer = 'ark_workshop_placer',
+  atlas = "images/ark_item_prototyper.xml",
+  image = "ark_item_prototyper.tex",
 })
-AddRecipeToFilter("ark_processing_station", "PROTOTYPERS")
+AddRecipeToFilter("ark_workshop", "PROTOTYPERS")

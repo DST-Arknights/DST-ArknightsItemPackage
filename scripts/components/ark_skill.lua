@@ -1,54 +1,60 @@
 local CONSTANTS = require "ark_constants"
 local common = require "ark_common"
-
+local utils = require "ark_utils"
 local ArkSkill = Class(function(self, inst)
   self.inst = inst
-
+  self.inst:AddTag("ark_skill")
 end)
 
-function ArkSkill:SetSkillConfigByKey(key)
-  local config = TUNING.ARK_SKILL_CONFIG[key]
-  if not config then
-    return
+local function defaultSkill(skill)
+  skill.energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO
+  skill.activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL
+  -- 能自动触发的技能关闭快捷键
+  if skill.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
+    skill.hotKey = nil
   end
-  self:SetupSkillConfig(config)
+  for _, levelConfig in ipairs(skill.levels) do
+    levelConfig.energy = levelConfig.energy or 1
+    -- levelConfig.buffTime = levelConfig.buffTime or 1
+    levelConfig.buffTime = levelConfig.buffTime or 0.3
+    levelConfig.bullet = levelConfig.bullet or 10
+    levelConfig.maxActivationStacks = levelConfig.maxActivationStacks or 1
+  end
+  return skill
 end
 
-function ArkSkill:SetupSkillConfig(config)
+local function defaultSkillData(config)
+  local level = 1
+  return {
+    data = {
+      level = level,
+      status = CONSTANTS.SKILL_STATUS.LOCKED,
+      energyProgress = 0,
+      buffProgress = 0,
+      bullet = 0,
+      activationStacks = 1,
+      force = false
+    },
+    config = config,
+    levelConfig = config.levels[level],
+    timeEnergy = false,
+    timeBuff = false
+  }
+end
+
+function ArkSkill:SetupSkillConfig(prefab)
+  local config = ARK_GLOBAL.GetArkSkillConfig(prefab)
   self.config = config
   -- 搞几个默认值进去
   for _, config in ipairs(config.skills) do
-    config.chargeType = config.chargeType or CONSTANTS.CHARGE_TYPE.AUTO
-    config.emitType = config.emitType or CONSTANTS.EMIT_TYPE.HAND
-    -- 能自动触发的技能关闭快捷键
-    if config.emitType ~= CONSTANTS.EMIT_TYPE.HAND then
-      config.hotKey = nil
-    end
-    for _, levelConfig in ipairs(config.levels) do
-      levelConfig.charge = levelConfig.charge or 1
-      -- levelConfig.buffTime = levelConfig.buffTime or 1
-      levelConfig.shadowBuffTime = levelConfig.buffTime or 0.3
-      levelConfig.bullet = levelConfig.bullet or 1
-      levelConfig.maxEmitCharge = levelConfig.maxEmitCharge or 1
-    end
+    defaultSkill(config)
   end
   self.skills = {}
+  self.latestSkills = {}
   for i, config in ipairs(config.skills) do
     local level = 1
-    self.skills[i] = {
-      data = {
-        level = level,
-        status = CONSTANTS.SKILL_STATUS.LOCKED,
-        chargeProgress = 0,
-        buffProgress = 0,
-        bullet = 0,
-        emitCharge = 0
-      },
-      config = config,
-      levelConfig = config.levels[level],
-      timeCharge = false,
-      timeBuff = false
-    }
+    self.skills[i] = defaultSkillData(config)
+    self.latestSkills[i] = utils.cloneTable(self.skills[i].data)
     self:SetSkillLevel(i, 1)
   end
   for i, skill in ipairs(self.skills) do
@@ -81,12 +87,12 @@ function ArkSkill:GetLevelConfig(idx)
 end
 
 -- 时间更新
-function ArkSkill:StartTimeCharge(idx)
-  self:GetSkill(idx).timeCharge = true
+function ArkSkill:StartTimeEnergy(idx)
+  self:GetSkill(idx).timeEnergy = true
 end
 
-function ArkSkill:StopTimeCharge(idx)
-  self:GetSkill(idx).timeCharge = false
+function ArkSkill:StopTimeEnergy(idx)
+  self:GetSkill(idx).timeEnergy = false
 end
 
 function ArkSkill:StartTimeBuff(idx)
@@ -100,22 +106,27 @@ end
 -- 状态变换
 
 function ArkSkill:UnLock(idx)
+  local status = self:GetSkillData(idx).status
+  -- 如果已经解锁就返回
+  if status ~= CONSTANTS.SKILL_STATUS.LOCKED and status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING  then
+    return
+  end
   -- 直接去充能状态
-  self:GoCharging(idx)
+  self:GoEnergyRecovering(idx)
 end
 
-function ArkSkill:GoCharging(idx)
+function ArkSkill:GoEnergyRecovering(idx)
   local config = self:GetConfig(idx)
   local levelConfig = self:GetLevelConfig(idx)
   local data = self:GetSkillData(idx)
-  data.status = CONSTANTS.SKILL_STATUS.CHARGING
-  if config.chargeType == CONSTANTS.CHARGE_TYPE.AUTO then
-    if data.emitCharge >= levelConfig.maxEmitCharge then
-      self:StopTimeCharge(idx)
-      data.chargeProgress = 0
-      data.emitCharge = levelConfig.maxEmitCharge
+  data.status = CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
+  if config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
+    if data.activationStacks >= levelConfig.maxActivationStacks then
+      self:StopTimeEnergy(idx)
+      data.energyProgress = 0
+      data.activationStacks = levelConfig.maxActivationStacks
     else
-      self:StartTimeCharge(idx)
+      self:StartTimeEnergy(idx)
     end
   end
   self:SyncSkillStatus(idx)
@@ -128,14 +139,28 @@ function ArkSkill:GoBuffing(idx)
   self:SyncSkillStatus(idx)
 end
 
-function ArkSkill:SyncSkillStatus(idx)
+function ArkSkill:GoBulleting(idx)
+  local data = self:GetSkillData(idx)
+  data.status = CONSTANTS.SKILL_STATUS.BULLETING
+  self:SyncSkillStatus(idx)
+end
+
+function ArkSkill:SyncSkillStatus(idx, notice)
   local data = self:GetSkillData(idx)
   SendModRPCToClient(GetClientModRPC("arkSkill", "SyncSkillStatus"), self.inst.userid, idx, data.status, data.level,
-    data.chargeProgress, data.buffProgress, data.bullet, data.emitCharge)
+    data.energyProgress, data.buffProgress, data.bullet, data.activationStacks)
+  if notice == nil then
+    notice = true
+  end
+  if self.onSkillStatusChange and notice then
+    local latestData = self.latestSkills[idx]
+    self.latestSkills[idx] = utils.cloneTable(data)
+    self.onSkillStatusChange(idx, data, latestData)
+  end
 end
 
 function ArkSkill:RequestSyncSkillStatus(idx)
-  self:SyncSkillStatus(idx)
+  self:SyncSkillStatus(idx, false)
 end
 
 function ArkSkill:OnUpdateBuff(idx, dt)
@@ -145,11 +170,11 @@ function ArkSkill:OnUpdateBuff(idx, dt)
   return self:AddBuffProgress(idx, dt)
 end
 
-function ArkSkill:OnUpdateTimeCharge(idx, dt)
-  if not self:GetSkill(idx).timeCharge then
+function ArkSkill:OnUpdateTimeEnergy(idx, dt)
+  if not self:GetSkill(idx).timeEnergy then
     return
   end
-  self:AddChargeProgress(idx, dt)
+  self:AddEnergyProgress(idx, dt)
 end
 
 function ArkSkill:OnUpdate(dt)
@@ -158,9 +183,9 @@ function ArkSkill:OnUpdate(dt)
       -- buff流动期间, 不会自动时间充能
       local leftBuffTime = self:OnUpdateBuff(i, dt)
       if leftBuffTime == nil then
-        self:OnUpdateTimeCharge(i, dt)
+        self:OnUpdateTimeEnergy(i, dt)
       elseif leftBuffTime > 0 then
-        self:OnUpdateTimeCharge(i, dt + leftBuffTime)
+        self:OnUpdateTimeEnergy(i, dt + leftBuffTime)
       end
     end
   end
@@ -185,17 +210,19 @@ function ArkSkill:OnLoad(data)
     if not self.skills[i] then
       break
     end
-    self.skills[i].data = skillData
-    self:SetSkillLevel(i, skillData.level)
+    self.skills[i].data = utils.mergeTable(self.skills[i].data, skillData)
+    local maxLevel = #self.skills[i].config.levels
+    self:SetSkillLevel(i, math.min(skillData.level, maxLevel))
     -- 根据status 切换到对应状态
-    if skillData.status == CONSTANTS.SKILL_STATUS.CHARGING then
-      self:GoCharging(i)
+    if skillData.status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+      self:GoEnergyRecovering(i)
     elseif skillData.status == CONSTANTS.SKILL_STATUS.BUFFING then
       self:GoBuffing(i)
+    elseif skillData.status == CONSTANTS.SKILL_STATUS.BULLETING then
+      self:GoBulleting(i)
     end
   end
 end
-
 -- 推荐暴露的方法
 
 function ArkSkill:LevelUpSkill(idx)
@@ -224,55 +251,96 @@ function ArkSkill:SetSkillLevel(idx, level)
   self:SyncSkillStatus(idx)
 end
 
-function ArkSkill:AddChargeProgress(idx, value)
+function ArkSkill:AddEnergyProgress(idx, value)
   local data = self:GetSkillData(idx)
   local levelConfig = self:GetLevelConfig(idx)
-  data.chargeProgress = data.chargeProgress + value
-  local leftCharge = data.chargeProgress - levelConfig.charge
-  if leftCharge >= 0 then
-    data.emitCharge = data.emitCharge + 1
-    if data.emitCharge < levelConfig.maxEmitCharge then
-      data.chargeProgress = leftCharge
+  data.energyProgress = data.energyProgress + value
+  local leftEnergy = data.energyProgress - levelConfig.energy
+  if leftEnergy >= 0 then
+    data.activationStacks = data.activationStacks + 1
+    if data.activationStacks < levelConfig.maxActivationStacks then
+      data.energyProgress = leftEnergy
     else -- 超出最大充能量
-      self:StopTimeCharge(idx)
-      data.chargeProgress = 0
+      self:StopTimeEnergy(idx)
+      data.energyProgress = 0
     end
     self:SyncSkillStatus(idx)
   end
-  return leftCharge
+  return leftEnergy
 end
+
 
 function ArkSkill:AddBuffProgress(idx, value)
   local data = self:GetSkillData(idx)
   local levelConfig = self:GetLevelConfig(idx)
   data.buffProgress = data.buffProgress + value
-  local leftBuff = data.buffProgress - levelConfig.shadowBuffTime
+  local leftBuff = data.buffProgress - levelConfig.buffTime
   if leftBuff >= 0 then
     data.buffProgress = leftBuff
-    self:GoCharging(idx)
+    self:GoEnergyRecovering(idx)
     self:StopTimeBuff(idx)
   end
   return leftBuff
 end
 
-function ArkSkill:EmitSkill(idx)
+function ArkSkill:ActivateSkill(idx, force)
   local data = self:GetSkillData(idx)
-  if data.emitCharge <= 0 then
-    return
+  if data.status == CONSTANTS.SKILL_STATUS.LOCKED then
+    return false
   end
-  -- TODO: 真实执行技能接口
-  data.emitCharge = data.emitCharge - 1
-  data.buffProgress = 0
-  self.inst:PushEvent("arkSkillEmit", idx)
-  self:GoBuffing(idx)
+  if data.activationStacks <= 0 then
+    return false
+  end
+  data.activationStacks = data.activationStacks - 1
+  local config = self:GetConfig(idx)
+  if config.bullet then
+    local levelConfig = self:GetLevelConfig(idx)
+    data.bullet = levelConfig.bullet
+  else
+    data.buffProgress = 0
+  end
+  data.force = force
+  if config.bullet then
+    self:GoBulleting(idx)
+  else
+    self:GoBuffing(idx)
+  end
+  return true
 end
 
-function ArkSkill:HandEmitSkill(idx)
+
+
+function ArkSkill:CancelSkill(idx)
+  local data = self:GetSkillData(idx)
+  data.force = false
+  self:GoEnergyRecovering(idx)
+end
+
+function ArkSkill:ManualCancelSkill(idx)
+  self:CancelSkill(idx)
+end
+
+function ArkSkill:ManualActivateSkill(idx)
   local config = self:GetConfig(idx)
-  if config.emitType ~= CONSTANTS.EMIT_TYPE.HAND then
+  if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
     return
   end
-  self:EmitSkill(idx)
+  self:ActivateSkill(idx)
+end
+
+function ArkSkill:CutBullet(idx, value)
+  if value == nil then
+    value = 1
+  end
+  local data = self:GetSkillData(idx)
+  data.bullet = data.bullet - value
+  if data.bullet < 0 then
+    data.bullet = 0
+  end
+  self:SyncSkillStatus(idx)
+  if data.bullet == 0 then
+    self:GoEnergyRecovering(idx)
+  end
 end
 
 return ArkSkill

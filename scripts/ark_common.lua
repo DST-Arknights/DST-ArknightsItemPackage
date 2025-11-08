@@ -14,9 +14,13 @@ local function getPrefabAssetsCode(prefab, withTex)
         animBuild = 'ark_item',
         atlas = 'images/ark_item.xml',
         image = image, 
-        slotbgatlas = 'images/ark_item_slotbg.xml',
+        slotbgatlas = 'images/ark_backpack_slotbg.xml',
         slotbgimage = prefab .. '.tex'
     }
+end
+
+local function genArkSkillLevelTag(idx, level)
+  return 'ark_skill_level_' .. idx .. '_' .. level
 end
 
 local function genArkSkillLevelUpPrefabName(idx, level)
@@ -32,10 +36,6 @@ local function parseArkSkillLevelUpPrefabName(prefabName)
   return nil, nil
 end
 
-local function genArkSkillLevelTag(idx, level)
-  return 'ark_skill_level_' .. idx .. '_' .. level
-end
-
 local function canNextElite(rarity, elite, level)
   -- 要当前等级满级, 并且当前精英化等级小于最大精英化等级
   return level >= CONSTANTS.EXP_CONFIG.maxLevel[rarity][elite] and elite < #CONSTANTS.EXP_CONFIG.maxLevel[rarity]
@@ -43,17 +43,6 @@ end
 
 local function getNextLevelExp(elite, level)
   return CONSTANTS.EXP_CONFIG.exp[elite][level][1]
-end
-
-local function formatSkillLevelString(level)
-  if level == 8 then
-    return "Rank Ⅰ"
-  elseif level ==  9 then
-    return "Rank Ⅱ"
-  elseif level == 10 then
-    return "Rank Ⅲ"
-  end
-  return tostring(level)
 end
 
 -- 新增配置计算相关函数
@@ -74,10 +63,9 @@ end
 
 return {
     getPrefabAssetsCode = getPrefabAssetsCode,
+    genArkSkillLevelTag = genArkSkillLevelTag,
     genArkSkillLevelUpPrefabName = genArkSkillLevelUpPrefabName,
     parseArkSkillLevelUpPrefabName = parseArkSkillLevelUpPrefabName,
-    genArkSkillLevelTag = genArkSkillLevelTag,
-    formatSkillLevelString = formatSkillLevelString,
     canNextElite = canNextElite,
     getMaxLevel = getMaxLevel,
     getExpAndGoldCost = getExpAndGoldCost,

@@ -50,7 +50,7 @@ local function fn()
   inst:AddTag("stone")
 
   -- prototyper (from prototyper component) added to pristine state for optimization
-  inst:AddTag("ark_processing_station")
+  inst:AddTag("ark_workshop")
 
   inst.entity:SetPristine()
 
@@ -67,9 +67,9 @@ local function fn()
   inst:AddComponent("workable")
 
   MakeHauntableWork(inst)
-  inst.scrapbook_specialinfo = "ARK_PROCESSING_STATION"
+  inst.scrapbook_specialinfo = "ARK_WORKSHOP"
 
-  inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_PROCESSING_STATION_ONE
+  inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_WORKSHOP_ONE
 
   inst.components.prototyper.onturnon = complete_onturnon
   inst.components.prototyper.onturnoff = complete_onturnoff
@@ -82,5 +82,5 @@ local function fn()
   return inst
 end
 
-return Prefab("ark_processing_station", fn, assets, prefabs),
-  MakePlacer("ark_processing_station_placer", "crafting_table", "crafting_table", "idle_full")
+return Prefab("ark_workshop", fn, assets, prefabs),
+  MakePlacer("ark_workshop_placer", "crafting_table", "crafting_table", "idle_full")
