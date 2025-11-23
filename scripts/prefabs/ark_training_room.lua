@@ -40,11 +40,14 @@ local function fn()
     if not doer or not doer.components.ark_skill or not recipe then
       return
     end
-    local skillIdx, level = common.parseArkSkillLevelUpPrefabName(recipe.name)
-    if not skillIdx or not level then
+    local skillId, level = common.parseArkSkillLevelUpPrefabName(recipe.name)
+    if not skillId or not level then
       return
     end
-    doer.components.ark_skill:SetSkillLevel(skillIdx, level)
+    local skill = doer.components.ark_skill:GetSkill(skillId)
+    if skill then
+      skill:SetLevel(level)
+    end
   end
   inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
   inst.components.workable:SetWorkLeft(4)

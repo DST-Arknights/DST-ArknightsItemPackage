@@ -9,11 +9,12 @@ local ArkSkillDesc = require "widgets/ark_skill_desc"
 -- 闪烁效果配置
 local BLINK_DURATION = 0.3  -- 单次闪烁持续时间（秒）
 
-local ArkSkill = Class(Widget, function(self, owner, config, idx)
+local ArkSkill = Class(Widget, function(self, owner, config)
   Widget._ctor(self, "ArkSkill")
   self.owner = owner
   self.config = config
-  self.idx = idx
+
+  self.id = config.id -- 服务端通信改为按 id
   self.size = {128, 128}
 
   local skill = self:AddChild(Image(config.atlas, config.image))
@@ -172,10 +173,6 @@ function ArkSkill:StartTimeCharge(from)
   return self:StartTimeEnergy(from)
 end
 
-function ArkSkill:StopTimeCharge()
-  return self:StopTimeEnergy()
-end
-
 function ArkSkill:SetBuffProgress(current)
   local total = self.levelConfig.buffTime
   self.buffShadow:SetScale(1, 1 - CaseShadowScale(current / total))
@@ -225,6 +222,7 @@ function ArkSkill:UpdateBlink(dt)
 end
 
 function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bullet, activationStacks)
+  print("[ark_skill]", "id=" .. self.id .. ", status=" .. status .. ", level=" .. level .. ", energyProgress=" .. energyProgress .. ", buffProgress=" .. buffProgress .. ", bullet=" .. bullet .. ", activationStacks=" .. activationStacks)
   self.status = status
   local wasInitComplete = self.initComplete
   self.initComplete = true
@@ -299,9 +297,11 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
 
   self:SetEnergyProgress(energyProgress)
   if self.config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
-    and self.activationStacks < self.levelConfig.maxActivationStacks then
+    and activationStacks < self.levelConfig.maxActivationStacks then
+    print("[UI SyncSkillStatus] 启动充能计时器。activationStacks=" .. activationStacks .. ", maxActivationStacks=" .. self.levelConfig.maxActivationStacks .. ", energyProgress=" .. energyProgress)
     self:StartTimeEnergy(energyProgress)
   else
+    print("[UI SyncSkillStatus] 停止充能计时器。status=" .. status .. ", activationStacks=" .. activationStacks .. ", maxActivationStacks=" .. self.levelConfig.maxActivationStacks)
     self:StopTimeEnergy()
   end
   if status == CONSTANTS.SKILL_STATUS.LOCKED then
@@ -347,7 +347,7 @@ end
 
 -- OnUpdate 需要第一帧检测, 第一帧要作点事情
 function ArkSkill:OnUpdate(dt)
-  SendModRPCToServer(GetModRPC("arkSkill", "RequestSyncSkillStatus"), self.idx)
+  SendModRPCToServer(GetModRPC("arkSkill", "RequestSyncSkillStatus"), self.id)
   self.OnUpdate = OnUpdate
 end
 
@@ -369,7 +369,7 @@ function ArkSkill:OnGainFocus()
       level = self.level,
       desc = self.levelConfig.desc,
     }
-    self.skillDesc = self:AddChild(ArkSkillDesc(self.owner, descConfig, self.idx))
+    self.skillDesc = self:AddChild(ArkSkillDesc(self.owner, descConfig, self.id))
     self.skillDesc:SetScale(1, 1, 1)
     local size = self.skillDesc:GetSize()
     self.skillDesc:SetPosition(-self.size[1] / 2 + size.x / 2, self.size[2] / 2 + size.y + 10, 0)
@@ -391,10 +391,10 @@ function ArkSkill:TryActivateSkill()
   end
   -- 弹药模式下可以取消技能
   if self.config.bullet and self.status == CONSTANTS.SKILL_STATUS.BULLETING then
-    SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), self.idx)
+    SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), self.id)
     return
   end
-  SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), self.idx, TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL))
+  SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), self.id, TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL))
 end
 
 function ArkSkill:OnControl(control, down)

@@ -35,12 +35,12 @@ function ArkSkillDescText:GetSize()
   return self.maxWidth, self.h
 end
 
-local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, idx)
+local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   Widget._ctor(self, "ArkSkillDesc")
   self.owner = owner
   self.size = {1000, 0} -- 初始时高度为0
-  self.hotKey = descConfig.hotKey
-  self.idx = idx
+  self.id = id
+  self.hotKey = (ThePlayer and ThePlayer.GetArkHotKey and ThePlayer:GetArkHotKey('skill', self.id)) or descConfig.hotKey
   local bg = self:AddChild(Image("images/ui.xml", "white.tex"))
   bg:SetTint(0.23, 0.23, 0.23, 0.7)
   local leftOffset = -self.size[1] / 2 + PADDING
@@ -152,9 +152,9 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, idx)
     hotKeyResetButton:SetFont(FALLBACK_FONT_FULL)
     hotKeyResetButton:SetPosition(self.size[1] / 2 - 110, 0, 0)
     hotKeyResetButton:SetOnClick(function()
-      ThePlayer:SaveArkSkillLocalHotKey(self.idx, nil)
-      ThePlayer:RefreshArkSkillLocalHotKey()
-      local hotKey = ThePlayer:GetArkSkillLocalHotKey(self.idx)
+      ThePlayer:SaveArkHotKey('skill', self.id, nil)
+      ThePlayer:RefreshArkHotKey()
+      local hotKey = ThePlayer:GetArkHotKey('skill', self.id)
       self.hotKey = hotKey
       self:RefreshHotKey()
     end)
@@ -176,17 +176,17 @@ function ArkSkillDesc:RefreshHotKey()
   self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.HOT_KEY .. ": " .. hotKeyString)
 end
 
-function ArkSkillDesc:SettingHotKeyCallback(key, conflictIdx)
-  if conflictIdx and conflictIdx ~= self.idx then
+function ArkSkillDesc:SettingHotKeyCallback(key, conflictId)
+  if conflictId and conflictId ~= self.id then
     self:RefreshHotKey()
     self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.HOT_KEY_CONFLICT)
     return
   end
   self.hotKey = key
-  ThePlayer:SaveArkSkillLocalHotKey(self.idx, key)
+  ThePlayer:SaveArkHotKey('skill', self.id, key)
   self:RefreshHotKey()
   self.hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.SETTING .. "]")
-  ThePlayer:RefreshArkSkillLocalHotKey()
+  ThePlayer:RefreshArkHotKey()
   ThePlayer.HUD._settingSkillHotKeyCallback = nil
 end
 
@@ -198,8 +198,8 @@ function ArkSkillDesc:SettingHotKey()
   else
     self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY)
     self.hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.CANCEL .. "]")
-    ThePlayer.HUD._settingSkillHotKeyCallback = function(key, conflictIdx)
-      self:SettingHotKeyCallback(key, conflictIdx)
+    ThePlayer.HUD._settingSkillHotKeyCallback = function(key, conflictId)
+      self:SettingHotKeyCallback(key, conflictId)
     end
   end
 end

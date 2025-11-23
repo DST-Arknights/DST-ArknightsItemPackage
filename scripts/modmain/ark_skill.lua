@@ -1,20 +1,31 @@
 local CONSTANTS = require "ark_constants"
 local common = require "ark_common"
 
--- 添加技能升级的制作回调
-AddModRPCHandler("arkSkill", "LevelUpSkill", function(player, skillIndex)
-  if player and player.components.ark_skill then
-    player.components.ark_skill:LevelUpSkill(skillIndex)
-  end
+-- 技能升级 RPC 处理
+AddModRPCHandler("arkSkill", "LevelUpSkill", function(player, skillId)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(skillId)
+  if not skill then return end
+  local level = (skill.data.level or 1) + 1
+  skill:SetLevel(level)
 end)
 
-AddModRPCHandler("arkSkill", "RequestSyncSkillStatus", function(player, idx)
-  if player and player.components.ark_skill then
-    player.components.ark_skill:RequestSyncSkillStatus(idx)
-  end
+-- 技能设置等级 RPC 处理
+AddModRPCHandler("arkSkill", "SetSkillLevel", function(player, skillId, level)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(skillId)
+  if not skill then return end
+  skill:SetLevel(level)
 end)
 
-AddClientModRPCHandler("arkSkill", "SyncSkillStatus", function (skillIndex, ...)
+-- 请求同步技能状态 RPC 处理
+AddModRPCHandler("arkSkill", "RequestSyncSkillStatus", function(player, id)
+  if not player or not player.components.ark_skill then return end
+  player.components.ark_skill:RequestSyncSkillStatus(id)
+end)
+
+-- 客户端同步技能状态
+AddClientModRPCHandler("arkSkill", "SyncSkillStatus", function (skillId, ...)
   if not ThePlayer then
     return
   end
@@ -22,98 +33,37 @@ AddClientModRPCHandler("arkSkill", "SyncSkillStatus", function (skillIndex, ...)
   if not arkSkillUi then
     return
   end
-  local skillUi = arkSkillUi:GetSkill(skillIndex)
-  -- local oldLevel = skillUi.level
+  local skillUi = arkSkillUi.GetSkillById and arkSkillUi:GetSkillById(skillId) or nil
+  if not skillUi then
+    return
+  end
   skillUi:SyncSkillStatus(...)
-  -- ThePlayer:PushEvent("refreshcrafting")
+end)
+
+-- 手动激活技能 RPC 处理
+AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, id, target, targetPos, force)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(id)
+  if not skill then return end
+  local config = skill.config
+  if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
+    return
+  end
+  local deserializedPos = string.split(targetPos, ",")
+  targetPos = Vector3(tonumber(deserializedPos[1]), tonumber(deserializedPos[2]), tonumber(deserializedPos[3]))
+  skill:Activate(target, targetPos, force)
+end)
+
+-- 手动取消技能 RPC 处理
+AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(id)
+  if not skill then return end
+  skill:Cancel()
 end)
 
 
-AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, skillIndex)
-  if player and player.components.ark_skill then
-    player.components.ark_skill:ManualActivateSkill(skillIndex)
-  end
-end)
 
-
-
-AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, skillIndex)
-  if player and player.components.ark_skill then
-    player.components.ark_skill:ManualCancelSkill(skillIndex)
-  end
-end)
-
-
-local function getStorageKey(player)
-  return "ark_skill_local_hot_key" .. player.userid .. player.prefab
-end
-
-local function SetupArkSkillHotKey(config)
-  local hotKeyManager = {
-    default = {},  -- 默认热键配置
-    custom = nil,   -- 自定义热键配置
-  }
-
-  -- 保存默认热键配置
-  for i, skillConfig in pairs(config.skills) do
-    hotKeyManager.default[i] = skillConfig.hotKey
-  end
-
-  -- 保存自定义热键
-  function ThePlayer:SaveArkSkillLocalHotKey(idx, hotKey)
-    hotKeyManager.custom = hotKeyManager.custom or {}
-    
-    if hotKey == nil then
-      table.remove(hotKeyManager.custom, idx)
-    else
-      hotKeyManager.custom[idx] = hotKey
-    end
-
-    TheSim:SetPersistentString(getStorageKey(ThePlayer), 
-      json.encode(hotKeyManager.custom), false)
-  end
-
-  -- 获取热键配置
-  function ThePlayer:GetArkSkillLocalHotKey(idx)
-    return config.skills[idx].hotKey
-  end
-
-  -- 加载自定义热键配置
-  function ThePlayer:LoadArkSkillLocalHotKey()
-    TheSim:GetPersistentString(getStorageKey(ThePlayer),
-      function(load_success, str)
-        if not load_success then
-          hotKeyManager.custom = {}
-          return
-        end
-
-        local ok, data = pcall(json.decode, str)
-        if not ok then
-          hotKeyManager.custom = {}
-          return
-        end
-
-        hotKeyManager.custom = data
-      end)
-  end
-
-  -- 刷新热键配置
-  function ThePlayer:RefreshArkSkillLocalHotKey()
-    -- 恢复默认热键
-    for i, hotKey in pairs(hotKeyManager.default) do
-      config.skills[i].hotKey = hotKey
-    end
-
-    -- 应用自定义热键
-    if not hotKeyManager.custom then return end
-    
-    for i, hotKey in pairs(hotKeyManager.custom) do
-      if config.skills[i] then
-        config.skills[i].hotKey = hotKey
-      end
-    end
-  end
-end
 
 local arkSkillLevelUpImages = {}
 
@@ -127,18 +77,12 @@ AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
   controls.arkSkillUi = controls.inv.hand_inv:AddChild(ArkSkillUi(ThePlayer, config))
   controls.arkSkillUi:SetPosition(config.position or Vector3(-840, 80, 0))
   controls.arkSkillUi:SetScale(.5, .5, .5)
-  -- 安装本地热键方法
-  SetupArkSkillHotKey(config)
-  ThePlayer:LoadArkSkillLocalHotKey()
-  ThePlayer:RefreshArkSkillLocalHotKey()
+  -- 安装统一热键管理器（纯机制，不关心技能）
+  local ArkHotKey = require "ark_hotkey"
+  local hkMgr = (ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager()) or ArkHotKey.Create(ThePlayer):AttachToPlayer()
+  hkMgr:HookHUD(ThePlayer.HUD)
+  hkMgr:Load()
 
-  local function findSkillHotKeyIndex(hotKey, skillConfigs)
-    for i, config in pairs(skillConfigs) do
-      if config.hotKey == hotKey then
-        return i
-      end
-    end
-  end
   -- 替换高清资源
   for _, skill in pairs(config.skills) do
     local resolveAtlas = resolvefilepath(skill.atlas)
@@ -148,25 +92,13 @@ AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
     arkSkillLevelUpImages[resolveAtlas][skill.image] = true
   end
 
-  -- 安装热键
-  local _OnRawKey = ThePlayer.HUD.OnRawKey
-  function ThePlayer.HUD:OnRawKey(key, down)
-    if not down then
-      return _OnRawKey(self, key, down)
-    end
-    if ThePlayer.HUD._settingSkillHotKeyCallback then
-      -- 检查是否有冲突
-      local conflictIndex = findSkillHotKeyIndex(key, config.skills)
-      ThePlayer.HUD._settingSkillHotKeyCallback(key, conflictIndex)
-      return true
-    end
-    local skillIndex = findSkillHotKeyIndex(key, config.skills)
-    if not skillIndex then
-      return _OnRawKey(self, key, down)
-    end
-    local skill = controls.arkSkillUi:GetSkill(skillIndex)
-    skill:TryActivateSkill()
-    return true
+  -- 注册技能热键（UI 安装时）
+  for _, skillCfg in ipairs(config.skills) do
+    local id = skillCfg.id
+    hkMgr:Register('skill', id, function()
+      local s = controls.arkSkillUi and controls.arkSkillUi:GetSkillById(id)
+      if s then s:TryActivateSkill() end
+    end, skillCfg.hotKey)
   end
 end)
 
@@ -206,22 +138,25 @@ end)
 -- )
 -- AddRecipeToFilter("ark_training_room", "PROTOTYPERS")
 
-function GLOBAL.ARK_GLOBAL.SetupArkSkillConfig(prefab, config)
-  TUNING.ARK_SKILL[string.upper(prefab)] = config
-  local skills = config.skills
+-- 服务端
+
+function GLOBAL.ARK_GLOBAL.AddSkillLevelUpRecipes(skills)
   for i, skill in ipairs(skills) do
     if i > CONSTANTS.MAX_SKILL_LIMIT then
       break
     end
+
+    -- 规范化 id，确保配方与组件一致使用字符串 id
+    skill.id = common.normalizeSkillId(skill.id or ("skill_" .. tostring(i)))
 
     for j, levelConfig in ipairs(skill.levels) do
       if j > CONSTANTS.MAX_SKILL_LEVEL then
         break
       end
       if j ~= 1 then
-        local prefabName = common.genArkSkillLevelUpPrefabName(i, j)
+        local prefabName = common.genArkSkillLevelUpPrefabNameById(skill.id, j)
         local ingredients = levelConfig.ingredients or { Ingredient("goldnugget", 1) }
-        local tag = common.genArkSkillLevelTag(i, j - 1)
+        local tag = common.genArkSkillLevelTagById(skill.id, j - 1)
         AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
           nounlock = true,
           atlas = skill.atlas,
@@ -239,8 +174,4 @@ function GLOBAL.ARK_GLOBAL.SetupArkSkillConfig(prefab, config)
       end
     end
   end
-end
-
-function GLOBAL.ARK_GLOBAL.GetArkSkillConfig(prefab)
-  return TUNING.ARK_SKILL[string.upper(prefab)]
 end

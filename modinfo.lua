@@ -21,6 +21,8 @@ all_clients_require_mod = true
 icon_atlas = "modicon.xml"
 icon = "modicon.tex"
 
+priority = 1
+
 server_filter_tags = {"arknights", "明日方舟", "item", "物品"}
 configuration_options = {{
     name = "language",

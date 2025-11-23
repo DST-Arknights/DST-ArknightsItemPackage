@@ -13,25 +13,34 @@ local function getPrefabAssetsCode(prefab, withTex)
         animBank = 'ark_item',
         animBuild = 'ark_item',
         atlas = 'images/ark_item.xml',
-        image = image, 
+        image = image,
         slotbgatlas = 'images/ark_backpack_slotbg.xml',
         slotbgimage = prefab .. '.tex'
     }
 end
 
-local function genArkSkillLevelTag(idx, level)
-  return 'ark_skill_level_' .. idx .. '_' .. level
+local function normalizeSkillId(id)
+  id = string.lower(tostring(id))
+  id = string.gsub(id, "%s+", "_")
+  id = string.gsub(id, "[^%w_]", "")
+  return id
 end
 
-local function genArkSkillLevelUpPrefabName(idx, level)
-  return 'ark_skill_level_up_' .. idx .. '_' .. level
+
+local function genArkSkillLevelUpPrefabNameById(id, level)
+  return 'ark_skill_level_up_' .. normalizeSkillId(id) .. '_' .. level
+end
+
+
+local function genArkSkillLevelTagById(id, level)
+  return 'ark_skill_level_' .. normalizeSkillId(id) .. '_' .. level
 end
 
 local function parseArkSkillLevelUpPrefabName(prefabName)
-  -- 匹配格式: ark_skill_level_up_数字_数字
-  local idx, level = string.match(prefabName, "ark_skill_level_up_(%d+)_(%d+)")
-  if idx and level then
-    return tonumber(idx), tonumber(level)
+  -- 匹配格式: ark_skill_level_up_<id>_<level>，其中 id 为字符串（可含下划线），level 为数字
+  local id, level = string.match(prefabName, "^ark_skill_level_up_(.+)_(%d+)$")
+  if id and level then
+    return normalizeSkillId(id), tonumber(level)
   end
   return nil, nil
 end
@@ -63,8 +72,9 @@ end
 
 return {
     getPrefabAssetsCode = getPrefabAssetsCode,
-    genArkSkillLevelTag = genArkSkillLevelTag,
-    genArkSkillLevelUpPrefabName = genArkSkillLevelUpPrefabName,
+    normalizeSkillId = normalizeSkillId,
+    genArkSkillLevelTagById = genArkSkillLevelTagById,
+    genArkSkillLevelUpPrefabNameById = genArkSkillLevelUpPrefabNameById,
     parseArkSkillLevelUpPrefabName = parseArkSkillLevelUpPrefabName,
     canNextElite = canNextElite,
     getMaxLevel = getMaxLevel,

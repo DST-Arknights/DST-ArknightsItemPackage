@@ -7,23 +7,34 @@ local ArkSkillUi = Class(Widget, function(self, owner, config)
   Widget._ctor(self, "ArkSkillUi")
   self.owner = owner
   self.skills = {}
-  for i, config in ipairs(config.skills) do
-    self:AddSkill(config, i)
+  self.skillsById = {}
+  for _, cfg in ipairs(config.skills) do
+    self:AddSkill(cfg)
   end
 end)
 
-function ArkSkillUi:AddSkill(config, idx)
-  local skill = self:AddChild(ArkSkill(self.owner, config, idx))
+function ArkSkillUi:AddSkill(config)
+  local skill = self:AddChild(ArkSkill(self.owner, config))
   skill:SetPosition(SKILL_OFFSET_X * #self.skills, 0, 0)
   table.insert(self.skills, skill)
+  if config.id then
+    self.skillsById[config.id] = skill
+  end
 end
 
-function ArkSkillUi:GetSkill(index)
-  return self.skills[index]
+function ArkSkillUi:GetSkillById(id)
+  return self.skillsById and self.skillsById[id] or nil
 end
 
-function ArkSkillUi:GetSkillConfig(index)
-  return self.skills[index].config
+-- UI Kill
+function ArkSkillUi:Kill()
+  local mgr = ThePlayer and ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager() or nil
+  if mgr and self.skillsById then
+    for id, _ in pairs(self.skillsById) do
+      mgr:Unregister('skill', id)
+    end
+  end
+  ArkSkillUi._base.Kill(self)
 end
 
 return ArkSkillUi
