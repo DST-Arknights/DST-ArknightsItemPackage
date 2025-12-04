@@ -1,11 +1,8 @@
 GLOBAL.setmetatable(env, {
   __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
-local common = require('ark_common')
-local utils = require('ark_utils')
-local TechTree = require('techtree')
 
-PrefabFiles = {"ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room'}
+PrefabFiles = {"net_state_classified", "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room' }
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -18,42 +15,32 @@ Assets = {
   Asset("ANIM", "anim/ark_training_room.zip"),
 }
 
-GLOBAL.ARK_GLOBAL = {}
-TUNING.ARK_SKILL = TUNING.ARK_SKILL or {}
+AddReplicableComponent("ark_currency")
+-- 加载日志
+-- 导出全局变量ArkLogger
+modimport('scripts/ark_logger')
+ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
 
-table.insert(TechTree.AVAILABLE_TECH, 'ARK_ITEM_TECH')
-table.insert(TechTree.AVAILABLE_TECH, 'ARK_TRAINING_TECH')
-
-TECH.NONE.ARK_ITEM_TECH = 0
-TECH.ARK_ITEM_ONE = { ARK_ITEM_TECH = 1}
-TECH.NONE.ARK_TRAINING_TECH = 0
-TECH.ARK_TRAINING_ONE = { ARK_TRAINING_TECH = 1}
-
-for k,v in pairs(TUNING.PROTOTYPER_TREES) do
-  v.ARK_ITEM_TECH = 0
-  v.ARK_TRAINING_TECH = 0
-end
-
-TUNING.PROTOTYPER_TREES.ARK_WORKSHOP_ONE = TechTree.Create({
-  ARK_ITEM_TECH = 1,
-})
-TUNING.PROTOTYPER_TREES.ARK_TRAINING_ROOM_ONE = TechTree.Create({
-  ARK_TRAINING_TECH = 1,
-})
-
-for i, v in pairs(AllRecipes) do
-	v.level.ARK_ITEM_TECH = v.level.ARK_ITEM_TECH or 0
-  v.level.ARK_TRAINING_TECH = v.level.ARK_TRAINING_TECH or 0
-end
-
+modimport('scripts/modmain/net_state')
+-- 加载语言
+-- 导出全局变量MergePOFile
+modimport('scripts/modmain/ark_i18n')
+-- 加载中文语言包
+MergePOFile('languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S), true)
+-- 加载字体
+modimport('scripts/modmain/ark_fonts')
 -- 初始化配置
 modimport('scripts/modmain/ark_config')
-modimport('scripts/modmain/ark_i18n')
-GLOBAL.ARK_GLOBAL.LoadPOFile('scripts/languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S))
+-- 科技
+modimport('scripts/modmain/ark_tech')
+-- 货币
 modimport('scripts/modmain/ark_currency')
+-- 物品
 modimport('scripts/modmain/ark_item')
+-- 背包
 modimport('scripts/modmain/ark_item_container')
+-- 技能
+-- 导出全局变量AddSkillLevelUpRecipes
 modimport('scripts/modmain/ark_skill')
+-- 经验
 modimport('scripts/modmain/ark_exp')
-
-AddReplicableComponent("ark_currency")

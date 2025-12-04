@@ -15,79 +15,86 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.config = config
 
   self.id = config.id -- 服务端通信改为按 id
-  self.size = {128, 128}
+  self.iconSize = {128, 128}
+  self.width = self.iconSize[1]
+  self.height = self.iconSize[2]
 
-  local skill = self:AddChild(Image(config.atlas, config.image))
+  local skillIcon = self:AddChild(Widget("skillIcon"))
+  skillIcon:SetPosition(0, 0, 0)
+  self.skillIcon = skillIcon
+
+  local skill = skillIcon:AddChild(Image(config.atlas, config.image))
   self.skill = skill
-  skill:SetSize(self.size)
+  skill:SetSize(self.iconSize)
 
-  local manualActivationShadow = self:AddChild(Image("images/ui.xml", "black.tex"))
+  local manualActivationShadow = skillIcon:AddChild(Image("images/ui.xml", "black.tex"))
   self.manualActivationShadow = manualActivationShadow
   -- 设置底部对齐
-  manualActivationShadow:SetPosition(0, -self.size[2] / 2, 0)
+  manualActivationShadow:SetPosition(0, -self.iconSize[2] / 2, 0)
   manualActivationShadow:SetVRegPoint(ANCHOR_BOTTOM)
-  manualActivationShadow:SetSize(self.size)
+  manualActivationShadow:SetSize(self.iconSize)
   -- 设置黑色半透明
   manualActivationShadow:SetTint(1, 1, 1, 0.6)
 
-  local chargeShadow = self:AddChild(Image("images/ui.xml", "white.tex"))
+  local chargeShadow = skillIcon:AddChild(Image("images/ui.xml", "white.tex"))
   self.chargeShadow = chargeShadow
-  chargeShadow:SetPosition(0, -self.size[2] / 2, 0)
+  chargeShadow:SetPosition(0, -self.iconSize[2] / 2, 0)
   chargeShadow:SetVRegPoint(ANCHOR_BOTTOM)
-  chargeShadow:SetSize(self.size)
+  chargeShadow:SetSize(self.iconSize)
   -- 设置绿色半透明
   chargeShadow:SetTint(0, 1, 0, 0.4)
 
-  local buffShadow = self:AddChild(Image("images/ui.xml", "white.tex"))
+  local buffShadow = skillIcon:AddChild(Image("images/ui.xml", "white.tex"))
   self.buffShadow = buffShadow
-  buffShadow:SetPosition(0, -self.size[2] / 2, 0)
+  buffShadow:SetPosition(0, -self.iconSize[2] / 2, 0)
   buffShadow:SetVRegPoint(ANCHOR_BOTTOM)
-  buffShadow:SetSize(self.size)
+  buffShadow:SetSize(self.iconSize)
   -- 设置橘黄色半透明
   buffShadow:SetTint(1, 0.5, 0, 0.3)
 
-  local stop = self:AddChild(Image("images/ark_skill.xml", "stop.tex"))
+  local stop = skillIcon:AddChild(Image("images/ark_skill.xml", "stop.tex"))
   self.stop = stop
-  stop:SetSize(self.size)
+  stop:SetSize(self.iconSize)
 
-  local lock = self:AddChild(Image("images/ark_skill.xml", "lock.tex"))
+  local lock = skillIcon:AddChild(Image("images/ark_skill.xml", "lock.tex"))
   self.lock = lock
-  lock:SetSize(self.size)
+  lock:SetSize(self.iconSize)
 
-  local autoActivation = self:AddChild(Image("images/ark_skill.xml", "auto_activation.tex"))
+  local autoActivation = skillIcon:AddChild(Image("images/ark_skill.xml", "auto_activation.tex"))
   self.autoActivation = autoActivation
   autoActivation:Hide()
 
   -- 闪烁遮罩 - 用于技能充能完成提醒
-  local blinkMask = self:AddChild(Image("images/ui.xml", "white.tex"))
+  local blinkMask = skillIcon:AddChild(Image("images/ui.xml", "white.tex"))
   self.blinkMask = blinkMask
-  blinkMask:SetSize(self.size)
+  blinkMask:SetSize(self.iconSize)
   blinkMask:SetTint(1, 1, 1, 0)  -- 初始完全透明
   blinkMask:Hide()  -- 默认隐藏
 
-  local frame = self:AddChild(Image("images/ark_skill.xml", "frame.tex"))
-  frame:SetSize(self.size)
+  local frame = skillIcon:AddChild(Image("images/ark_skill.xml", "frame.tex"))
+  frame:SetSize(self.iconSize)
 
   local status = self:AddChild(Widget("ark_skill_status"))
-  status:SetPosition(0, -self.size[2] / 2 - 20, 0)
+  status:SetPosition(0, -self.iconSize[2] / 2 - 20, 0)
   local statusImg = status:AddChild(Image("images/ark_skill.xml", "sprite_skill_ready.tex"))
   self.statusImg = statusImg
   statusImg:SetPosition(0, -12, 0)
-  local statusText = status:AddChild(Text(FALLBACK_FONT_OUTLINE, 32))
+  local _, statusImgHeight = statusImg:GetSize()
+  self.height = self.height + statusImgHeight / 2 + 12
+  local statusText = status:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 32))
   self.statusText = statusText
   statusText:SetPosition(10, 0, 0)
-  statusText:SetFont(CODEFONT)
 
   -- 加一个文本框, 用来展示激活充能
   local activationChargeWidget = self:AddChild(Widget("activationChargeWidget"))
   self.activationStacksWidget = activationChargeWidget
   -- 放左上角
-  activationChargeWidget:SetPosition(-self.size[1] / 2, self.size[2] / 2, 0)
+  activationChargeWidget:SetPosition(-self.iconSize[1] / 2, self.iconSize[2] / 2, 0)
   -- 加一个圆黑透明背景
   local activationChargeBg = activationChargeWidget:AddChild(Image("images/ui.xml", "black.tex"))
   activationChargeBg:SetSize(40, 40)
   activationChargeBg:SetTint(0, 0, 0, 0.8)
-  local activationChargeText = activationChargeWidget:AddChild(Text(FALLBACK_FONT_OUTLINE, 32))
+  local activationChargeText = activationChargeWidget:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 32))
   self.activationStacksText = activationChargeText
 
   self.levelConfig = self.config.levels[1]
@@ -100,9 +107,35 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.isBlinking = false
   self.previousActivationStacks = 0  -- 用于检测充能状态变化
 
+  -- skillDesc 延迟移除相关变量
+  self.skillDescHideTimer = nil
+  self.skillDescHideDelay = 0.1  -- 0.3秒延迟
+
   self.owner:StartUpdatingComponent(self)
   self.initComplete = false
+  self:RegisterHotKey()
 end)
+
+function ArkSkill:GetSize()
+  return self.width, self.height
+end
+
+function ArkSkill:RegisterHotKey()
+  local mgr = ThePlayer and ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager() or nil
+  if mgr and self.id then
+    mgr:Register('skill', self.id, function()
+      self:TryActivateSkill()
+    end, self.config.hotKey)
+  end
+end
+
+function ArkSkill:Kill()
+  local mgr = ThePlayer and ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager() or nil
+  if mgr and self.id then
+    mgr:Unregister('skill', self.id)
+  end
+  ArkSkill._base.Kill(self)
+end
 
 local function CaseShadowScale(scale)
   local paddingScale = 0.08
@@ -222,7 +255,6 @@ function ArkSkill:UpdateBlink(dt)
 end
 
 function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bullet, activationStacks)
-  print("[ark_skill]", "id=" .. self.id .. ", status=" .. status .. ", level=" .. level .. ", energyProgress=" .. energyProgress .. ", buffProgress=" .. buffProgress .. ", bullet=" .. bullet .. ", activationStacks=" .. activationStacks)
   self.status = status
   local wasInitComplete = self.initComplete
   self.initComplete = true
@@ -298,10 +330,8 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
   self:SetEnergyProgress(energyProgress)
   if self.config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
     and activationStacks < self.levelConfig.maxActivationStacks then
-    print("[UI SyncSkillStatus] 启动充能计时器。activationStacks=" .. activationStacks .. ", maxActivationStacks=" .. self.levelConfig.maxActivationStacks .. ", energyProgress=" .. energyProgress)
     self:StartTimeEnergy(energyProgress)
   else
-    print("[UI SyncSkillStatus] 停止充能计时器。status=" .. status .. ", activationStacks=" .. activationStacks .. ", maxActivationStacks=" .. self.levelConfig.maxActivationStacks)
     self:StopTimeEnergy()
   end
   if status == CONSTANTS.SKILL_STATUS.LOCKED then
@@ -336,6 +366,19 @@ local function OnUpdate(self, dt)
   end
   -- 更新闪烁效果
   self:UpdateBlink(dt)
+
+  -- 处理 skillDesc 延迟移除
+  if self.skillDescHideTimer then
+    self.skillDescHideTimer = self.skillDescHideTimer - dt
+    if self.skillDescHideTimer <= 0 then
+      self.skillDescHideTimer = nil
+      if self.skillDesc then
+        self.skillDesc:Kill()
+        self.skillDesc = nil
+      end
+    end
+  end
+
   -- buff期间技能停止充能
   local leftBuffTime = UpdateTimeBuff(self, dt)
   if leftBuffTime == nil then
@@ -356,6 +399,8 @@ function ArkSkill:OnGainFocus()
     return
   end
   ArkSkill._base.OnGainFocus(self)
+  -- 取消延迟移除计时器
+  self.skillDescHideTimer = nil
   if not self.skillDesc then
     local descConfig = {
       locked = self.status == CONSTANTS.SKILL_STATUS.LOCKED,
@@ -372,7 +417,7 @@ function ArkSkill:OnGainFocus()
     self.skillDesc = self:AddChild(ArkSkillDesc(self.owner, descConfig, self.id))
     self.skillDesc:SetScale(1, 1, 1)
     local size = self.skillDesc:GetSize()
-    self.skillDesc:SetPosition(-self.size[1] / 2 + size.x / 2, self.size[2] / 2 + size.y + 10, 0)
+    self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
   end
   self.skillDesc:Show()
 end
@@ -380,8 +425,8 @@ end
 function ArkSkill:OnLoseFocus()
   ArkSkill._base.OnLoseFocus(self)
   if self.skillDesc then
-    self.skillDesc:Kill()
-    self.skillDesc = nil
+    -- 启动延迟移除计时器，而不是立即移除
+    self.skillDescHideTimer = self.skillDescHideDelay
   end
 end
 
@@ -394,7 +439,12 @@ function ArkSkill:TryActivateSkill()
     SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), self.id)
     return
   end
-  SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), self.id, TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL))
+  -- 获取鼠标指向的目标, 以及鼠标指向的坐标
+  local target = TheInput:GetWorldEntityUnderMouse()
+  local targetPos = TheInput:GetWorldPosition()
+  local serializedPos = string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z)
+  local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
+  SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), self.id, target, serializedPos, force)
 end
 
 function ArkSkill:OnControl(control, down)

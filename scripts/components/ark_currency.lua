@@ -18,6 +18,7 @@ end
 function ArkCurrency:OnRemoveFromEntity()
   TheWorld.components.ark_currency_data:SetPlayerCurrency(self.inst.userid, self.inst.replica.ark_currency:GetArkCurrency())
 end
+
 function ArkCurrency:GetArkCurrency()
   return self.inst.replica.ark_currency:GetArkCurrency()
 end
@@ -97,4 +98,5 @@ end
 function ArkCurrency:AddArkHggShd(value)
   self.inst.replica.ark_currency:AddArkHggShd(value)
 end
+
 return ArkCurrency

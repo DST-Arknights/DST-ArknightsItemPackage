@@ -13,20 +13,33 @@ local ArkSkill = Class(function(self, inst)
 end)
 
 local function defaultSkill(skill)
-  skill.id = common.normalizeSkillId(skill.id)
-  skill.energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO
-  skill.activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL
-  -- 能自动触发的技能关闭快捷键
-  if skill.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
-    skill.hotKey = nil
+  local function defaultLevelConfigs(levelConfigs)
+    local copyLevelConfigs = {}
+    for _, levelConfig in ipairs(levelConfigs) do
+      local copyLevelConfig = {
+        energy = levelConfig.energy or 1,
+        buffTime = levelConfig.buffTime or 0.3,
+        bullet = levelConfig.bullet or 10,
+        maxActivationStacks = levelConfig.maxActivationStacks or 1,
+        desc = levelConfig.desc,
+        config = levelConfig.config or {},
+      }
+      table.insert(copyLevelConfigs, copyLevelConfig)
+    end
+    return copyLevelConfigs
   end
-  for _, levelConfig in ipairs(skill.levels) do
-    levelConfig.energy = levelConfig.energy or 1
-    levelConfig.buffTime = levelConfig.buffTime or 0.3
-    levelConfig.bullet = levelConfig.bullet or 10
-    levelConfig.maxActivationStacks = levelConfig.maxActivationStacks or 1
-  end
-  return skill
+  local copySkill = {
+    id = common.normalizeSkillId(skill.id),
+    atlas = skill.atlas,
+    image = skill.image,
+    name = skill.name,
+    lockedDesc = skill.lockedDesc,
+    energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
+    activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
+    hotKey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotKey or nil,
+    levels = defaultLevelConfigs(skill.levels),
+  }
+  return copySkill
 end
 
 
@@ -48,6 +61,8 @@ local SingleSkill = Class(function(self, manager, config)
     force = false,
   }
   self.levelConfig = config.levels[1]
+  -- tag
+  self:UpdateLevelTags()
   -- 定时器控制（按帧推进）
   self.timeEnergy = false
   self.timeBuff = false
@@ -55,18 +70,79 @@ local SingleSkill = Class(function(self, manager, config)
   self._onLocked = {}
   self._onUnlocked = {}
   self._onEnergyRecovering = {}
-  self._onEnergyReady = {}
-  self._onActive = {}
+  self._onActivateReady = {}
+  self._onActivate = {}
   self._onDeactivate = {}
-  self._onActiveCancel = {}
   self._onBulletCut = {}
   self._onLevelChange = {}
-  self._onStatusChange = {}
+  self._activateTest = nil
 end)
 
 function SingleSkill:IsLoading()
   return self.manager and self.manager._loading
 end
+
+-- 事件工具方法
+local function _addCallback(list, fn)
+  if fn == nil then return end
+  for _, cb in ipairs(list) do
+    if cb == fn then
+      return
+    end
+  end
+  table.insert(list, fn)
+end
+
+local function _removeCallback(list, fn)
+  if fn == nil then return end
+  for i, cb in ipairs(list) do
+    if cb == fn then
+      table.remove(list, i)
+      return
+    end
+  end
+end
+
+function SingleSkill:_Emit(list, eventName, payload)
+  if self:IsLoading() then return end
+  if payload == nil then payload = {} end
+  payload.skillId = payload.skillId or self.id
+  payload.level = payload.level or self.data.level
+  payload.status = payload.status or self.data.status
+  for _, cb in ipairs(list or {}) do
+    cb(self.inst, payload)
+  end
+  if self.inst and self.inst.PushEvent then
+    self.inst:PushEvent(eventName, payload)
+  end
+end
+
+-- 事件注册/反注册接口（相同函数不会重复添加）
+function SingleSkill:SetOnLocked(fn)       _addCallback(self._onLocked, fn) end
+function SingleSkill:UnsetOnLocked(fn)     _removeCallback(self._onLocked, fn) end
+
+function SingleSkill:SetOnUnlocked(fn)     _addCallback(self._onUnlocked, fn) end
+function SingleSkill:UnsetOnUnlocked(fn)   _removeCallback(self._onUnlocked, fn) end
+
+function SingleSkill:SetOnEnergyRecovering(fn)   _addCallback(self._onEnergyRecovering, fn) end
+function SingleSkill:UnsetOnEnergyRecovering(fn) _removeCallback(self._onEnergyRecovering, fn) end
+
+function SingleSkill:SetOnActivateReady(fn)   _addCallback(self._onActivateReady, fn) end
+function SingleSkill:UnsetOnActivateReady(fn) _removeCallback(self._onActivateReady, fn) end
+
+function SingleSkill:SetOnActive(fn)       _addCallback(self._onActivate, fn) end
+function SingleSkill:UnsetOnActive(fn)     _removeCallback(self._onActivate, fn) end
+
+function SingleSkill:SetOnDeactivate(fn)   _addCallback(self._onDeactivate, fn) end
+function SingleSkill:UnsetOnDeactivate(fn) _removeCallback(self._onDeactivate, fn) end
+
+function SingleSkill:SetOnBulletCut(fn)    _addCallback(self._onBulletCut, fn) end
+function SingleSkill:UnsetOnBulletCut(fn)  _removeCallback(self._onBulletCut, fn) end
+
+function SingleSkill:SetOnLevelChange(fn)   _addCallback(self._onLevelChange, fn) end
+function SingleSkill:UnsetOnLevelChange(fn) _removeCallback(self._onLevelChange, fn) end
+
+function SingleSkill:SetActivateTest(fn) self._activateTest = fn end
 
 function SingleSkill:UpdateLevelTags()
   local data = self.data
@@ -93,21 +169,40 @@ function SingleSkill:StopTimeBuff()
   self.timeBuff = false
 end
 
-function SingleSkill:SetEnergyRecovering()
+function SingleSkill:SetEnergyRecovering(force)
   local data = self.data
   local cfg = self.config
   local lvl = self.levelConfig
+  local prevStatus = data.status
+  local cancelled = force == true
+
   data.status = CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
   if cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
     if data.activationStacks >= lvl.maxActivationStacks then
       self:StopTimeEnergy()
-      data.energyProgress = 0    else
-      self:StartTimeEnergy()    end
+      data.energyProgress = 0
+    else
+      self:StartTimeEnergy()
+    end
   else
     self:StopTimeEnergy()
   end
   self:UpdateLevelTags()
   self.manager:SyncSkillStatus(self.id)
+
+  -- 从 BUFF/BULLET 状态回到充能，视为一次“结束激活”
+  if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
+    self:_Emit(self._onDeactivate, "ark_skill_deactivate", {
+      fromStatus = prevStatus,
+      cancelled = cancelled,
+    })
+  end
+
+  -- 进入充能状态事件
+  self:_Emit(self._onEnergyRecovering, "ark_skill_energy_recovering", {
+    fromStatus = prevStatus,
+    cancelled = cancelled,
+  })
 end
 
 function SingleSkill:SetBuffing()
@@ -123,38 +218,75 @@ function SingleSkill:SetBulleting()
   self.manager:SyncSkillStatus(self.id)
 end
 
+function SingleSkill:IsActivating()
+  return self.data.status == CONSTANTS.SKILL_STATUS.BUFFING or self.data.status == CONSTANTS.SKILL_STATUS.BULLETING
+end
+
 function SingleSkill:Lock()
   local data = self.data
+  local prevStatus = data.status
   data.status = CONSTANTS.SKILL_STATUS.LOCKED
-  self:StopTimeEnergy(); self:StopTimeBuff()
-  data.energyProgress = 0; data.buffProgress = 0; data.bullet = 0; data.activationStacks = 0; data.force = false
+  self:StopTimeEnergy()
+  self:StopTimeBuff()
+  data.energyProgress = 0
+  data.buffProgress = 0
+  data.bullet = 0
+  data.activationStacks = 0
+  data.force = false
   self:UpdateLevelTags()
   self.manager:SyncSkillStatus(self.id)
+  self:_Emit(self._onLocked, "ark_skill_locked", {
+    fromStatus = prevStatus,
+  })
 end
 
 function SingleSkill:Unlock()
-  if self.data.status ~= CONSTANTS.SKILL_STATUS.LOCKED and self.data.status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then return end
-  self:SetEnergyRecovering()
+  local data = self.data
+  if data.status ~= CONSTANTS.SKILL_STATUS.LOCKED and data.status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+    return
+  end
+  local prevStatus = data.status
+  self:SetEnergyRecovering(false)
+  self:_Emit(self._onUnlocked, "ark_skill_unlocked", {
+    fromStatus = prevStatus,
+  })
 end
 
 function SingleSkill:SetLevel(level)
   local levelConfig = self.config.levels[level]
   if not levelConfig then return end
+  local oldLevel = self.data.level or 1
   self.data.level = level
   self.levelConfig = levelConfig
   self:UpdateLevelTags()
   self.manager:SyncSkillStatus(self.id)
+  if oldLevel ~= level then
+    self:_Emit(self._onLevelChange, "ark_skill_level_change", {
+      oldLevel = oldLevel,
+      newLevel = level,
+    })
+  end
+end
+
+function SingleSkill:GetLevelConfig()
+  return self.levelConfig.config
 end
 
 function SingleSkill:AddEnergyProgress(value)
   local data = self.data
   if data.status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then return 0 end
+  if data.activationStacks >= self.levelConfig.maxActivationStacks then return 0 end
   local lvl = self.levelConfig
   data.energyProgress = data.energyProgress + value
   local changed = false
   while data.energyProgress >= lvl.energy do
-    data.energyProgress = data.energyProgress - lvl.energy    data.activationStacks = data.activationStacks + 1
+    data.energyProgress = data.energyProgress - lvl.energy
+    data.activationStacks = data.activationStacks + 1
     changed = true
+    -- 每次可激活次数 +1 时触发
+    self:_Emit(self._onActivateReady, "ark_skill_activate_ready", {
+      activationStacks = data.activationStacks,
+    })
     if data.activationStacks >= lvl.maxActivationStacks then
       self:StopTimeEnergy()
       data.energyProgress = 0
@@ -183,10 +315,19 @@ function SingleSkill:AddBuffProgress(value)
   return leftBuff
 end
 
-function SingleSkill:Activate(force)
+function SingleSkill:CanActivate(target, targetPos, force)
   local data = self.data
   if data.status == CONSTANTS.SKILL_STATUS.LOCKED then return false end
   if data.activationStacks <= 0 then return false end
+  if self._activateTest then
+    return self:_activateTest(target, targetPos, force)
+  end
+  return true
+end
+
+function SingleSkill:Activate(target, targetPos, force)
+  if not self:CanActivate(target, targetPos, force) then return false end
+  local data = self.data
   data.activationStacks = data.activationStacks - 1
   if self.config.bullet then
     data.bullet = self.levelConfig.bullet
@@ -199,22 +340,37 @@ function SingleSkill:Activate(force)
   else
     self:SetBuffing()
   end
+  self:_Emit(self._onActivate, "ark_skill_activated", {
+    force = force,
+    target = target,
+    targetPos = targetPos,
+  })
   return true
+end
+
+function SingleSkill:TryActivate(...)
+  return self:Activate(...)
 end
 
 function SingleSkill:Cancel()
   self.data.force = false
-  self:SetEnergyRecovering()
+  self:SetEnergyRecovering(true)
 end
 
 function SingleSkill:CutBullet(value)
   if value == nil then value = 1 end
   local data = self.data
   data.bullet = data.bullet - value
-  if data.bullet < 0 then data.bullet = 0 end
+  if data.bullet < 0 then
+    data.bullet = 0
+  end
   self.manager:SyncSkillStatus(self.id)
+  self:_Emit(self._onBulletCut, "ark_skill_bullet_cut", {
+    cut = value,
+    bullet = data.bullet,
+  })
   if data.bullet == 0 then
-    self:SetEnergyRecovering()
+    self:SetEnergyRecovering(false)
   end
 end
 
@@ -259,10 +415,6 @@ function SingleSkill:OnLoad(saved)
   end
   self:UpdateLevelTags()
 end
-
-
-
-
 
 function ArkSkill:RegisterSkill(config)
   assert(config and config.id, "RegisterSkill requires config.id")

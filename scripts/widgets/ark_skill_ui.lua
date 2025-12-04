@@ -1,40 +1,26 @@
 local Widget = require "widgets/widget"
 local ArkSkill = require "widgets/ark_skill"
+local ArkCharacterLevel = require "widgets/ark_character_level"
+local ArkSkills = require "widgets/ark_skills"
+local ArkExpBar = require "widgets/ark_exp_bar"
 
-local SKILL_OFFSET_X = 220
-
-local ArkSkillUi = Class(Widget, function(self, owner, config)
+local ArkSkillUi = Class(Widget, function(self, owner, skillsConfig)
   Widget._ctor(self, "ArkSkillUi")
   self.owner = owner
-  self.skills = {}
-  self.skillsById = {}
-  for _, cfg in ipairs(config.skills) do
-    self:AddSkill(cfg)
-  end
+
+  local skills = self:AddChild(ArkSkills(self.owner, skillsConfig))
+  self.skills = skills
+  self.skills:SetPosition(140, 20, 0)
+
+  local characterLevel = self:AddChild(ArkCharacterLevel(self.owner))
+  characterLevel:SetPosition(0, -25, 0)
+  self.characterLevel = characterLevel
+
+  local expBar = self:AddChild(ArkExpBar(self.owner))
+  expBar:SetPosition(80, -110, 0)
+  local skillsSizeX = skills:GetSize()
+  expBar:SetSize(skillsSizeX)
+  self.expBar = expBar
 end)
-
-function ArkSkillUi:AddSkill(config)
-  local skill = self:AddChild(ArkSkill(self.owner, config))
-  skill:SetPosition(SKILL_OFFSET_X * #self.skills, 0, 0)
-  table.insert(self.skills, skill)
-  if config.id then
-    self.skillsById[config.id] = skill
-  end
-end
-
-function ArkSkillUi:GetSkillById(id)
-  return self.skillsById and self.skillsById[id] or nil
-end
-
--- UI Kill
-function ArkSkillUi:Kill()
-  local mgr = ThePlayer and ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager() or nil
-  if mgr and self.skillsById then
-    for id, _ in pairs(self.skillsById) do
-      mgr:Unregister('skill', id)
-    end
-  end
-  ArkSkillUi._base.Kill(self)
-end
 
 return ArkSkillUi

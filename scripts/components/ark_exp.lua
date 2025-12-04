@@ -65,6 +65,9 @@ function ArkExp:EliteUp()
 end
 
 function ArkExp:SyncExpStatus()
+  if (self.inst.userid == '') then
+    return
+  end
   SendModRPCToClient(GetClientModRPC("arkExp", "SyncExpStatus"), self.inst.userid, self.rarity, self.data.potential, self.data.elite, self.data.level, self.data.leftExp)
 end
 

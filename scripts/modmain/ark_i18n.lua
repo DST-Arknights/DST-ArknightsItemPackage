@@ -1,9 +1,8 @@
-
 local utils = require('ark_utils')
 
-function GLOBAL.ARK_GLOBAL.LoadPOFile(fname, lang)
+function GLOBAL.MergePOFile(fname, langCode, default)
   local localeCode = LOC.GetLocaleCode();
-  if lang ~= localeCode then
+  if langCode ~= localeCode and not default then
     return
   end
   if IsXB1() then
@@ -13,11 +12,11 @@ function GLOBAL.ARK_GLOBAL.LoadPOFile(fname, lang)
       fname = 'data/' .. fname
     end
   end
-  local loadedLanguages = LanguageTranslator.languages[lang]
-  LanguageTranslator:LoadPOFile(fname, lang)
-  local newLoadedLanguages = LanguageTranslator.languages[lang]
+  local loadedLanguages = LanguageTranslator.languages[langCode]
+  LanguageTranslator:LoadPOFile(fname, langCode)
+  local newLoadedLanguages = LanguageTranslator.languages[langCode]
   utils.mergeTable(loadedLanguages, newLoadedLanguages)
-  LanguageTranslator.languages[lang] = loadedLanguages
+  LanguageTranslator.languages[langCode] = loadedLanguages
   -- Recursively merge translation keys into STRINGS
   for key, value in pairs(newLoadedLanguages) do
     if type(key) == "string" and string.sub(key, 1, 8) == "STRINGS." then

@@ -33,7 +33,7 @@ AddClientModRPCHandler("arkSkill", "SyncSkillStatus", function (skillId, ...)
   if not arkSkillUi then
     return
   end
-  local skillUi = arkSkillUi.GetSkillById and arkSkillUi:GetSkillById(skillId) or nil
+  local skillUi = arkSkillUi.skills.GetSkillById and arkSkillUi.skills:GetSkillById(skillId) or nil
   if not skillUi then
     return
   end
@@ -74,7 +74,7 @@ AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
   local config = json.decode(config)
   local controls = ThePlayer.HUD.controls
   local ArkSkillUi = require "widgets/ark_skill_ui"
-  controls.arkSkillUi = controls.inv.hand_inv:AddChild(ArkSkillUi(ThePlayer, config))
+  controls.arkSkillUi = controls.inv.hand_inv:AddChild(ArkSkillUi(ThePlayer, config.skills))
   controls.arkSkillUi:SetPosition(config.position or Vector3(-840, 80, 0))
   controls.arkSkillUi:SetScale(.5, .5, .5)
   -- 安装统一热键管理器（纯机制，不关心技能）
@@ -90,15 +90,6 @@ AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
       arkSkillLevelUpImages[resolveAtlas] = {}
     end
     arkSkillLevelUpImages[resolveAtlas][skill.image] = true
-  end
-
-  -- 注册技能热键（UI 安装时）
-  for _, skillCfg in ipairs(config.skills) do
-    local id = skillCfg.id
-    hkMgr:Register('skill', id, function()
-      local s = controls.arkSkillUi and controls.arkSkillUi:GetSkillById(id)
-      if s then s:TryActivateSkill() end
-    end, skillCfg.hotKey)
   end
 end)
 
@@ -140,7 +131,7 @@ end)
 
 -- 服务端
 
-function GLOBAL.ARK_GLOBAL.AddSkillLevelUpRecipes(skills)
+function GLOBAL.AddSkillLevelUpRecipes(skills)
   for i, skill in ipairs(skills) do
     if i > CONSTANTS.MAX_SKILL_LIMIT then
       break

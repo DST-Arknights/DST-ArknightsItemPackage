@@ -70,7 +70,12 @@ local function componentEdible(inst, args)
   elseif args.oneatenbuffs then
     for _, buff in ipairs(args.oneatenbuffs) do
       inst.components.edible:SetOnEatenFn(function(inst, eater)
-        eater.AddDebuff(buff)
+        if type(buff) == 'string' then
+          eater:AddDebuff(buff, buff)
+        elseif type(buff) == 'table' then
+          eater:AddDebuff(buff.name, buff.prefab, buff.data, buff.skin_test, buff.pref_buff_fn)
+          return
+        end
       end)
     end
   end
@@ -226,7 +231,6 @@ local function addItemTemplate(item)
   if not item.template then return end
   for k, args in pairs(item.template) do
     if type(template[k]) == 'function' then
-      print('item '.. item.prefab .. ' add template ' .. k)
       AddPrefabPostInit(item.prefab, function(inst)
         template[k](inst, args)
       end)
