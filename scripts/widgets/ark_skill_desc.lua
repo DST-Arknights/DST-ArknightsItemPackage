@@ -90,20 +90,20 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     local tagEnergyNumIcon = tagEnergyNum:AddChild(Image("images/ark_skill.xml", "skill_desc_icon_energy.tex"))
     tagEnergyNumIcon:SetSize(54, 54)
     tagEnergyNumIcon:SetPosition(-40, 0, 0)
-    local tagEnergyNumText = tagEnergyNum:AddChild(Text(FALLBACK_FONT_FULL, 70, tostring(descConfig.energy)))
+    local tagEnergyNumText = tagEnergyNum:AddChild(Text(FALLBACK_FONT_FULL, 70, tostring(descConfig.activationEnergy)))
     tagEnergyNumText:SetPosition(20, 0, 0)
     local tagEnergyNumSizeX, tagEnergyNumSizeY = tagEnergyNumBg:GetSize()
     tagEnergyNum:SetPosition(tagLeftOffset + tagEnergyNumSizeX / 2, topOffset, 0)
     tagLeftOffset = tagLeftOffset + tagEnergyNumSizeX + TAG_PADDING
 
-    if descConfig.buffTime then
+    if descConfig.buffDuration then
       local tagBuff = self:AddChild(Widget("tagBuff"))
       local tagBuffBg = tagBuff:AddChild(Image("images/ark_skill.xml", "skill_desc_bg6.tex"))
       local tagBuffIcon = tagBuff:AddChild(Image("images/ark_skill.xml", "skill_desc_icon_clock.tex"))
       tagBuffIcon:SetSize(46, 46)
       tagBuffIcon:SetPosition(-60, 0, 0)
       local tagBuffText =
-      tagBuff:AddChild(Text(FALLBACK_FONT_FULL, 70, tostring(descConfig.buffTime) .. STRINGS.UI.ARK_SKILL.SECONDS))
+      tagBuff:AddChild(Text(FALLBACK_FONT_FULL, 70, tostring(descConfig.buffDuration) .. STRINGS.UI.ARK_SKILL.SECONDS))
       tagBuffText:SetPosition(30, 0, 0)
       local tagBuffSizeX, tagBuffSizeY = tagBuffBg:GetSize()
       tagBuff:SetPosition(tagLeftOffset + tagBuffSizeX / 2, topOffset, 0)
@@ -138,24 +138,31 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     hotKeyText:SetPosition(self.size[1] / 2 - 440, 0, 0)
     self:RefreshHotKey()
     local hotKeyButton = foot:AddChild(TextButton("hotkeySetting"))
+    self.hotKeyButton = hotKeyButton
     hotKeyButton:SetTextSize(80)
     hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.SETTING .. "]")
     hotKeyButton:SetFont(FALLBACK_FONT_FULL)
-    self.hotKeyButton = hotKeyButton
     hotKeyButton:SetPosition(self.size[1] / 2 - 240, 0, 0)
     hotKeyButton:SetOnClick(function()
       self:SettingHotKey()
     end)
+    local cancelHotkeyButton = foot:AddChild(TextButton("cancelHotkey"))
+    self.cancelHotkeyButton = cancelHotkeyButton
+    cancelHotkeyButton:SetTextSize(80)
+    cancelHotkeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.CANCEL .. "]")
+    cancelHotkeyButton:SetFont(FALLBACK_FONT_FULL)
+    cancelHotkeyButton:SetPosition(self.size[1] / 2 - 240, 0, 0)
+    cancelHotkeyButton:SetOnClick(function()
+      self:CancelSettingHotKey()
+    end)
+    cancelHotkeyButton:Hide()
     local hotKeyResetButton = foot:AddChild(TextButton("hotkeyReset"))
     hotKeyResetButton:SetTextSize(80)
     hotKeyResetButton:SetText("[" .. STRINGS.UI.ARK_SKILL.RESET .. "]")
     hotKeyResetButton:SetFont(FALLBACK_FONT_FULL)
     hotKeyResetButton:SetPosition(self.size[1] / 2 - 110, 0, 0)
     hotKeyResetButton:SetOnClick(function()
-      ThePlayer:SaveArkHotKey('skill', self.id, nil)
-      ThePlayer:RefreshArkHotKey()
-      local hotKey = ThePlayer:GetArkHotKey('skill', self.id)
-      self.hotKey = hotKey
+      ThePlayer.replica.ark_skill:ResetHotkey(self.id)
       self:RefreshHotKey()
     end)
   end
@@ -167,41 +174,40 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
 end)
 
 function ArkSkillDesc:RefreshHotKey()
+  local hotKey = ThePlayer.replica.ark_skill:GetHotkey(self.id)
   local hotKeyString = nil
-  if self.hotKey ~= nil then
-    hotKeyString = STRINGS.UI.CONTROLSSCREEN.INPUTS[1][self.hotKey]
+  if hotKey ~= nil then
+    hotKeyString = STRINGS.UI.CONTROLSSCREEN.INPUTS[1][hotKey]
   else
     hotKeyString = STRINGS.UI.ARK_SKILL.NONE
   end
   self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.HOT_KEY .. ": " .. hotKeyString)
 end
 
-function ArkSkillDesc:SettingHotKeyCallback(key, conflictId)
-  if conflictId and conflictId ~= self.id then
-    self:RefreshHotKey()
-    self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.HOT_KEY_CONFLICT)
-    return
-  end
-  self.hotKey = key
-  ThePlayer:SaveArkHotKey('skill', self.id, key)
-  self:RefreshHotKey()
-  self.hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.SETTING .. "]")
-  ThePlayer:RefreshArkHotKey()
-  ThePlayer.HUD._settingSkillHotKeyCallback = nil
-end
 
 function ArkSkillDesc:SettingHotKey()
-  if ThePlayer.HUD._settingSkillHotKeyCallback then
-    self:RefreshHotKey()
-    self.hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.SETTING .. "]")
-    ThePlayer.HUD._settingSkillHotKeyCallback = nil
-  else
-    self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY)
-    self.hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.CANCEL .. "]")
-    ThePlayer.HUD._settingSkillHotKeyCallback = function(key, conflictId)
-      self:SettingHotKeyCallback(key, conflictId)
+  self.cancelHotkeyButton:Show()
+  self.hotKeyButton:Hide()
+  self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY)
+  local function onKey(key, down)
+    if down then
+      -- 不检查冲突, 注册为新的按键
+      ThePlayer.replica.ark_skill:SetHotkey(self.id, key)
+      self:RefreshHotKey()
     end
   end
+  self._onKey = onKey
+  local mgr = GetHotKeyManager(ThePlayer)
+  mgr:AddTempListener(self._onKey)
+end
+
+function ArkSkillDesc:CancelSettingHotKey()
+  self.cancelHotkeyButton:Hide()
+  self.hotKeyButton:Show()
+  local mgr = GetHotKeyManager(ThePlayer)
+  mgr:RemoveTempListener(self._onKey)
+  self._onKey = nil
+  self:RefreshHotKey()
 end
 
 function ArkSkillDesc:GetSize()

@@ -1,7 +1,25 @@
 local utils = require("ark_utils")
 
+local function OnKilled(inst, data)
+  if not inst:HasTag("player") then
+    return
+  end
+  local target = data.victim
+  if not target then
+    return
+  end
+  if not inst.components.ark_currency then
+    return
+  end
+  -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的金币
+  local health = target.components.health.maxhealth
+  local gold = math.floor(health / 1)
+  inst.components.ark_currency:AddArkGold(gold)
+end
+
 local ArkCurrency = Class(function(self, inst)
   self.inst = inst
+  self.inst:ListenForEvent("killed", OnKilled)
 end)
 
 function ArkCurrency:OnSave()
@@ -97,6 +115,10 @@ end
 
 function ArkCurrency:AddArkHggShd(value)
   self.inst.replica.ark_currency:AddArkHggShd(value)
+end
+
+function ArkCurrency:OnRemoveFromEntity()
+  self.inst:RemoveEventCallback("killed", OnKilled)
 end
 
 return ArkCurrency

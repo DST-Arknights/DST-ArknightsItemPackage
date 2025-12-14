@@ -1,21 +1,24 @@
-local utils = require("ark_utils")
+local SafeCallArkExtendUI = GenSafeCall(function (inst)
+  return inst and inst.HUD and inst.HUD.controls and inst.HUD.controls.arkExtendUi or nil
+end)
 
-local function getVarName(currencyType) return '_currency_' .. currencyType end
-
+local SafeCallArkCurrencyUI = GenSafeCall(function (inst)
+  return SafeCallArkExtendUI(self.inst).currency
+end)
 local ArkCurrency = Class(function(self, inst)
   self.inst = inst
+  local stateDef = {}
   for _, currencyType in ipairs(TUNING.ARK_CURRENCY_TYPES) do
-    local varName = getVarName(currencyType)
-    local varNetName = 'ark_currency.' .. varName
-    local varDirtyName = 'ark_currency_dirty_' .. currencyType
-    self[varName] = net_int(inst.GUID, varNetName, varDirtyName)
-    if not TheWorld.ismastersim then
-      self.inst:ListenForEvent(varDirtyName, function()
-        if self.inst.HUD and self.inst.HUD.controls.arkCurrency then
-          self.inst.HUD.controls.arkCurrency:Refresh()
-        end
-      end)
-    end
+    stateDef[currencyType] = "int:classified"
+  end
+  self.state = NetState(self.inst, stateDef)
+  self.state:Attach(self.inst)
+  if not TheNet:IsDedicated() then
+    self.state:Watch(TUNING.ARK_CURRENCY_TYPES, function()
+      ArkLogger:Debug('ark_currency_replica Watch OnDirty')
+      SafeCallArkCurrencyUI(self.inst):Refresh()
+    end)
+    SafeCallArkExtendUI(self.inst):SetupCurrency()
   end
   if TheWorld.ismastersim then
     self.inst:DoTaskInTime(0, function()
@@ -30,8 +33,7 @@ end)
 function ArkCurrency:GetArkCurrency()
   local currency = {}
   for _, currencyType in ipairs(TUNING.ARK_CURRENCY_TYPES) do
-    local varName = getVarName(currencyType)
-    currency[currencyType] = self[varName]:value()
+    currency[currencyType] = self.state[currencyType]
   end
   return currency
 end
@@ -43,19 +45,19 @@ function ArkCurrency:SetArkCurrency(currency)
 end
 
 function ArkCurrency:GetArkCurrencyByType(currencyType)
-  local varName = getVarName(currencyType)
-  return self[varName]:value()
+  return self.state[currencyType]
 end
 
 function ArkCurrency:SetArkCurrencyByType(currencyType, value)
-  local varName = getVarName(currencyType)
-  self[varName]:set(value)
+  ArkLogger:Debug('SetArkCurrencyByType', currencyType, value)
+  self.state[currencyType] = value
   if TheWorld.ismastersim then
     TheWorld.components.ark_currency_data:SetPlayerCurrency(self.inst.userid, self:GetArkCurrency())
   end
 end
 
 function ArkCurrency:AddArkCurrencyByType(currencyType, value)
+  ArkLogger:Debug('AddArkCurrencyByType', currencyType, value)
   local old = self:GetArkCurrencyByType(currencyType)
   self:SetArkCurrencyByType(currencyType, old + value)
 end

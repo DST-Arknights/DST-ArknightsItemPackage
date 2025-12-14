@@ -15,13 +15,20 @@ Assets = {
   Asset("ANIM", "anim/ark_training_room.zip"),
 }
 
+AddReplicableComponent("ark_skill")
 AddReplicableComponent("ark_currency")
+AddReplicableComponent("ark_elite")
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
 ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
 
+-- 加载 NetState
 modimport('scripts/modmain/net_state')
+-- 加载安全调用
+modimport('scripts/modmain/safe_call')
+-- 加载热键管理器
+modimport('scripts/ark_hotkey')
 -- 加载语言
 -- 导出全局变量MergePOFile
 modimport('scripts/modmain/ark_i18n')
@@ -42,5 +49,7 @@ modimport('scripts/modmain/ark_item_container')
 -- 技能
 -- 导出全局变量AddSkillLevelUpRecipes
 modimport('scripts/modmain/ark_skill')
--- 经验
-modimport('scripts/modmain/ark_exp')
+-- 扩展ui
+modimport('scripts/modmain/ark_extend_ui')
+
+modimport('scripts/modmain/combat_extension')

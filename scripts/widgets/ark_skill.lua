@@ -15,7 +15,8 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.config = config
 
   self.id = config.id -- 服务端通信改为按 id
-  self.iconSize = {128, 128}
+  self.iconSize = {64, 64}
+  self.scale = self.iconSize[1] / 64
   self.width = self.iconSize[1]
   self.height = self.iconSize[2]
 
@@ -62,6 +63,7 @@ local ArkSkill = Class(Widget, function(self, owner, config)
 
   local autoActivation = skillIcon:AddChild(Image("images/ark_skill.xml", "auto_activation.tex"))
   self.autoActivation = autoActivation
+  self.autoActivation:SetScale(self.scale / 2)
   autoActivation:Hide()
 
   -- 闪烁遮罩 - 用于技能充能完成提醒
@@ -75,15 +77,17 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   frame:SetSize(self.iconSize)
 
   local status = self:AddChild(Widget("ark_skill_status"))
-  status:SetPosition(0, -self.iconSize[2] / 2 - 20, 0)
+  status:SetPosition(0, -self.iconSize[2] / 2 - 14, 0)
   local statusImg = status:AddChild(Image("images/ark_skill.xml", "sprite_skill_ready.tex"))
+  local originalStatusWidth, originalStatusHeight = statusImg:GetSize()
+  self.originalStatusWidth = originalStatusWidth
+  self.originalStatusHeight = originalStatusHeight
   self.statusImg = statusImg
-  statusImg:SetPosition(0, -12, 0)
-  local _, statusImgHeight = statusImg:GetSize()
-  self.height = self.height + statusImgHeight / 2 + 12
-  local statusText = status:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 32))
+  self:RecurrentStatusImageSize()
+  self.height = self.height + self.statusHeight / 2
+  local statusText = statusImg:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 14 * self.scale))
   self.statusText = statusText
-  statusText:SetPosition(10, 0, 0)
+  statusText:SetPosition(5 * self.scale, 6 * self.scale, 0)
 
   -- 加一个文本框, 用来展示激活充能
   local activationChargeWidget = self:AddChild(Widget("activationChargeWidget"))
@@ -99,7 +103,7 @@ local ArkSkill = Class(Widget, function(self, owner, config)
 
   self.levelConfig = self.config.levels[1]
   self.activationStacks = 0
-  self:SetChargeProgress(0)
+  self:SetEnergyProgress(0)
   self:SetBuffProgress(0)
 
   -- 闪烁效果相关变量
@@ -113,8 +117,15 @@ local ArkSkill = Class(Widget, function(self, owner, config)
 
   self.owner:StartUpdatingComponent(self)
   self.initComplete = false
-  self:RegisterHotKey()
 end)
+
+function ArkSkill:RecurrentStatusImageSize()
+  if not self.statusWidth or not self.statusHeight then
+    self.statusWidth = self.iconSize[1] * 1.18
+    self.statusHeight = self.originalStatusHeight * self.iconSize[1] / self.originalStatusWidth
+  end
+  self.statusImg:SetSize(self.statusWidth, self.statusHeight)
+end
 
 function ArkSkill:GetSize()
   return self.width, self.height
@@ -176,21 +187,16 @@ local function isAutoActivation(activationMode)
 end
 
 function ArkSkill:SetEnergyProgress(current)
-  local total = self.levelConfig.energy
+  local total = self.levelConfig.activationEnergy
   self.statusText:SetString(string.format("%d/%d", math.floor(math.min(current, total - 1)), total))
   self.chargeShadow:SetScale(1, CaseShadowScale(current / total))
   return total - current
 end
 
--- 保留旧函数名称以兼容现有代码
-function ArkSkill:SetChargeProgress(current)
-  return self:SetEnergyProgress(current)
-end
-
-function ArkSkill:SetBullet(bullet)
-  local total = self.levelConfig.bullet
-  self.statusText:SetString(string.format("%d/%d", bullet, total))
-  self.buffShadow:SetScale(1, CaseShadowScale(bullet / total))
+function ArkSkill:SetBulletCount(bulletCount)
+  local total = self.levelConfig.bulletCount
+  self.statusText:SetString(string.format("%d/%d", bulletCount, total))
+  self.buffShadow:SetScale(1, CaseShadowScale(bulletCount / total))
 end
 
 function ArkSkill:StartTimeEnergy(from)
@@ -201,13 +207,8 @@ function ArkSkill:StopTimeEnergy()
   self.timeEnergy = nil
 end
 
--- 保留旧函数名称以兼容现有代码
-function ArkSkill:StartTimeCharge(from)
-  return self:StartTimeEnergy(from)
-end
-
 function ArkSkill:SetBuffProgress(current)
-  local total = self.levelConfig.buffTime
+  local total = self.levelConfig.buffDuration
   self.buffShadow:SetScale(1, 1 - CaseShadowScale(current / total))
   return total - current
 end
@@ -254,7 +255,7 @@ function ArkSkill:UpdateBlink(dt)
   self.blinkMask:SetTint(1, 1, 1, alpha)
 end
 
-function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bullet, activationStacks)
+function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bulletCount, activationStacks)
   self.status = status
   local wasInitComplete = self.initComplete
   self.initComplete = true
@@ -297,7 +298,7 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
   if status == CONSTANTS.SKILL_STATUS.BULLETING then
     self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_bullet.tex")
     self.statusText:SetColour(1, 1, 1, 1)
-    self:SetBullet(bullet, self.levelConfig.bullet)
+    self:SetBulletCount(bulletCount)
     self.stop:Show()
   else
     self.stop:Hide()
@@ -357,6 +358,7 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
       end
     end
   end
+  self:RecurrentStatusImageSize()
 end
 
 local function OnUpdate(self, dt)
@@ -388,9 +390,29 @@ local function OnUpdate(self, dt)
   end
 end
 
+function ArkSkill:RequestSyncSkillStatus()
+  local state = self.owner.replica.ark_skill:GetState(self.id)
+  if state.status ~= 0 then
+    self:SyncSkillStatus(
+      state.status,
+      state.level,
+      state.energyProgress,
+      state.buffProgress,
+      state.bulletCount,
+      state.activationStacks
+    )
+  end
+  if self.owner.components.ark_skill then
+    self.owner.components.ark_skill:RequestSyncSkillStatus(self.id)
+  else
+    SendModRPCToServer(GetModRPC("arkSkill", "RequestSyncSkillStatus"), self.id)
+  end
+end
+
 -- OnUpdate 需要第一帧检测, 第一帧要作点事情
 function ArkSkill:OnUpdate(dt)
-  SendModRPCToServer(GetModRPC("arkSkill", "RequestSyncSkillStatus"), self.id)
+  ArkLogger:Debug("ark_skill first update", self.id)
+  self:RequestSyncSkillStatus()
   self.OnUpdate = OnUpdate
 end
 
@@ -408,8 +430,8 @@ function ArkSkill:OnGainFocus()
       name = self.config.name,
       energyRecoveryMode = self.config.energyRecoveryMode,
       activationMode = self.config.activationMode,
-      energy = self.levelConfig.energy,
-      buffTime = self.levelConfig.buffTime,
+      activationEnergy = self.levelConfig.activationEnergy,
+      buffDuration = self.levelConfig.buffDuration,
       hotKey = self.config.hotKey,
       level = self.level,
       desc = self.levelConfig.desc,
@@ -430,30 +452,13 @@ function ArkSkill:OnLoseFocus()
   end
 end
 
-function ArkSkill:TryActivateSkill()
-  if not self.initComplete then
-    return
-  end
-  -- 弹药模式下可以取消技能
-  if self.config.bullet and self.status == CONSTANTS.SKILL_STATUS.BULLETING then
-    SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), self.id)
-    return
-  end
-  -- 获取鼠标指向的目标, 以及鼠标指向的坐标
-  local target = TheInput:GetWorldEntityUnderMouse()
-  local targetPos = TheInput:GetWorldPosition()
-  local serializedPos = string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z)
-  local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
-  SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), self.id, target, serializedPos, force)
-end
-
 function ArkSkill:OnControl(control, down)
   if ArkSkill._base.OnControl(self, control, down) then
     return true
   end
   if control == CONTROL_ACCEPT then
-    if down then
-      self:TryActivateSkill()
+    if down and self.owner.replica.ark_skill then
+      self.owner.replica.ark_skill:TryActivateSkill(self.id)
       return true
     end
   end

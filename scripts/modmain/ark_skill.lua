@@ -62,35 +62,19 @@ AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
   skill:Cancel()
 end)
 
-
-
-
 local arkSkillLevelUpImages = {}
 
-AddClientModRPCHandler("arkSkill", "SetupArkSkillUi", function(config)
-  if not config or not ThePlayer.HUD or ThePlayer.HUD.controls.arkSkillUi then
-    return
+AddClientModRPCHandler("arkSkill", "ClientRegisterSkill", function(config)
+  config = json.decode(config)
+  if ThePlayer and ThePlayer.replica.ark_skill then
+    ThePlayer.replica.ark_skill:ClientRegisterSkill(config)
   end
-  local config = json.decode(config)
-  local controls = ThePlayer.HUD.controls
-  local ArkSkillUi = require "widgets/ark_skill_ui"
-  controls.arkSkillUi = controls.inv.hand_inv:AddChild(ArkSkillUi(ThePlayer, config.skills))
-  controls.arkSkillUi:SetPosition(config.position or Vector3(-840, 80, 0))
-  controls.arkSkillUi:SetScale(.5, .5, .5)
-  -- 安装统一热键管理器（纯机制，不关心技能）
-  local ArkHotKey = require "ark_hotkey"
-  local hkMgr = (ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager()) or ArkHotKey.Create(ThePlayer):AttachToPlayer()
-  hkMgr:HookHUD(ThePlayer.HUD)
-  hkMgr:Load()
-
   -- 替换高清资源
-  for _, skill in pairs(config.skills) do
-    local resolveAtlas = resolvefilepath(skill.atlas)
-    if not arkSkillLevelUpImages[resolveAtlas] then
-      arkSkillLevelUpImages[resolveAtlas] = {}
-    end
-    arkSkillLevelUpImages[resolveAtlas][skill.image] = true
+  local resolveAtlas = resolvefilepath(config.atlas)
+  if not arkSkillLevelUpImages[resolveAtlas] then
+    arkSkillLevelUpImages[resolveAtlas] = {}
   end
+  arkSkillLevelUpImages[resolveAtlas][config.image] = true
 end)
 
 -- 修改技能升级图标的尺寸, 维持高清
@@ -131,7 +115,7 @@ end)
 
 -- 服务端
 
-function GLOBAL.AddSkillLevelUpRecipes(skills)
+function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
   for i, skill in ipairs(skills) do
     if i > CONSTANTS.MAX_SKILL_LIMIT then
       break
@@ -145,15 +129,14 @@ function GLOBAL.AddSkillLevelUpRecipes(skills)
         break
       end
       if j ~= 1 then
-        local prefabName = common.genArkSkillLevelUpPrefabNameById(skill.id, j)
+        local prefabName = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, j)
         local ingredients = levelConfig.ingredients or { Ingredient("goldnugget", 1) }
-        local tag = common.genArkSkillLevelTagById(skill.id, j - 1)
         AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
           nounlock = true,
           atlas = skill.atlas,
           image = skill.image,
           actionstr = j <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
-          builder_tag = tag,
+          builder_tag = 'none',
           manufactured = true,
         })
         local upperName = string.upper(prefabName)

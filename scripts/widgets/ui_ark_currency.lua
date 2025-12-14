@@ -1,6 +1,5 @@
 local Widget = require "widgets/widget"
 local Badge = require "widgets/badge"
-local UIAnim = require "widgets/uianim"
 local Text = require "widgets/text"
 local Image = require "widgets/image"
 local common = require "ark_common"
@@ -33,8 +32,14 @@ local UIArkCurrency = Class(Widget, function(self, owner)
 
     self.diamond = addCurrency(self, "images/ark_item_ui.xml", "icon_diamond.tex", STRINGS.NAMES.ARK_DIAMOND)
     self.diamond:SetPosition(160, 0, 0)
-
+    self.owner:DoTaskInTime(0, function()
+      self:Refresh()
+    end)
 end)
+
+function UIArkCurrency:GetSize()
+    return self.bg:GetSize()
+end
 
 function UIArkCurrency:Refresh()
     self.gold.text:SetString(tostring(self.owner.replica.ark_currency:GetArkGold()))

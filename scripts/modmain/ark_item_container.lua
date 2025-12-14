@@ -1,7 +1,6 @@
 local containers = require "containers"
 local TrueScrollArea = require "widgets/truescrollarea"
 local Text = require "widgets/text"
-local UIAnim = require "widgets/uianim"
 local Widget = require "widgets/widget"
 local TEMPLATES = require "widgets/redux/templates"
 local common = require("ark_common")

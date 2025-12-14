@@ -16,11 +16,22 @@ local ArkSkillUi = Class(Widget, function(self, owner, skillsConfig)
   characterLevel:SetPosition(0, -25, 0)
   self.characterLevel = characterLevel
 
+end)
+
+function ArkSkillUi:SetUpExpBar() 
   local expBar = self:AddChild(ArkExpBar(self.owner))
   expBar:SetPosition(80, -110, 0)
   local skillsSizeX = skills:GetSize()
   expBar:SetSize(skillsSizeX)
   self.expBar = expBar
-end)
+end
+
+-- 卸载ExpBar
+function ArkSkillUi:RemoveExpBar() 
+  if self.expBar then
+    self.expBar:Kill()
+    self.expBar = nil
+  end
+end
 
 return ArkSkillUi

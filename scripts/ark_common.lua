@@ -27,13 +27,8 @@ local function normalizeSkillId(id)
 end
 
 
-local function genArkSkillLevelUpPrefabNameById(id, level)
-  return 'ark_skill_level_up_' .. normalizeSkillId(id) .. '_' .. level
-end
-
-
-local function genArkSkillLevelTagById(id, level)
-  return 'ark_skill_level_' .. normalizeSkillId(id) .. '_' .. level
+local function genArkSkillLevelUpPrefabNameById(prefab,id, level)
+  return 'ark_skill_level_up_' .. prefab .. '_' .. normalizeSkillId(id) .. '_' .. level
 end
 
 local function parseArkSkillLevelUpPrefabName(prefabName)
@@ -45,40 +40,10 @@ local function parseArkSkillLevelUpPrefabName(prefabName)
   return nil, nil
 end
 
-local function canNextElite(rarity, elite, level)
-  -- 要当前等级满级, 并且当前精英化等级小于最大精英化等级
-  return level >= CONSTANTS.EXP_CONFIG.maxLevel[rarity][elite] and elite < #CONSTANTS.EXP_CONFIG.maxLevel[rarity]
-end
-
-local function getNextLevelExp(elite, level)
-  return CONSTANTS.EXP_CONFIG.exp[elite][level][1]
-end
-
--- 新增配置计算相关函数
-local function getMaxLevel(rarity, elite)
-  return CONSTANTS.EXP_CONFIG.maxLevel[rarity][elite]
-end
-
-local function getExpAndGoldCost(elite, level)
-  if not CONSTANTS.EXP_CONFIG.exp[elite] or not CONSTANTS.EXP_CONFIG.exp[elite][level] then
-    return nil, nil
-  end
-  return CONSTANTS.EXP_CONFIG.exp[elite][level][1], CONSTANTS.EXP_CONFIG.exp[elite][level][2]
-end
-
-local function getMaxPotential()
-  return CONSTANTS.EXP_CONFIG.maxPotential
-end
 
 return {
     getPrefabAssetsCode = getPrefabAssetsCode,
     normalizeSkillId = normalizeSkillId,
-    genArkSkillLevelTagById = genArkSkillLevelTagById,
     genArkSkillLevelUpPrefabNameById = genArkSkillLevelUpPrefabNameById,
     parseArkSkillLevelUpPrefabName = parseArkSkillLevelUpPrefabName,
-    canNextElite = canNextElite,
-    getMaxLevel = getMaxLevel,
-    getExpAndGoldCost = getExpAndGoldCost,
-    getMaxPotential = getMaxPotential,
-    getNextLevelExp = getNextLevelExp,
 }
