@@ -1,3 +1,5 @@
+local CONSTANTS = require "ark_constants"
+
 local function getHotkeyName(inst, id)
   return inst.prefab .. "_ark_skill_" .. id
 end
@@ -60,6 +62,7 @@ function ArkSkillReplica:ClientRegisterSkill(config)
   local index = config.index
   self.skillIdToIndex[config.id] = index
   self.configs[index] = config
+  self:SetHotkey(config.id, config.hotkey)
 end
 
 -- 主机端注册技能，返回分配的索引
@@ -75,15 +78,19 @@ function ArkSkillReplica:RegisterSkill(config)
   local index = self.skillCount
   self.skillIdToIndex[config.id] = index
   self.configs[index] = config
-  if TheWorld.ismastersim and ThePlayer ~= self.inst then
-    -- 发送rpc, 同步配置
-    -- 延时发送, 不然获取不到userid
-    self._register_tasks[config.id] = self.inst:DoTaskInTime(0, function()
-      ArkLogger:Debug("ark_skill_replica register skill send rpc", config.id)
-      config.index = index
-      SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
-      self._register_tasks[config.id] = nil
-    end)
+  if TheWorld.ismastersim then
+    if ThePlayer == self.inst then
+      self:SetHotkey(config.id, config.hotkey)
+    else
+      -- 发送rpc, 同步配置
+      -- 延时发送, 不然获取不到userid
+      self._register_tasks[config.id] = self.inst:DoTaskInTime(0, function()
+        ArkLogger:Debug("ark_skill_replica register skill send rpc", config.id)
+        config.index = index
+        SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
+        self._register_tasks[config.id] = nil
+      end)
+    end
   end
   return index
 end
@@ -118,11 +125,11 @@ function ArkSkillReplica:GetState(id)
   return index and self.states[index] or nil
 end
 
-function ArkSkillReplica:ResetHotkey(id)
+function ArkSkillReplica:RestoreDefaultHotkey(id)
   if not TheNet:IsDedicated() then
-    local hotkey = GetHotKeyManager(self.inst)
+    local hotkey_mgr = GetHotKeyManager(self.inst)
     local name = getHotkeyName(self.inst, id)
-    hotkey:ResetHotkey(name)
+    hotkey_mgr:RestoreDefaultHotkey(name)
   end
 end
 
@@ -135,16 +142,22 @@ function ArkSkillReplica:GetHotkey(id)
 end
 
 function ArkSkillReplica:SetHotkey(id, hotkey)
+  if not hotkey then return end
   if not TheNet:IsDedicated() then
     local hotkey_mgr = GetHotKeyManager(self.inst)
     local name = getHotkeyName(self.inst, id)
     -- 检查是否已经有按键了
     local oldHotkey = hotkey_mgr:GetHotkey(name)
+    ArkLogger:Debug('ark_skill_replica SetHotkey', id, hotkey, oldHotkey)
     if oldHotkey then
       hotkey_mgr:SetHotkey(name, hotkey)
     else
       hotkey_mgr:Register(name, function()
-        self:TryActivateSkill(id)
+        if self:IsActivating(id) then
+          self:CancelSkill(id)
+        else
+          self:TryActivateSkill(id)
+        end
       end, hotkey)
     end
   end
@@ -156,9 +169,22 @@ function ArkSkillReplica:TryActivateSkill(id)
   local serializedPos = string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z)
   local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
   if self.inst.components.ark_skill then
-    self.inst.components.ark_skill:GetSkill(id):TryActivate()
+    self.inst.components.ark_skill:GetSkill(id):TryActivate(target, targetPos, force)
   else
-    SendModRPCToServer(GetModRPC("arkSkill", "RequestSyncSkillStatus"), id, target, serializedPos, force)
+    SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), id, target, serializedPos, force)
+  end
+end
+
+function ArkSkillReplica:IsActivating(id)
+  local state = self:GetState(id)
+  return state and state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING
+end
+
+function ArkSkillReplica:CancelSkill(id)
+  if self.inst.components.ark_skill then
+    self.inst.components.ark_skill:GetSkill(id):Cancel()
+  else
+    SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), id)
   end
 end
 

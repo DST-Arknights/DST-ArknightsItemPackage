@@ -131,23 +131,6 @@ function ArkSkill:GetSize()
   return self.width, self.height
 end
 
-function ArkSkill:RegisterHotKey()
-  local mgr = ThePlayer and ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager() or nil
-  if mgr and self.id then
-    mgr:Register('skill', self.id, function()
-      self:TryActivateSkill()
-    end, self.config.hotKey)
-  end
-end
-
-function ArkSkill:Kill()
-  local mgr = ThePlayer and ThePlayer.GetArkHotKeyManager and ThePlayer:GetArkHotKeyManager() or nil
-  if mgr and self.id then
-    mgr:Unregister('skill', self.id)
-  end
-  ArkSkill._base.Kill(self)
-end
-
 local function CaseShadowScale(scale)
   local paddingScale = 0.08
   return paddingScale + (1 - 2 * paddingScale) * scale
@@ -432,14 +415,14 @@ function ArkSkill:OnGainFocus()
       activationMode = self.config.activationMode,
       activationEnergy = self.levelConfig.activationEnergy,
       buffDuration = self.levelConfig.buffDuration,
-      hotKey = self.config.hotKey,
+      hotkey = self.config.hotkey,
       level = self.level,
       desc = self.levelConfig.desc,
     }
     self.skillDesc = self:AddChild(ArkSkillDesc(self.owner, descConfig, self.id))
-    self.skillDesc:SetScale(1, 1, 1)
+    self.skillDesc:SetScale(0.5)
     local size = self.skillDesc:GetSize()
-    self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
+    self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2 * 0.5, self.iconSize[2] / 2 + size.y * 0.5 + 10, 0)
   end
   self.skillDesc:Show()
 end

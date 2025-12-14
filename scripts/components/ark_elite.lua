@@ -31,9 +31,6 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
-  -- TODO: test 每2秒钟加30经验
-  self.inst:DoPeriodicTask(5, function() self:AddExp(30) end)
-  self.inst:DoPeriodicTask(12, function() self:AddExp(1000) end)
 end, nil, {
   ratity = onraity,
   elite = onelite,

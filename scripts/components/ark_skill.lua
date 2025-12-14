@@ -33,7 +33,7 @@ local function defaultSkill(skill)
     lockedDesc = skill.lockedDesc,
     energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
     activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
-    hotKey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotKey or nil,
+    hotkey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
     levels = defaultLevelConfigs(skill.levels)
   }
   return copySkill

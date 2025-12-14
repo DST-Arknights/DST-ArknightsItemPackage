@@ -40,7 +40,7 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   self.owner = owner
   self.size = {1000, 0} -- 初始时高度为0
   self.id = id
-  self.hotKey = (ThePlayer and ThePlayer.GetArkHotKey and ThePlayer:GetArkHotKey('skill', self.id)) or descConfig.hotKey
+  
   local bg = self:AddChild(Image("images/ui.xml", "white.tex"))
   bg:SetTint(0.23, 0.23, 0.23, 0.7)
   local leftOffset = -self.size[1] / 2 + PADDING
@@ -162,7 +162,7 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     hotKeyResetButton:SetFont(FALLBACK_FONT_FULL)
     hotKeyResetButton:SetPosition(self.size[1] / 2 - 110, 0, 0)
     hotKeyResetButton:SetOnClick(function()
-      ThePlayer.replica.ark_skill:ResetHotkey(self.id)
+      ThePlayer.replica.ark_skill:RestoreDefaultHotkey(self.id)
       self:RefreshHotKey()
     end)
   end
@@ -174,10 +174,11 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
 end)
 
 function ArkSkillDesc:RefreshHotKey()
-  local hotKey = ThePlayer.replica.ark_skill:GetHotkey(self.id)
+  local hotkey = ThePlayer.replica.ark_skill:GetHotkey(self.id)
+  ArkLogger:Debug('ArkSkillDesc:RefreshHotKey', self.id, hotkey)
   local hotKeyString = nil
-  if hotKey ~= nil then
-    hotKeyString = STRINGS.UI.CONTROLSSCREEN.INPUTS[1][hotKey]
+  if hotkey ~= nil then
+    hotKeyString = STRINGS.UI.CONTROLSSCREEN.INPUTS[1][hotkey]
   else
     hotKeyString = STRINGS.UI.ARK_SKILL.NONE
   end
@@ -189,23 +190,25 @@ function ArkSkillDesc:SettingHotKey()
   self.cancelHotkeyButton:Show()
   self.hotKeyButton:Hide()
   self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY)
-  local function onKey(key, down)
+  self._onKey = function(key, down)
     if down then
       -- 不检查冲突, 注册为新的按键
       ThePlayer.replica.ark_skill:SetHotkey(self.id, key)
       self:RefreshHotKey()
+      self.cancelHotkeyButton:Hide()
+      self.hotKeyButton:Show()
+      return true -- 返回true表示消费事件并移除监听器
     end
   end
-  self._onKey = onKey
   local mgr = GetHotKeyManager(ThePlayer)
-  mgr:AddTempListener(self._onKey)
+  mgr:ListenOnce(self._onKey)
 end
 
 function ArkSkillDesc:CancelSettingHotKey()
   self.cancelHotkeyButton:Hide()
   self.hotKeyButton:Show()
   local mgr = GetHotKeyManager(ThePlayer)
-  mgr:RemoveTempListener(self._onKey)
+  mgr:CancelListenOnce(self._onKey)
   self._onKey = nil
   self:RefreshHotKey()
 end

@@ -24,9 +24,9 @@ end
 function HotKeyManager._Create(player)
     local manager = {
         player = player,
-        registry = {},      -- 改为 { [name] = {hotkey=key, handler=func} }
+        registry = {},      -- { [name] = {hotkey=key, handler=func} }
         hooksInstalled = false,
-        origOnRawKey = nil,
+        controlHandler = nil,  -- 事件处理器引用，用于移除
         tempListeners = {}, -- 临时监听器数组 { callback = function }
     }
     
@@ -73,21 +73,28 @@ function HotKeyManager._Create(player)
         end
     end
     
-    -- 重置热键
-    function manager:ResetHotkey(name)
-        local data = loadData()
-        data[name] = nil
-        saveData(data)
+    -- 恢复默认热键
+    function manager:RestoreDefaultHotkey(name)
+        local info = self.registry[name]
+        if info and info.defaultHotkey then
+            self:SetHotkey(name, info.defaultHotkey)
+        end
     end
-    
+
     -- 注册热键处理器
     function manager:Register(name, handler, defaultHotkey)
-        local hotkey = self:GetHotkey(name) or defaultHotkey
+        local hotkey = self:GetHotkey(name)
+        if not hotkey and defaultHotkey then
+            -- 如果没有已保存的热键，使用默认值并保存
+            hotkey = defaultHotkey
+            self:SetHotkey(name, hotkey)
+        end
         self.registry[name] = {
             hotkey = hotkey,
-            handler = handler
+            handler = handler,
+            defaultHotkey = defaultHotkey,  -- 保存默认值
         }
-        
+
         self:_installHook()
     end
     
@@ -96,22 +103,14 @@ function HotKeyManager._Create(player)
         self.registry[name] = nil
     end
     
-    -- 添加临时按键监听器（返回取消函数）
-    function manager:AddTempListener(callback)
+    -- 一次性按键监听器（回调返回true时自动移除）
+    function manager:ListenOnce(callback)
         local listener = { callback = callback }
         table.insert(self.tempListeners, listener)
-        
-        return function()
-            for i, v in ipairs(self.tempListeners) do
-                if v == listener then
-                    table.remove(self.tempListeners, i)
-                    break
-                end
-            end
-        end
     end
 
-    function manager:RemoveTempListener(callback)
+    -- 取消一次性监听器
+    function manager:CancelListenOnce(callback)
         for i, v in ipairs(self.tempListeners) do
             if v.callback == callback then
                 table.remove(self.tempListeners, i)
@@ -120,44 +119,55 @@ function HotKeyManager._Create(player)
         end
     end
     
-    -- 清除所有临时监听器
-    function manager:ClearAllTempListeners()
-        self.tempListeners = {}
-    end
-    
-    -- 安装HUD钩子（改进版）
+    -- 安装控制事件监听器
     function manager:_installHook()
-        if self.hooksInstalled or not player.hud then return end
-        
+        if self.hooksInstalled then return end
+
         self.hooksInstalled = true
-        self.origOnRawKey = player.hud.OnRawKey
-        
-        player.hud.OnRawKey = function(_, key, down)
-            -- 1. 优先处理临时监听器
-            if #self.tempListeners > 0 then
-                local listeners = shallowCopy(self.tempListeners)
-                for _, listener in ipairs(listeners) do
-                    pcall(listener.callback, key, down)
-                end
-                return true
+
+        -- 使用 oncontrol 事件处理器
+        local function onKeyHandler(key, down)
+            if IsPaused() then
+                return
             end
-            
+            local isenabled, ishudblocking = ThePlayer and ThePlayer.components.playercontroller:IsEnabled() or false, false
+            if not isenabled and not ishudblocking then
+                return
+            end
+            -- 1. 优先处理一次性监听器（回调返回true时移除）
+            if #self.tempListeners > 0 then
+                local listener = self.tempListeners[1]
+                local ok, shouldRemove = pcall(listener.callback, key, down)
+                if ok and shouldRemove then
+                    table.remove(self.tempListeners, 1)
+                end
+                return
+            end
+
             -- 2. 常规热键处理（允许同一个按键触发多个handler）
             if down then
-                local triggered = false
                 for name, info in pairs(self.registry) do
                     if info.hotkey == key then
                         pcall(info.handler, name, key)
-                        triggered = true
                     end
                 end
-                return triggered
             end
-            
-            return self.origOnRawKey(_, key, down)
         end
+
+        self.controlHandler = TheInput.onkey:AddEventHandler("onkey", onKeyHandler)
     end
-    
+
+    -- 卸载控制事件监听器
+    function manager:_uninstallHook()
+        if not self.hooksInstalled then return end
+
+        if self.controlHandler then
+            self.controlHandler:Remove()
+            self.controlHandler = nil
+        end
+        self.hooksInstalled = false
+    end
+
     return manager
 end
 GLOBAL.GetHotKeyManager = HotKeyManager.Get
