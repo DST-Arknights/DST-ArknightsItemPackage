@@ -54,6 +54,14 @@ local EliteUI = Class(Widget, function(self, owner)
   self.currentElite = 0
   self.currentLevel = 0
   self.currentPotential = 0
+  self.owner:DoTaskInTime(0, function() 
+    local state = self.owner.replica.ark_elite and self.owner.replica.ark_elite.state
+    if state then
+      self:SetElite(state.elite)
+      self:SetLevel(state.level)
+      self:SetPotential(state.potential)
+    end
+  end)
 end)
 
 function EliteUI:Blink(widget)
@@ -82,13 +90,15 @@ function EliteUI:Kill()
   EliteUI._base.Kill(self)
 end
 
-function EliteUI:SetData(elite, level, potential)
+function EliteUI:SetElite(elite)
   if self.currentElite ~= elite then
     self.currentElite = elite
     self.eliteWidget.eliteImg:SetTexture("images/ark_item_ui.xml", "elite_" .. elite - 1 .. "_small.tex")
     self:Blink(self.eliteWidget)
   end
+end
 
+function EliteUI:SetLevel(level)
   if self.currentLevel ~= level then
     self.currentLevel = level
     -- 获取 UIAnim 中的 Text 子组件
@@ -98,7 +108,9 @@ function EliteUI:SetData(elite, level, potential)
     end
     self:Blink(self.levelTextWidget)
   end
+end
 
+function EliteUI:SetPotential(potential)
   if self.currentPotential ~= potential then
     self.currentPotential = potential
     self.potentialWidget.potentialImg:SetTexture("images/ark_item_ui.xml", "potential_" .. potential - 1 .. "_small.tex")

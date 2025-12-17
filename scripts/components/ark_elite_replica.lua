@@ -258,7 +258,6 @@ local ArkElite = Class(function(self, inst)
     elite = "int:classified",
     level = "int:classified",
     currentExp = "int:classified",
-    totalExp = "int:classified",
     overflowExp = "int:classified",
   }
 
@@ -268,10 +267,16 @@ local ArkElite = Class(function(self, inst)
   if not TheNet:IsDedicated() then
     SafeCallArkExtendUI(self.inst):SetupElite()
     -- 监听核心字段变化，驱动 ArkEliteUI（包括多级连升与减速逻辑）
-    local watched = {"rarity", "potential", "elite", "level", "currentExp", "overflowExp"}
-    self.state:Watch(watched, function()
-      ArkLogger:Debug('ark_elite_replica Watch OnDirty', self.state.rarity, self.state.potential, self.state.elite, self.state.level, self.state.currentExp, self.state.overflowExp)
-      SafeCallArkExtendUI(self.inst):OnEliteDirty(self.state)
+    self.state:Watch("potential", function (state) 
+      SafeCallArkEliteUI(self.inst):SetPotential(state.potential)
+    end)
+    self.state:Watch("elite", function (state) 
+      SafeCallArkEliteUI(self.inst):SetElite(state.elite)
+    end)
+    -- 等级交给 expBar 动画处理
+    self.state:Watch({"currentExp", "level"}, function (state)
+      ArkLogger:Debug('ark_elite_replica Watch OnDirty', state.level, state.currentExp)
+      SafeCallArkExpBarUI(self.inst):SetRealData(state.level, state.currentExp)
     end)
   end
 end)

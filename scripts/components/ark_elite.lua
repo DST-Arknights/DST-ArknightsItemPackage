@@ -14,10 +14,6 @@ local function oncurrentExp(self, value)
   self.inst.replica.ark_elite.state.currentExp = value
 end
 
-local function ontotalExp(self, value)
-  ArkLogger:Debug('ark_elite ontotalExp', value)
-  self.inst.replica.ark_elite.state.totalExp = value
-end
 local function onoverflowExp(self, value)
   self.inst.replica.ark_elite.state.overflowExp = value
 end
@@ -31,12 +27,14 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
+  ArkLogger:Debug("ark_elite init")
+  -- 每50秒增加300经验
+  self.inst:DoPeriodicTask(10, function() self:AddExp(300) end)
 end, nil, {
   ratity = onraity,
   elite = onelite,
   level = onlevel,
   currentExp = oncurrentExp,
-  totalExp = ontotalExp,
   overflowExp = onoverflowExp
 })
 
@@ -161,6 +159,29 @@ function ArkElite:EliteUp()
     self:_ApplyExpPool(overflow, false)
   end
   return true
+end
+
+function ArkElite:OnSave()
+  local data = {
+    potential = self.potential,
+    elite = self.elite,
+    level = self.level,
+    currentExp = self.currentExp,
+    totalExp = self.totalExp,
+    overflowExp = self.overflowExp,
+  }
+  return data
+end
+
+function ArkElite:OnLoad(data)
+  if data then
+    self.potential = data.potential or self.potential
+    self.elite = data.elite or self.elite
+    self.level = data.level or self.level
+    self.currentExp = data.currentExp or self.currentExp
+    self.totalExp = data.totalExp or self.totalExp
+    self.overflowExp = data.overflowExp or self.overflowExp
+  end
 end
 
 return ArkElite

@@ -17,7 +17,6 @@ local ArkExtendUi =Class(Widget, function(self, owner)
     if owner.replica.ark_elite then
       self:SetupElite()
       self:SetupExpBar()
-      self:OnEliteDirty(owner.replica.ark_elite.state)
     end
     if owner.replica.ark_currency then
       self:SetupCurrency()
@@ -125,14 +124,6 @@ function ArkExtendUi:SetupExpBar()
   end
   local expBar = self.handBase:AddChild(ExpBar(self.owner))
   self.expBar = expBar
-
-  -- 注册升级完成回调
-  expBar:SetOnLevelUpComplete(function(level)
-    if self.elite then
-      local state = self.owner.replica.ark_elite.state
-      self.elite:SetData(state.elite, level, state.potential)
-    end
-  end)
   self:UpdateLayout()
 end
 
@@ -143,51 +134,9 @@ function ArkExtendUi:RemoveExpBar()
   end
   self:UpdateLayout()
 end
-
-function ArkExtendUi:OnEliteDirty(state)
-  if state.level == 0 then
-    return
-  end
-  -- 计算升级队列
-  local oldLevel = self.lastLevel or state.level
-  local newLevel = state.level
-
-  if oldLevel ~= newLevel then
-    -- 有等级变化，计算升级队列
-    local levelUpQueue = self:_CalculateLevelUpQueue(oldLevel, newLevel)
-
-    -- 启动 ExpBar 的升级序列
-    if self.expBar then
-      local needExp = self.owner.replica.ark_elite:GetLevelUpExp(newLevel)
-      self.expBar:PlayLevelUpSequence(levelUpQueue, state.currentExp, needExp)
-    end
-  else
-    -- 没有等级变化，只更新经验
-    if self.expBar then
-      local rep = self.owner.replica.ark_elite
-      local needExp = rep:GetLevelUpExp(state.level)
-      if rep.IsAtLevelCap and rep:IsAtLevelCap() then
-        -- 满级：经验条应保持满格
-        self.expBar:SetFullAtCap()
-      else
-        self.expBar:UpdateExp(state.currentExp, needExp)
-      end
-    end
-  end
-
-  self.lastLevel = newLevel
-end
-
-function ArkExtendUi:_CalculateLevelUpQueue(oldLevel, newLevel)
-  local queue = {}
-  for level = oldLevel + 1, newLevel do
-    table.insert(queue, {level = level})
-  end
-  return queue
-end
 function ArkExtendUi:UpdateLayout()
   ArkLogger:Debug('ark_extend_ui UpdateLayout')
-  self.handBase:SetPosition(-480, 130, 0)
+  self.handBase:SetPosition(-486, 130, 0)
   if self.elite then
     self.elite:SetPosition(20, 0, 0)
   end
