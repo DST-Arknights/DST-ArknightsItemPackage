@@ -22,7 +22,8 @@ AddReplicableComponent("ark_elite")
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
 ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
-
+-- 加载符号
+modimport('scripts/modmain/symbol')
 -- 加载 NetState
 modimport('scripts/modmain/net_state')
 -- 加载安全调用
