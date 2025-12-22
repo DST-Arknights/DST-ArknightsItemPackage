@@ -129,15 +129,15 @@ local function GenerateNetStateKey(inst, stack_level)
   return key
 end
 
--- 模块级通用绑定函数
-local function bindNetVars(self, owner, schemas)
+-- 模块级通用绑定函数（使用 inner）
+local function bindNetVars(inner, owner, schemas)
   if not schemas or next(schemas) == nil then
     return nil
   end
-  local var_kind = self.inst == owner and "normal" or "classified"
+  local var_kind = inner.inst == owner and "normal" or "classified"
   local vars = {}
   for key, def in pairs(schemas) do
-    self:log("Bind", var_kind, "var", key, "type", def.type)
+    inner.log("Bind", var_kind, "var", key, "type", def.type)
     local constructor = TYPE_MAP[def.type]
     assert(constructor,
       string.format("[NetState] Unknown netvar type '%s' for key '%s'", tostring(def.type), tostring(key)))
@@ -158,13 +158,15 @@ end
 local stateId = 1
 local NetState = {}
 -- 记录netState对象与内部变量表的映射
-local NetStateMap= {__mode = "k"}
+local NetStateMap = setmetatable({}, {
+  __mode = "k"
+})
 -- 实例初始化逻辑
 local function NetStateInit(self, inst, schema_def)
   local inner = {}
   NetStateMap[self] = inner
-  self.inst = inst
-  self._id = stateId
+  inner.inst = inst
+  inner._id = stateId
   stateId = stateId + 1
 
   -------------------------------------------------------------------------------
@@ -173,7 +175,7 @@ local function NetStateInit(self, inst, schema_def)
   -- stack_level 5: NetStateInit -> __call -> 调用 NetState(...) 的源文件
   local key = GenerateNetStateKey(inst, 5)
   ArkLogger:Trace('[net_state]', 'NetStateInit', key)
-  self._key = key
+  inner._key = key
 
   -- 在 inst 上登记 key -> state 的映射（真正用于主客机匹配的 identity）
   local state_by_key = inst._ns_state_by_key
@@ -181,48 +183,48 @@ local function NetStateInit(self, inst, schema_def)
     state_by_key = {}
     inst._ns_state_by_key = state_by_key
   end
-  state_by_key[self._key] = self
+  state_by_key[inner._key] = self
 
   -- 实例专属日志方法：自动携带 GUID 和分类标签
-  self.log = function(self, category, ...)
+  inner.log = function(category, ...)
     local template = type(category) == "string" and "[NetState:%s][%s]" or "[NetState:%s]"
-    ArkLogger:Trace(string.format(template, self._id, category), ...)
+    ArkLogger:Trace(string.format(template, inner._id, category), ...)
   end
 
   -- 解析并分离普通字段与 classified 字段
   local full_schema = ParseSchema(schema_def)
-  self.classified_schemas = filterSchema(full_schema, function(def)
+  inner.classified_schemas = filterSchema(full_schema, function(def)
     return def.classified
   end)
-  self.normal_schemas = filterSchema(full_schema, function(def)
+  inner.normal_schemas = filterSchema(full_schema, function(def)
     return not def.classified
   end)
-  self:log("Init", "binding normal netvars", "key", self._key)
-  self._vars = bindNetVars(self, self.inst, self.normal_schemas)
-  self._pending_classified_listeners = {}
+  inner.log("Init", "binding normal netvars", "key", inner._key)
+  inner._vars = bindNetVars(inner, inner.inst, inner.normal_schemas)
+  inner._pending_classified_listeners = {}
   -- 若存在 classified 字段，则在主机上生成 classified，在客机上尝试消费 pending
-  if next(self.classified_schemas) then
+  if next(inner.classified_schemas) then
     if TheWorld.ismastersim then
       -- 主机：立即生成并绑定对应的 classified 实体
-      self:log("Attach", "spawning net_state_classified prefab", self._key)
-      self.net_state_classified = SpawnPrefab("net_state_classified")
-      self.net_state_classified.entity:SetParent(self.inst.entity)
-      self.net_state_classified._net_state_key:set(self._key)
-      self.inst:DoTaskInTime(0, function()
-        self:AttachClassified(self.net_state_classified)
-        self.net_state_classified.Network:SetClassifiedTarget(self.inst)
+      inner.log("Attach", "spawning net_state_classified prefab", inner._key)
+      inner.net_state_classified = SpawnPrefab("net_state_classified")
+      inner.net_state_classified.entity:SetParent(inner.inst.entity)
+      inner.net_state_classified._net_state_key:set(inner._key)
+      inner.inst:DoTaskInTime(0, function()
+        self:AttachClassified(inner.net_state_classified, true)
+        inner.net_state_classified.Network:SetClassifiedTarget(inner.inst)
       end)
     else
       -- 客机：如果 classified 先于 NetStateInit 到达，则 OnEntityReplicated 会把
       -- net_state_classified 放到 inst._ns_pending_classified[key] 里。
       -- 这里在初始化完成后主动检查并尝试完成绑定。
-      local pending = self.inst._ns_pending_classified
+      local pending = inner.inst._ns_pending_classified
       if pending ~= nil then
-        local classified = pending[self._key]
+        local classified = pending[inner._key]
         if classified ~= nil and classified:IsValid() then
-          pending[self._key] = nil
+          pending[inner._key] = nil
           classified._state = self
-          self:log("AttachClassified", "attach from pending", self._key)
+          inner.log("AttachClassified", "attach from pending", inner._key)
           self:AttachClassified(classified)
         end
       end
@@ -245,35 +247,35 @@ setmetatable(NetState, {
 
 --- 注册 Attach 成功回调（若已 Attach 则立即执行）
 function NetState:OnAttached(fn)
-  self._on_attached = fn
-  if self.net_state_classified ~= nil then
-    fn()
-  end
+  local inner = NetStateMap[self]
+  inner._on_attached = fn
 end
 
 --- 注册 Detach 回调
 function NetState:OnDetached(fn)
-  self._on_detached = fn
+  local inner = NetStateMap[self]
+  inner._on_detached = fn
 end
 
-function NetState:AttachClassified(net_state_classified)
-  self:log("AttachClassified", "begin")
-  self.net_state_classified = net_state_classified
+function NetState:AttachClassified(net_state_classified, skip_attach)
+  local inner = NetStateMap[self]
+  inner.log("AttachClassified", "begin")
+  inner.net_state_classified = net_state_classified
   -- 注册所有 pending 的 classified 监听
-  if self._pending_classified_listeners and #self._pending_classified_listeners > 0 then
-    self:log("AttachClassified", "registering", #self._pending_classified_listeners, "classified listeners")
-    for _, item in ipairs(self._pending_classified_listeners) do
-      DoListenForKey(self.net_state_classified, item.key, item.fn)
-      self:log("Watch", "attached classified listener for", item.key)
+  if inner._pending_classified_listeners and #inner._pending_classified_listeners > 0 then
+    inner.log("AttachClassified", "registering", #inner._pending_classified_listeners, "classified listeners")
+    for _, item in ipairs(inner._pending_classified_listeners) do
+      DoListenForKey(inner.net_state_classified, item.key, item.fn)
+      inner.log("Watch", "attached classified listener for", item.key)
     end
   end
-  self._classified_vars = bindNetVars(self, self.net_state_classified, self.classified_schemas)
+  inner._classified_vars = bindNetVars(inner, inner.net_state_classified, inner.classified_schemas)
   -- 恢复缓存值
-  if self._classified_cache then
-    self:log("AttachClassified", "restoring cached values")
-    if self._classified_vars then
-      for key, value in pairs(self._classified_cache) do
-        local netvar = self._classified_vars[key]
+  if inner._classified_cache then
+    inner.log("AttachClassified", "restoring cached values")
+    if inner._classified_vars then
+      for key, value in pairs(inner._classified_cache) do
+        local netvar = inner._classified_vars[key]
         if netvar then
           if TheWorld.ismastersim then
             netvar:set(value)
@@ -283,60 +285,53 @@ function NetState:AttachClassified(net_state_classified)
         end
       end
     end
-    self._classified_cache = nil
+    inner._classified_cache = nil
   end
-  if self._on_attached then
-    self._on_attached()
+  if inner._on_attached and not skip_attach then
+    inner._on_attached(ThePlayer)
   end
-  self:log("AttachClassified", "complete")
+  inner.log("AttachClassified", "complete")
 end
 
 --- 客户端：当 classified 实体被销毁时调用
 function NetState:DetachClassified()
-  self:log("DetachClassified")
-  self.net_state_classified = nil
-  self._classified_vars = nil
-  if self._on_detached then
-    self._on_detached()
+  local inner = NetStateMap[self]
+  inner.log("DetachClassified")
+  inner.net_state_classified = nil
+  inner._classified_vars = nil
+  if inner._on_detached then
+    inner._on_detached(ThePlayer)
   end
 end
 
 --- 主机端：手动控制 classified 的目标玩家
-function NetState:Attach(target_player_or_nil)
+function NetState:Attach(target)
   if not TheWorld.ismastersim then
     return
   end
-  if not target_player_or_nil then
-    return self:Detach()
-  end
-  self.attach_task = self.inst:DoTaskInTime(0, function()
+  local inner = NetStateMap[self]
+  inner.attach_task = inner.inst:DoTaskInTime(0, function()
     -- 设置 classified 的目标玩家（客户端会收到该实体）
-    if self.net_state_classified then
-      self:log("Attach", "attaching classified to player", target_player_or_nil, self._key)
-      self.net_state_classified.Network:SetClassifiedTarget(target_player_or_nil)
+    inner.log("Attach", "attaching classified to player", target, inner._key)
+    inner.net_state_classified.Network:SetClassifiedTarget(target)
+    -- 主机没有AttachClassified，立即attach
+    if not TheNet:IsDedicated() then
+      if target == ThePlayer and inner._on_attached then
+        inner._on_attached(target)
+      end
+      if target ~= nil and target ~= ThePlayer and inner._on_detached then
+        inner._on_detached(target)
+      end
     end
-    self.attach_task = nil
+    inner.attach_task = nil
   end)
-end
-
---- 解除 classified 绑定（主机端）
-function NetState:Detach()
-  if not TheWorld.ismastersim then
-    return
-  end
-  if self.attach_task then
-    self.attach_task:Cancel()
-    self.attach_task = nil
-  end
-  if self.net_state_classified and self.net_state_classified.Network then
-    self.net_state_classified.Network:SetClassifiedTarget(nil)
-  end
 end
 
 --- 注册字段变化监听
 -- @param keys string 或 string[]
 -- @param fn function(NetState)
 function NetState:Watch(keys, fn)
+  local inner = NetStateMap[self]
   if type(keys) == "string" then
     keys = {keys}
   end
@@ -355,30 +350,30 @@ function NetState:Watch(keys, fn)
     if update_task then
       return
     end
-    update_task = self.inst:DoTaskInTime(0, function()
+    update_task = inner.inst:DoTaskInTime(0, function()
       update_task = nil
-      if self.inst:IsValid() then
+      if inner.inst:IsValid() then
         fn(self)
       end
     end)
   end
-  self:log("Watch", "packaged wrapped_fn for keys:", keys)
+  inner.log("Watch", "packaged wrapped_fn for keys:", keys)
   for _, key in ipairs(keys) do
-    if self.normal_schemas[key] then
-      DoListenForKey(self.inst, key, wrapped_fn)
-      self:log("Watch", "attached normal listener for", key)
-    elseif self.classified_schemas[key] then
-      if self.net_state_classified then
-        DoListenForKey(self.net_state_classified, key, wrapped_fn)
-        self:log("Watch", "attached classified listener (immediate) for", key)
+    if inner.normal_schemas[key] then
+      DoListenForKey(inner.inst, key, wrapped_fn)
+      inner.log("Watch", "attached normal listener for", key)
+    elseif inner.classified_schemas[key] then
+      if inner.net_state_classified then
+        DoListenForKey(inner.net_state_classified, key, wrapped_fn)
+        inner.log("Watch", "attached classified listener (immediate) for", key)
       end
-      table.insert(self._pending_classified_listeners, {
+      table.insert(inner._pending_classified_listeners, {
         key = key,
         fn = wrapped_fn
       })
-      self:log("Watch", "pending classified listener for", key)
+      inner.log("Watch", "pending classified listener for", key)
     else
-      self:log("Watch", "unknown key", key)
+      inner.log("Watch", "unknown key", key)
     end
   end
 end
@@ -388,10 +383,16 @@ end
 -------------------------------------------------------------------------------
 
 local function __index(t, k)
+  local inner = NetStateMap[t]
+  if inner == nil then
+    -- 未初始化，返回类方法
+    return getmetatable(t)[k]
+  end
+
   -- 1. 普通字段（normal）
-  local normal = rawget(t, "normal_schemas")
+  local normal = inner.normal_schemas
   if normal ~= nil and normal[k] ~= nil then
-    local vars = rawget(t, "_vars")
+    local vars = inner._vars
     if vars ~= nil and vars[k] ~= nil then
       return vars[k]:value()
     end
@@ -399,15 +400,15 @@ local function __index(t, k)
   end
 
   -- 2. Classified 字段
-  local classified_schemas = rawget(t, "classified_schemas")
+  local classified_schemas = inner.classified_schemas
   if classified_schemas ~= nil and classified_schemas[k] ~= nil then
     -- 优先从已绑定的 netvar 读取
-    local cvars = rawget(t, "_classified_vars")
+    local cvars = inner._classified_vars
     if cvars ~= nil and cvars[k] ~= nil then
       return cvars[k]:value()
     end
     -- 其次从本地缓存读取（Attach 前的写入）
-    local cache = rawget(t, "_classified_cache")
+    local cache = inner._classified_cache
     if cache ~= nil and cache[k] ~= nil then
       return cache[k]
     end
@@ -415,15 +416,22 @@ local function __index(t, k)
     return TYPE_DEFAULT_VALUE[classified_schemas[k].type]
   end
 
-  -- 3. 非 schema 字段：访问类方法或普通属性
+  -- 3. 非 schema 字段：访问类方法
   return getmetatable(t)[k]
 end
 
 local function __newindex(t, k, v)
+  local inner = NetStateMap[t]
+  if inner == nil then
+    -- 未初始化，直接写入实例（不应发生）
+    rawset(t, k, v)
+    return
+  end
+
   -- 1. 普通字段写入
-  local normal = rawget(t, "normal_schemas")
+  local normal = inner.normal_schemas
   if normal ~= nil and normal[k] ~= nil then
-    local vars = rawget(t, "_vars")
+    local vars = inner._vars
     if vars ~= nil and vars[k] ~= nil then
       -- 只有服务器才真正修改 net 变量；set 自带 dirty 事件
       if TheWorld.ismastersim then
@@ -437,9 +445,9 @@ local function __newindex(t, k, v)
   end
 
   -- 2. Classified 字段写入
-  local classified_schemas = rawget(t, "classified_schemas")
+  local classified_schemas = inner.classified_schemas
   if classified_schemas ~= nil and classified_schemas[k] ~= nil then
-    local cvars = rawget(t, "_classified_vars")
+    local cvars = inner._classified_vars
     local netvar = (cvars ~= nil) and cvars[k] or nil
     if netvar ~= nil then
       if TheWorld.ismastersim then
@@ -450,10 +458,10 @@ local function __newindex(t, k, v)
       return
     else
       -- 尚未 AttachClassified，缓存起来待用
-      local cache = rawget(t, "_classified_cache")
+      local cache = inner._classified_cache
       if cache == nil then
         cache = {}
-        rawset(t, "_classified_cache", cache)
+        inner._classified_cache = cache
       end
       cache[k] = v
       return
