@@ -54,7 +54,8 @@ local EliteUI = Class(Widget, function(self, owner)
   self.currentElite = 0
   self.currentLevel = 0
   self.currentPotential = 0
-  self.owner:DoTaskInTime(0, function() 
+
+  self.initTask = self.inst:DoTaskInTime(0, function() 
     local state = self.owner.replica.ark_elite and self.owner.replica.ark_elite.state
     if state then
       self:SetElite(state.elite)
@@ -81,8 +82,11 @@ function EliteUI:Blink(widget)
     end)
   end)
 end
-
 function EliteUI:Kill()
+  if self.initTask then
+    self.initTask:Cancel()
+    self.initTask = nil
+  end
   for widget, _ in pairs(self.blinkTasks) do
     widget:CancelTintTo(true)
   end

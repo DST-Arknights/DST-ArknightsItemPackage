@@ -179,7 +179,7 @@ function SingleSkill:SetEnergyRecovering(force)
   local cfg = self.config
   local lvl = self.levelConfig
   local prevStatus = data.status
-  local cancelled = force == true
+  force = force == true
 
   data.status = CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
   if cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
@@ -198,14 +198,14 @@ function SingleSkill:SetEnergyRecovering(force)
   if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
     self:_Emit("ark_skill_deactivate", {
       fromStatus = prevStatus,
-      cancelled = cancelled
+      force = force
     })
   end
 
   -- 进入充能状态事件
   self:_Emit("ark_skill_energy_recovering", {
     fromStatus = prevStatus,
-    cancelled = cancelled
+    force = force
   })
 end
 
@@ -243,11 +243,11 @@ end
 
 function SingleSkill:Unlock()
   local data = self.data
-  if data.status ~= CONSTANTS.SKILL_STATUS.LOCKED and data.status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+  if data.status ~= CONSTANTS.SKILL_STATUS.LOCKED then
     return
   end
   local prevStatus = data.status
-  self:SetEnergyRecovering(false)
+  self:SetEnergyRecovering()
   self:_Emit("ark_skill_unlocked", {
     fromStatus = prevStatus
   })
@@ -386,7 +386,7 @@ function SingleSkill:CutBullet(value)
     bulletCount = data.bulletCount
   })
   if data.bulletCount == 0 then
-    self:SetEnergyRecovering(false)
+    self:SetEnergyRecovering()
   end
 end
 
