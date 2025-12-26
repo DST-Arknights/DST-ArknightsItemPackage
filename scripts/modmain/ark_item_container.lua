@@ -194,23 +194,6 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
   end
 end)
 
-AddClientModRPCHandler('ark_item', 'inventoryBounce', function(slot)
-  if not ThePlayer then
-    return
-  end
-  local slotInv = ThePlayer.HUD.controls.inv.inv[slot]
-  if slotInv then
-    slotInv:ScaleTo(1, 1.25, .125, function()
-      slotInv:ScaleTo(1.25, 1, .125)
-    end)
-    local slotItem = ThePlayer.replica.inventory:GetItemInSlot(slot)
-    local isOpen = slotItem and slotItem.replica.container and slotItem.replica.container._isopen
-    if not isOpen then
-      TheFocalPoint.SoundEmitter:PlaySound(PICKUPSOUNDS["DEFAULT_FALLBACK"])
-    end
-  end
-end)
-
 -- overflow ark背包优先标志
 local overflowArkPackFirstSymbol = Symbol("overflow_ark_pack_first")
 -- 只允获得一个包
@@ -461,6 +444,47 @@ local function OnRefreshCrafting(inst)
   if ThePlayer ~= nil and ThePlayer.HUD ~= nil then
     ThePlayer:PushEvent("refreshcrafting")
   end
+end
+
+local function DoBlink(slot)
+  if slot.blink_task then
+    return;
+  end
+  slot.blink_task = slot.inst:DoTaskInTime(0, function()
+    slot:ScaleTo(1, 1.25, .125, function()
+      slot:ScaleTo(1.25, 1, .125)
+    end)
+    TheFocalPoint.SoundEmitter:PlaySound(PICKUPSOUNDS["DEFAULT_FALLBACK"])
+  end)
+end
+
+local function BlinkArkPackSlot(inst, data)
+  -- 非ark包, 不闪
+  if not isArkItemPack(inst) then
+    return
+  end
+  -- 获取自己的owner
+  local owner = nil
+  local opened = false
+  -- 主机从组件里取
+  if inst.components.inventoryitemm then
+    owner = inst.components.inventoryitem:GetOwner()
+    opened = owner and inst.components.container.silent_open_list[owner] or false
+  else
+    owner = ThePlayer
+    opened = inst.replica.container and inst.replica.container.silent_opener and true or false
+  end
+  if opened and owner.HUD and owner.HUD.controls and owner.HUD.controls.inv then
+    -- 找到索引
+    local items = owner.replica.inventory and owner.replica.inventory:GetItems() or {}
+    for i, v in ipairs(items) do
+      if v == inst then
+        local slot = owner.HUD.controls.inv.inv[i]
+        DoBlink(slot)
+      end
+    end
+  end
+  
 end
 
 AddClassPostConstruct("components/container_replica", function(self)
