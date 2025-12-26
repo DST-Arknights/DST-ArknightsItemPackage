@@ -34,28 +34,25 @@ local ArkSkillReplica = Class(function(self, inst)
     })
     self.states[i] = state
     state:Attach(self.inst)
-    if not TheNet:IsDedicated() then
-      -- 客机端监听状态变化，直接调用 UI 更新
-      state:Watch({ "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
-        ArkLogger:Debug('ark_skill_replica Watch OnDirty', i, state.status, state.level, state.energyProgress, state.buffProgress, state.bulletCount, state.activationStacks)
-        local skillUI = SafeGetSkillsUI(self.inst):GetSkillByIndex(i)
-        if skillUI then
-          ArkLogger:Debug('ark_skill_replica Watch OnDirty SyncSkillStatus', i, state.status, state.level, state.energyProgress, state.buffProgress, state.bulletCount, state.activationStacks)
-          skillUI:SyncSkillStatus(
-            state.status,
-            state.level,
-            state.energyProgress,
-            state.buffProgress,
-            state.bulletCount,
-            state.activationStacks
-          )
-        end
-      end)
-    end
+    state:Watch({ "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
+      ArkLogger:Debug('ark_skill_replica Watch OnDirty', i, state.status, state.level, state.energyProgress, state.buffProgress, state.bulletCount, state.activationStacks)
+      local skillUI = SafeGetSkillsUI(self.inst):GetSkillByIndex(i)
+      if skillUI then
+        skillUI:SyncSkillStatus(
+          state.status,
+          state.level,
+          state.energyProgress,
+          state.buffProgress,
+          state.bulletCount,
+          state.activationStacks
+        )
+      end
+    end)
   end
 end)
 
 function ArkSkillReplica:ClientRegisterSkill(config)
+  ArkLogger:Debug("ark_skill_replica ClientRegisterSkill", config.id)
   if TheWorld.ismastersim then
     return
   end
@@ -79,18 +76,20 @@ function ArkSkillReplica:RegisterSkill(config)
   self.skillIdToIndex[config.id] = index
   self.configs[index] = config
   if TheWorld.ismastersim then
-    if ThePlayer == self.inst then
-      self:SetHotkey(config.id, config.hotkey)
-    else
       -- 发送rpc, 同步配置
       -- 延时发送, 不然获取不到userid
-      self._register_tasks[config.id] = self.inst:DoTaskInTime(0, function()
+    if self._register_tasks[config.id] then
+      self._register_tasks[config.id]:Cancel()
+    end
+    self._register_tasks[config.id] = self.inst:DoTaskInTime(0, function()
+      if ThePlayer == self.inst then
+        self:SetHotkey(config.id, config.hotkey)
+      else
         ArkLogger:Debug("ark_skill_replica register skill send rpc", config.id)
-        config.index = index
         SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
         self._register_tasks[config.id] = nil
-      end)
-    end
+      end
+    end)
   end
   return index
 end

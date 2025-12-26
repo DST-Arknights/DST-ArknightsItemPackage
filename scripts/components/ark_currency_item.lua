@@ -12,7 +12,7 @@ function ArkCurrency:GetAllPrices()
 end
 
 function ArkCurrency:CanUse(doer)
-  return doer:HasTag('ark_currency_user')
+  return true
 end
 
 return ArkCurrency

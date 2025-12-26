@@ -3,7 +3,7 @@ local SafeCallArkExtendUI = GenSafeCall(function (inst)
 end)
 
 local SafeCallArkCurrencyUI = GenSafeCall(function (inst)
-  return SafeCallArkExtendUI(self.inst).currency
+  return SafeCallArkExtendUI(inst).currency
 end)
 local ArkCurrency = Class(function(self, inst)
   self.inst = inst

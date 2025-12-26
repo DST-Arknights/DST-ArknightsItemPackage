@@ -2,7 +2,7 @@ GLOBAL.setmetatable(env, {
   __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
 
-PrefabFiles = {"net_state_classified", "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room' }
+PrefabFiles = {"net_state_classified", "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener'}
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -52,5 +52,5 @@ modimport('scripts/modmain/ark_item_container')
 modimport('scripts/modmain/ark_skill')
 -- 扩展ui
 modimport('scripts/modmain/ark_extend_ui')
-
+-- 武器扩展
 modimport('scripts/modmain/combat_extension')

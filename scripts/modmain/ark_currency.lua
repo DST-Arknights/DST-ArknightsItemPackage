@@ -2,71 +2,94 @@ local utils = require("ark_utils")
 
 TUNING.ARK_CURRENCY_TYPES = {"ark_gold", "ark_diamond_shd", "ark_diamond", "ark_exgg_shd", "ark_hgg_shd", "ark_lgg_shd"}
 
+for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
+  CHARACTER_INGREDIENT[string.upper(type)] = type
+end
+
+local _IsCharacterIngredient = GLOBAL.IsCharacterIngredient
+local is_ark_currency_ingredient = nil
+function GLOBAL.IsCharacterIngredient(ingredient)
+  if is_ark_currency_ingredient == nil then
+    is_ark_currency_ingredient = {}
+    for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
+      is_ark_currency_ingredient[type] = true
+    end
+  end
+  if ingredient ~= nil and is_ark_currency_ingredient[ingredient] then
+    return true
+  end
+  return _IsCharacterIngredient(ingredient)
+end
+
 AddPrefabPostInit("world", function(inst)
   if TheNet:GetIsServer() then
     inst:AddComponent("ark_currency_data")
   end
 end)
 
-AddPlayerPostInit(function(self)
-  self:AddTag('ark_currency_user')
-end)
-
-AddComponentPostInit("inventory", function(self)
-  local _Has = self.Has
-  self.Has = function(self, item, amount, ...)
-    for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
-      if item == type then
-        local left = self.inst.components.ark_currency:GetArkCurrencyByType(type)
-        return left >= amount, left
+AddComponentPostInit("builder", function(self)
+  local _HasCharacterIngredient = self.HasCharacterIngredient
+  function self:HasCharacterIngredient(ingredient)
+    if self.inst.components.ark_currency ~= nil then
+      if is_ark_currency_ingredient[ingredient.type] then
+        local has = self.inst.components.ark_currency:GetArkCurrencyByType(ingredient.type)
+        if has ~= nil and has >= ingredient.amount then
+          return true, has
+        else
+          return false, 0
+        end
       end
     end
-    return _Has(self, item, amount, ...)
+    return _HasCharacterIngredient(self, ingredient)
   end
-end)
-
-AddComponentPostInit("builder", function(self)
   local _RemoveIngredients = self.RemoveIngredients
-  self.RemoveIngredients = function(self, ingredients, recname, ...)
+  self.RemoveIngredients = function(self, ingredients, recname, discounted)
     if self.freebuildmode then
       return
     end
-    local recipe = AllRecipes[recname]
-    if recipe then
-      for k, v in pairs(recipe.ingredients) do
-        for _, currencyType in pairs(TUNING.ARK_CURRENCY_TYPES) do
-          if v.type == currencyType then
-            local amt = math.max(1, RoundBiasedUp(v.amount * self.ingredientmod))
-            self.inst.components.ark_currency:AddArkCurrencyByType(currencyType, -amt)
+    if self.inst.components.ark_currency ~= nil then
+      local recipe = AllRecipes[recname]
+      if recipe then
+        for _, v in pairs(recipe.character_ingredients) do
+          if is_ark_currency_ingredient[v.type] then
+            self.inst.components.ark_currency:AddArkCurrencyByType(v.type, -v.amount)
           end
         end
       end
     end
-    return _RemoveIngredients(self, ingredients, recname, ...)
+    return _RemoveIngredients(self, ingredients, recname, discounted)
   end
 end)
 
-AddClassPostConstruct('components/inventory_replica', function(self)
-  local _Has = self.Has
-  self.Has = function(self, item, amount, ...)
-    if self.inst.replica.ark_currency then
-      for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
-        if item == type then
-          local left = self.inst.replica.ark_currency:GetArkCurrencyByType(type)
-          return left >= amount, left
+AddClassPostConstruct('components/builder_replica', function(self)
+  local _HasCharacterIngredient = self.HasCharacterIngredient
+  self.HasCharacterIngredient = function(self, ingredient, ...)
+    if self.inst.replica.ark_currency ~= nil then
+      if is_ark_currency_ingredient[ingredient.type] then
+        local has = self.inst.replica.ark_currency:GetArkCurrencyByType(ingredient.type)
+        if has ~= nil and has >= ingredient.amount then
+          return true, has
+        else
+          return false, 0
         end
       end
     end
-    return _Has(self, item, amount, ...)
+    return _HasCharacterIngredient(self, ingredient, ...)
   end
 end)
 
 -- 使用货币
 AddAction("USE_ARK_CURRENCY", STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC, function(act)
   local target = act.target or act.invobject
-  if target.components.ark_currency_item then
-    return target.components.ark_currency_item:CanUse(act.doer)
+  if target.components.ark_currency_item and act.doer.components.ark_currency then
+    local prices = target.components.ark_currency_item:GetAllPrices()
+    for _, v in pairs(prices) do
+      act.doer.components.ark_currency:AddArkCurrencyByType(v.currencyType, v.value)
+    end
+    target.components.stackable:Get():Remove()
+    return true
   end
+  return false
 end)
 
 AddComponentAction('INVENTORY', 'ark_currency_item', function(inst, doer, actions, right)
@@ -91,32 +114,13 @@ local useArkCurrencyState = State {
     if not TheWorld.ismastersim then
       return
     end
-    local action = inst:GetBufferedAction()
-    local target = action.target or action.invobject
-    local prices = target.components.ark_currency_item:GetAllPrices()
-    for _, v in pairs(prices) do
-      inst.components.ark_currency:AddArkCurrencyByType(v.currencyType, v.value)
-    end
-    -- target 消耗一个
-    target.components.stackable:Get():Remove()
-    inst:ClearBufferedAction()
+    inst:PerformBufferedAction()
   end)},
   events = {EventHandler("animover", function(inst) inst.sg:GoToState("idle") end)}
 }
 
 AddStategraphState("wilson", useArkCurrencyState)
 AddStategraphState("wilson_client", useArkCurrencyState)
-
-
--- 修改ui样式, 与精神或体力等一致的样式
-local IngredientUI = require "widgets/ingredientui"
-local _IngredientUI_ctor = IngredientUI._ctor
-function IngredientUI:_ctor(atlas, image, quantity, on_hand, has_enough, name, owner, recipe_type, quant_text_scale, ingredient_recipe)
-  _IngredientUI_ctor(self, atlas, image, quantity, on_hand, has_enough, name, owner, recipe_type, quant_text_scale, ingredient_recipe)
-  if utils.findIndex(TUNING.ARK_CURRENCY_TYPES, recipe_type) then
-    self.quant:SetString(string.format("-%d", quantity))
-  end
-end
 
 -- 货币系统ui
 table.insert(Assets, Asset("ATLAS", "images/ark_item_ui.xml"))

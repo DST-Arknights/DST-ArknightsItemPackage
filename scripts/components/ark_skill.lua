@@ -4,9 +4,8 @@ local utils = require "ark_utils"
 local ArkSkill = Class(function(self, inst)
   self.inst = inst
   self.inst:AddTag("ark_skill")
-  -- by-id 存储与遍历顺序
   self.skillsById = {}
-  self.order = {}
+  self.skillCount = 0
 end)
 
 local function defaultSkill(skill)
@@ -247,10 +246,10 @@ function SingleSkill:Unlock()
     return
   end
   local prevStatus = data.status
-  self:SetEnergyRecovering()
   self:_Emit("ark_skill_unlocked", {
     fromStatus = prevStatus
   })
+  self:SetEnergyRecovering()
 end
 
 function SingleSkill:SetLevel(level)
@@ -422,9 +421,10 @@ function ArkSkill:RegisterSkill(config)
   if self.skillsById[id] then
     return self.skillsById[id]
   end
+  self.skillCount = self.skillCount + 1
+  config.index = self.skillCount
   local skill = SingleSkill(self, config)
   self.skillsById[id] = skill
-  table.insert(self.order, id)
 
   -- 开始更新
   self.inst:StartUpdatingComponent(self)
@@ -450,8 +450,7 @@ function ArkSkill:RequestSyncSkillStatus(id)
 end
 
 function ArkSkill:OnUpdate(dt)
-  for _, id in ipairs(self.order) do
-    local s = self.skillsById[id]
+  for _, s in pairs(self.skillsById) do
     if s and s.Step then
       s:Step(dt)
     end
@@ -460,7 +459,6 @@ end
 
 function ArkSkill:OnSave()
   local data = {
-    order = self.order,
     skills = {}
   }
   for id, skill in pairs(self.skillsById) do
