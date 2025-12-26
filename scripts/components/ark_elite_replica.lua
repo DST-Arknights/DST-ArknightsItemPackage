@@ -275,7 +275,6 @@ local ArkElite = Class(function(self, inst)
     end)
     -- 等级交给 expBar 动画处理
     self.state:Watch({"currentExp", "level"}, function (state)
-      ArkLogger:Debug('ark_elite_replica Watch OnDirty', state.level, state.currentExp)
       SafeCallArkExpBarUI(self.inst):SetRealData(state.level, state.currentExp)
     end)
   end

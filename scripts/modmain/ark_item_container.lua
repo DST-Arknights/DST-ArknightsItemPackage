@@ -441,6 +441,7 @@ AddComponentPostInit("container", function(self)
 end)
 
 local function OnRefreshCrafting(inst)
+  ArkLogger:Trace('container', 'OnRefreshCrafting', inst)
   if ThePlayer ~= nil and ThePlayer.HUD ~= nil then
     ThePlayer:PushEvent("refreshcrafting")
   end
@@ -451,10 +452,11 @@ local function DoBlink(slot)
     return;
   end
   slot.blink_task = slot.inst:DoTaskInTime(0, function()
+    slot.blink_task = nil
     slot:ScaleTo(1, 1.25, .125, function()
       slot:ScaleTo(1.25, 1, .125)
     end)
-    TheFocalPoint.SoundEmitter:PlaySound(PICKUPSOUNDS["DEFAULT_FALLBACK"])
+    -- TheFocalPoint.SoundEmitter:PlaySound(PICKUPSOUNDS["DEFAULT_FALLBACK"])
   end)
 end
 
@@ -469,12 +471,12 @@ local function BlinkArkPackSlot(inst, data)
   -- 主机从组件里取
   if inst.components.inventoryitemm then
     owner = inst.components.inventoryitem:GetOwner()
-    opened = owner and inst.components.container.silent_open_list[owner] or false
+    opened = owner and inst.components.container.openlist[owner] or false
   else
     owner = ThePlayer
-    opened = inst.replica.container and inst.replica.container.silent_opener and true or false
+    opened = inst.replica.container and inst.replica.container.opener and true or false
   end
-  if opened and owner.HUD and owner.HUD.controls and owner.HUD.controls.inv then
+  if not opened and owner and owner.HUD and owner.HUD.controls and owner.HUD.controls.inv then
     -- 找到索引
     local items = owner.replica.inventory and owner.replica.inventory:GetItems() or {}
     for i, v in ipairs(items) do
@@ -496,6 +498,9 @@ AddClassPostConstruct("components/container_replica", function(self)
       self.inst.container_silent_opener = nil
       self:AttachSilentOpener(self.inst.container_silent_opener)
     end
+  end
+  if not TheNet:IsDedicated() then
+    self.inst:ListenForEvent("itemget", BlinkArkPackSlot)
   end
   -- 调整打开者
   function self:AdjustOpener(opener)
