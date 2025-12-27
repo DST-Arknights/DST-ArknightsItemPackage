@@ -2,7 +2,7 @@ GLOBAL.setmetatable(env, {
   __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
 
-PrefabFiles = {"net_state_classified", "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener'}
+PrefabFiles = {"ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener'}
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),

@@ -138,11 +138,17 @@ local function bindNetVars(inner, owner, schemas)
   local vars = {}
   for key, def in pairs(schemas) do
     inner.log("Bind", var_kind, "var", key, "type", def.type)
-    local constructor = TYPE_MAP[def.type]
-    assert(constructor,
-      string.format("[NetState] Unknown netvar type '%s' for key '%s'", tostring(def.type), tostring(key)))
-    local dirty_event = getDirtyName(key)
-    vars[key] = constructor(owner.GUID, "net_state." .. key, dirty_event)
+    -- 已存在则绑定, 不存在则创建
+    local netvar = owner[key]
+    if netvar == nil then
+      local constructor = TYPE_MAP[def.type]
+      assert(constructor,
+        string.format("[NetState] Unknown netvar type '%s' for key '%s'", tostring(def.type), tostring(key)))
+      local dirty_event = getDirtyName(key)
+      vars[key] = constructor(owner.GUID, "net_state." .. key, dirty_event)
+    else
+      vars[key] = netvar
+    end
   end
   return vars
 end
@@ -150,6 +156,62 @@ end
 local function DoListenForKey(inst, key, fn)
   local dirty_event = getDirtyName(key)
   inst:ListenForEvent(dirty_event, fn)
+end
+
+local function RegisterClassifiedPrefab(name, schemas)
+  RegisterSinglePrefab(Prefab(name, function()
+    ArkLogger:Trace('[net_state_classified]', 'RegisterClassifiedPrefab', name)
+    local inst = CreateEntity()
+    if TheWorld.ismastersim then
+      inst.entity:AddTransform()
+    end
+    inst.entity:AddNetwork()
+    inst.entity:Hide()
+    inst:AddTag("CLASSIFIED")
+    for key, def in pairs(schemas) do
+      local constructor = TYPE_MAP[def.type]
+      local dirty_event = getDirtyName(key)
+      inst[key] = constructor(inst.GUID, "net_state." .. key, dirty_event)
+    end
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+      inst.OnEntityReplicated = function(inst)
+        local parent = inst.entity:GetParent()
+        if parent == nil then
+          ArkLogger:Warn('[net_state_classified]', 'OnEntityReplicated parent == nil', inst)
+          inst:Remove()
+          return
+        end
+        local state_by_name = parent._ns_state_by_name
+        local state = state_by_name and state_by_name[name] or nil
+        if state == nil then
+          -- 没找到, 等待
+          ArkLogger:Trace('[net_state_classified]', 'OnEntityReplicated state == nil, push pending', name)
+          parent._ns_pending_classified = parent._ns_pending_classified or {}
+          parent._ns_pending_classified[name] = inst
+          return
+        else
+          state:AttachClassified(inst)
+        end
+      end
+      inst.OnRemoveEntity = function(inst)
+        local parent = inst.entity:GetParent()
+        if parent ~= nil then
+          -- 解除_ns_pending_classified
+          local pending = parent._ns_pending_classified
+          if pending ~= nil then
+            pending[name] = nil
+          end
+        end
+        if inst._state ~= nil then
+          inst._state:DetachClassified()
+        end
+      end
+      return inst
+    end
+    inst.persists = false
+    return inst
+  end))
 end
 
 -------------------------------------------------------------------------------
@@ -174,16 +236,15 @@ local function NetStateInit(self, inst, schema_def)
   -------------------------------------------------------------------------------
   -- stack_level 5: NetStateInit -> __call -> 调用 NetState(...) 的源文件
   local key = GenerateNetStateKey(inst, 5)
-  ArkLogger:Trace('[net_state]', 'NetStateInit', key)
   inner._key = key
-
+  local state_name = 'net_state_' .. hash(inner._key)
   -- 在 inst 上登记 key -> state 的映射（真正用于主客机匹配的 identity）
-  local state_by_key = inst._ns_state_by_key
-  if state_by_key == nil then
-    state_by_key = {}
-    inst._ns_state_by_key = state_by_key
+  local state_by_name = inst._ns_state_by_name
+  if state_by_name == nil then
+    state_by_name = {}
+    inst._ns_state_by_name = state_by_name
   end
-  state_by_key[inner._key] = self
+  state_by_name[state_name] = self
 
   -- 实例专属日志方法：自动携带 GUID 和分类标签
   inner.log = function(category, ...)
@@ -204,15 +265,20 @@ local function NetStateInit(self, inst, schema_def)
   inner._pending_classified_listeners = {}
   -- 若存在 classified 字段，则在主机上生成 classified，在客机上尝试消费 pending
   if next(inner.classified_schemas) then
+    if not PrefabExists(state_name) then
+      RegisterClassifiedPrefab(state_name, inner.classified_schemas)
+    end
     if TheWorld.ismastersim then
-      -- 主机：立即生成并绑定对应的 classified 实体
-      inner.log("Attach", "spawning net_state_classified prefab", inner._key)
-      inner.net_state_classified = SpawnPrefab("net_state_classified")
-      inner.net_state_classified.entity:SetParent(inner.inst.entity)
-      inner.net_state_classified._net_state_key:set(inner._key)
-      inner.inst:DoTaskInTime(0, function()
+      inner.classified_initialized_task = inner.inst:DoTaskInTime(0, function()
+        inner.classified_initialized_task = nil
+        inner.net_state_classified = SpawnPrefab(state_name)
+        inner.net_state_classified.entity:SetParent(inner.inst.entity)
         self:AttachClassified(inner.net_state_classified, true)
-        inner.net_state_classified.Network:SetClassifiedTarget(inner.inst)
+        if inner.pending_attach_target ~= nil then
+          self:Attach(inner.pending_attach_target)
+        else
+          inner.net_state_classified.Network:SetClassifiedTarget(inner.inst)
+        end
       end)
     else
       -- 客机：如果 classified 先于 NetStateInit 到达，则 OnEntityReplicated 会把
@@ -220,11 +286,10 @@ local function NetStateInit(self, inst, schema_def)
       -- 这里在初始化完成后主动检查并尝试完成绑定。
       local pending = inner.inst._ns_pending_classified
       if pending ~= nil then
-        local classified = pending[inner._key]
+        local classified = pending[state_name]
         if classified ~= nil and classified:IsValid() then
-          pending[inner._key] = nil
-          classified._state = self
-          inner.log("AttachClassified", "attach from pending", inner._key)
+          pending[state_name] = nil
+          inner.log("AttachClassified", "attach from pending", state_name)
           self:AttachClassified(classified)
         end
       end
@@ -259,11 +324,11 @@ end
 
 function NetState:AttachClassified(net_state_classified, skip_attach)
   local inner = NetStateMap[self]
-  inner.log("AttachClassified", "begin")
   inner.net_state_classified = net_state_classified
+  net_state_classified._state = self
+  inner.log("AttachClassified", "attaching classified", net_state_classified)
   -- 注册所有 pending 的 classified 监听
   if inner._pending_classified_listeners and #inner._pending_classified_listeners > 0 then
-    inner.log("AttachClassified", "registering", #inner._pending_classified_listeners, "classified listeners")
     for _, item in ipairs(inner._pending_classified_listeners) do
       DoListenForKey(inner.net_state_classified, item.key, item.fn)
       inner.log("Watch", "attached classified listener for", item.key)
@@ -287,10 +352,10 @@ function NetState:AttachClassified(net_state_classified, skip_attach)
     end
     inner._classified_cache = nil
   end
+  inner.log("AttachClassified", "complete")
   if inner._on_attached and not skip_attach then
     inner._on_attached(ThePlayer)
   end
-  inner.log("AttachClassified", "complete")
 end
 
 --- 客户端：当 classified 实体被销毁时调用
@@ -305,26 +370,59 @@ function NetState:DetachClassified()
 end
 
 --- 主机端：手动控制 classified 的目标玩家
+--- 可见性规则（与客机一致）：
+--- - SetClassifiedTarget(nil) = 开放给所有人可见
+--- - SetClassifiedTarget(player) = 只有该 player 可见
+--- - SetClassifiedTarget(self.inst) = 所有玩家不可见（假设 self.inst 不是玩家）
+--- 事件触发规则（与客机一致）：
+--- - 只有主机玩家（ThePlayer）的可见权限变更才会触发 attach/detached
+--- - nil -> player 不会对主机玩家触发 attach（除非 player == ThePlayer）
 function NetState:Attach(target)
   if not TheWorld.ismastersim then
     return
   end
   local inner = NetStateMap[self]
-  inner.attach_task = inner.inst:DoTaskInTime(0, function()
-    -- 设置 classified 的目标玩家（客户端会收到该实体）
-    inner.log("Attach", "attaching classified to player", target, inner._key)
-    inner.net_state_classified.Network:SetClassifiedTarget(target)
-    -- 主机没有AttachClassified，立即attach
-    if not TheNet:IsDedicated() then
-      if target == ThePlayer and inner._on_attached then
-        inner._on_attached(target)
-      end
-      if target ~= nil and target ~= ThePlayer and inner._on_detached then
-        inner._on_detached(target)
-      end
+  local old_target = inner.attach_target
+  if target == old_target then
+    return
+  end
+  if inner.classified_initialized_task then
+    inner.pending_attach_target = target
+    return
+  end
+  -- 设置 classified 的目标玩家（客户端会收到该实体）
+  inner.log("Attach", "attaching classified to player", target, inner._key)
+  inner.net_state_classified.Network:SetClassifiedTarget(target)
+
+  -- 计算主机玩家（ThePlayer）的可见性变更
+  -- old_visible: 主机玩家之前是否可见
+  -- new_visible: 主机玩家现在是否可见
+  local function is_visible_to_host(t)
+    -- nil = 所有人可见，包括主机玩家
+    -- ThePlayer = 只有主机玩家可见
+    -- 其他玩家 = 主机玩家不可见
+    -- self.inst（假设不是玩家）= 所有人不可见
+    return t == nil or t == ThePlayer
+  end
+
+  local old_visible = is_visible_to_host(old_target)
+  local new_visible = is_visible_to_host(target)
+
+  -- 只有可见性发生变更时才触发事件（与客机逻辑一致）
+  if old_visible and not new_visible then
+    -- 从可见变为不可见 -> detached
+    if inner._on_detached then
+      inner._on_detached(ThePlayer)
     end
-    inner.attach_task = nil
-  end)
+  elseif not old_visible and new_visible then
+    -- 从不可见变为可见 -> attached
+    if inner._on_attached then
+      inner._on_attached(ThePlayer)
+    end
+  end
+  -- 可见性未变（如 nil -> nil 或 player1 -> player2 其中都不是 ThePlayer）不触发任何事件
+
+  inner.attach_target = target
 end
 
 --- 注册字段变化监听

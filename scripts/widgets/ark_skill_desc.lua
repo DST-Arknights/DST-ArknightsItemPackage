@@ -175,7 +175,6 @@ end)
 
 function ArkSkillDesc:RefreshHotKey()
   local hotkey = ThePlayer.replica.ark_skill:GetHotkey(self.id)
-  ArkLogger:Debug('ArkSkillDesc:RefreshHotKey', self.id, hotkey)
   local hotKeyString = nil
   if hotkey ~= nil then
     hotKeyString = STRINGS.UI.CONTROLSSCREEN.INPUTS[1][hotkey]
