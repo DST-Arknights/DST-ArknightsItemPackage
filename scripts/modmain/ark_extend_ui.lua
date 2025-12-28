@@ -1,10 +1,19 @@
 local ArkExtendUi = require "widgets/ark_extend_ui"
-AddClassPostConstruct("screens/playerhud", function(self)
-  local _SetMainCharacter = self.SetMainCharacter
-  function self:SetMainCharacter(maincharacter)
-    _SetMainCharacter(self, maincharacter)
-    maincharacter.HUD.controls.arkExtendUi = maincharacter.HUD.controls:AddChild(ArkExtendUi(self.owner))
-    maincharacter.HUD.controls.arkExtendUi:MoveToBack()
+
+AddClassPostConstruct("widgets/controls", function(self)
+  self.arkExtendUi = self:AddChild(ArkExtendUi(self.owner, self))
+  self.arkExtendUi:MoveToBack()
+
+  local _ShowCraftingAndInventory = self.ShowCraftingAndInventory
+  function self:ShowCraftingAndInventory()
+    _ShowCraftingAndInventory(self)
+    self.arkExtendUi:Show()
+  end
+
+  local _HideCraftingAndInventory = self.HideCraftingAndInventory
+  function self:HideCraftingAndInventory()
+    _HideCraftingAndInventory(self)
+    self.arkExtendUi:Hide()
   end
 end)
 AddClassPostConstruct("widgets/inventorybar", function(self)
