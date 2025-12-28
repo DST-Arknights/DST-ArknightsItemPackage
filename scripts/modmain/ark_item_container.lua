@@ -491,17 +491,6 @@ end
 
 AddClassPostConstruct("components/container_replica", function(self)
   self.silent_openers = {}
-  if not TheWorld.ismastersim then
-    if self.silent_opener == nil and self.inst.container_silent_opener ~= nil then
-      self.silent_opener = self.inst.container_silent_opener
-      self.inst.container_silent_opener.OnRemoveEntity = nil
-      self.inst.container_silent_opener = nil
-      self:AttachSilentOpener(self.inst.container_silent_opener)
-    end
-  end
-  if not TheNet:IsDedicated() then
-    self.inst:ListenForEvent("itemget", BlinkArkPackSlot)
-  end
   -- 调整打开者
   function self:AdjustOpener(opener)
     -- 取静默打开与非静默打开的并集, 获取count
@@ -586,6 +575,18 @@ AddClassPostConstruct("components/container_replica", function(self)
       end
     end
     return enough, count
+  end
+
+  if not TheWorld.ismastersim then
+    if self.silent_opener == nil and self.inst.container_silent_opener ~= nil then
+      self.silent_opener = self.inst.container_silent_opener
+      self.inst.container_silent_opener.OnRemoveEntity = nil
+      self.inst.container_silent_opener = nil
+      self:AttachSilentOpener(self.inst.container_silent_opener)
+    end
+  end
+  if not TheNet:IsDedicated() then
+    self.inst:ListenForEvent("itemget", BlinkArkPackSlot)
   end
 end)
 
