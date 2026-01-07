@@ -345,6 +345,9 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
 end
 
 local function OnUpdate(self, dt)
+  if not self.inst:IsValid() then
+    return
+  end
   -- 自动激活模式图标旋转
   if self.autoActivation:IsVisible() then
     self.autoActivation:SetRotation(self.autoActivation:GetRotation() - 360 * dt / 10)

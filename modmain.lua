@@ -21,7 +21,7 @@ AddReplicableComponent("ark_elite")
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
-ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
+ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
 -- 加载符号
 modimport('scripts/modmain/symbol')
 -- 加载 NetState
@@ -50,7 +50,38 @@ modimport('scripts/modmain/ark_item_container')
 -- 技能
 -- 导出全局变量AddSkillLevelUpRecipes
 modimport('scripts/modmain/ark_skill')
+-- 精英化
+modimport('scripts/modmain/ark_elite')
 -- 扩展ui
 modimport('scripts/modmain/ark_extend_ui')
 -- 武器扩展
 modimport('scripts/modmain/combat_extension')
+
+
+-- 定义 elite NetState
+DefineNetState("ark_elite", {
+  rarity = "int:classified",
+  potential = "int:classified",
+  elite = "int:classified",
+  level = "int:classified",
+  currentExp = "int:classified",
+  overflowExp = "int:classified",
+})
+
+DefineNetState("ark_skill", {
+  status = "int:classified",
+  level = "int:classified",
+  energyProgress = "float:classified",
+  buffProgress = "float:classified",
+  bulletCount = "int:classified",
+  activationStacks = "int:classified",
+})
+
+-- 定义货币 NetState
+DefineNetState("ark_currency", (function()
+  local stateDef = {}
+  for _, currencyType in ipairs(TUNING.ARK_CURRENCY_TYPES) do
+    stateDef[currencyType] = "int:classified"
+  end
+  return stateDef
+end)())

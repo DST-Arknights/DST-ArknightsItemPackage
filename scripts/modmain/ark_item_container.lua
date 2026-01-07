@@ -250,6 +250,13 @@ AddComponentPostInit("inventory", function(self)
 
   local _RemoveItem = self.RemoveItem
   self.RemoveItem = function(self, item, wholestack, checkallcontainers, keepoverstacked)
+    if true then
+      if isArkItemPack(item) then
+        item.components.container:CloseSilently(self.inst)
+      end
+      return _RemoveItem(self, item, wholestack, checkallcontainers, keepoverstacked)
+    end
+    -- 后面的代码不要了, 源码判断有问题
     local overflow = self:GetOverflowContainer()
     if checkallcontainers then
       local silent_open_containers = self.silent_open_containers

@@ -250,32 +250,24 @@ end)
 local ArkElite = Class(function(self, inst)
   self.inst = inst
 
-  -- NetState 定义：组件只写入这些字段，UI 只从这里读取
+  -- NetState 使用预定义的 "ark_elite" schema
   -- 注意：levelUpExp 不再通过网络同步，改为本地计算
-  local stateDef = {
-    rarity = "int:classified",
-    potential = "int:classified",
-    elite = "int:classified",
-    level = "int:classified",
-    currentExp = "int:classified",
-    overflowExp = "int:classified",
-  }
-
-  self.state = NetState(self.inst, stateDef)
+  self.state = NetState(self.inst, "ark_elite")
   self.state:Attach(self.inst)
 
   if not TheNet:IsDedicated() then
     SafeCallArkExtendUI(self.inst):SetupElite()
     -- 监听核心字段变化，驱动 ArkEliteUI（包括多级连升与减速逻辑）
-    self.state:Watch("potential", function (state) 
+    self.state:Watch("potential", function (state)
+      ArkLogger:Debug("ark_elite_replica Watch potential", state.potential)
       SafeCallArkEliteUI(self.inst):SetPotential(state.potential)
     end)
-    self.state:Watch("elite", function (state) 
-      SafeCallArkEliteUI(self.inst):SetElite(state.elite)
-    end)
     -- 等级交给 expBar 动画处理
-    self.state:Watch({"currentExp", "level"}, function (state)
-      SafeCallArkExpBarUI(self.inst):SetRealData(state.level, state.currentExp)
+    local force = true
+    self.state:Watch({"elite", "level", "currentExp"}, function (state)
+      SafeCallArkEliteUI(self.inst):SetElite(state.elite)
+      SafeCallArkExpBarUI(self.inst):SetRealData(state.elite, state.level, state.currentExp, force)
+      force = false
     end)
   end
 end)
@@ -301,6 +293,7 @@ function ArkElite:GetLevelCap()
   if not rarity or rarity < 1 then
     rarity = 1
   end
+  ArkLogger:Debug("ark_elite_replica GetLevelCap", rarity, elite)
   return EXP_CONFIG.maxLevel[rarity] and EXP_CONFIG.maxLevel[rarity][elite] or 1
 end
 return ArkElite

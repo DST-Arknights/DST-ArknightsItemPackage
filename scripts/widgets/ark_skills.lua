@@ -16,6 +16,11 @@ local ArkSkills = Class(Widget, function(self, owner, skillsConfig)
       self:AddSkill(skill)
     end
   end
+  self.owner:DoTaskInTime(0, function()
+    if owner.replica.ark_skill then
+      owner.replica.ark_skill:RequestSkillsConfig()
+    end
+  end)
 end)
 
 -- 按index排序的比较函数
@@ -59,6 +64,10 @@ end
 
 -- 添加单个技能
 function ArkSkills:AddSkill(cfg)
+  -- 相同的id杀掉然后添加
+  if cfg.id then
+    self:RemoveSkill(cfg.id)
+  end
   local skill = self:AddChild(ArkSkill(self.owner, cfg))
 
   table.insert(self.skillSlots, {

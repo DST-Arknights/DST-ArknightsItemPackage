@@ -23,3 +23,40 @@ for i, v in pairs(AllRecipes) do
 	v.level.ARK_ITEM_TECH = v.level.ARK_ITEM_TECH or 0
   v.level.ARK_TRAINING_TECH = v.level.ARK_TRAINING_TECH or 0
 end
+
+AddPrototyperDef('ark_workshop', {
+  icon_atlas = "images/ark_item_prototyper.xml",
+  icon_image = "ark_item_prototyper.tex",
+  is_crafting_station = true,
+  action_str = 'ARK_WORKSHOP',
+  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
+})
+
+-- 制造站
+AddRecipe2('ark_workshop', {
+  Ingredient('goldnugget', 2),
+}, TECH.SCIENCE_TWO, {
+  placer = 'ark_workshop_placer',
+  atlas = "images/ark_item_prototyper.xml",
+  image = "ark_item_prototyper.tex",
+})
+AddRecipeToFilter("ark_workshop", "PROTOTYPERS")
+
+-- 训练室
+AddPrototyperDef('ark_training_room', {
+  icon_atlas = "images/ark_item_prototyper.xml",
+  icon_image = "ark_item_prototyper.tex",
+  is_crafting_station = true,
+  action_str = 'ARK_TRAINING_ROOM',
+  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_TRAINING_ROOM
+})
+AddRecipe2("ark_training_room",
+  {Ingredient("boards", 4), Ingredient("goldnugget", 2)},
+  TECH.SCIENCE_TWO,
+  {
+    placer = 'ark_training_room_placer',
+    atlas = "images/ark_item_prototyper.xml",
+    image = "ark_item_prototyper.tex",
+  }
+)
+AddRecipeToFilter("ark_training_room", "PROTOTYPERS")

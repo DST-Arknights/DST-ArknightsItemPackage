@@ -1,7 +1,7 @@
 local common = require "ark_common"
 local CONSTANTS = require "ark_constants"
 
-local function onraity(self, value)
+local function onrarity(self, value)
   self.inst.replica.ark_elite.state.rarity = value
 end
 local function onelite(self, value)
@@ -27,17 +27,37 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
-  ArkLogger:Debug("ark_elite init")
   -- 每50秒增加300经验
   self.inst:DoPeriodicTask(10, function() self:AddExp(300) end)
+  self:RefreshLevelTag()
 end, nil, {
-  ratity = onraity,
+  rarity = onrarity,
   elite = onelite,
   level = onlevel,
   currentExp = oncurrentExp,
   overflowExp = onoverflowExp
 })
 
+function ArkElite:RefreshLevelTag()
+  -- 下一帧任务
+  if self._refreshLevelTagTask then
+    return
+  end
+  self._refreshLevelTagTask = self.inst:DoTaskInTime(0, function()
+    ArkLogger:Debug("ark_elite refresh level tag", self.inst, self.elite, self.level)
+    self._refreshLevelTagTask = nil
+    if self:CanEliteUp() then
+      local tag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, self.elite)
+      self.inst:AddTag(tag)
+    else
+      -- 循环删除所有tag
+      for i = 1, self.elite do
+        local tag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, i)
+        self.inst:RemoveTag(tag)
+      end
+    end
+  end)
+end
 ----------------------------------------------------------
 -- 内部工具函数
 ----------------------------------------------------------
@@ -61,11 +81,10 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
   if not amount or amount <= 0 then
     return
   end
+  local oldLevel = self.level
   local pool = amount
-  ArkLogger:Debug("ark_elite apply exp pool", amount, countToTotal)
   while pool > 0 do
     local levelCap = self:_GetLevelCap()
-    ArkLogger:Debug("ark_elite apply exp pool levelCap", levelCap)
     if self.level >= levelCap then
       -- 当前精英化阶段已满级：多余经验全部进入 overflow，等待精英化后释放
       self.overflowExp = (self.overflowExp or 0) + pool
@@ -73,7 +92,6 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
     end
 
     local need = self.inst.replica.ark_elite:GetLevelUpExp(self.level)
-    ArkLogger:Debug("ark_elite apply exp pool need", need)
     if need <= 0 then
       -- 配置缺失或异常，直接把剩余经验计入 overflow，避免死循环
       self.overflowExp = (self.overflowExp or 0) + pool
@@ -81,7 +99,6 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
     end
 
     local remainToNext = need - self.currentExp
-    ArkLogger:Debug("ark_elite apply exp pool remainToNext", remainToNext)
     if remainToNext <= 0 then
       -- 数据异常：强制升一级，重置当前经验
       self.currentExp = 0
@@ -105,13 +122,17 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
   if countToTotal and amount > 0 then
     self.totalExp = self.totalExp + amount
   end
+  self:RefreshLevelTag()
+  if self.level ~= oldLevel then
+    self:ApplyElite()
+  end
 end
 ----------------------------------------------------------
 -- 对外接口（供其它系统 / RPC 调用）
 ----------------------------------------------------------
 
 -- 设置角色星级（改变星级后会按新星级的配置校正精英化与等级）
-function ArkElite:SetPrototype(rarity)
+function ArkElite:SetRarity(rarity)
   self.rarity = rarity or self.rarity
   local maxElite = _getMaxEliteByRarity(self.rarity)
   if maxElite > 0 and self.elite > maxElite then
@@ -122,6 +143,7 @@ function ArkElite:SetPrototype(rarity)
     self.level = levelCap
     self.currentExp = 0
   end
+  self:RefreshLevelTag()
 end
 
 -- 增加经验值：负责自动小等级升级与封顶阶段溢出经验的记录
@@ -138,10 +160,6 @@ function ArkElite:CanEliteUp()
 end
 
 -- 精英化提升：提升精英化阶段，重置小等级为 1，并立即释放在上一阶段累积的 overflowExp
-
-
-
-
 function ArkElite:EliteUp()
   if not self:CanEliteUp() then
     return false
@@ -158,7 +176,27 @@ function ArkElite:EliteUp()
   if overflow > 0 then
     self:_ApplyExpPool(overflow, false)
   end
+  ArkLogger:Debug("ark_elite elite up", self.inst, self.elite, self.level)
+  self:RefreshLevelTag()
+  self:ApplyElite()
   return true
+end
+
+function ArkElite:OnApplyElite(fn)
+  self._onApplyElite = fn
+end
+
+function ArkElite:ApplyElite()
+  -- 下一帧任务
+  if self._applyEliteTask then
+    return
+  end
+  self._applyEliteTask = self.inst:DoTaskInTime(0, function()
+    self._applyEliteTask = nil
+    if self._onApplyElite then
+      self._onApplyElite(self.inst, self.elite, self.level)
+    end
+  end)
 end
 
 function ArkElite:OnSave()
@@ -181,6 +219,19 @@ function ArkElite:OnLoad(data)
     self.currentExp = data.currentExp or self.currentExp
     self.totalExp = data.totalExp or self.totalExp
     self.overflowExp = data.overflowExp or self.overflowExp
+  end
+  self:RefreshLevelTag()
+  self:ApplyElite()
+end
+
+function ArkElite:OnRemoveFromEntity()
+  if self._refreshLevelTagTask then
+    self._refreshLevelTagTask:Cancel()
+    self._refreshLevelTagTask = nil
+  end
+  if self._applyEliteTask then
+    self._applyEliteTask:Cancel()
+    self._applyEliteTask = nil
   end
 end
 

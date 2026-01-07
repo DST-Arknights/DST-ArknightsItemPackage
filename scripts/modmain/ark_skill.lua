@@ -62,12 +62,23 @@ AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
   skill:Cancel()
 end)
 
+-- 请求技能配置 RPC 处理
+AddModRPCHandler("arkSkill", "ResponseSkillsConfig", function(player)
+  if not player or not player.replica.ark_skill then return end
+  player.replica.ark_skill:ResponseSkillsConfig()
+end)
+
 local arkSkillLevelUpImages = {}
 
 AddClientModRPCHandler("arkSkill", "ClientRegisterSkill", function(config)
   config = json.decode(config)
   if ThePlayer and ThePlayer.replica.ark_skill then
-    ThePlayer.replica.ark_skill:ClientRegisterSkill(config)
+    if ThePlayer.replica.ark_skill then
+      ThePlayer.replica.ark_skill:ClientRegisterSkill(config)
+    else
+      ThePlayer.pending_ark_skill_configs = ThePlayer.pending_ark_skill_configs or {}
+      table.insert(ThePlayer.pending_ark_skill_configs, config)
+    end
   end
   -- 替换高清资源
   local resolveAtlas = resolvefilepath(config.atlas)
@@ -91,39 +102,11 @@ AddClassPostConstruct("widgets/spinner", function(self)
   end
 end)
 
-
--- AddPrototyperDef('ark_training_room', {
---   icon_atlas = "images/ark_item_prototyper.xml",
---   icon_image = "ark_item_prototyper.tex",
---   is_crafting_station = true,
---   action_str = 'ARK_WORKSHOP',
---   filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
--- })
-
--- -- 添加训练室配方
--- AddRecipe2("ark_training_room",
---   {Ingredient("boards", 4), Ingredient("goldnugget", 2)},
---   TECH.SCIENCE_TWO,
---   {
---     placer = 'ark_training_room_placer',
---     atlas = "images/ark_training_room.xml",
---     image = "ark_training_room.tex",
---   },
---   {"STRUCTURES"}
--- )
--- AddRecipeToFilter("ark_training_room", "PROTOTYPERS")
-
--- 服务端
-
 function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
   for i, skill in ipairs(skills) do
     if i > CONSTANTS.MAX_SKILL_LIMIT then
       break
     end
-
-    -- 规范化 id，确保配方与组件一致使用字符串 id
-    skill.id = common.normalizeSkillId(skill.id or ("skill_" .. tostring(i)))
-
     for j, levelConfig in ipairs(skill.levels) do
       if j > CONSTANTS.MAX_SKILL_LEVEL then
         break
@@ -136,9 +119,10 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
           atlas = skill.atlas,
           image = skill.image,
           actionstr = j <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
-          builder_tag = 'none',
+          builder_tag = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, j - 1),
           manufactured = true,
         })
+        AddRecipeToFilter(prefabName, CRAFTING_FILTERS.CRAFTING_STATION.name)
         local upperName = string.upper(prefabName)
         STRINGS.NAMES[upperName] = STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name
         local currentLevel = STRINGS.UI.ARK_SKILL.LEVEL[tostring(j-1)] or tostring(j-1)

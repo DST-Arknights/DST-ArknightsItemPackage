@@ -32,17 +32,17 @@ local ArkExpBar = Class(Widget, function(self, owner)
         tint_flash = {1, 1, 1, 1},
         -- 滚动纹理
         scroll_speed = 50,
-        -- 追赶动画
-        chase_base_speed = 200,   -- 基础速度 (exp/秒)
-        chase_min_speed = 30,     -- 最小速度 (接近目标时)
-        chase_decel_dist = 50,    -- 减速距离阈值
+        -- 追赶动画 (百分比速度，与经验值无关)
+        chase_base_speed = 0.5,   -- 基础速度 (进度条百分比/秒，0.5 = 2秒填满)
+        chase_min_speed = 0.08,   -- 最小速度 (接近目标时)
+        chase_decel_pct = 0.15,   -- 减速阈值 (剩余进度百分比)
         -- 闪烁动画
         flash_fade_speed = 2.0,   -- 闪烁消退速度
     }
 
     -- 数据模型
-    self.real = { level = 1, exp = 0 }  -- 服务端数据
-    self.anim = { level = 1, exp = 0 }  -- 动画数据
+    self.real = { elite = 1, level = 1, exp = 0 }  -- 服务端数据
+    self.anim = { elite = 1, level = 1, exp = 0 }  -- 动画数据
 
     -- 状态
     self.state = "idle"        -- idle | chasing | flashing
@@ -51,6 +51,7 @@ local ArkExpBar = Class(Widget, function(self, owner)
     -- 缓存 (减少每帧计算和 UI 调用)
     self._cache = {
         animTotalExp = 100,    -- 当前动画等级的 totalExp
+        animElite = 1,         -- 上次缓存的动画精英化等级
         animLevel = 1,         -- 上次缓存的动画等级
         animWidth = -1,        -- 上次动画条宽度
         previewWidth = -1,     -- 上次预览条宽度
@@ -61,10 +62,10 @@ local ArkExpBar = Class(Widget, function(self, owner)
     self:_InitUI()
     self:SetSize(self.config.size[1], self.config.size[2])
     self.owner:StartUpdatingComponent(self)
-    self.owner:DoTaskInTime(0, function() 
+    self.owner:DoTaskInTime(0, function()
       local state = self.owner.replica.ark_elite and self.owner.replica.ark_elite.state
       if state then
-        self:SetRealData(state.level, state.currentExp, true)
+        self:SetRealData(state.elite, state.level, state.currentExp, true)
       end
     end)
 end)
@@ -122,9 +123,10 @@ function ArkExpBar:_GetTotalExp(level)
     return rep and rep:GetLevelUpExp(level) or 100
 end
 
--- 获取当前动画等级的 totalExp (带缓存)
+-- 获取当前动画等级的 totalExp (带缓存，考虑 elite 变化)
 function ArkExpBar:_GetAnimTotalExp()
-    if self._cache.animLevel ~= self.anim.level then
+    if self._cache.animElite ~= self.anim.elite or self._cache.animLevel ~= self.anim.level then
+        self._cache.animElite = self.anim.elite
         self._cache.animLevel = self.anim.level
         self._cache.animTotalExp = self:_GetTotalExp(self.anim.level)
     end
@@ -165,6 +167,8 @@ end
 function ArkExpBar:_TickChaseAnimation(dt)
     if self.state == "flashing" then return end
 
+
+
     -- 目标: 需升级则追到满，否则追到真实经验
     local needLevelUp = self.anim.level < self.real.level
     local targetExp = needLevelUp and self:_GetAnimTotalExp() or self.real.exp
@@ -189,16 +193,29 @@ function ArkExpBar:_TickChaseAnimation(dt)
     self:_RefreshVisuals()
 end
 
--- 计算追赶速度 (接近最终目标时减速)
+-- 计算追赶速度 (基于百分比，接近最终目标时减速)
+-- 返回：每秒增加的经验值
 function ArkExpBar:_CalcChaseSpeed()
-    local dist = self:_CalcDistanceToReal()
+    local totalExp = self:_GetAnimTotalExp()
     local cfg = self.config
-    if dist > cfg.chase_decel_dist then
-        return cfg.chase_base_speed
+
+    -- 计算剩余进度百分比
+    local needLevelUp = self.anim.level < self.real.level
+    local targetExp = needLevelUp and totalExp or self.real.exp
+    local remainingPct = (targetExp - self.anim.exp) / totalExp
+
+    -- 基于百分比的速度
+    local speedPct
+    if remainingPct > cfg.chase_decel_pct then
+        speedPct = cfg.chase_base_speed
+    else
+        -- 线性减速
+        local ratio = remainingPct / cfg.chase_decel_pct
+        speedPct = cfg.chase_min_speed + (cfg.chase_base_speed - cfg.chase_min_speed) * ratio
     end
-    -- 线性减速
-    local ratio = dist / cfg.chase_decel_dist
-    return cfg.chase_min_speed + (cfg.chase_base_speed - cfg.chase_min_speed) * ratio
+
+    -- 转换为 exp/秒
+    return speedPct * totalExp
 end
 
 -- 触发升级闪烁
@@ -284,12 +301,14 @@ end
 -- 外部接口
 ----------------------------------------------------------------
 
-function ArkExpBar:SetRealData(level, exp, force)
+function ArkExpBar:SetRealData(elite, level, exp, force)
+    self.real.elite = elite
     self.real.level = level
     self.real.exp = exp
 
     -- 首次加载: 直接同步到真实数据，跳过动画 (或强制更新)
     if force then
+        self.anim.elite = elite
         self.anim.level = level
         self.anim.exp = exp
         self.state = "idle"

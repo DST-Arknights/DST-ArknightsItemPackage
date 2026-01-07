@@ -25,7 +25,7 @@ local function defaultSkill(skill)
     return copyLevelConfigs
   end
   local copySkill = {
-    id = common.normalizeSkillId(skill.id),
+    id = skill.id,
     atlas = skill.atlas,
     image = skill.image,
     name = skill.name,
@@ -238,6 +238,7 @@ function SingleSkill:Lock()
   self:_Emit("ark_skill_locked", {
     fromStatus = prevStatus
   })
+  self:RefreshTag()
 end
 
 function SingleSkill:Unlock()
@@ -250,6 +251,26 @@ function SingleSkill:Unlock()
     fromStatus = prevStatus
   })
   self:SetEnergyRecovering()
+  self:RefreshTag()
+end
+
+function SingleSkill:RefreshTag()
+  -- task任务, 第一次prefab是没初始化的
+  if self.refreshTagTask ~= nil then
+    return
+  end
+  self.refreshTagTask = self.inst:DoTaskInTime(0, function()
+    self.refreshTagTask = nil
+    for level in pairs(self.config.levels) do
+      local builder_tag = common.genArkSkillLevelUpPrefabNameById(self.inst.prefab, self.id, level)
+      if level == self.data.level and self.data.status ~= CONSTANTS.SKILL_STATUS.LOCKED then
+        ArkLogger:Trace("RefreshTag", builder_tag)
+        self.inst:AddTag(builder_tag)
+      else
+        self.inst:RemoveTag(builder_tag)
+      end
+    end
+  end)
 end
 
 function SingleSkill:SetLevel(level)
@@ -267,6 +288,8 @@ function SingleSkill:SetLevel(level)
       newLevel = level
     })
   end
+  self:SetEnergyRecovering()
+  self:RefreshTag()
 end
 
 function SingleSkill:GetLevelConfig()
@@ -412,6 +435,7 @@ function SingleSkill:OnLoad(saved)
   self.data.level = math.min(self.data.level or 1, maxLevel)
   self.levelConfig = self.config.levels[self.data.level]
   self.manager:SyncSkillStatus(self.id)
+  self:RefreshTag()
 end
 
 function ArkSkill:RegisterSkill(config)

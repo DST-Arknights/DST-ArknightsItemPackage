@@ -54,7 +54,7 @@ function ArkExtendUi:SetupSkill()
   if self.skills then
     return
   end
-  self.skills = self.handBase:AddChild(ArkSkills(self.owner, self.owner.replica.ark_skill.configs))
+  self.skills = self.handBase:AddChild(ArkSkills(self.owner, self.owner.replica.ark_skill and self.owner.replica.ark_skill.configs))
   self:UpdateLayout()
 end
 

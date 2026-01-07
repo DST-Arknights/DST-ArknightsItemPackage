@@ -24,14 +24,7 @@ local ArkSkillReplica = Class(function(self, inst)
   self._register_tasks = {}
   -- 预制 4 个 state，用于同步状态数据
   for i = 1, MAX_SKILL_COUNT do
-    local state = NetState(self.inst, {
-      status = "int:classified",
-      level = "int:classified",
-      energyProgress = "float:classified",
-      buffProgress = "float:classified",
-      bulletCount = "int:classified",
-      activationStacks = "int:classified",
-    })
+    local state = NetState(self.inst, "ark_skill")
     self.states[i] = state
     state:Attach(self.inst)
     state:Watch({ "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
@@ -49,6 +42,12 @@ local ArkSkillReplica = Class(function(self, inst)
       end
     end)
   end
+  if self.inst.pending_ark_skill_configs then
+    for _, config in pairs(self.inst.pending_ark_skill_configs) do
+      self:ClientRegisterSkill(config)
+    end
+    self.inst.pending_ark_skill_configs = nil
+  end
 end)
 
 function ArkSkillReplica:ClientRegisterSkill(config)
@@ -60,8 +59,25 @@ function ArkSkillReplica:ClientRegisterSkill(config)
   self.skillIdToIndex[config.id] = index
   self.configs[index] = config
   self:SetHotkey(config.id, config.hotkey)
+  local skillUI = SafeGetSkillsUI(self.inst).skills
+  if not skillUI then
+    SafeGetArkExtendUi(self.inst):SetupSkill()
+  end
+  SafeGetSkillsUI(self.inst):AddSkill(config)
 end
 
+function ArkSkillReplica:RequestSkillsConfig()
+  if TheWorld.ismastersim then
+    return
+  end 
+  SendModRPCToServer(GetModRPC("arkSkill", "ResponseSkillsConfig"))
+end
+
+function ArkSkillReplica:ResponseSkillsConfig()
+  for _, config in pairs(self.configs) do
+    SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
+  end
+end
 -- 主机端注册技能，返回分配的索引
 function ArkSkillReplica:RegisterSkill(config)
   ArkLogger:Debug("ark_skill_replica register skill", config.id)

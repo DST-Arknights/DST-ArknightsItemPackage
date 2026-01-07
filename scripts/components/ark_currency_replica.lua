@@ -7,11 +7,7 @@ local SafeCallArkCurrencyUI = GenSafeCall(function (inst)
 end)
 local ArkCurrency = Class(function(self, inst)
   self.inst = inst
-  local stateDef = {}
-  for _, currencyType in ipairs(TUNING.ARK_CURRENCY_TYPES) do
-    stateDef[currencyType] = "int:classified"
-  end
-  self.state = NetState(self.inst, stateDef)
+  self.state = NetState(self.inst, "ark_currency")
   self.state:Attach(self.inst)
   if not TheNet:IsDedicated() then
     self.state:Watch(TUNING.ARK_CURRENCY_TYPES, function()
