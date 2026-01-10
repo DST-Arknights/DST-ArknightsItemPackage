@@ -27,8 +27,6 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
-  -- 每50秒增加300经验
-  self.inst:DoPeriodicTask(10, function() self:AddExp(300) end)
   self:RefreshLevelTag()
 end, nil, {
   rarity = onrarity,

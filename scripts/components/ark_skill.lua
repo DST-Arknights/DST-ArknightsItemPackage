@@ -264,7 +264,6 @@ function SingleSkill:RefreshTag()
     for level in pairs(self.config.levels) do
       local builder_tag = common.genArkSkillLevelUpPrefabNameById(self.inst.prefab, self.id, level)
       if level == self.data.level and self.data.status ~= CONSTANTS.SKILL_STATUS.LOCKED then
-        ArkLogger:Trace("RefreshTag", builder_tag)
         self.inst:AddTag(builder_tag)
       else
         self.inst:RemoveTag(builder_tag)

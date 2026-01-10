@@ -51,7 +51,7 @@ AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, id, target,
   end
   local deserializedPos = string.split(targetPos, ",")
   targetPos = Vector3(tonumber(deserializedPos[1]), tonumber(deserializedPos[2]), tonumber(deserializedPos[3]))
-  skill:Activate(target, targetPos, force)
+  skill:TryActivate(target, targetPos, force)
 end)
 
 -- 手动取消技能 RPC 处理
@@ -107,27 +107,28 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
     if i > CONSTANTS.MAX_SKILL_LIMIT then
       break
     end
-    for j, levelConfig in ipairs(skill.levels) do
-      if j > CONSTANTS.MAX_SKILL_LEVEL then
+    for currentLevel, levelConfig in ipairs(skill.levels) do
+      if currentLevel > CONSTANTS.MAX_SKILL_LEVEL then
         break
       end
-      if j ~= 1 then
-        local prefabName = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, j)
-        local ingredients = levelConfig.ingredients or { Ingredient("goldnugget", 1) }
+      local nextLevel = currentLevel + 1
+      if levelConfig.ingredients then
+        local prefabName = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, nextLevel)
+        local ingredients = levelConfig.ingredients
         AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
           nounlock = true,
           atlas = skill.atlas,
           image = skill.image,
-          actionstr = j <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
-          builder_tag = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, j - 1),
+          actionstr = nextLevel <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
+          builder_tag = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, currentLevel),
           manufactured = true,
         })
         AddRecipeToFilter(prefabName, CRAFTING_FILTERS.CRAFTING_STATION.name)
         local upperName = string.upper(prefabName)
         STRINGS.NAMES[upperName] = STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name
-        local currentLevel = STRINGS.UI.ARK_SKILL.LEVEL[tostring(j-1)] or tostring(j-1)
-        local nextLevel = STRINGS.UI.ARK_SKILL.LEVEL[tostring(j)] or tostring(j)
-        local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevel .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevel)
+        local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
+        local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
+        local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevelStr .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevelStr)
         STRINGS.RECIPE_DESC[upperName] = desc
       end
     end

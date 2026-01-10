@@ -6,19 +6,57 @@ SpDamageUtil.DefineSpType("true_damage", {
         return 0
     end,
 })
+
+-- 使用 Symbol 作为缓存标记
+local TIMELINE_RESCALED_KEY = GLOBAL.Symbol("timeline_rescaled")
+local ORIGINAL_TIMES_KEY = GLOBAL.Symbol("original_times")
+
 local function RescaleTimeline(self, val)
     local timeline = self.currentstate and self.currentstate.timeline
-    if timeline then
-        local key = "attackSpeedTime"
-        for _, v in pairs(timeline) do
-            if val == nil or val == 1 then
-                v.time = v[key] or v.time
-                v[key] = nil
-            else
-                v[key] = v[key] or v.time
-                v.time = v.time / val
+    if not timeline then
+        return
+    end
+
+    -- 如果要重置（val == nil 或 1）
+    if val == nil or val == 1 then
+        -- 如果已经是原始状态，无需重置
+        if not timeline[TIMELINE_RESCALED_KEY] then
+            return
+        end
+        
+        -- 恢复原始时间
+        local original_times = timeline[ORIGINAL_TIMES_KEY]
+        if original_times then
+            for i, v in ipairs(timeline) do
+                v.time = original_times[i]
             end
         end
+        
+        -- 清除标记
+        timeline[TIMELINE_RESCALED_KEY] = nil
+        timeline[ORIGINAL_TIMES_KEY] = nil
+    else
+        -- 如果已经缩放过相同的值，跳过
+        if timeline[TIMELINE_RESCALED_KEY] == val then
+            return
+        end
+        
+        -- 保存原始时间（如果还没保存过）
+        if not timeline[ORIGINAL_TIMES_KEY] then
+            timeline[ORIGINAL_TIMES_KEY] = {}
+            for i, v in ipairs(timeline) do
+                timeline[ORIGINAL_TIMES_KEY][i] = v.time
+            end
+        end
+        
+        -- 应用新的缩放
+        local original_times = timeline[ORIGINAL_TIMES_KEY]
+        for i, v in ipairs(timeline) do
+            v.time = original_times[i] / val
+        end
+        
+        -- 标记当前缩放值
+        timeline[TIMELINE_RESCALED_KEY] = val
     end
 end
 
@@ -116,6 +154,10 @@ AddComponentPostInit("combat", function(self)
     self.true_damage_enabled = false
   end
 
+  function self:SetAttackSpeed(speed)
+    self.attackspeedmodifiers:SetModifier("ark_attack_speed", speed)
+  end
+
   function self:GetAttackSpeed()
     return self.attackspeedmodifiers:Get()
   end
@@ -150,9 +192,9 @@ end)
 
 
 AddStategraphPostInit("wilson", function(sg)
-    local OldAtackOnenter = sg.states["attack"].onenter
+    local OldAttackOnEnter = sg.states["attack"].onenter
     sg.states["attack"].onenter = function(inst, ...)
-        OldAtackOnenter(inst, ...)
+        OldAttackOnEnter(inst, ...)
         if not inst.components.rider:IsRiding() and inst.sg.currentstate.name == "attack" then
             local attack_speed = inst.components.combat:GetAttackSpeed()
             if attack_speed ~= 1 then
@@ -174,9 +216,9 @@ AddStategraphPostInit("wilson", function(sg)
 end)
 
 AddStategraphPostInit("wilson_client", function(sg)
-    local OldAtackOnenter = sg.states["attack"].onenter
+    local OldAttackOnEnter = sg.states["attack"].onenter
     sg.states["attack"].onenter = function(inst, ...)
-        OldAtackOnenter(inst, ...)
+        OldAttackOnEnter(inst, ...)
 
         if not inst.replica.rider:IsRiding() and inst.sg.currentstate.name == "attack" then
             local attack_speed = inst.replica.combat:GetAttackSpeed()

@@ -1,21 +1,22 @@
 local common = require "ark_common"
 
 function GLOBAL.AddEliteLevelUpRecipes(characterPrefab,elites)
-  for i, elite in ipairs(elites) do
-    local prefabName = common.genArkEliteLevelUpPrefabName(characterPrefab, i)
-    local tag = common.genArkEliteLevelUpPrefabName(characterPrefab, i)
-    ArkLogger:Debug("ark_elite add recipe", prefabName, tag)
-    AddCharacterRecipe(prefabName, elite.ingredients, TECH.ARK_TRAINING_ONE, {
+  for currentElite, eliteConfig in ipairs(elites) do
+    local nextElite = currentElite + 1
+    local prefabName = common.genArkEliteLevelUpPrefabName(characterPrefab, nextElite)
+    local builder_tag = common.genArkEliteLevelUpPrefabName(characterPrefab, currentElite)
+    ArkLogger:Debug("ark_elite add recipe", prefabName, builder_tag)
+    AddCharacterRecipe(prefabName, eliteConfig.ingredients, TECH.ARK_TRAINING_ONE, {
       nounlock = true,
-      atlas = elite.atlas,
-      image = elite.image,
+      atlas = eliteConfig.atlas,
+      image = eliteConfig.image,
       actionstr = "ARK_ELITE_UPDATE",
-      builder_tag = tag,
+      builder_tag = builder_tag,
       manufactured = true,
     })
     AddRecipeToFilter(prefabName, CRAFTING_FILTERS.CRAFTING_STATION.name)
     local upperName = string.upper(prefabName)
-    STRINGS.NAMES[upperName] = STRINGS.UI.ARK_ELITE.ELITE .. " " .. i
-    STRINGS.RECIPE_DESC[upperName] = STRINGS.UI.ARK_ELITE.ELITE .. " " .. i
+    STRINGS.NAMES[upperName] = STRINGS.UI.ARK_ELITE.ELITE .. " " .. nextElite - 1
+    STRINGS.RECIPE_DESC[upperName] = STRINGS.UI.ARK_ELITE.ELITE .. " " .. nextElite - 1
   end
 end
