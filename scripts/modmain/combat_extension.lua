@@ -1,3 +1,4 @@
+local SourceModifierList = require("util/sourcemodifierlist")
 local SpDamageUtil = GLOBAL.require("components/spdamageutil")
 
 SpDamageUtil.DefineSpType("true_damage", {
@@ -60,71 +61,7 @@ local function RescaleTimeline(self, val)
     end
 end
 
--- 攻击速度修改器类，类似于 SourceModifierList
-local AttackSpeedModifiers = Class(function(self, combat)
-    self.combat = combat
-    self.modifiers = {} -- { [source] = { [key] = multiplier } }
-end)
-
-function AttackSpeedModifiers:SetModifier(source, multiplier, key)
-    -- source 可以是对象或字符串
-    -- key 是可选的，默认为 ""
-    key = key or ""
-
-    local source_key = type(source) == "table" and source or tostring(source)
-
-    if not self.modifiers[source_key] then
-        self.modifiers[source_key] = {}
-
-        -- 如果 source 是实体，监听其移除事件
-        if type(source) == "table" and source.ListenForEvent then
-            source:ListenForEvent("onremove", function()
-                self:RemoveAllModifiersFromSource(source_key)
-            end)
-        end
-    end
-
-    self.modifiers[source_key][key] = multiplier
-    self:_UpdateAttackSpeed()
-end
-
-function AttackSpeedModifiers:RemoveModifier(source, key)
-    key = key or ""
-    local source_key = type(source) == "table" and source or tostring(source)
-
-    if self.modifiers[source_key] then
-        self.modifiers[source_key][key] = nil
-
-        -- 如果该来源没有更多修改器，清理掉
-        if next(self.modifiers[source_key]) == nil then
-            self.modifiers[source_key] = nil
-        end
-
-        self:_UpdateAttackSpeed()
-    end
-end
-
-function AttackSpeedModifiers:RemoveAllModifiersFromSource(source)
-    local source_key = type(source) == "table" and source or tostring(source)
-
-    if self.modifiers[source_key] then
-        self.modifiers[source_key] = nil
-        self:_UpdateAttackSpeed()
-    end
-end
-
-function AttackSpeedModifiers:Get()
-    -- 计算所有修改器的乘积
-    local result = 1
-    for _, source_mods in pairs(self.modifiers) do
-        for _, multiplier in pairs(source_mods) do
-            result = result * multiplier
-        end
-    end
-    return result
-end
-
-function AttackSpeedModifiers:_UpdateAttackSpeed()
+local function UpdateAttackSpeed(self)
     local combat = self.combat
     local speed = self:Get()
 
@@ -132,7 +69,9 @@ function AttackSpeedModifiers:_UpdateAttackSpeed()
         combat.base_attack_period = combat.min_attack_period
     end
 
-    combat:SetAttackPeriod(combat.base_attack_period / speed)
+    -- 将实际周期的计算交给 SetAttackPeriod 的包装器：传入基准周期（unscaled base），
+    -- 包装器会根据当前攻速重新计算并调用底层实现，避免重复缩放。
+    combat:SetAttackPeriod(combat.base_attack_period)
 
     if combat.inst.replica and combat.inst.replica.combat then
         combat.inst.replica.combat:SetAttackSpeed(speed)
@@ -141,17 +80,29 @@ end
 
 AddComponentPostInit("combat", function(self)
   -- 初始化攻击速度修改器
-  self.attackspeedmodifiers = AttackSpeedModifiers(self)
-
-  function self:EnableTrueDamage(enable)
-    if enable == nil then
-      enable = true
-    end
-    self.true_damage_enabled = enable
+  self.attackspeedmodifiers = SourceModifierList(self.inst)
+  local _SetModifier = self.attackspeedmodifiers.SetModifier
+  function self.attackspeedmodifiers:SetModifier(source, multiplier, key)
+    _SetModifier(self, source, multiplier, key)
+    UpdateAttackSpeed(self.attackspeedmodifiers)
   end
-
-  function self:DisableTrueDamage()
-    self.true_damage_enabled = false
+  local _RemoveModifier = self.attackspeedmodifiers.RemoveModifier
+  function self.attackspeedmodifiers:RemoveModifier(source, key)
+    _RemoveModifier(self, source, key)
+    UpdateAttackSpeed(self.attackspeedmodifiers)
+  end
+  -- Wrap SetAttackPeriod to store an unscaled base period and apply current attack speed
+  local _SetAttackPeriod = self.SetAttackPeriod
+  function self:SetAttackPeriod(period)
+    self.base_attack_period = period
+    local speed = 1
+    if self.GetAttackSpeed then
+      speed = self:GetAttackSpeed()
+    end
+    if speed == 0 then
+      speed = 1
+    end
+    _SetAttackPeriod(self, period / speed)
   end
 
   function self:SetAttackSpeed(speed)
@@ -161,18 +112,52 @@ AddComponentPostInit("combat", function(self)
   function self:GetAttackSpeed()
     return self.attackspeedmodifiers:Get()
   end
+
+  -- 使用 SourceModifierList 的第三个参数为合并函数：
+  -- 按顺序合并比例 v，使得结果为 m + (1-m)*v（序列化剩余伤害的转换）
+  self.turedamagemodifiers = SourceModifierList(self.inst, 0, function(m, v)
+    if v <= 0 then return m end
+    if m >= 1 then return 1 end
+    return m + (1 - m) * v
+  end)
+
+  function self:EnableTrueDamage(value)
+    -- 接受数值 0..1，表示按顺序从剩余伤害中抽取的比例
+    self.turedamagemodifiers:SetModifier("ark_true_damage", value)
+  end
+
+  function self:DisableTrueDamage()
+    self.turedamagemodifiers:RemoveModifier("ark_true_damage")
+  end
+
   -- hook
   local _GetAttacked = self.GetAttacked
   function self:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
     -- 作为被攻击者, 如果攻击者启用了真实伤害，则将伤害转换为真实伤害
-    if attacker and attacker.components.combat and attacker.components.combat.true_damage_enabled then
-      ArkLogger:Trace("combat_extension GetAttacked TrueDamage")
+    local tdprop = attacker and attacker.components.combat and attacker.components.combat.turedamagemodifiers:Get() or 0
+    if tdprop > 0 then
       if spdamage == nil then
         spdamage = {}
       end
-      spdamage.true_damage = damage
-      damage = 0
-      return _GetAttacked(self, attacker, damage, weapon, stimuli, spdamage)
+      local true_damage = 0
+      damage = damage or 0
+      true_damage = damage * tdprop
+      damage = damage - true_damage
+      local removed_spdamage = {}
+      for k, v in pairs(spdamage) do
+        if k ~= "true_damage" then
+            local true_amount = v * tdprop
+            spdamage[k] = v - true_amount
+            if spdamage[k] <= 0 then
+                removed_spdamage[k] = true
+            end
+            true_damage = true_damage + true_amount
+        end
+      end
+      for k in pairs(removed_spdamage) do
+        spdamage[k] = nil
+      end
+      spdamage.true_damage = (spdamage.true_damage or 0) + true_damage
     end
     return _GetAttacked(self, attacker, damage, weapon, stimuli, spdamage)
   end

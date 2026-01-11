@@ -28,7 +28,7 @@ local ArkSkillReplica = Class(function(self, inst)
     self.states[i] = state
     state:Attach(self.inst)
     state:Watch({ "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
-      ArkLogger:Debug('ark_skill_replica Watch OnDirty', i, state.status, state.level, state.energyProgress, state.buffProgress, state.bulletCount, state.activationStacks)
+      ArkLogger:Trace('ark_skill_replica Watch OnDirty', i, state.status, state.level, state.energyProgress, state.buffProgress, state.bulletCount, state.activationStacks)
       local skillUI = SafeGetSkillsUI(self.inst):GetSkillByIndex(i)
       if skillUI then
         skillUI:SyncSkillStatus(
@@ -116,7 +116,6 @@ end
 
 -- 主机端同步状态到客机
 function ArkSkillReplica:SyncSkillStatus(id, data)
-  ArkLogger:Debug('ark_skill_replica SyncSkillStatus', id, data.status, data.level, data.energyProgress, data.buffProgress, data.bulletCount, data.activationStacks)
   local index = self.skillIdToIndex[id]
   if not index then
     ArkLogger:Error("ark_skill_replica: 未注册的技能 " .. id)

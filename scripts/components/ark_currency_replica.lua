@@ -45,7 +45,6 @@ function ArkCurrency:GetArkCurrencyByType(currencyType)
 end
 
 function ArkCurrency:SetArkCurrencyByType(currencyType, value)
-  ArkLogger:Debug('SetArkCurrencyByType', currencyType, value)
   self.state[currencyType] = value
   if TheWorld.ismastersim then
     TheWorld.components.ark_currency_data:SetPlayerCurrency(self.inst.userid, self:GetArkCurrency())

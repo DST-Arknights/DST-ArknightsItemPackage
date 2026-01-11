@@ -245,6 +245,16 @@ return {
     BUFFING = 3,
     BULLETING = 4,
   },
+
+  -- 技能“效果态同步”事件 reason 常量（ark_skill_effects_sync）
+  SKILL_EFFECTS_SYNC_REASON = {
+    LOAD = "load",
+    REGISTER = "register",
+    STATUS_CHANGE = "status_change",
+    LEVEL_CHANGE = "level_change",
+    MANUAL = "manual",
+  },
+
   ENERGY_RECOVERY_MODE = {
     NONE = "none",
     AUTO = "auto",
