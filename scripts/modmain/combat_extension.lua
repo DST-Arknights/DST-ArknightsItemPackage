@@ -62,7 +62,7 @@ local function RescaleTimeline(self, val)
 end
 
 local function UpdateAttackSpeed(self)
-    local combat = self.combat
+    local combat = self.inst.components.combat
     local speed = self:Get()
 
     if not combat.base_attack_period then
@@ -73,9 +73,7 @@ local function UpdateAttackSpeed(self)
     -- 包装器会根据当前攻速重新计算并调用底层实现，避免重复缩放。
     combat:SetAttackPeriod(combat.base_attack_period)
 
-    if combat.inst.replica and combat.inst.replica.combat then
-        combat.inst.replica.combat:SetAttackSpeed(speed)
-    end
+    self.inst.replica.combat:SetAttackSpeed(speed)
 end
 
 AddComponentPostInit("combat", function(self)
@@ -84,12 +82,12 @@ AddComponentPostInit("combat", function(self)
   local _SetModifier = self.attackspeedmodifiers.SetModifier
   function self.attackspeedmodifiers:SetModifier(source, multiplier, key)
     _SetModifier(self, source, multiplier, key)
-    UpdateAttackSpeed(self.attackspeedmodifiers)
+    UpdateAttackSpeed(self)
   end
   local _RemoveModifier = self.attackspeedmodifiers.RemoveModifier
   function self.attackspeedmodifiers:RemoveModifier(source, key)
     _RemoveModifier(self, source, key)
-    UpdateAttackSpeed(self.attackspeedmodifiers)
+    UpdateAttackSpeed(self)
   end
   -- Wrap SetAttackPeriod to store an unscaled base period and apply current attack speed
   local _SetAttackPeriod = self.SetAttackPeriod
@@ -115,7 +113,7 @@ AddComponentPostInit("combat", function(self)
 
   -- 使用 SourceModifierList 的第三个参数为合并函数：
   -- 按顺序合并比例 v，使得结果为 m + (1-m)*v（序列化剩余伤害的转换）
-  self.turedamagemodifiers = SourceModifierList(self.inst, 0, function(m, v)
+  self.truedamagemultipliers = SourceModifierList(self.inst, 0, function(m, v)
     if v <= 0 then return m end
     if m >= 1 then return 1 end
     return m + (1 - m) * v
@@ -123,18 +121,18 @@ AddComponentPostInit("combat", function(self)
 
   function self:EnableTrueDamage(value)
     -- 接受数值 0..1，表示按顺序从剩余伤害中抽取的比例
-    self.turedamagemodifiers:SetModifier("ark_true_damage", value)
+    self.truedamagemultipliers:SetModifier("ark_true_damage", value)
   end
 
   function self:DisableTrueDamage()
-    self.turedamagemodifiers:RemoveModifier("ark_true_damage")
+    self.truedamagemultipliers:RemoveModifier("ark_true_damage")
   end
 
   -- hook
   local _GetAttacked = self.GetAttacked
   function self:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
     -- 作为被攻击者, 如果攻击者启用了真实伤害，则将伤害转换为真实伤害
-    local tdprop = attacker and attacker.components.combat and attacker.components.combat.turedamagemodifiers:Get() or 0
+    local tdprop = attacker and attacker.components.combat and attacker.components.combat.truedamagemultipliers:Get() or 0
     if tdprop > 0 then
       if spdamage == nil then
         spdamage = {}
@@ -158,6 +156,7 @@ AddComponentPostInit("combat", function(self)
         spdamage[k] = nil
       end
       spdamage.true_damage = (spdamage.true_damage or 0) + true_damage
+      ArkLogger:Debug("true_damage", true_damage, damage)
     end
     return _GetAttacked(self, attacker, damage, weapon, stimuli, spdamage)
   end

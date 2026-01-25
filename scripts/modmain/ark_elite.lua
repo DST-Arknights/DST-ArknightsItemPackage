@@ -13,8 +13,7 @@ function GLOBAL.AddEliteLevelUpRecipes(characterPrefab,elites)
       actionstr = "ARK_ELITE_UPDATE",
       builder_tag = builder_tag,
       manufactured = true,
-    })
-    AddRecipeToFilter(prefabName, CRAFTING_FILTERS.CRAFTING_STATION.name)
+    }, { "CRAFTING_STATION" })
     local upperName = string.upper(prefabName)
     STRINGS.NAMES[upperName] = STRINGS.UI.ARK_ELITE.ELITE .. " " .. nextElite - 1
     STRINGS.RECIPE_DESC[upperName] = STRINGS.UI.ARK_ELITE.ELITE .. " " .. nextElite - 1

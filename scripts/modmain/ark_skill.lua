@@ -122,8 +122,7 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
           actionstr = nextLevel <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
           builder_tag = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, currentLevel),
           manufactured = true,
-        })
-        AddRecipeToFilter(prefabName, CRAFTING_FILTERS.CRAFTING_STATION.name)
+        }, { "CRAFTING_STATION" })
         local upperName = string.upper(prefabName)
         STRINGS.NAMES[upperName] = STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name
         local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
