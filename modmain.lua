@@ -57,6 +57,9 @@ modimport('scripts/modmain/ark_extend_ui')
 -- 武器扩展
 modimport('scripts/modmain/combat_extension')
 
+-- widget 扩展
+modimport('scripts/modmain/widget_extension')
+
 
 -- 定义 elite NetState
 DefineNetState("ark_elite", {
