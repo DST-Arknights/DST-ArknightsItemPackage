@@ -297,11 +297,14 @@ local function NetStateInit(self, inst, name)
       -- 客机：如果 classified 先于 NetStateInit 到达，则 OnEntityReplicated 会把
       -- net_state_classified 放到 inst._ns_pending_classified[state_name] 里。
       -- 这里在初始化完成后主动检查并尝试完成绑定。
-      local pending_classified = inner.inst._ns_pending_classified and inner.inst._ns_pending_classified[state_name] and inner.inst._ns_pending_classified[state_name][inner._index] or nil
-      if pending_classified ~= nil and pending_classified:IsValid() then
-        inner.log("AttachClassified", "attach from pending (classified)", state_name)
-        self:AttachClassified(pending_classified)
-      end
+      inner.inst:DoTaskInTime(0, function()
+        local pending_classified = inner.inst._ns_pending_classified and inner.inst._ns_pending_classified[state_name] and inner.inst._ns_pending_classified[state_name][inner._index] or nil
+        local pending_classified = inner.inst._ns_pending_classified and inner.inst._ns_pending_classified[state_name] and inner.inst._ns_pending_classified[state_name][inner._index] or nil
+        if pending_classified ~= nil and pending_classified:IsValid() then
+          inner.log("AttachClassified", "attach from pending (classified) ", state_name)
+          self:AttachClassified(pending_classified)
+        end
+      end)
     end
   end
 end

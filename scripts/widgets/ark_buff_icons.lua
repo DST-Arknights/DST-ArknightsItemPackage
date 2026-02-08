@@ -1,0 +1,328 @@
+local Widget = require "widgets/widget"
+local Image = require "widgets/image"
+local Text = require "widgets/text"
+
+local ICON_SIZE = 32
+
+-- Buff图标闪烁配置
+local BLINK_THRESHOLD = 5  -- 剩余时间少于10秒时开始闪烁
+local BLINK_CYCLE = 2  -- 闪烁周期（秒）
+
+local ArkBuffIcon = Class(Widget, function(self, owner)
+  Widget._ctor(self, "ArkBuffIcon")
+  self.owner = owner
+  self.size = {ICON_SIZE, ICON_SIZE}
+  self.gap = 10
+  self.iconImage = self:AddChild(Image())
+  self.iconImage:SetSize(self.size)
+  -- 倒计时遮罩
+  self.maskImage = self:AddChild(Image("images/ui.xml", "white.tex"))
+  self.maskImage:SetTint(0, 0, 0, 0.7)
+  self.maskImage:SetSize(self.size)
+  self.maskImage:SetVRegPoint(ANCHOR_TOP)
+  self.maskImage:SetPosition(0, ICON_SIZE / 2, 0)
+  
+  -- 闪烁遮罩
+  self.blinkMask = self:AddChild(Image("images/ui.xml", "white.tex"))
+  self.blinkMask:SetSize(self.size)
+  self.blinkMask:SetTint(0, 0, 0, 0.4)
+  self.blinkMask:Hide()
+
+  self.stacksBg = self:AddChild(Image("images/ark_item_ui.xml", "circle.tex"))
+  self.stacksBg:SetTint(0, 0, 0, 0.8)
+  self.stacksBg:SetSize(14, 14)
+  self.stacksBg:SetPosition(-ICON_SIZE / 2, ICON_SIZE / 2, 0)
+  self.stacksBg:Hide()  -- 初始隐藏，等待SetStacks判断
+  -- 展示层数的文本
+  self.stacksText = self.stacksBg:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT,12))
+
+  -- 闪烁状态
+  self.isBlinking = false
+  self.blinkTimer = 0
+  self.currentStacks = 0  -- 记录当前stack，用于检测stack变化
+  self.owner:DoTaskInTime(0, function()
+    local debuffable = self.owner.components.debuffable
+    if debuffable then
+      for name, debuff in pairs(debuffable.debuffs) do
+        if debuff.components.ark_buff_icon then
+          self:AddBuff(debuff)
+        end
+      end
+    end
+  end)
+end)
+
+function ArkBuffIcon:SetTexture(atlas, tex)
+  self.iconImage:SetTexture(atlas, tex)
+  self.iconImage:SetSize(self.size)
+end
+
+function ArkBuffIcon:SetStacks(stacks)
+  self.stacksText:SetString(tostring(stacks))
+  
+  -- Stack=1时隐藏，大于1才显示
+  if stacks == 1 then
+    self.stacksBg:Hide()
+  else
+    self.stacksBg:Show()
+  end
+  
+  -- 检测stack变化：如果进入新的stack，停止闪烁
+  if self.currentStacks ~= stacks and self.isBlinking then
+    self:StopBlink()
+  end
+  self.currentStacks = stacks
+end
+
+function ArkBuffIcon:SetTotalTime(totalTime)
+  self.totalTime = totalTime
+end
+
+function ArkBuffIcon:SetRemainingTime(remainingTime)
+  self.remainingTime = remainingTime
+  -- 每次设置剩余时间时，立刻刷新遮罩显示
+  self:UpdateDisplayByRemainingTime()
+  
+  -- 判断是否需要闪烁
+  if remainingTime > 0 and remainingTime <= BLINK_THRESHOLD then
+    if not self.isBlinking then
+      self:StartBlink()
+    end
+  else
+    if self.isBlinking then
+      self:StopBlink()
+    end
+  end
+end
+
+function ArkBuffIcon:UpdateDisplayByRemainingTime()
+  -- 根据当前时间计算实际剩余百分比，用于遮罩显示
+  if not self.totalTime then
+    return
+  end
+  local scaleHeight = math.max(0, self.remainingTime / self.totalTime)
+  self.maskImage:SetScale(1, 1 - scaleHeight)
+end
+
+function ArkBuffIcon:StartBlink()
+  self.isBlinking = true
+  self.blinkTimer = 0
+  self.blinkMask:Show()
+end
+
+function ArkBuffIcon:StopBlink()
+  self.isBlinking = false
+  self.blinkTimer = 0
+  self.blinkMask:SetTint(1, 1, 1, 0)
+  self.blinkMask:Hide()
+end
+
+function ArkBuffIcon:UpdateBlink(dt)
+  if not self.isBlinking then
+    return
+  end
+  
+  self.blinkTimer = self.blinkTimer + dt
+  
+  -- 使用正弦波实现平滑的呼吸效果
+  local progress = (self.blinkTimer % BLINK_CYCLE) / BLINK_CYCLE
+  local alpha = math.sin(progress * math.pi * 2) * 0.3 + 0.3  -- 在0.0-0.6之间波动
+  self.blinkMask:SetTint(1, 1, 1, alpha)
+end
+
+local ArkBuffIcons = Class(Widget, function(self, owner)
+  Widget._ctor(self, "ArkBuffIcons")
+  self.owner = owner
+  -- 按 atlas:tex 联合键分组
+  -- buffGroups[key] = { icon = ArkBuffIcon, insts = { buffInst, ... } }
+  self.buffGroups = {}
+  -- 记录group的顺序，用于布局
+  self.groupOrder = {}
+  -- 客户端倒计时追踪
+  -- buffClientTimers[buffInst] = { serverRemaining, clientStartTick }
+  self.buffClientTimers = {}
+  self.gap = 10
+  self.owner:StartUpdatingComponent(self)
+end)
+
+function ArkBuffIcons:AddBuff(buffInst)
+  -- 使用 atlas:tex 联合键分组，相同纹理的buff共用一个icon
+  local state = buffInst.replica.ark_buff_icon.state
+  local groupKey = state.atlas .. ":" .. state.tex
+  local group = self.buffGroups[groupKey]
+  
+  ArkLogger:Debug('ark_buff_icons AddBuff', buffInst, groupKey, group)
+  if not group then
+    -- 创建新分组
+    local icon = ArkBuffIcon(self.owner)
+    icon:SetTexture(state.atlas, state.tex)
+    icon:SetTotalTime(state.totalTime)
+    group = {
+      icon = icon,
+      insts = {},
+    }
+    self.buffGroups[groupKey] = group
+    table.insert(self.groupOrder, groupKey)
+    self:AddChild(icon)
+  end
+  
+  -- 将buff实例加入分组
+  table.insert(group.insts, buffInst)
+  
+  -- 初始化客户端倒计时
+  self:_InitializeBuffTimer(buffInst)
+  
+  -- 更新布局
+  self:_UpdateLayout()
+  
+  -- 更新分组显示
+  self:_UpdateGroupDisplay(groupKey)
+end
+
+function ArkBuffIcons:RemoveBuff(buffInst)
+  -- 清理客户端倒计时记录
+  self.buffClientTimers[buffInst] = nil
+  
+  -- 遍历所有分组，找到包含该buff实例的分组
+  local foundGroupKey = nil
+  local foundGroup = nil
+  
+  for groupKey, group in pairs(self.buffGroups) do
+    for i, inst in ipairs(group.insts) do
+      if inst == buffInst then
+        -- 找到了，从分组中移除
+        ArkLogger:Debug('ark_buff_icons RemoveBuff found', buffInst, groupKey)
+        table.remove(group.insts, i)
+        foundGroupKey = groupKey
+        foundGroup = group
+        break
+      end
+    end
+    if foundGroupKey then
+      break
+    end
+  end
+  
+  if not foundGroupKey then
+    ArkLogger:Debug('ark_buff_icons RemoveBuff not found in any group', buffInst)
+    return
+  end
+  
+  -- 如果分组还有实例，更新显示
+  if #foundGroup.insts > 0 then
+    ArkLogger:Debug('ark_buff_icons RemoveBuff group still has insts', foundGroup.insts)
+    self:_UpdateGroupDisplay(foundGroupKey)
+  else
+    ArkLogger:Debug('ark_buff_icons RemoveBuff group is empty', foundGroupKey)
+    -- 分组为空，移除icon并删除分组
+    foundGroup.icon:Kill()
+    self.buffGroups[foundGroupKey] = nil
+    -- 从顺序列表中移除
+    for i, key in ipairs(self.groupOrder) do
+      if key == foundGroupKey then
+        table.remove(self.groupOrder, i)
+        break
+      end
+    end
+  end
+  
+  -- 更新布局
+  self:_UpdateLayout()
+end
+
+function ArkBuffIcons:_GetDisplayRemainingTime(buffInst)
+  -- 获取buff的客户端计算的剩余时间
+  local timer = self.buffClientTimers[buffInst]
+  if not timer then
+    return 0
+  end
+  
+  return timer.remainingTime
+end
+
+function ArkBuffIcons:_InitializeBuffTimer(buffInst)
+  -- 初始化或重置客户端倒计时
+  local state = buffInst.replica.ark_buff_icon.state
+  self.buffClientTimers[buffInst] = {
+    remainingTime = state.remainingTime,  -- 直接存储剩余时间，每帧递减
+  }
+end
+
+function ArkBuffIcons:UpdateBuff(buffInst)
+  -- 当服务端同步buff状态时，重新初始化客户端倒计时
+  local groupKey = buffInst.replica.ark_buff_icon.state.atlas .. ":" .. buffInst.replica.ark_buff_icon.state.tex
+  self:_InitializeBuffTimer(buffInst)
+  self:_UpdateGroupDisplay(groupKey)
+end
+
+function ArkBuffIcons:_UpdateGroupDisplay(groupKey)
+  -- 在分组内找到 remainingTime > 0 且最小的buff
+  local group = self.buffGroups[groupKey]
+  if not group or #group.insts == 0 then
+    return
+  end
+  
+  -- 过滤出还未过期的buff (remainingTime > 0)
+  local validInsts = {}
+  for _, inst in ipairs(group.insts) do
+    if inst.replica and inst.replica.ark_buff_icon then
+      local clientRemainingTime = self:_GetDisplayRemainingTime(inst)
+      if clientRemainingTime > 0 then
+        table.insert(validInsts, inst)
+      end
+    end
+  end
+  
+  if #validInsts > 0 then
+    -- 显示层数 = 还未过期的 buff 实例数量
+    group.icon:SetStacks(#validInsts)
+    -- 按剩余时间排序，找出最小的
+    table.sort(validInsts, function(a, b)
+      return self:_GetDisplayRemainingTime(a) < self:_GetDisplayRemainingTime(b)
+    end)
+    local displayBuff = validInsts[1]
+    local displayState = displayBuff.replica.ark_buff_icon.state
+    local displayRemainingTime = self:_GetDisplayRemainingTime(displayBuff)
+    -- group.icon:SetTexture(displayState.atlas, displayState.tex)
+    group.icon:SetTotalTime(displayState.totalTime)
+    group.icon:SetRemainingTime(displayRemainingTime)
+  else
+    -- 没有有效的buff，隐藏icon（或保持显示最后一个已过期的buff）
+    group.icon:SetRemainingTime(0)
+  end
+end
+
+function ArkBuffIcons:_UpdateLayout()
+  -- 根据groupOrder中的顺序，横向排布所有group的icon
+  local x = ICON_SIZE / 2
+  for _, groupKey in ipairs(self.groupOrder) do
+    local group = self.buffGroups[groupKey]
+    if group then
+      -- 设置icon的位置
+      group.icon:SetPosition(x, 0, 0)
+      -- 移动到下一个icon的x位置
+      local iconSize = group.icon.size[1] or 32
+      x = x + iconSize + self.gap
+    end
+  end
+end
+
+function ArkBuffIcons:OnUpdate(dt)
+  -- 先更新所有buff的客户端倒计时（使用dt递减剩余时间）
+  for buffInst, timer in pairs(self.buffClientTimers) do
+    timer.remainingTime = math.max(0, timer.remainingTime - dt)
+  end
+  
+  -- 更新所有图标的闪烁效果
+  for groupKey, group in pairs(self.buffGroups) do
+    if group.icon then
+      group.icon:UpdateBlink(dt)
+    end
+  end
+  
+  -- 然后更新所有分组的显示
+  for groupKey, group in pairs(self.buffGroups) do
+    self:_UpdateGroupDisplay(groupKey)
+  end
+end
+return ArkBuffIcons

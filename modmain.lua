@@ -18,10 +18,11 @@ Assets = {
 AddReplicableComponent("ark_skill")
 AddReplicableComponent("ark_currency")
 AddReplicableComponent("ark_elite")
+AddReplicableComponent("ark_buff_icon")
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
-ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
+ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
 -- 加载符号
 modimport('scripts/modmain/symbol')
 -- 加载 NetState
@@ -88,3 +89,10 @@ DefineNetState("ark_currency", (function()
   end
   return stateDef
 end)())
+
+DefineNetState("ark_buff_icon", {
+  atlas = "string:classified",
+  tex = "string:classified",
+  totalTime = "float:classified",
+  remainingTime = "float:classified",
+})

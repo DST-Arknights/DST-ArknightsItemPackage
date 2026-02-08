@@ -521,7 +521,10 @@ end
 
 function SingleSkill:Cancel()
   self.data.force = false
-  self:SetEnergyRecovering(true)
+  self.data.tickBuff = false
+  if self.levelConfig.bulletCount then
+    self:SetEnergyRecovering(true)
+  end
 end
 
 function SingleSkill:CutBullet(value)

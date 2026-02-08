@@ -95,7 +95,7 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   -- 放左上角
   activationChargeWidget:SetPosition(-self.iconSize[1] / 2, self.iconSize[2] / 2, 0)
   -- 加一个圆黑透明背景
-  local activationChargeBg = activationChargeWidget:AddChild(Image("images/ui.xml", "black.tex"))
+  local activationChargeBg = activationChargeWidget:AddChild(Image("images/ark_item_ui.xml", "circle.tex"))
   activationChargeBg:SetSize(20, 20)
   activationChargeBg:SetTint(0, 0, 0, 0.8)
   local activationChargeText = activationChargeWidget:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 16))

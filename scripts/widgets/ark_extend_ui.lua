@@ -3,6 +3,7 @@ local ArkSkills = require "widgets/ark_skills"
 local Widget = require "widgets/widget"
 local UIArkCurrency = require "widgets/ui_ark_currency"
 local ExpBar = require "widgets/ark_exp_bar"
+local ArkBuffIcons = require "widgets/ark_buff_icons"
 local common = require "ark_common"
 
 local ArkExtendUi =Class(Widget, function(self, owner, controls)
@@ -24,6 +25,7 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
     end
     self.setup_task = nil
   end)
+  self:SetupBuffIcons()
 end)
 
 function ArkExtendUi:Kill()
@@ -55,6 +57,9 @@ function ArkExtendUi:SetupSkill()
     return
   end
   self.skills = self.handBase:AddChild(ArkSkills(self.owner, self.owner.replica.ark_skill and self.owner.replica.ark_skill.configs))
+  self.skills.updatedLayout = function()
+    self:UpdateLayout()
+  end
   self:UpdateLayout()
 end
 
@@ -135,17 +140,38 @@ function ArkExtendUi:RemoveExpBar()
   end
   self:UpdateLayout()
 end
+
+function ArkExtendUi:SetupBuffIcons()
+  if self.buffIcons then
+    return
+  end
+  local buffIcons = self.handBase:AddChild(ArkBuffIcons(self.owner))
+  self.buffIcons = buffIcons
+  self:UpdateLayout()
+end
+
+function ArkExtendUi:RemoveBuffIcons()
+  if self.buffIcons then
+    self.buffIcons:Kill()
+    self.buffIcons = nil
+  end
+  self:UpdateLayout()
+end
 function ArkExtendUi:UpdateLayout()
   ArkLogger:Debug('ark_extend_ui UpdateLayout')
   self.handBase:SetPosition(-486, 130, 0)
   if self.elite then
     self.elite:SetPosition(20, 0, 0)
   end
+  local skillsW = self.skills and self.skills:GetSize() or 0
   if self.skills then
-  self.skills:SetPosition(50, 18, 0)
+    self.skills:SetPosition(50, 18, 0)
   end
   if self.expBar then
     self.expBar:SetPosition(50, -40, 0)
+  end
+  if self.buffIcons then
+    self.buffIcons:SetPosition(50 + skillsW + 16, -16, 0)
   end
 end
 

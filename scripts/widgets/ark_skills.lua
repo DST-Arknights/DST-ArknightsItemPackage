@@ -59,6 +59,9 @@ function ArkSkills:UpdateLayout()
       self.width = 0
     end
     self.height = maxHeight
+    if self.updatedLayout then
+      self.updatedLayout()
+    end
   end)
 end
 
