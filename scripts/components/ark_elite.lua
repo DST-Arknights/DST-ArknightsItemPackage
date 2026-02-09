@@ -28,6 +28,7 @@ local ArkElite = Class(function(self, inst)
   self.totalExp = 0
   self.overflowExp = 0
   self:RefreshLevelTag()
+  self:ApplyElite()
 end, nil, {
   rarity = onrarity,
   elite = onelite,
