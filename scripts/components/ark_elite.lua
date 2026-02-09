@@ -62,7 +62,6 @@ function ArkElite:RefreshLevelTag()
     return
   end
   self._refreshLevelTagTask = self.inst:DoTaskInTime(0, function()
-    ArkLogger:Debug("ark_elite refresh level tag", self.inst, self.elite, self.level)
     self._refreshLevelTagTask = nil
     if self:CanEliteUp() then
       local tag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, self.elite)

@@ -293,7 +293,6 @@ function ArkElite:GetLevelCap()
   if not rarity or rarity < 1 then
     rarity = 1
   end
-  ArkLogger:Debug("ark_elite_replica GetLevelCap", rarity, elite)
   return EXP_CONFIG.maxLevel[rarity] and EXP_CONFIG.maxLevel[rarity][elite] or 1
 end
 return ArkElite

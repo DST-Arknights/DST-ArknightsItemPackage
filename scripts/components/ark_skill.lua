@@ -406,6 +406,9 @@ function SingleSkill:SetLevel(level)
     return
   end
   local oldLevel = self.data.level or 1
+  if oldLevel == level then
+    return
+  end
   self.data.effects_prev = _BuildEffectsState(self.data)
   self.data.prevLevel = oldLevel
   self.data.level = level
@@ -419,7 +422,7 @@ function SingleSkill:SetLevel(level)
       newLevel = level
     })
   end
-  self:SetEnergyRecovering()
+  -- self:SetEnergyRecovering()
   self:RefreshTag()
 end
 
