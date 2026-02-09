@@ -302,6 +302,7 @@ end
 ----------------------------------------------------------------
 
 function ArkExpBar:SetRealData(elite, level, exp, force)
+    local eliteChanged = self.anim.elite ~= elite
     self.real.elite = elite
     self.real.level = level
     self.real.exp = exp
@@ -312,6 +313,13 @@ function ArkExpBar:SetRealData(elite, level, exp, force)
         self.anim.level = level
         self.anim.exp = exp
         self.state = "idle"
+        self:_NotifyEliteUI()
+    elseif eliteChanged then
+        -- 精英化变更时，从新阶段的 1 级 0 经验开始追赶
+        self.anim.elite = elite
+        self.anim.level = 1
+        self.anim.exp = 0
+        self.state = "chasing"
         self:_NotifyEliteUI()
     end
 
