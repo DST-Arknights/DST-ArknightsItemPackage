@@ -18,6 +18,24 @@ local function onoverflowExp(self, value)
   self.inst.replica.ark_elite.state.overflowExp = value
 end
 
+-- 杀怪回经验
+local function OnKilled(inst, data)
+  if not inst:HasTag("player") then
+    return
+  end
+  local target = data.victim
+  if not target then
+    return
+  end
+  if not inst.components.ark_elite then
+    return
+  end
+  -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的经验
+  local health = target.components.health.maxhealth
+  local exp = math.floor(health)
+  inst.components.ark_elite:AddExp(exp)
+end
+
 local ArkElite = Class(function(self, inst)
   self.inst = inst
   self.rarity = 1
@@ -29,6 +47,7 @@ local ArkElite = Class(function(self, inst)
   self.overflowExp = 0
   self:RefreshLevelTag()
   self:ApplyElite()
+  self.inst:ListenForEvent("killed", OnKilled)
 end, nil, {
   rarity = onrarity,
   elite = onelite,
@@ -232,6 +251,7 @@ function ArkElite:OnRemoveFromEntity()
     self._applyEliteTask:Cancel()
     self._applyEliteTask = nil
   end
+  self.inst:RemoveEventCallback("killed", OnKilled)
 end
 
 return ArkElite
