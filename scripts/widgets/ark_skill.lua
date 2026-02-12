@@ -423,9 +423,9 @@ function ArkSkill:OnGainFocus()
       desc = self.levelConfig.desc,
     }
     self.skillDesc = self:AddChild(ArkSkillDesc(self.owner, descConfig, self.id))
-    self.skillDesc:SetScale(0.5)
+    -- self.skillDesc:SetScale(0.5)
     local size = self.skillDesc:GetSize()
-    self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2 * 0.5, self.iconSize[2] / 2 + size.y * 0.5 + 10, 0)
+    self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
   end
   self.skillDesc:Show()
 end

@@ -3,18 +3,26 @@ local Image = require "widgets/image"
 local Text = require "widgets/text"
 local CONSTANTS = require "ark_constants"
 local TextButton = require "widgets/textbutton"
-local utils = require "ark_utils"
-local common = require "ark_common"
 
-local PADDING = 60
-local TAG_PADDING = 10
+local PADDING = 24
+local TAG_PADDING = 4
+
+local ENERGY_RECOVERY_MODE_TO_TAG_BG_TEX = {
+  [CONSTANTS.ENERGY_RECOVERY_MODE.AUTO] = "skill_desc_bg1.tex",
+  [CONSTANTS.ENERGY_RECOVERY_MODE.DEFENSIVE] = "skill_desc_bg3.tex",
+  [CONSTANTS.ENERGY_RECOVERY_MODE.ATTACK] = "skill_desc_bg3.tex",
+}
+
+local function GetEnergyRecoveryTagBgTex(energyRecoveryMode)
+  return ENERGY_RECOVERY_MODE_TO_TAG_BG_TEX[energyRecoveryMode] or "skill_desc_bg1.tex"
+end
 
 local ArkSkillDescText = Class(Widget, function(self, text, maxWidth)
   Widget._ctor(self, "ArkSkillDescText")
   self.h = 0
   self.w = 0
-  self.maxWidth = maxWidth or 1000
-  local H_OFFSET = 30
+  self.maxWidth = maxWidth or 400
+  local H_OFFSET = 12
   local lines = string.split(text, '\n')
 
   for i, line in ipairs(lines) do
@@ -23,7 +31,7 @@ local ArkSkillDescText = Class(Widget, function(self, text, maxWidth)
     end
 
     -- 直接为每一行创建文本，不再进行复杂的字符统计和折叠
-    local textWidget = self:AddChild(Text(FALLBACK_FONT_FULL, 80, line))
+    local textWidget = self:AddChild(Text(FALLBACK_FONT_FULL, 32, line))
     local w, h = textWidget:GetRegionSize()
     textWidget:SetPosition(-self.maxWidth / 2 + w / 2, -self.h, 0)
     self.h = self.h + h
@@ -35,10 +43,48 @@ function ArkSkillDescText:GetSize()
   return self.maxWidth, self.h
 end
 
+local ArkSkillDescTag = Class(Widget, function(self, cfg) 
+  Widget._ctor(self, "ArkSkillDescTag")
+  self.size = {80, 20}
+  self.fontSize = 28
+  -- 统一tag图标尺寸（不再区分大小）
+  self.iconSize = {18, 18}
+  self.gap = 5
+  self:AddChild(Image(cfg.bg.atlas, cfg.bg.tex)):SetSize(self.size)
+  
+  local icon
+  if cfg.icon then
+    icon = self:AddChild(Image(cfg.icon.atlas, cfg.icon.tex))
+    icon:SetSize(self.iconSize)
+  end
+  
+  local text = self:AddChild(Text(FALLBACK_FONT_FULL, self.fontSize, cfg.text))
+  local textW, textH = text:GetRegionSize()
+  
+  -- 计算icon和text的总宽度
+  local totalWidth = textW
+  if icon then
+    totalWidth = totalWidth + self.iconSize[1] + self.gap
+  end
+
+  -- 设置位置
+  local startX = -totalWidth / 2
+  if icon then
+    icon:SetPosition(startX + self.iconSize[1] / 2, 0, 0)
+    startX = startX + self.iconSize[1] + self.gap
+  end
+  text:SetPosition(startX + textW / 2, 0, 0)
+end)
+
+function ArkSkillDescTag:GetSize()
+  return self.size[1], self.size[2]
+end
+
+
 local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   Widget._ctor(self, "ArkSkillDesc")
   self.owner = owner
-  self.size = {1000, 0} -- 初始时高度为0
+  self.size = {400, 0} -- 初始时高度为0
   self.id = id
   
   local bg = self:AddChild(Image("images/ui.xml", "white.tex"))
@@ -47,72 +93,60 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   local topOffset = -PADDING -- 初始时从顶部开始布局
 
     -- 技能名称
-  local skillName = self:AddChild(Text(FALLBACK_FONT_FULL, 100, descConfig.name))
+  local skillName = self:AddChild(Text(FALLBACK_FONT_FULL, 40, descConfig.name))
   local skillNameSizeX, skillNameSizeY = skillName:GetRegionSize()
   skillName:SetPosition(leftOffset + skillNameSizeX / 2, topOffset - skillNameSizeY / 2, 0)
   topOffset = topOffset - skillNameSizeY -- 更新 topOffset
 
-  topOffset = topOffset - 80
+  topOffset = topOffset - 32
   local tagLeftOffset = leftOffset
   -- 小标题
   -- 被动, 没有充能方式, 没有触发方式, 没有充能值, 没有buff持续时间
+  local tags = {}
   if descConfig.activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE then
-    local tag = self:AddChild(Widget("tag"))
-    local tagBg = tag:AddChild(Image("images/ark_skill.xml", "skill_desc_bg4.tex"))
-    local tagText = tag:AddChild(Text(FALLBACK_FONT_FULL, 70, STRINGS.UI.ARK_SKILL.EMIT_TYPE.PASSIVE))
-    local tagSizeX, tagSizeY = tagBg:GetSize()
-    tag:SetPosition(tagLeftOffset + tagSizeX / 2, topOffset, 0)
+    tags = {
+      {
+        bg = { atlas = "images/ark_skill.xml", tex = "skill_desc_bg4.tex" },
+        text = STRINGS.UI.ARK_SKILL.EMIT_TYPE.PASSIVE,
+      },
+    }
   else
-    local tagEnergyBg = nil
-    if descConfig.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
-      tagEnergyBg = Image("images/ark_skill.xml", "skill_desc_bg1.tex")
-    elseif descConfig.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.DEFENSIVE then
-      tagEnergyBg = Image("images/ark_skill.xml", "skill_desc_bg3.tex")
-    elseif descConfig.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.ATTACK then
-      tagEnergyBg = Image("images/ark_skill.xml", "skill_desc_bg3.tex")
-    end
-    local tagEnergy = self:AddChild(Widget("tagEnergy"))
-    local tagEnergyBg = tagEnergy:AddChild(tagEnergyBg)
-    local tagEnergySizeX, tagEnergySizeY = tagEnergyBg:GetSize()
-    local tagEnergyText = tagEnergy:AddChild(Text(FALLBACK_FONT_FULL, 70, STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE[string.upper(descConfig.energyRecoveryMode)]))
-    tagEnergy:SetPosition(tagLeftOffset + tagEnergySizeX / 2, topOffset, 0)
-    tagLeftOffset = tagLeftOffset + tagEnergySizeX + TAG_PADDING
-
-    local tagEmit = self:AddChild(Widget("tagEmit"))
-    local tagEmitBg = tagEmit:AddChild(Image("images/ark_skill.xml", "skill_desc_bg2.tex"))
-    local tagEmitText = tagEmit:AddChild(Text(FALLBACK_FONT_FULL, 70, STRINGS.UI.ARK_SKILL.ACTIVATION_MODE[string.upper(descConfig.activationMode)]))
-    local tagEmitSizeX, tagEmitSizeY = tagEmitBg:GetSize()
-    tagEmit:SetPosition(tagLeftOffset + tagEmitSizeX / 2, topOffset, 0)
-    tagLeftOffset = tagLeftOffset + tagEmitSizeX + TAG_PADDING
-
-    local tagEnergyNum = self:AddChild(Widget("tagEnergyNum"))
-    local tagEnergyNumBg = tagEnergyNum:AddChild(Image("images/ark_skill.xml", "skill_desc_bg4.tex"))
-    local tagEnergyNumIcon = tagEnergyNum:AddChild(Image("images/ark_skill.xml", "skill_desc_icon_energy.tex"))
-    tagEnergyNumIcon:SetSize(54, 54)
-    tagEnergyNumIcon:SetPosition(-40, 0, 0)
-    local tagEnergyNumText = tagEnergyNum:AddChild(Text(FALLBACK_FONT_FULL, 70, tostring(descConfig.activationEnergy)))
-    tagEnergyNumText:SetPosition(20, 0, 0)
-    local tagEnergyNumSizeX, tagEnergyNumSizeY = tagEnergyNumBg:GetSize()
-    tagEnergyNum:SetPosition(tagLeftOffset + tagEnergyNumSizeX / 2, topOffset, 0)
-    tagLeftOffset = tagLeftOffset + tagEnergyNumSizeX + TAG_PADDING
+    local tagEnergyBgTex = GetEnergyRecoveryTagBgTex(descConfig.energyRecoveryMode)
+    tags = {
+      {
+        bg = { atlas = "images/ark_skill.xml", tex = tagEnergyBgTex },
+        text = STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE[string.upper(descConfig.energyRecoveryMode)],
+      },
+      {
+        bg = { atlas = "images/ark_skill.xml", tex = "skill_desc_bg2.tex" },
+        text = STRINGS.UI.ARK_SKILL.ACTIVATION_MODE[string.upper(descConfig.activationMode)],
+      },
+      {
+        bg = { atlas = "images/ark_skill.xml", tex = "skill_desc_bg4.tex" },
+        icon = { atlas = "images/ark_skill.xml", tex = "skill_desc_icon_energy.tex" },
+        text = tostring(descConfig.activationEnergy),
+      },
+    }
 
     if descConfig.buffDuration then
-      local tagBuff = self:AddChild(Widget("tagBuff"))
-      local tagBuffBg = tagBuff:AddChild(Image("images/ark_skill.xml", "skill_desc_bg6.tex"))
-      local tagBuffIcon = tagBuff:AddChild(Image("images/ark_skill.xml", "skill_desc_icon_clock.tex"))
-      tagBuffIcon:SetSize(46, 46)
-      tagBuffIcon:SetPosition(-60, 0, 0)
-      local tagBuffText =
-      tagBuff:AddChild(Text(FALLBACK_FONT_FULL, 70, tostring(descConfig.buffDuration) .. STRINGS.UI.ARK_SKILL.SECONDS))
-      tagBuffText:SetPosition(30, 0, 0)
-      local tagBuffSizeX, tagBuffSizeY = tagBuffBg:GetSize()
-      tagBuff:SetPosition(tagLeftOffset + tagBuffSizeX / 2, topOffset, 0)
-      tagLeftOffset = tagLeftOffset + tagBuffSizeX + TAG_PADDING
+      table.insert(tags, {
+        bg = { atlas = "images/ark_skill.xml", tex = "skill_desc_bg6.tex" },
+        icon = { atlas = "images/ark_skill.xml", tex = "skill_desc_icon_clock.tex" },
+        text = tostring(descConfig.buffDuration) .. STRINGS.UI.ARK_SKILL.SECONDS,
+      })
     end
   end
-  topOffset = topOffset - 20 -- 更新 topOffset
 
-  topOffset = topOffset - 80
+  -- 统一计算与布局tag，减少冗余
+  for _, tagCfg in ipairs(tags) do
+    local tag = self:AddChild(ArkSkillDescTag(tagCfg))
+    local tagW = select(1, tag:GetSize())
+    tag:SetPosition(tagLeftOffset + tagW / 2, topOffset, 0)
+    tagLeftOffset = tagLeftOffset + tagW + TAG_PADDING
+  end
+  topOffset = topOffset - 8 -- 更新 topOffset
+
+  topOffset = topOffset - 32
   if descConfig.desc then
     local descText = self:AddChild(ArkSkillDescText(descConfig.desc, self.size[1] - PADDING * 2))
     local descTextSizeW, descTextSizeH = descText:GetSize()
@@ -120,47 +154,47 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     topOffset = topOffset -  descTextSizeH -- 更新 topOffset
   end
 
-  topOffset = topOffset - 60
+  topOffset = topOffset - 24
   -- 脚部
   local foot = self:AddChild(Widget("foot"))
   foot:SetPosition(0, topOffset, 0)
   local levelStr = tostring(descConfig.level)
   local levelString = "LV: " .. (STRINGS.UI.ARK_SKILL.LEVEL[levelStr] or levelStr)
-  local levelText = foot:AddChild(Text(FALLBACK_FONT_FULL, 80, levelString))
+  local levelText = foot:AddChild(Text(FALLBACK_FONT_FULL, 32, levelString))
   local levelTextSizeX, levelTextSizeY = levelText:GetRegionSize()
   levelText:SetPosition(leftOffset + levelTextSizeX / 2, 0, 0)
   topOffset = topOffset - levelTextSizeY -- 更新 topOffset
 
   -- 热键
   if descConfig.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL then
-    local hotKeyText = foot:AddChild(Text(FALLBACK_FONT_FULL, 80))
+    local hotKeyText = foot:AddChild(Text(FALLBACK_FONT_FULL, 32))
     self.hotKeyText = hotKeyText
-    hotKeyText:SetPosition(self.size[1] / 2 - 440, 0, 0)
+    hotKeyText:SetPosition(self.size[1] / 2 - 176, 0, 0)
     self:RefreshHotKey()
     local hotKeyButton = foot:AddChild(TextButton("hotkeySetting"))
     self.hotKeyButton = hotKeyButton
-    hotKeyButton:SetTextSize(80)
+    hotKeyButton:SetTextSize(32)
     hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.SETTING .. "]")
     hotKeyButton:SetFont(FALLBACK_FONT_FULL)
-    hotKeyButton:SetPosition(self.size[1] / 2 - 240, 0, 0)
+    hotKeyButton:SetPosition(self.size[1] / 2 - 96, 0, 0)
     hotKeyButton:SetOnClick(function()
       self:SettingHotKey()
     end)
     local cancelHotkeyButton = foot:AddChild(TextButton("cancelHotkey"))
     self.cancelHotkeyButton = cancelHotkeyButton
-    cancelHotkeyButton:SetTextSize(80)
+    cancelHotkeyButton:SetTextSize(32)
     cancelHotkeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.CANCEL .. "]")
     cancelHotkeyButton:SetFont(FALLBACK_FONT_FULL)
-    cancelHotkeyButton:SetPosition(self.size[1] / 2 - 240, 0, 0)
+    cancelHotkeyButton:SetPosition(self.size[1] / 2 - 96, 0, 0)
     cancelHotkeyButton:SetOnClick(function()
       self:CancelSettingHotKey()
     end)
     cancelHotkeyButton:Hide()
     local hotKeyResetButton = foot:AddChild(TextButton("hotkeyReset"))
-    hotKeyResetButton:SetTextSize(80)
+    hotKeyResetButton:SetTextSize(32)
     hotKeyResetButton:SetText("[" .. STRINGS.UI.ARK_SKILL.RESET .. "]")
     hotKeyResetButton:SetFont(FALLBACK_FONT_FULL)
-    hotKeyResetButton:SetPosition(self.size[1] / 2 - 110, 0, 0)
+    hotKeyResetButton:SetPosition(self.size[1] / 2 - 44, 0, 0)
     hotKeyResetButton:SetOnClick(function()
       ThePlayer.replica.ark_skill:RestoreDefaultHotkey(self.id)
       self:RefreshHotKey()
