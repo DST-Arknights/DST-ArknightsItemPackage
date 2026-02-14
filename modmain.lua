@@ -57,6 +57,8 @@ modimport('scripts/modmain/ark_elite')
 modimport('scripts/modmain/ark_extend_ui')
 -- 武器扩展
 modimport('scripts/modmain/combat_extension')
+-- 特效生成器
+modimport('scripts/modmain/ark_make_fx')
 
 -- widget 扩展
 modimport('scripts/modmain/widget_extension')
