@@ -1,6 +1,7 @@
 local Widget = require "widgets/widget"
 local Image = require "widgets/image"
 local Text = require "widgets/text"
+local BorderWidget = require "widgets/border_widget"
 local CONSTANTS = require "ark_constants"
 local TextButton = require "widgets/textbutton"
 
@@ -95,8 +96,11 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   self.size = {400, 0} -- 初始时高度为0
   self.id = id
   
-  local bg = self:AddChild(Image("images/ui.xml", "white.tex"))
-  bg:SetTint(0.23, 0.23, 0.23, 0.7)
+  local bg = self:AddChild(BorderWidget(self.size[1], 0, {
+    borderWidth = 2,
+    borderColor = { 0.45, 0.45, 0.45, 0.9 },
+    backgroundColor = { 0.23, 0.23, 0.23, 0.7 },
+  }))
   local leftOffset = -self.size[1] / 2 + PADDING
   local topOffset = -PADDING -- 初始时从顶部开始布局
 

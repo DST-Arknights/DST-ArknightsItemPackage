@@ -1,6 +1,7 @@
 local Widget = require "widgets/widget"
 local Image = require "widgets/image"
 local Text = require "widgets/text"
+local BorderWidget = require "widgets/border_widget"
 
 --[[
     经验条系统 (Chase Animation Model)
@@ -73,13 +74,13 @@ end)
 -- 初始化所有 UI 组件
 function ArkExpBar:_InitUI()
     -- 背景层
-    self.bg1 = self:AddChild(Image("images/ui.xml", "white.tex"))
-    self.bg1:SetTint(unpack(self.config.tint_bg))
-    self.bg1:SetHRegPoint(ANCHOR_LEFT)
-
-    self.bg2 = self:AddChild(Image("images/ui.xml", "white.tex"))
-    self.bg2:SetTint(unpack(self.config.tint_inner))
-    self.bg2:SetHRegPoint(ANCHOR_LEFT)
+    self.backgroundPanel = self:AddChild(BorderWidget(0, 0, {
+        borderWidth = self.config.border,
+        borderColor = self.config.tint_bg,
+        backgroundColor = self.config.tint_inner,
+    }))
+    self.bg1 = self.backgroundPanel.borderImage
+    self.bg2 = self.backgroundPanel.innerImage
 
     -- 预览条 (显示真实进度)
     self.previewBar = self:AddChild(Image("images/ui.xml", "white.tex"))
@@ -338,9 +339,8 @@ function ArkExpBar:SetSize(width, height)
     self.content_pos = Vector3(b, 0, 0)
     self.content_size = {width - b * 2, height - b * 2}
 
-    self.bg1:SetSize(width, height)
-    self.bg2:SetSize(self.content_size[1], self.content_size[2])
-    self.bg2:SetPosition(self.content_pos)
+    self.backgroundPanel:SetSize(width, height)
+    self.backgroundPanel:SetPosition(width / 2, 0, 0)
 
     self.previewBar:SetPosition(self.content_pos)
     self.previewBar:SetSize(0, self.content_size[2])

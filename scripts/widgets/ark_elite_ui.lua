@@ -2,6 +2,7 @@ local Widget = require "widgets/widget"
 local Image = require "widgets/image"
 local Text = require "widgets/text"
 local UIAnim = require "widgets/uianim"
+local BorderWidget = require "widgets/border_widget"
 
 local EliteUI = Class(Widget, function(self, owner)
   Widget._ctor(self, "EliteUI")
@@ -15,15 +16,13 @@ local EliteUI = Class(Widget, function(self, owner)
   self.blinkTasks = {}
 
   -- 背景
-  local bg1 = self:AddChild(Image("images/ui.xml", "white.tex"))
-  bg1:SetSize(self.width, self.height)
-  bg1:SetTint(0.23, 0.23, 0.23, 1)
-  self.bg1 = bg1
-
-  local bg2 = self:AddChild(Image("images/ui.xml", "white.tex"))
-  bg2:SetSize(self.width - self.borderSize * 2, self.height - self.borderSize * 2)
-  bg2:SetTint(0, 0, 0, 0.5)
-  self.bg2 = bg2
+  self.backgroundPanel = self:AddChild(BorderWidget(self.width, self.height, {
+    borderWidth = self.borderSize,
+    borderColor = { 0.23, 0.23, 0.23, 1 },
+    backgroundColor = { 0, 0, 0, 0.5 },
+  }))
+  self.bg1 = self.backgroundPanel.borderImage
+  self.bg2 = self.backgroundPanel.innerImage
 
   -- 潜能图标
   local potentialWidget = self:AddChild(UIAnim())
