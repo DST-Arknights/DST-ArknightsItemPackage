@@ -113,7 +113,9 @@ local ArkSkill = Class(Widget, function(self, owner, config)
 
   self.skillDescRoot = Widget("ark_skill_desc_root")
   self:SetHoverWidget(self.skillDescRoot, {
-    offset_y = self.iconSize[2] / 2 + 10,
+    attach_to_parent = self,
+    offset_x = 0,
+    offset_y = 0,
     show_delay = 0.08,
     hide_delay = 0.12,
   })
@@ -197,7 +199,7 @@ function ArkSkill:RefreshSkillDescWidget()
 
   self.skillDesc = self.skillDescRoot:AddChild(ArkSkillDesc(self.owner, self:GetSkillDescConfig(), self.id))
   local size = self.skillDesc:GetSize()
-  self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, size.y / 2, 0)
+  self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
 end
 
 function ArkSkill:SetEnergyProgress(current)
