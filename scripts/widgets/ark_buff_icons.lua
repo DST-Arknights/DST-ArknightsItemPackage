@@ -107,14 +107,13 @@ end
 function ArkBuffIcon:StartBlink()
   self.isBlinking = true
   self.blinkTimer = 0
-  self.blinkMask:Show()
 end
 
 function ArkBuffIcon:StopBlink()
   self.isBlinking = false
   self.blinkTimer = 0
-  self.blinkMask:SetTint(1, 1, 1, 0)
-  self.blinkMask:Hide()
+  -- 恢复maskImage的默认透明度
+  self.maskImage:SetTint(0, 0, 0, 0.7)
 end
 
 function ArkBuffIcon:UpdateBlink(dt)
@@ -126,8 +125,8 @@ function ArkBuffIcon:UpdateBlink(dt)
   
   -- 使用正弦波实现平滑的呼吸效果
   local progress = (self.blinkTimer % BLINK_CYCLE) / BLINK_CYCLE
-  local alpha = math.sin(progress * math.pi * 2) * 0.3 + 0.3  -- 在0.0-0.6之间波动
-  self.blinkMask:SetTint(1, 1, 1, alpha)
+  local alpha = math.sin(progress * math.pi * 2) * 0.15 + 0.55  -- 在0.4-0.7之间波动
+  self.maskImage:SetTint(0, 0, 0, alpha)
 end
 
 local ArkBuffIcons = Class(Widget, function(self, owner)
