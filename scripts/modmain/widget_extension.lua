@@ -1,3 +1,5 @@
+local Widget = require "widgets/widget"
+
 AddClassPostConstruct("widgets/widget", function(self)
   function self:CancelScissorTo(run_complete_fn)
     if self.inst.components.uianim ~= nil then
@@ -10,6 +12,163 @@ AddClassPostConstruct("widgets/widget", function(self)
       self.inst:AddComponent("uianim")
     end
     self.inst.components.uianim:ScissorTo(from, to, time, fn)
+  end
+
+  function self:ClearHoverWidget()
+    if self._HoverWidgetShowTask then
+      self._HoverWidgetShowTask:Cancel()
+      self._HoverWidgetShowTask = nil
+    end
+    if self._HoverWidgetHideTask then
+      self._HoverWidgetHideTask:Cancel()
+      self._HoverWidgetHideTask = nil
+    end
+
+    if self._HoverWidgetOnGainFocus ~= nil and self.OnGainFocus == self._HoverWidgetOnGainFocus then
+      self.OnGainFocus = self._PrevOnGainFocusForHoverWidget
+    end
+    if self._HoverWidgetOnLoseFocus ~= nil and self.OnLoseFocus == self._HoverWidgetOnLoseFocus then
+      self.OnLoseFocus = self._PrevOnLoseFocusForHoverWidget
+    end
+
+    self._HoverWidgetOnGainFocus = nil
+    self._HoverWidgetOnLoseFocus = nil
+    self._PrevOnGainFocusForHoverWidget = nil
+    self._PrevOnLoseFocusForHoverWidget = nil
+
+    if self.hoverwidget then
+      self.hoverwidget:Hide()
+      self.hoverwidget = nil
+    end
+
+    if self.hoverwidget_root then
+      self.hoverwidget_root:Hide()
+      self.hoverwidget_root:Kill()
+      self.hoverwidget_root = nil
+    end
+  end
+
+  function self:SetHoverWidget(widget, params)
+    if widget == nil then
+      self:ClearHoverWidget()
+      return
+    end
+
+    params = params or {}
+
+    self:ClearHoverWidget()
+
+    if params.attach_to_parent ~= nil then
+      self.hoverwidget_root = params.attach_to_parent:AddChild(Widget("hoverwidget_root"))
+    else
+      self.hoverwidget_root = Widget("hoverwidget_root")
+      self.hoverwidget_root.global_widget = true
+      self.hoverwidget_root:SetScaleMode(SCALEMODE_PROPORTIONAL)
+    end
+    self.hoverwidget_root:Hide()
+
+    self.hoverwidget = self.hoverwidget_root:AddChild(widget)
+    self.hoverwidget:Hide()
+
+    local show_hover_widget = function(owner)
+      if owner.hoverwidget_root == nil or owner.hoverwidget == nil then
+        return
+      end
+      if params.attach_to_parent ~= nil then
+        local world_pos = owner:GetWorldPosition() - params.attach_to_parent:GetWorldPosition()
+        local parent_scale = params.attach_to_parent:GetScale()
+
+        local x_pos = world_pos.x / parent_scale.x + (params.offset_x or 0)
+        local y_pos = world_pos.y / parent_scale.y + (params.offset_y or 26)
+        owner.hoverwidget_root:SetPosition(x_pos, y_pos)
+        owner.hoverwidget_root:MoveToFront()
+      else
+        local world_pos = owner:GetWorldPosition()
+        local x_pos = world_pos.x + (params.offset_x or 0)
+        local y_pos = world_pos.y + (params.offset_y or 26)
+        owner.hoverwidget_root:SetPosition(x_pos, y_pos)
+      end
+
+      owner.hoverwidget:Show()
+      owner.hoverwidget_root:Show()
+    end
+
+    local hide_hover_widget = function(owner)
+      if owner.hoverwidget then
+        owner.hoverwidget:Hide()
+      end
+      if owner.hoverwidget_root then
+        owner.hoverwidget_root:Hide()
+      end
+    end
+
+    local show_delay = params.show_delay
+      or params.delay_show
+      or 0
+    local hide_delay = params.hide_delay
+      or params.delay_hide
+      or 0
+
+    local request_show_hover_widget = function(owner)
+      if owner._HoverWidgetHideTask then
+        owner._HoverWidgetHideTask:Cancel()
+        owner._HoverWidgetHideTask = nil
+      end
+
+      if owner._HoverWidgetShowTask then
+        owner._HoverWidgetShowTask:Cancel()
+        owner._HoverWidgetShowTask = nil
+      end
+
+      if show_delay > 0 then
+        owner._HoverWidgetShowTask = owner.inst:DoTaskInTime(show_delay, function()
+          owner._HoverWidgetShowTask = nil
+          show_hover_widget(owner)
+        end)
+      else
+        show_hover_widget(owner)
+      end
+    end
+
+    local request_hide_hover_widget = function(owner)
+      if owner._HoverWidgetShowTask then
+        owner._HoverWidgetShowTask:Cancel()
+        owner._HoverWidgetShowTask = nil
+      end
+
+      if owner._HoverWidgetHideTask then
+        owner._HoverWidgetHideTask:Cancel()
+        owner._HoverWidgetHideTask = nil
+      end
+
+      if hide_delay > 0 then
+        owner._HoverWidgetHideTask = owner.inst:DoTaskInTime(hide_delay, function()
+          owner._HoverWidgetHideTask = nil
+          hide_hover_widget(owner)
+        end)
+      else
+        hide_hover_widget(owner)
+      end
+    end
+
+    self._PrevOnGainFocusForHoverWidget = self.OnGainFocus
+    self._PrevOnLoseFocusForHoverWidget = self.OnLoseFocus
+
+    self._HoverWidgetOnGainFocus = function(owner)
+      request_show_hover_widget(owner)
+      if owner._PrevOnGainFocusForHoverWidget then
+        owner._PrevOnGainFocusForHoverWidget(owner)
+      end
+    end
+    self._HoverWidgetOnLoseFocus = function(owner)
+      request_hide_hover_widget(owner)
+      if owner._PrevOnLoseFocusForHoverWidget then
+        owner._PrevOnLoseFocusForHoverWidget(owner)
+      end
+    end
+
+    self.OnGainFocus = self._HoverWidgetOnGainFocus
+    self.OnLoseFocus = self._HoverWidgetOnLoseFocus
   end
 end)
 

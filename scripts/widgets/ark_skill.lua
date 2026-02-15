@@ -111,12 +111,17 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.isBlinking = false
   self.previousActivationStacks = 0  -- 用于检测充能状态变化
 
-  -- skillDesc 延迟移除相关变量
-  self.skillDescHideTimer = nil
-  self.skillDescHideDelay = 0.1  -- 0.3秒延迟
+  self.skillDescRoot = Widget("ark_skill_desc_root")
+  self:SetHoverWidget(self.skillDescRoot, {
+    offset_y = self.iconSize[2] / 2 + 10,
+    show_delay = 0.08,
+    hide_delay = 0.12,
+  })
 
   self.owner:StartUpdatingComponent(self)
   self.initComplete = false
+
+  self:RefreshSkillDescWidget()
 end)
 
 function ArkSkill:RecurrentStatusImageSize()
@@ -167,6 +172,32 @@ end
 
 local function isAutoActivation(activationMode)
   return activationMode == CONSTANTS.ACTIVATION_MODE.AUTO
+end
+
+function ArkSkill:GetSkillDescConfig()
+  return {
+    locked = self.status == CONSTANTS.SKILL_STATUS.LOCKED,
+    lockedDesc = self.config.lockedDesc,
+    name = self.config.name,
+    energyRecoveryMode = self.config.energyRecoveryMode,
+    activationMode = self.config.activationMode,
+    activationEnergy = self.levelConfig.activationEnergy,
+    buffDuration = self.levelConfig.buffDuration,
+    hotkey = self.config.hotkey,
+    level = self.level or 1,
+    desc = self.levelConfig.desc,
+  }
+end
+
+function ArkSkill:RefreshSkillDescWidget()
+  if self.skillDesc then
+    self.skillDesc:Kill()
+    self.skillDesc = nil
+  end
+
+  self.skillDesc = self.skillDescRoot:AddChild(ArkSkillDesc(self.owner, self:GetSkillDescConfig(), self.id))
+  local size = self.skillDesc:GetSize()
+  self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, size.y / 2, 0)
 end
 
 function ArkSkill:SetEnergyProgress(current)
@@ -341,6 +372,8 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
       end
     end
   end
+
+  self:RefreshSkillDescWidget()
   self:RecurrentStatusImageSize()
 end
 
@@ -354,18 +387,6 @@ local function OnUpdate(self, dt)
   end
   -- 更新闪烁效果
   self:UpdateBlink(dt)
-
-  -- 处理 skillDesc 延迟移除
-  if self.skillDescHideTimer then
-    self.skillDescHideTimer = self.skillDescHideTimer - dt
-    if self.skillDescHideTimer <= 0 then
-      self.skillDescHideTimer = nil
-      if self.skillDesc then
-        self.skillDesc:Kill()
-        self.skillDesc = nil
-      end
-    end
-  end
 
   -- buff期间技能停止充能
   local leftBuffTime = UpdateTimeBuff(self, dt)
@@ -403,39 +424,20 @@ function ArkSkill:OnUpdate(dt)
 end
 
 function ArkSkill:OnGainFocus()
-  if not self.initComplete then
-    return
-  end
   ArkSkill._base.OnGainFocus(self)
-  -- 取消延迟移除计时器
-  self.skillDescHideTimer = nil
-  if not self.skillDesc then
-    local descConfig = {
-      locked = self.status == CONSTANTS.SKILL_STATUS.LOCKED,
-      lockedDesc = self.config.lockedDesc,
-      name = self.config.name,
-      energyRecoveryMode = self.config.energyRecoveryMode,
-      activationMode = self.config.activationMode,
-      activationEnergy = self.levelConfig.activationEnergy,
-      buffDuration = self.levelConfig.buffDuration,
-      hotkey = self.config.hotkey,
-      level = self.level,
-      desc = self.levelConfig.desc,
-    }
-    self.skillDesc = self:AddChild(ArkSkillDesc(self.owner, descConfig, self.id))
-    -- self.skillDesc:SetScale(0.5)
-    local size = self.skillDesc:GetSize()
-    self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
-  end
-  self.skillDesc:Show()
 end
 
 function ArkSkill:OnLoseFocus()
   ArkSkill._base.OnLoseFocus(self)
+end
+
+function ArkSkill:Kill()
+  self:ClearHoverWidget()
   if self.skillDesc then
-    -- 启动延迟移除计时器，而不是立即移除
-    self.skillDescHideTimer = self.skillDescHideDelay
+    self.skillDesc:Kill()
+    self.skillDesc = nil
   end
+  ArkSkill._base.Kill(self)
 end
 
 function ArkSkill:OnControl(control, down)
