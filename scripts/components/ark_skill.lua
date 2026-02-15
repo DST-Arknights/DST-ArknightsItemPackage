@@ -297,6 +297,7 @@ function SingleSkill:SetEnergyRecovering(force)
   else
     data.tickEnergy = false
   end
+  data.tickBuff = false
   self.manager:SyncSkillStatus(self.id)
 
   -- 效果态同步：状态变更后，要求外部将挂载效果校准到当前状态
@@ -324,6 +325,7 @@ function SingleSkill:SetBuffing()
   data.prevStatus = data.status
   data.status = CONSTANTS.SKILL_STATUS.BUFFING
   data.tickBuff = true
+  data.tickEnergy = false
   self.manager:SyncSkillStatus(self.id)
 
   self:_EmitEffectsSync(EFFECTS_SYNC_REASON.STATUS_CHANGE)
@@ -335,7 +337,8 @@ function SingleSkill:SetBulleting()
   data.prevStatus = data.status
   data.status = CONSTANTS.SKILL_STATUS.BULLETING
   self.manager:SyncSkillStatus(self.id)
-
+  data.tickEnergy = false
+  data.tickBuff = false
   self:_EmitEffectsSync(EFFECTS_SYNC_REASON.STATUS_CHANGE)
 end
 
@@ -430,9 +433,9 @@ function SingleSkill:GetLevelConfig()
   return self.levelConfig.config
 end
 
-function SingleSkill:AddEnergyProgress(value)
+function SingleSkill:AddEnergyProgress(value, ignoreSync)
   local data = self.data
-  if data.status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+  if data.status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING and data.status ~= CONSTANTS.SKILL_STATUS.BUFFING then
     return 0
   end
   if data.activationStacks >= self.levelConfig.maxActivationStacks then
@@ -456,7 +459,7 @@ function SingleSkill:AddEnergyProgress(value)
     end
   end
   -- 自动充能时，只在状态变更时同步；其他充能方式每次都需要同步，避免客户端不能展示
-  if changed or self.config.energyRecoveryMode ~= CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
+  if changed or self.config.energyRecoveryMode ~= CONSTANTS.ENERGY_RECOVERY_MODE.AUTO or ignoreSync then
     self.manager:SyncSkillStatus(self.id)
   end
   local leftEnergy = data.energyProgress - lvl.activationEnergy
@@ -556,10 +559,10 @@ function SingleSkill:Step(dt)
     local leftBuff = self:AddBuffProgress(dt)
     -- 如果状态流转到了 自动充能，且有剩余时间，则将剩余时间加到能量上
     if leftBuff > 0 and data.tickEnergy then
-      self:AddEnergyProgress(dt + leftBuff)
+      self:AddEnergyProgress(dt + leftBuff, true)
     end
   elseif data.tickEnergy then
-    self:AddEnergyProgress(dt)
+    self:AddEnergyProgress(dt, true)
   end
 end
 
