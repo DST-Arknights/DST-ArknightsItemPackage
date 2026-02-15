@@ -22,21 +22,29 @@ local ArkSkillDescText = Class(Widget, function(self, text, maxWidth)
   self.h = 0
   self.w = 0
   self.maxWidth = maxWidth or 400
-  local H_OFFSET = 12
-  local lines = string.split(text, '\n')
+  local fontSize = 32
+  local maxLines = 20
+  local lineHeight = fontSize * 1.0
 
-  for i, line in ipairs(lines) do
-    if i ~= 1 then
-      self.h = self.h + H_OFFSET  -- 添加行间距
-    end
+  local textWidget = self:AddChild(Text(FALLBACK_FONT_FULL, fontSize, ""))
+  local numLines = textWidget:SetMultilineTruncatedString(
+    text or "",
+    maxLines,
+    self.maxWidth,
+    nil,
+    true,
+    true,
+    fontSize
+  )
 
-    -- 直接为每一行创建文本，不再进行复杂的字符统计和折叠
-    local textWidget = self:AddChild(Text(FALLBACK_FONT_FULL, 32, line))
-    local w, h = textWidget:GetRegionSize()
-    textWidget:SetPosition(-self.maxWidth / 2 + w / 2, -self.h, 0)
-    self.h = self.h + h
-    self.w = math.max(self.w, w)
-  end
+  numLines = math.max(1, numLines or 1)
+  self.h = numLines * lineHeight
+  self.w = self.maxWidth
+
+  textWidget:SetRegionSize(self.maxWidth, self.h)
+  textWidget:SetHAlign(ANCHOR_LEFT)
+  textWidget:SetVAlign(ANCHOR_TOP)
+  textWidget:SetPosition(0, -self.h / 2, 0)
 end)
 
 function ArkSkillDescText:GetSize()

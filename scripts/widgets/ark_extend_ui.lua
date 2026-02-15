@@ -4,7 +4,6 @@ local Widget = require "widgets/widget"
 local UIArkCurrency = require "widgets/ui_ark_currency"
 local ExpBar = require "widgets/ark_exp_bar"
 local ArkBuffIcons = require "widgets/ark_buff_icons"
-local common = require "ark_common"
 
 local ArkExtendUi =Class(Widget, function(self, owner, controls)
   Widget._ctor(self, "ArkExtendUi")

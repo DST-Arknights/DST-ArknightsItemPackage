@@ -97,4 +97,6 @@ DefineNetState("ark_buff_icon", {
   tex = "string:classified",
   totalTime = "float:classified",
   remainingTime = "float:classified",
+  title = "string:classified",
+  desc = "string:classified",
 })
