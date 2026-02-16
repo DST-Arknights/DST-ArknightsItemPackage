@@ -110,7 +110,7 @@ function ArkExpBar:_InitUI()
     self.flashOverlay:SetClickable(false)
 
     -- 经验文字
-    self.expText = self:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 16, "EXP 0/0"))
+    self.expText = self:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 18, "EXP 0/0"))
     self.expText:Hide()
 end
 
