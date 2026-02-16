@@ -1,12 +1,50 @@
 local Widget = require "widgets/widget"
 local Image = require "widgets/image"
 local Text = require "widgets/text"
+local BorderWidget = require "widgets/border_widget"
 
 local ICON_SIZE = 32
+local HOVER_WIDTH = 360
+local HOVER_PADDING = 20
+local HOVER_TITLE_FONT_SIZE = 36
+local HOVER_DESC_FONT_SIZE = 30
+local HOVER_DESC_MAX_LINES = 20
 
 -- Buff图标闪烁配置
 local BLINK_THRESHOLD = 5  -- 剩余时间少于10秒时开始闪烁
 local BLINK_CYCLE = 2  -- 闪烁周期（秒）
+
+local ArkBuffDescText = Class(Widget, function(self, text, maxWidth)
+  Widget._ctor(self, "ArkBuffDescText")
+  self.h = 0
+  self.maxWidth = maxWidth or 320
+  local fontSize = HOVER_DESC_FONT_SIZE
+  local maxLines = HOVER_DESC_MAX_LINES
+  local lineHeight = fontSize * 1.0
+
+  local textWidget = self:AddChild(Text(FALLBACK_FONT_FULL, fontSize, ""))
+  local numLines = textWidget:SetMultilineTruncatedString(
+    text or "",
+    maxLines,
+    self.maxWidth,
+    nil,
+    true,
+    true,
+    fontSize
+  )
+
+  numLines = math.max(1, numLines or 1)
+  self.h = numLines * lineHeight
+
+  textWidget:SetRegionSize(self.maxWidth, self.h)
+  textWidget:SetHAlign(ANCHOR_LEFT)
+  textWidget:SetVAlign(ANCHOR_TOP)
+  textWidget:SetPosition(0, -self.h / 2, 0)
+end)
+
+function ArkBuffDescText:GetSize()
+  return self.maxWidth, self.h
+end
 
 local ArkBuffIcon = Class(Widget, function(self, owner)
   Widget._ctor(self, "ArkBuffIcon")
@@ -36,6 +74,25 @@ local ArkBuffIcon = Class(Widget, function(self, owner)
   -- 展示层数的文本
   self.stacksText = self.stacksBg:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT,12))
 
+  self.hoverRoot = Widget("ark_buff_icon_hover_root")
+  self.hoverBg = self.hoverRoot:AddChild(BorderWidget(HOVER_WIDTH, 0, {
+    borderWidth = 2,
+    borderColor = { 0.45, 0.45, 0.45, 0.9 },
+    backgroundColor = { 0.23, 0.23, 0.23, 0.7 },
+  }))
+  self.hoverTitle = self.hoverRoot:AddChild(Text(FALLBACK_FONT_FULL, HOVER_TITLE_FONT_SIZE, ""))
+  self.hoverDesc = nil
+  self.currentHoverTitle = nil
+  self.currentHoverDesc = nil
+  self:SetHoverWidget(self.hoverRoot, {
+    attach_to_parent = self,
+    offset_x = 0,
+    offset_y = 0,
+    show_delay = 0.08,
+    hide_delay = 0.12,
+  })
+  self:SetHoverContent(nil, nil)
+
   -- 闪烁状态
   self.isBlinking = false
   self.blinkTimer = 0
@@ -51,6 +108,53 @@ local ArkBuffIcon = Class(Widget, function(self, owner)
     end
   end)
 end)
+
+function ArkBuffIcon:SetHoverContent(title, desc)
+  local nextTitle = title or ""
+  local nextDesc = desc or ""
+  if self.currentHoverTitle == nextTitle and self.currentHoverDesc == nextDesc then
+    return
+  end
+
+  self.currentHoverTitle = nextTitle
+  self.currentHoverDesc = nextDesc
+
+  if nextTitle == "" and nextDesc == "" then
+    self.hoverRoot:Hide()
+    return
+  end
+
+  self.hoverRoot:Show()
+  if self.hoverDesc then
+    self.hoverDesc:Kill()
+    self.hoverDesc = nil
+  end
+
+  local contentWidth = HOVER_WIDTH - HOVER_PADDING * 2
+  local leftOffset = -HOVER_WIDTH / 2 + HOVER_PADDING
+  local topOffset = -HOVER_PADDING
+
+  self.hoverTitle:SetString(nextTitle)
+  local titleW, titleH = self.hoverTitle:GetRegionSize()
+  self.hoverTitle:SetRegionSize(contentWidth, titleH)
+  self.hoverTitle:SetHAlign(ANCHOR_LEFT)
+  self.hoverTitle:SetVAlign(ANCHOR_TOP)
+  self.hoverTitle:SetPosition(leftOffset + contentWidth / 2, topOffset - titleH / 2, 0)
+  topOffset = topOffset - titleH
+
+  if nextDesc ~= "" then
+    topOffset = topOffset - 10
+    self.hoverDesc = self.hoverRoot:AddChild(ArkBuffDescText(nextDesc, contentWidth))
+    local _, descH = self.hoverDesc:GetSize()
+    self.hoverDesc:SetPosition(0, topOffset, 0)
+    topOffset = topOffset - descH
+  end
+
+  local height = -topOffset + HOVER_PADDING
+  self.hoverBg:SetSize(HOVER_WIDTH, height)
+  self.hoverBg:SetPosition(0, -height / 2, 0)
+  self.hoverRoot:SetPosition(-ICON_SIZE / 2 + HOVER_WIDTH / 2, ICON_SIZE / 2 + height + 10, 0)
+end
 
 function ArkBuffIcon:SetTexture(atlas, tex)
   self.iconImage:SetTexture(atlas, tex)
@@ -285,9 +389,11 @@ function ArkBuffIcons:_UpdateGroupDisplay(groupKey)
     -- group.icon:SetTexture(displayState.atlas, displayState.tex)
     group.icon:SetTotalTime(displayState.totalTime)
     group.icon:SetRemainingTime(displayRemainingTime)
+    group.icon:SetHoverContent(displayState.title, displayState.desc)
   else
     -- 没有有效的buff，隐藏icon（或保持显示最后一个已过期的buff）
     group.icon:SetRemainingTime(0)
+    group.icon:SetHoverContent(nil, nil)
   end
 end
 
