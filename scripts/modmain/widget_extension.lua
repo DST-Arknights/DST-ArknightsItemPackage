@@ -1,6 +1,15 @@
 local Widget = require "widgets/widget"
+local ImageButton = require "widgets/imagebutton"
 
 AddClassPostConstruct("widgets/widget", function(self)
+  local _WidgetKill = self.Kill
+  function self:Kill(...)
+    self:ClearHoverWidget()
+    if _WidgetKill then
+      return _WidgetKill(self, ...)
+    end
+  end
+
   function self:CancelScissorTo(run_complete_fn)
     if self.inst.components.uianim ~= nil then
       self.inst.components.uianim:CancelScissorTo(run_complete_fn)
@@ -22,6 +31,11 @@ AddClassPostConstruct("widgets/widget", function(self)
     if self._HoverWidgetHideTask then
       self._HoverWidgetHideTask:Cancel()
       self._HoverWidgetHideTask = nil
+    end
+
+    if self.hoverwidget_focus_proxy then
+      self.hoverwidget_focus_proxy:Kill()
+      self.hoverwidget_focus_proxy = nil
     end
 
     if self._HoverWidgetOnGainFocus ~= nil and self.OnGainFocus == self._HoverWidgetOnGainFocus then
@@ -154,21 +168,34 @@ AddClassPostConstruct("widgets/widget", function(self)
     self._PrevOnGainFocusForHoverWidget = self.OnGainFocus
     self._PrevOnLoseFocusForHoverWidget = self.OnLoseFocus
 
-    self._HoverWidgetOnGainFocus = function(owner)
-      request_show_hover_widget(owner)
-      if owner._PrevOnGainFocusForHoverWidget then
-        owner._PrevOnGainFocusForHoverWidget(owner)
-      end
-    end
-    self._HoverWidgetOnLoseFocus = function(owner)
-      request_hide_hover_widget(owner)
-      if owner._PrevOnLoseFocusForHoverWidget then
-        owner._PrevOnLoseFocusForHoverWidget(owner)
-      end
-    end
+    local hover_parent = self.text or self
+    if hover_parent.GetString ~= nil and hover_parent:GetString() ~= "" then
+      self.hoverwidget_focus_proxy = hover_parent:AddChild(ImageButton("images/ui.xml", "blank.tex", "blank.tex", "blank.tex", nil, nil, {1,1}, {0,0}))
+      self.hoverwidget_focus_proxy.image:ScaleToSize(hover_parent:GetRegionSize())
 
-    self.OnGainFocus = self._HoverWidgetOnGainFocus
-    self.OnLoseFocus = self._HoverWidgetOnLoseFocus
+      self.hoverwidget_focus_proxy.OnGainFocus = function()
+        request_show_hover_widget(self)
+      end
+      self.hoverwidget_focus_proxy.OnLoseFocus = function()
+        request_hide_hover_widget(self)
+      end
+    else
+      self._HoverWidgetOnGainFocus = function(owner)
+        request_show_hover_widget(owner)
+        if owner._PrevOnGainFocusForHoverWidget then
+          owner._PrevOnGainFocusForHoverWidget(owner)
+        end
+      end
+      self._HoverWidgetOnLoseFocus = function(owner)
+        request_hide_hover_widget(owner)
+        if owner._PrevOnLoseFocusForHoverWidget then
+          owner._PrevOnLoseFocusForHoverWidget(owner)
+        end
+      end
+
+      self.OnGainFocus = self._HoverWidgetOnGainFocus
+      self.OnLoseFocus = self._HoverWidgetOnLoseFocus
+    end
   end
 end)
 
