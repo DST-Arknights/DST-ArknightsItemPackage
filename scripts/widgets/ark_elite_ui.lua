@@ -4,6 +4,31 @@ local Text = require "widgets/text"
 local UIAnim = require "widgets/uianim"
 local BorderWidget = require "widgets/border_widget"
 
+local EliteHoverTip = Class(Widget, function(self, text)
+  Widget._ctor(self, "EliteHoverTip")
+  self.paddingX = 8
+  self.paddingY = 8
+  self.minWidth = 100
+  self.minHeight = 36
+
+  self.bg = self:AddChild(BorderWidget(self.minWidth, self.minHeight, {
+    borderWidth = 2,
+    borderColor = { 0.45, 0.45, 0.45, 0.9 },
+    backgroundColor = { 0.23, 0.23, 0.23, 0.7 },
+  }))
+  self.label = self:AddChild(Text(FALLBACK_FONT_FULL, 30, ""))
+  self:SetText(text or "")
+end)
+
+function EliteHoverTip:SetText(text)
+  self.label:SetString(text or "")
+  local textW, textH = self.label:GetRegionSize()
+  local width = math.max(self.minWidth, textW + self.paddingX * 2)
+  local height = math.max(self.minHeight, textH + self.paddingY * 2)
+  self.bg:SetSize(width, height)
+  self.label:SetPosition(0, 0, 0)
+end
+
 local EliteUI = Class(Widget, function(self, owner)
   Widget._ctor(self, "EliteUI")
   self.owner = owner
@@ -21,13 +46,12 @@ local EliteUI = Class(Widget, function(self, owner)
     borderColor = { 0.23, 0.23, 0.23, 1 },
     backgroundColor = { 0, 0, 0, 0.5 },
   }))
-  self.bg1 = self.backgroundPanel.borderImage
-  self.bg2 = self.backgroundPanel.innerImage
 
   -- 潜能图标
   local potentialWidget = self:AddChild(UIAnim())
   local potentialImg = potentialWidget:AddChild(Image("images/ark_item_ui.xml", "potential_0_small.tex"))
   potentialWidget.potentialImg = potentialImg
+  self.potentialImg = potentialImg
   local potentialW = potentialImg:GetSize()
   potentialImg:SetScale(self.iconWidth / potentialW)
   potentialImg:SetPosition(0, 25, 0)
@@ -37,6 +61,7 @@ local EliteUI = Class(Widget, function(self, owner)
   local eliteWidget = self:AddChild(UIAnim())
   local eliteImg = eliteWidget:AddChild(Image("images/ark_item_ui.xml", "elite_0_small.tex"))
   eliteWidget.eliteImg = eliteImg
+  self.eliteImg = eliteImg
   local eliteW, _ = eliteImg:GetSize()
   eliteImg:SetScale(self.iconWidth / eliteW)
   eliteImg:SetPosition(0, -12, 0)
@@ -46,6 +71,7 @@ local EliteUI = Class(Widget, function(self, owner)
   local levelTextWidget = self:AddChild(UIAnim())
   local levelText = levelTextWidget:AddChild(Text(SEGEOUI_ALPHANUM_ITALICFONT, 16, "LV1"))
   levelTextWidget.levelText = levelText
+  self.levelText = levelText
   levelText:SetPosition(0, -40, 0)
   self.levelTextWidget = levelTextWidget
 
@@ -53,6 +79,40 @@ local EliteUI = Class(Widget, function(self, owner)
   self.currentElite = 0
   self.currentLevel = 0
   self.currentPotential = 0
+
+  self.potentialHoverTip = EliteHoverTip("")
+  self.eliteHoverTip = EliteHoverTip("")
+  self.levelHoverTip = EliteHoverTip("")
+
+  local hoverCommonParams = {
+    attach_to_parent = self,
+    offset_x = -80,
+    show_delay = 0.08,
+    hide_delay = 0.12,
+  }
+
+  self.potentialImg:SetHoverWidget(self.potentialHoverTip, {
+    attach_to_parent = hoverCommonParams.attach_to_parent,
+    offset_x = hoverCommonParams.offset_x,
+    offset_y = 0,
+    show_delay = hoverCommonParams.show_delay,
+    hide_delay = hoverCommonParams.hide_delay,
+  })
+  self.eliteImg:SetHoverWidget(self.eliteHoverTip, {
+    attach_to_parent = hoverCommonParams.attach_to_parent,
+    offset_x = hoverCommonParams.offset_x,
+    offset_y = 0,
+    show_delay = hoverCommonParams.show_delay,
+    hide_delay = hoverCommonParams.hide_delay,
+  })
+  self.levelText:SetHoverWidget(self.levelHoverTip, {
+    attach_to_parent = hoverCommonParams.attach_to_parent,
+    offset_x = hoverCommonParams.offset_x,
+    offset_y = 0,
+    show_delay = hoverCommonParams.show_delay,
+    hide_delay = hoverCommonParams.hide_delay,
+  })
+  self:RefreshHoverTips()
 
   self.initTask = self.inst:DoTaskInTime(0, function() 
     local state = self.owner.replica.ark_elite and self.owner.replica.ark_elite.state
@@ -63,6 +123,19 @@ local EliteUI = Class(Widget, function(self, owner)
     end
   end)
 end)
+
+function EliteUI:GetEliteHoverText(elite)
+  local hoverStrings = STRINGS.UI.ARK_ELITE.HOVER.ELITE
+  ArkLogger:Debug("elite", elite, hoverStrings[elite], hoverStrings[0])
+  return hoverStrings[tostring(elite)] or hoverStrings[""]
+end
+
+function EliteUI:RefreshHoverTips()
+  ArkLogger:Debug("RefreshHoverTips", self.currentPotential, self.currentElite, self.currentLevel)
+  self.potentialHoverTip:SetText(string.format(STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL, self.currentPotential or 0))
+  self.eliteHoverTip:SetText(self:GetEliteHoverText(self.currentElite))
+  self.levelHoverTip:SetText(string.format(STRINGS.UI.ARK_ELITE.HOVER.LEVEL, self.currentLevel))
+end
 
 function EliteUI:Blink(widget)
   if self.blinkTasks[widget] then
@@ -97,6 +170,7 @@ function EliteUI:SetElite(elite)
   if self.currentElite ~= elite then
     self.currentElite = elite
     self.eliteWidget.eliteImg:SetTexture("images/ark_item_ui.xml", "elite_" .. elite - 1 .. "_small.tex")
+    self:RefreshHoverTips()
     self:Blink(self.eliteWidget)
   end
 end
@@ -109,6 +183,7 @@ function EliteUI:SetLevel(level)
     if levelText then
       levelText:SetString("LV" .. level)
     end
+    self:RefreshHoverTips()
     self:Blink(self.levelTextWidget)
   end
 end
@@ -117,6 +192,7 @@ function EliteUI:SetPotential(potential)
   if self.currentPotential ~= potential then
     self.currentPotential = potential
     self.potentialWidget.potentialImg:SetTexture("images/ark_item_ui.xml", "potential_" .. potential - 1 .. "_small.tex")
+    self:RefreshHoverTips()
     self:Blink(self.potentialWidget)
   end
 end

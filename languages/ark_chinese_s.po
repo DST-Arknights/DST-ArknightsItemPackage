@@ -155,6 +155,31 @@ msgctxt "STRINGS.UI.ARK_ELITE.ELITE"
 msgid "Elite"
 msgstr "精英化"
 
+#. STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL"
+msgid "Potential: %d"
+msgstr "潜能: %d"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.LEVEL
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.LEVEL"
+msgid "Level: %d"
+msgstr "等级: %d"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.ELITE.1
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.1"
+msgid "Not Elite"
+msgstr "未精英化"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.ELITE.2
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.1"
+msgid "Elite I"
+msgstr "精英化一"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.ELITE.3
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.3"
+msgid "Elite II"
+msgstr "精英化二"
+
 
 #. STRINGS.NAMES.ARK_WORKSHOP
 msgctxt "STRINGS.NAMES.ARK_WORKSHOP"
