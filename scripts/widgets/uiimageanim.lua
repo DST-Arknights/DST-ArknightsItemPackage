@@ -191,6 +191,7 @@ local UIImageAnim = Class(Widget, function(self, config_or_path)
   self._anim = nil
   self._anim_t = 0
   self._accum_dt = 0
+  self._dt_multiplier = 1
   self._frame_step = self._config.frame_step or (1 / 30)
   self._queue = {}
   self._paused = false
@@ -292,6 +293,10 @@ function UIImageAnim:GetCurrentAnimationName()
   return self._anim_name
 end
 
+function UIImageAnim:GetCurrentAnimationTime()
+  return self._anim_t or 0
+end
+
 function UIImageAnim:PlayAnimation(name, loop)
   local anim = self._compiled_anims[name]
   if anim == nil then
@@ -307,6 +312,47 @@ function UIImageAnim:PlayAnimation(name, loop)
   self._loop = loop == true
   self:StartUpdating()
   self:_Advance(0)
+  return true
+end
+
+function UIImageAnim:SetCurrentAnimationTime(time)
+  if self._anim == nil then
+    return false
+  end
+
+  local duration = self._anim.duration or 0
+  local t = tonumber(time) or 0
+  if t < 0 then
+    t = 0
+  end
+
+  if duration > 0 then
+    if self._loop then
+      t = t % duration
+    elseif t > duration then
+      t = duration
+    end
+  else
+    t = 0
+  end
+
+  self._anim_t = t
+  self._accum_dt = 0
+  self:_Advance(0)
+  return true
+end
+
+function UIImageAnim:SetDeltaTimeMultiplier(speed)
+  if speed == nil then
+    speed = 1
+  end
+
+  local multiplier = tonumber(speed)
+  if multiplier == nil then
+    return false
+  end
+
+  self._dt_multiplier = multiplier
   return true
 end
 
@@ -401,6 +447,7 @@ function UIImageAnim:_Advance(dt)
     return
   end
 
+  local prev_t = self._anim_t
   self._anim_t = self._anim_t + dt
   local duration = anim.duration
   local t = self._anim_t
@@ -412,10 +459,14 @@ function UIImageAnim:_Advance(dt)
     else
       if t > duration then
         t = duration
+      elseif t < 0 then
+        t = 0
       end
+      self._anim_t = t
     end
   else
     t = 0
+    self._anim_t = 0
   end
 
   local active_ids = {}
@@ -427,8 +478,12 @@ function UIImageAnim:_Advance(dt)
   end
   self:_HideUnusedNodes(active_ids)
 
-  if not self._loop and duration > 0 and self._anim_t >= duration then
-    self:_OnAnimFinished()
+  if not self._loop and duration > 0 then
+    if dt > 0 and prev_t < duration and self._anim_t >= duration then
+      self:_OnAnimFinished()
+    elseif dt < 0 and prev_t > 0 and self._anim_t <= 0 then
+      self:_OnAnimFinished()
+    end
   end
 end
 
@@ -448,7 +503,11 @@ function UIImageAnim:OnUpdate(dt)
     step = 0.12
   end
 
-  self:_Advance(step)
+  local multiplier = self._dt_multiplier or 1
+  local scaled_step = step * multiplier
+  if scaled_step ~= 0 then
+    self:_Advance(scaled_step)
+  end
 end
 
 return UIImageAnim

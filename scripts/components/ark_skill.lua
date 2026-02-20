@@ -459,7 +459,7 @@ function SingleSkill:AddEnergyProgress(value, ignoreSync)
     end
   end
   -- 自动充能时，只在状态变更时同步；其他充能方式每次都需要同步，避免客户端不能展示
-  if changed or self.config.energyRecoveryMode ~= CONSTANTS.ENERGY_RECOVERY_MODE.AUTO or ignoreSync then
+  if changed or self.config.energyRecoveryMode ~= CONSTANTS.ENERGY_RECOVERY_MODE.AUTO or not ignoreSync then
     self.manager:SyncSkillStatus(self.id)
   end
   local leftEnergy = data.energyProgress - lvl.activationEnergy
