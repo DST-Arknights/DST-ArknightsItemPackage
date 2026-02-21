@@ -176,7 +176,7 @@ msgid "Not Elite"
 msgstr "未精英化"
 
 #. STRINGS.UI.ARK_ELITE.HOVER.ELITE.2
-msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.1"
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.2"
 msgid "Elite I"
 msgstr "精英化一"
 

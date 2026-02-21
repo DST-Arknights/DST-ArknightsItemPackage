@@ -176,14 +176,25 @@ function ArkElite:CanEliteUp()
   return self.inst.replica.ark_elite:IsAtLevelCap()
 end
 
--- 精英化提升：提升精英化阶段，重置小等级为 1，并立即释放在上一阶段累积的 overflowExp
-function ArkElite:EliteUp()
-  if not self:CanEliteUp() then
+-- 强制设置精英化阶段（无视当前经验是否满级），并释放 overflowExp
+function ArkElite:SetElite(elite)
+  if elite == nil then
     return false
   end
 
-  -- 提升精英化阶段
-  self.elite = self.elite + 1
+  local targetElite = math.floor(elite)
+  local maxElite = _getMaxEliteByRarity(self.rarity)
+  if maxElite <= 0 then
+    return false
+  end
+
+  if targetElite < 1 then
+    targetElite = 1
+  elseif targetElite > maxElite then
+    targetElite = maxElite
+  end
+
+  self.elite = targetElite
   self.level = 1
   self.currentExp = 0
 
@@ -193,10 +204,19 @@ function ArkElite:EliteUp()
   if overflow > 0 then
     self:_ApplyExpPool(overflow, false)
   end
+
   ArkLogger:Debug("ark_elite elite up", self.inst, self.elite, self.level)
   self:RefreshLevelTag()
   self:ApplyElite()
   return true
+end
+
+-- 精英化提升：保持经验校验，通过后调用下一阶段 SetElite
+function ArkElite:EliteUp()
+  if not self:CanEliteUp() then
+    return false
+  end
+  return self:SetElite(self.elite + 1)
 end
 
 function ArkElite:OnApplyElite(fn)
