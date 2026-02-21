@@ -206,6 +206,13 @@ function ArkElite:SetElite(elite)
   end
 
   ArkLogger:Debug("ark_elite elite up", self.inst, self.elite, self.level)
+  if self.inst.components.builder then
+    if self.elite == 2 then
+      self.inst.components.builder:UnlockRecipesForTech(TECH.ARK_ELITE_ONE)
+    elseif self.elite == 3 then
+      self.inst.components.builder:UnlockRecipesForTech(TECH.ARK_ELITE_TWO)
+    end
+  end
   self:RefreshLevelTag()
   self:ApplyElite()
   return true
