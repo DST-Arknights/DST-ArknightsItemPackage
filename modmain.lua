@@ -63,9 +63,6 @@ modimport('modmain/ark_make_fx')
 -- widget 扩展
 modimport('modmain/widget_extension')
 
--- 转移组件
-modimport('modmain/ark_transfer')
-
 -- 定义 elite NetState
 DefineNetState("ark_elite", {
   rarity = "int:classified",
