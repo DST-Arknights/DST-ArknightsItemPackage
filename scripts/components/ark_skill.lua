@@ -416,6 +416,23 @@ function SingleSkill:SetLevel(level)
   self.data.prevLevel = oldLevel
   self.data.level = level
   self.levelConfig = levelConfig
+
+  -- 等级变化后，按新上限修正激活层数，并重算是否继续自动充能
+  if self.data.activationStacks > levelConfig.maxActivationStacks then
+    self.data.activationStacks = levelConfig.maxActivationStacks
+  end
+
+  if self.data.status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+    if self.config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
+      self.data.tickEnergy = self.data.activationStacks < levelConfig.maxActivationStacks
+      if not self.data.tickEnergy then
+        self.data.energyProgress = 0
+      end
+    else
+      self.data.tickEnergy = false
+    end
+  end
+
   self.manager:SyncSkillStatus(self.id)
 
   self:_EmitEffectsSync(EFFECTS_SYNC_REASON.LEVEL_CHANGE)
