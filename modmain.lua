@@ -63,6 +63,8 @@ modimport('scripts/modmain/ark_make_fx')
 -- widget 扩展
 modimport('scripts/modmain/widget_extension')
 
+-- 转移组件
+modimport('scripts/modmain/ark_transfer')
 
 -- 定义 elite NetState
 DefineNetState("ark_elite", {
