@@ -24,47 +24,47 @@ AddReplicableComponent("ark_buff_icon")
 modimport('scripts/ark_logger')
 ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
 -- 加载符号
-modimport('scripts/modmain/symbol')
+modimport('modmain/symbol')
 -- 加载 NetState
-modimport('scripts/modmain/net_state')
+modimport('modmain/net_state')
 -- 加载安全调用
-modimport('scripts/modmain/safe_call')
+modimport('modmain/safe_call')
 -- 加载热键管理器
 modimport('scripts/ark_hotkey')
 -- 加载语言
 -- 导出全局变量MergePOFile
-modimport('scripts/modmain/ark_i18n')
+modimport('modmain/ark_i18n')
 -- 加载中文语言包
 MergePOFile('languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S), true)
 -- 加载字体
-modimport('scripts/modmain/ark_fonts')
+modimport('modmain/ark_fonts')
 -- 初始化配置
-modimport('scripts/modmain/ark_config')
+modimport('modmain/ark_config')
 -- 科技
-modimport('scripts/modmain/ark_tech')
+modimport('modmain/ark_tech')
 -- 货币
-modimport('scripts/modmain/ark_currency')
+modimport('modmain/ark_currency')
 -- 物品
-modimport('scripts/modmain/ark_item')
+modimport('modmain/ark_item')
 -- 背包
-modimport('scripts/modmain/ark_item_container')
+modimport('modmain/ark_item_container')
 -- 技能
 -- 导出全局变量AddSkillLevelUpRecipes
-modimport('scripts/modmain/ark_skill')
+modimport('modmain/ark_skill')
 -- 精英化
-modimport('scripts/modmain/ark_elite')
+modimport('modmain/ark_elite')
 -- 扩展ui
-modimport('scripts/modmain/ark_extend_ui')
+modimport('modmain/ark_extend_ui')
 -- 武器扩展
-modimport('scripts/modmain/combat_extension')
+modimport('modmain/combat_extension')
 -- 特效生成器
-modimport('scripts/modmain/ark_make_fx')
+modimport('modmain/ark_make_fx')
 
 -- widget 扩展
-modimport('scripts/modmain/widget_extension')
+modimport('modmain/widget_extension')
 
 -- 转移组件
-modimport('scripts/modmain/ark_transfer')
+modimport('modmain/ark_transfer')
 
 -- 定义 elite NetState
 DefineNetState("ark_elite", {
