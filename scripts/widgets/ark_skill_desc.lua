@@ -110,7 +110,7 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   skillName:SetPosition(leftOffset + skillNameSizeX / 2, topOffset - skillNameSizeY / 2, 0)
   topOffset = topOffset - skillNameSizeY -- 更新 topOffset
 
-  topOffset = topOffset - 32
+  topOffset = topOffset - PADDING
   local tagLeftOffset = leftOffset
   -- 小标题
   -- 被动, 没有充能方式, 没有触发方式, 没有充能值, 没有buff持续时间
@@ -156,9 +156,8 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     tag:SetPosition(tagLeftOffset + tagW / 2, topOffset, 0)
     tagLeftOffset = tagLeftOffset + tagW + TAG_PADDING
   end
-  topOffset = topOffset - 8 -- 更新 topOffset
 
-  topOffset = topOffset - 32
+  topOffset = topOffset - PADDING
   if descConfig.desc then
     local descText = self:AddChild(ArkSkillDescText(descConfig.desc, self.size[1] - PADDING * 2))
     local descTextSizeW, descTextSizeH = descText:GetSize()
@@ -166,7 +165,7 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     topOffset = topOffset -  descTextSizeH -- 更新 topOffset
   end
 
-  topOffset = topOffset - 24
+  topOffset = topOffset - PADDING
   -- 脚部
   local foot = self:AddChild(Widget("foot"))
   foot:SetPosition(0, topOffset, 0)
