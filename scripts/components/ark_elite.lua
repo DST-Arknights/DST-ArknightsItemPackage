@@ -1,5 +1,6 @@
 local common = require "ark_common"
 local CONSTANTS = require "ark_constants"
+local SourceModifierList = require("util/sourcemodifierlist")
 
 local function onrarity(self, value)
   self.inst.replica.ark_elite.state.rarity = value
@@ -45,6 +46,8 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
+  self.externalexpmultipliers = SourceModifierList(inst)
+  self.externalexpmultipliers:SetModifier("base", 100)
   self:RefreshLevelTag()
   self:ApplyElite()
   self.inst:ListenForEvent("killed", OnKilled)
@@ -168,6 +171,7 @@ function ArkElite:AddExp(value)
   if not value or value <= 0 then
     return
   end
+  value = math.floor(value * self.externalexpmultipliers:Get())
   self:_ApplyExpPool(value, true)
 end
 
