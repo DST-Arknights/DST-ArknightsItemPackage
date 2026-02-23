@@ -111,8 +111,9 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.isBlinking = false
   self.previousActivationStacks = 0  -- 用于检测充能状态变化
 
-  self.skillDescRoot = Widget("ark_skill_desc_root")
-  self:SetHoverWidget(self.skillDescRoot, {
+  self:SetHoverWidget(function()
+    return self:CreateSkillDescWidget()
+  end, {
     attach_to_parent = self,
     offset_x = 0,
     offset_y = 0,
@@ -123,7 +124,6 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.owner:StartUpdatingComponent(self)
   self.initComplete = false
 
-  self:RefreshSkillDescWidget()
 end)
 
 function ArkSkill:RecurrentStatusImageSize()
@@ -191,15 +191,11 @@ function ArkSkill:GetSkillDescConfig()
   }
 end
 
-function ArkSkill:RefreshSkillDescWidget()
-  if self.skillDesc then
-    self.skillDesc:Kill()
-    self.skillDesc = nil
-  end
-
-  self.skillDesc = self.skillDescRoot:AddChild(ArkSkillDesc(self.owner, self:GetSkillDescConfig(), self.id))
-  local size = self.skillDesc:GetSize()
-  self.skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
+function ArkSkill:CreateSkillDescWidget()
+  local skillDesc = ArkSkillDesc(self.owner, self:GetSkillDescConfig(), self.id)
+  local size = skillDesc:GetSize()
+  skillDesc:SetPosition(-self.iconSize[1] / 2 + size.x / 2, self.iconSize[2] / 2 + size.y + 10, 0)
+  return skillDesc
 end
 
 function ArkSkill:SetEnergyProgress(current)
@@ -375,7 +371,6 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
     end
   end
 
-  self:RefreshSkillDescWidget()
   self:RecurrentStatusImageSize()
 end
 
@@ -435,10 +430,6 @@ end
 
 function ArkSkill:Kill()
   self:ClearHoverWidget()
-  if self.skillDesc then
-    self.skillDesc:Kill()
-    self.skillDesc = nil
-  end
   ArkSkill._base.Kill(self)
 end
 

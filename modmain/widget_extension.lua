@@ -55,6 +55,9 @@ AddClassPostConstruct("widgets/widget", function(self)
       self.hoverwidget = nil
     end
 
+    self._HoverWidgetSource = nil
+    self._HoverWidgetSourceIsFn = nil
+
     if self.hoverwidget_root then
       self.hoverwidget_root:Hide()
       self.hoverwidget_root:Kill()
@@ -62,8 +65,8 @@ AddClassPostConstruct("widgets/widget", function(self)
     end
   end
 
-  function self:SetHoverWidget(widget, params)
-    if widget == nil then
+  function self:SetHoverWidget(widgetOrFn, params)
+    if widgetOrFn == nil then
       self:ClearHoverWidget()
       return
     end
@@ -81,13 +84,42 @@ AddClassPostConstruct("widgets/widget", function(self)
     end
     self.hoverwidget_root:Hide()
 
-    self.hoverwidget = self.hoverwidget_root:AddChild(widget)
-    self.hoverwidget:Hide()
+    self._HoverWidgetSource = widgetOrFn
+    self._HoverWidgetSourceIsFn = type(widgetOrFn) == "function"
+
+    if not self._HoverWidgetSourceIsFn then
+      self.hoverwidget = self.hoverwidget_root:AddChild(widgetOrFn)
+      self.hoverwidget:Hide()
+    else
+      self.hoverwidget = nil
+    end
+
+    local ensure_hover_widget = function(owner)
+      if owner.hoverwidget ~= nil then
+        return owner.hoverwidget
+      end
+      if owner.hoverwidget_root == nil then
+        return nil
+      end
+      local hover_widget = FunctionOrValue(owner._HoverWidgetSource, owner)
+      if hover_widget == nil then
+        return nil
+      end
+      owner.hoverwidget = owner.hoverwidget_root:AddChild(hover_widget)
+      owner.hoverwidget:Hide()
+      return owner.hoverwidget
+    end
 
     local show_hover_widget = function(owner)
-      if owner.hoverwidget_root == nil or owner.hoverwidget == nil then
+      if owner.hoverwidget_root == nil then
         return
       end
+
+      local hover_widget = ensure_hover_widget(owner)
+      if hover_widget == nil then
+        return
+      end
+
       if params.attach_to_parent ~= nil then
         local world_pos = owner:GetWorldPosition() - params.attach_to_parent:GetWorldPosition()
         local parent_scale = params.attach_to_parent:GetScale()
@@ -103,13 +135,18 @@ AddClassPostConstruct("widgets/widget", function(self)
         owner.hoverwidget_root:SetPosition(x_pos, y_pos)
       end
 
-      owner.hoverwidget:Show()
+      hover_widget:Show()
       owner.hoverwidget_root:Show()
     end
 
     local hide_hover_widget = function(owner)
       if owner.hoverwidget then
-        owner.hoverwidget:Hide()
+        if owner._HoverWidgetSourceIsFn then
+          owner.hoverwidget:Kill()
+          owner.hoverwidget = nil
+        else
+          owner.hoverwidget:Hide()
+        end
       end
       if owner.hoverwidget_root then
         owner.hoverwidget_root:Hide()
