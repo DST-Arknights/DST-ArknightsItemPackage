@@ -34,6 +34,10 @@ function Talker:Play(string_path, params)
   end
   params = params or {}
   local sound_data = table.getfield(self.sound_map, self.voice_lang .. '.' .. string_path)
+  -- 没获取到就取第一个语言的
+  if not sound_data then
+    sound_data = table.getfield(self.sound_map, next(self.sound_map) .. '.' .. string_path)
+  end
   if not sound_data then
     ArkLogger:Warn("Talker:Play sound_key not found", string_path)
   elseif self.inst.SoundEmitter then
