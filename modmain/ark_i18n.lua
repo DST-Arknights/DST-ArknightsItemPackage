@@ -42,3 +42,18 @@ function GLOBAL.MergePOFile(fname, langCode, default)
     end
   end
 end
+
+function GLOBAL.SayAndVoice(inst, key, params)
+  if not params then
+    params = {}
+  end
+  if inst.components.i18n_talker then
+    inst.components.i18n_talker:Play(key, params)
+  elseif inst.components.talker then
+    local text = GetString(inst, key)
+    if not text then
+      text = table.getfield(key)
+    end
+    inst.components.talker:Say(text, params.time, params.noanim, params.force, params.nobroadcast, params.colour, params.text_filter_context, params.original_author_netid, params.onfinishedlinesfn, params.sgparam)
+  end
+end
