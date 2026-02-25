@@ -37,25 +37,8 @@ local function fn()
 
   inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.ARK_TRAINING_ROOM_ONE
   inst.components.prototyper.onactivate = function(inst, doer, recipe)
-    ArkLogger:Debug("ark_training_room onactivate", inst, doer, recipe.name)
-    -- 尝试解析elite配方
-    local eliteLevel = common.parseArkEliteLevelUpPrefabName(recipe.name)
-    if eliteLevel then
-      if not doer or not doer.components.ark_elite then
-        return
-      end
-      doer.components.ark_elite:EliteUp()
-      return
-    end
-    local skillId, level = common.parseArkSkillLevelUpPrefabName(recipe.name)
-    if skillId and level then
-      if not doer or not doer.components.ark_skill then
-        return
-      end
-      local skill = doer.components.ark_skill:GetSkill(skillId)
-      if skill then
-        skill:SetLevel(level)
-      end
+    if recipe.manufacturedfn then
+      recipe.manufacturedfn(inst, doer)
       return
     end
   end

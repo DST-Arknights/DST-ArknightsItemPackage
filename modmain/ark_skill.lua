@@ -115,7 +115,7 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
       if levelConfig.ingredients then
         local prefabName = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, nextLevel)
         local ingredients = levelConfig.ingredients
-        AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
+        local rep = AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
           nounlock = true,
           atlas = skill.atlas,
           image = skill.image,
@@ -123,12 +123,25 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
           builder_tag = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, currentLevel),
           manufactured = true,
         }, { "CRAFTING_STATION" })
+        -- 机器制造回调
+        rep.manufacturedfn = function(inst, doer)
+          if doer and doer.components.ark_skill then
+            local skill = doer.components.ark_skill:GetSkill(skill.id)
+            if skill then
+              skill:SetLevel(nextLevel)
+            end
+          end
+        end
         local upperName = string.upper(prefabName)
-        STRINGS.NAMES[upperName] = STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name
-        local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
-        local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
-        local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevelStr .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevelStr)
-        STRINGS.RECIPE_DESC[upperName] = desc
+        STRINGS.NAMES[upperName] = skill.name or (STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name)
+        if skill.desc then
+          STRINGS.RECIPE_DESC[upperName] = skill.desc
+        else
+          local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
+          local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
+          local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevelStr .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevelStr)
+          STRINGS.RECIPE_DESC[upperName] = desc
+        end
       end
     end
   end
