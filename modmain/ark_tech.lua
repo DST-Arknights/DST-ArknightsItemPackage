@@ -46,7 +46,7 @@ AddPrototyperDef('ark_workshop', {
 
 -- 制造站
 AddRecipe2('ark_workshop', {
-  Ingredient('goldnugget', 2),
+  Ingredient('charcoal', 10),
 }, TECH.SCIENCE_TWO, {
   placer = 'ark_workshop_placer',
   atlas = "images/ark_item_prototyper.xml",
