@@ -4,3 +4,4 @@
 /exported/**/*.zip
 /shaders
 .vscode
+/animSource/**/*.zip
