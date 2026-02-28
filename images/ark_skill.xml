@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ark_skill.tex" />
+	<Elements>
+		<Element name="auto_activation.tex" u1="0.78225" u2="0.9755625" v2="0.668921875" v1="0.475609375" variant="" />
+		<Element name="frame.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.751" variant="" />
+		<Element name="lock.tex" u1="0.251" u2="0.499" v2="0.999" v1="0.751" variant="" />
+		<Element name="skill_desc_bg1.tex" u1="0.001" u2="0.389625" v2="0.749" v1="0.65334375" variant="" />
+		<Element name="skill_desc_bg2.tex" u1="0.001" u2="0.389625" v2="0.65134375" v1="0.5556875" variant="" />
+		<Element name="skill_desc_bg3.tex" u1="0.501" u2="0.889625" v2="0.999" v1="0.90334375" variant="" />
+		<Element name="skill_desc_bg4.tex" u1="0.501" u2="0.7724375" v2="0.90134375" v1="0.8056875" variant="" />
+		<Element name="skill_desc_bg5.tex" u1="0.391625" u2="0.6630625" v2="0.749" v1="0.65334375" variant="" />
+		<Element name="skill_desc_bg6.tex" u1="0.391625" u2="0.78025" v2="0.65134375" v1="0.5556875" variant="" />
+		<Element name="skill_desc_icon_clock.tex" u1="0.891625" u2="0.952125" v2="0.999" v1="0.9385" variant="" />
+		<Element name="skill_desc_icon_energy.tex" u1="0.7744375" u2="0.8349375" v2="0.90134375" v1="0.84084375" variant="" />
+		<Element name="specialized_0_small.tex" u1="0.7744375" u2="0.9599375" v2="0.83884375" v1="0.670921875" variant="" />
+		<Element name="specialized_1_small.tex" u1="0.001" u2="0.1865" v2="0.5536875" v1="0.385765625" variant="" />
+		<Element name="specialized_2_small.tex" u1="0.001" u2="0.1865" v2="0.383765625" v1="0.21584375" variant="" />
+		<Element name="specialized_3_small.tex" u1="0.1885" u2="0.374" v2="0.5536875" v1="0.385765625" variant="" />
+		<Element name="specialized_tiny_0.tex" u1="0.501" u2="0.54196875" v2="0.8036875" v1="0.766625" variant="" />
+		<Element name="specialized_tiny_1.tex" u1="0.54396875" u2="0.5849375" v2="0.8036875" v1="0.776390625" variant="" />
+		<Element name="specialized_tiny_2.tex" u1="0.5869375" u2="0.606421875" v2="0.8036875" v1="0.776390625" variant="" />
+		<Element name="specialized_tiny_3.tex" u1="0.501" u2="0.500953125" v2="0.764625" v1="0.764671875" variant="" />
+		<Element name="sprite_skill_bullet.tex" u1="0.001" u2="0.29196875" v2="0.21384375" v1="0.104515625" variant="" />
+		<Element name="sprite_skill_notready.tex" u1="0.1885" u2="0.47946875" v2="0.383765625" v1="0.2744375" variant="" />
+		<Element name="sprite_skill_ready.tex" u1="0.376" u2="0.66696875" v2="0.5536875" v1="0.444359375" variant="" />
+		<Element name="stop.tex" u1="0.48146875" u2="0.72946875" v2="0.442359375" v1="0.194359375" variant="" />
+		<Element name="progress_bar_slice.tex" u1="0.001" u2="0.1" v2="0.1" v1="0.001" variant="" />
+	</Elements>
+</Atlas>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ark_backpack_slotbg.tex" />
+	<Elements>
+		<Element name="ark_item_mtl_asc_di.tex" u1="0.001" u2="0.124" v2="0.374" v1="0.251" variant="" />
+		<Element name="ark_item_mtl_sl_alcohol1.tex" u1="0.126" u2="0.249" v2="0.374" v1="0.251" variant="" />
+		<Element name="ark_item_mtl_sl_alcohol2.tex" u1="0.001" u2="0.124" v2="0.249" v1="0.126" variant="" />
+		<Element name="ark_item_mtl_sl_bn.tex" u1="0.251" u2="0.374" v2="0.499" v1="0.376" variant="" />
+		<Element name="ark_item_mtl_sl_boss1.tex" u1="0.126" u2="0.249" v2="0.249" v1="0.126" variant="" />
+		<Element name="ark_item_mtl_sl_boss2.tex" u1="0.001" u2="0.124" v2="0.124" v1="0.001" variant="" />
+		<Element name="ark_item_mtl_sl_boss3.tex" u1="0.251" u2="0.374" v2="0.374" v1="0.251" variant="" />
+		<Element name="ark_item_mtl_sl_boss4.tex" u1="0.376" u2="0.499" v2="0.499" v1="0.376" variant="" />
+		<Element name="ark_item_mtl_sl_ccf.tex" u1="0.501" u2="0.624" v2="0.499" v1="0.376" variant="" />
+		<Element name="ark_item_mtl_sl_ds.tex" u1="0.251" u2="0.374" v2="0.249" v1="0.126" variant="" />
+		<Element name="ark_item_mtl_sl_g1.tex" u1="0.126" u2="0.249" v2="0.124" v1="0.001" variant="" />
+		<Element name="ark_item_mtl_sl_g2.tex" u1="0.376" u2="0.499" v2="0.374" v1="0.251" variant="" />
+		<Element name="ark_item_mtl_sl_g3.tex" u1="0.251" u2="0.374" v2="0.124" v1="0.001" variant="" />
+		<Element name="ark_item_mtl_sl_g4.tex" u1="0.501" u2="0.624" v2="0.374" v1="0.251" variant="" />
+		<Element name="ark_item_mtl_sl_ht.tex" u1="0.376" u2="0.499" v2="0.249" v1="0.126" variant="" />
+		<Element name="ark_item_mtl_sl_htt.tex" u1="0.626" u2="0.749" v2="0.499" v1="0.376" variant="" />
+		<Element name="ark_item_mtl_sl_iam3.tex" u1="0.501" u2="0.624" v2="0.249" v1="0.126" variant="" />
+		<Element name="ark_item_mtl_sl_iam4.tex" u1="0.376" u2="0.499" v2="0.124" v1="0.001" variant="" />
+		<Element name="ark_item_mtl_sl_iron1.tex" u1="0.751" u2="0.874" v2="0.499" v1="0.376" variant="" />
+		<Element name="ark_item_mtl_sl_iron2.tex" u1="0.626" u2="0.749" v2="0.374" v1="0.251" variant="" />
+		<Element name="ark_item_mtl_sl_iron3.tex" u1="0.001" u2="0.124" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_iron4.tex" u1="0.126" u2="0.249" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_ketone1.tex" u1="0.001" u2="0.124" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_ketone2.tex" u1="0.126" u2="0.249" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_ketone3.tex" u1="0.251" u2="0.374" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_ketone4.tex" u1="0.251" u2="0.374" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_manganese1.tex" u1="0.376" u2="0.499" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_manganese2.tex" u1="0.376" u2="0.499" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_oc3.tex" u1="0.001" u2="0.124" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_oc4.tex" u1="0.001" u2="0.124" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_oeu.tex" u1="0.126" u2="0.249" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_pg1.tex" u1="0.251" u2="0.374" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_pg2.tex" u1="0.126" u2="0.249" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_pgel3.tex" u1="0.251" u2="0.374" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_pgel4.tex" u1="0.376" u2="0.499" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_plcf.tex" u1="0.376" u2="0.499" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_pp.tex" u1="0.501" u2="0.624" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_rma7012.tex" u1="0.626" u2="0.749" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_rma7024.tex" u1="0.501" u2="0.624" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_rs.tex" u1="0.751" u2="0.874" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_rush1.tex" u1="0.626" u2="0.749" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_rush2.tex" u1="0.501" u2="0.624" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_rush3.tex" u1="0.626" u2="0.749" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_rush4.tex" u1="0.501" u2="0.624" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_shj.tex" u1="0.751" u2="0.874" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_ss.tex" u1="0.876" u2="0.999" v2="0.999" v1="0.876" variant="" />
+		<Element name="ark_item_mtl_sl_strg1.tex" u1="0.876" u2="0.999" v2="0.874" v1="0.751" variant="" />
+		<Element name="ark_item_mtl_sl_strg2.tex" u1="0.751" u2="0.874" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_strg3.tex" u1="0.626" u2="0.749" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_strg4.tex" u1="0.751" u2="0.874" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_xw.tex" u1="0.876" u2="0.999" v2="0.749" v1="0.626" variant="" />
+		<Element name="ark_item_mtl_sl_xwb.tex" u1="0.876" u2="0.999" v2="0.624" v1="0.501" variant="" />
+		<Element name="ark_item_mtl_sl_zy.tex" u1="0.001" u2="0.124" v2="0.499" v1="0.376" variant="" />
+		<Element name="ark_item_mtl_sl_zyk.tex" u1="0.126" u2="0.249" v2="0.499" v1="0.376" variant="" />
+	</Elements>
+</Atlas>
