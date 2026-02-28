@@ -1,24 +1,27 @@
-local assets = {Asset("ANIM", "anim/crafting_table.zip"), Asset("MINIMAP_IMAGE", "tab_crafting_table"),
+local assets = {Asset("ANIM", "anim/ark_workshop.zip"), Asset("MINIMAP_IMAGE", "tab_crafting_table"),
   }
 local prefabs = {}
 
 local function complete_onturnon(inst)
-  if inst.AnimState:IsCurrentAnimation("proximity_loop") then
+  if inst.AnimState:IsCurrentAnimation("idle_loop") then
     -- NOTE: push again even if already playing, in case an idle was also pushed
-    inst.AnimState:PushAnimation("proximity_loop", true)
+    inst.AnimState:PushAnimation("idle_loop", true)
   else
-    inst.AnimState:PlayAnimation("proximity_loop", true)
+    inst.AnimState:PlayAnimation("idle_loop", true)
   end
   if not inst.SoundEmitter:PlayingSound("idlesound") then
     inst.SoundEmitter:PlaySound("dontstarve/common/ancienttable_LP", "idlesound")
   end
 end
 
-local function complete_onturnoff(inst) inst.AnimState:PushAnimation("idle_full") end
+local function complete_onturnoff(inst) inst.AnimState:PushAnimation("idle") end
 
 local function complete_onhammered(inst, worker) inst:Remove() end
-local function commonFn() return inst end
 
+local function onbuilt(inst)
+  inst.AnimState:PlayAnimation("place")
+  inst.AnimState:PushAnimation("idle", false)
+end
 local function fn()
   local inst = CreateEntity()
 
@@ -34,9 +37,9 @@ local function fn()
   inst.MiniMapEntity:SetPriority(5)
   inst.MiniMapEntity:SetIcon("tab_crafting_table.png")
 
-  inst.AnimState:SetBank("crafting_table")
-  inst.AnimState:SetBuild("crafting_table")
-  inst.AnimState:PlayAnimation("idle_full")
+  inst.AnimState:SetBank("ark_workshop")
+  inst.AnimState:SetBuild("ark_workshop")
+  inst.AnimState:PlayAnimation("idle")
 
   inst.Light:Enable(false)
   inst.Light:SetRadius(0)
@@ -78,9 +81,11 @@ local function fn()
   inst.components.workable:SetWorkLeft(10)
   inst.components.workable:SetMaxWork(10)
   inst.components.workable:SetOnFinishCallback(complete_onhammered)
+  inst.components.workable:SetOnWorkCallback(onhit)
+  inst:ListenForEvent("onbuilt", onbuilt)
 
   return inst
 end
 
 return Prefab("ark_workshop", fn, assets, prefabs),
-  MakePlacer("ark_workshop_placer", "crafting_table", "crafting_table", "idle_full")
+  MakePlacer("ark_workshop_placer", "ark_workshop", "ark_workshop", "idle")

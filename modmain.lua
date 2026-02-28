@@ -7,12 +7,11 @@ PrefabFiles = {"ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
   Asset("ATLAS", "images/ark_item_prototyper.xml"),
-  Asset("ANIM", "anim/ark_backpack_bg.zip"),
-  Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ATLAS", "images/ark_skill.xml"),
   Asset("ATLAS", "images/ark_training_room.xml"),
   Asset("ATLAS", "images/map_icons/ark_training_room.xml"),
-  Asset("ANIM", "anim/ark_training_room.zip"),
+  Asset("ANIM", "anim/ark_backpack_slot.zip"),
+  Asset("ANIM", "anim/ark_backpack_bg.zip"),
 }
 
 AddReplicableComponent("ark_skill")
