@@ -22,6 +22,17 @@ local function onbuilt(inst)
   inst.AnimState:PlayAnimation("place")
   inst.AnimState:PushAnimation("idle", false)
 end
+
+local function onhit(inst, worker)
+  if not inst:HasTag("burnt") then
+    inst.AnimState:PlayAnimation("hit")
+    if inst.components.prototyper.on then
+      inst.AnimState:PushAnimation("idle_loop", true)
+    else
+      inst.AnimState:PushAnimation("idle", false)
+    end
+  end
+end
 local function fn()
   local inst = CreateEntity()
 
