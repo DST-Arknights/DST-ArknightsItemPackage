@@ -92,6 +92,29 @@ function ArkElite:_GetLevelCap()
   return self.inst.replica.ark_elite:GetLevelCap()
 end
 
+-- 获取当前星级下所有精英化阶段的总等级数
+function ArkElite:_GetTotalLevels()
+  local cfg = CONSTANTS.EXP_CONFIG.maxLevel[self.rarity]
+  if not cfg then return 1 end
+  local total = 0
+  for _, cap in ipairs(cfg) do
+    total = total + cap
+  end
+  return math.max(total, 1)
+end
+
+-- 获取当前累计等级（已完成的精英化阶段等级上限之和 + 当前阶段等级）
+function ArkElite:_GetCumulativeLevel()
+  local cfg = CONSTANTS.EXP_CONFIG.maxLevel[self.rarity]
+  if not cfg then return 1 end
+  local cumulative = 0
+  for i = 1, self.elite - 1 do
+    cumulative = cumulative + (cfg[i] or 0)
+  end
+  cumulative = cumulative + self.level
+  return cumulative
+end
+
 
 
 -- 从一个经验池中推进等级（不跨精英化阶段）
@@ -234,6 +257,66 @@ function ArkElite:OnApplyElite(fn)
   self._onApplyElite = fn
 end
 
+-- 设置满级属性奖励上限（由角色 prefab 初始化时调用）
+function ArkElite:SetMaxHealthBonus(value)
+  self.maxHealthBonus = value or 0
+end
+
+function ArkElite:SetMaxDamageBonus(value)
+  self.maxDamageBonus = value or 0
+end
+
+function ArkElite:SetMaxDefenseBonus(value)
+  self.maxDefenseBonus = value or 0
+end
+
+-- 根据累计等级 / 总等级比例，应用属性奖励
+function ArkElite:_ApplyBonuses()
+  local totalLevels = self:_GetTotalLevels()
+  local cumulativeLevel = self:_GetCumulativeLevel()
+  local ratio = cumulativeLevel / totalLevels
+
+  -- 生命上限奖励
+  if self.maxHealthBonus and self.maxHealthBonus > 0 then
+    local health = self.inst.components.health
+    if health then
+      local oldBonus = self._appliedHealthBonus or 0
+      local newBonus = math.floor(self.maxHealthBonus * ratio)
+      local delta = newBonus - oldBonus
+      if delta ~= 0 then
+        local pct = health:GetPercent()
+        health.maxhealth = health.maxhealth + delta
+        health:SetPercent(pct)
+        self._appliedHealthBonus = newBonus
+      end
+    end
+  end
+
+  -- 攻击力奖励（直接叠加到 defaultdamage）
+  if self.maxDamageBonus and self.maxDamageBonus > 0 then
+    local combat = self.inst.components.combat
+    if combat then
+      local oldBonus = self._appliedDamageBonus or 0
+      local newBonus = math.floor(self.maxDamageBonus * ratio)
+      local delta = newBonus - oldBonus
+      if delta ~= 0 then
+        combat.defaultdamage = combat.defaultdamage + delta
+        self._appliedDamageBonus = newBonus
+      end
+    end
+  end
+
+  -- 防御奖励（通过 externalabsorbmodifiers 应用，值为 0~1 的吸收比例）
+  if self.maxDefenseBonus and self.maxDefenseBonus > 0 then
+    local health = self.inst.components.health
+    if health then
+      local newBonus = self.maxDefenseBonus * ratio
+      health.externalabsorbmodifiers:SetModifier(self.inst, newBonus, "ark_elite_defense")
+      self._appliedDefenseBonus = newBonus
+    end
+  end
+end
+
 function ArkElite:ApplyElite()
   -- 下一帧任务
   if self._applyEliteTask then
@@ -241,6 +324,7 @@ function ArkElite:ApplyElite()
   end
   self._applyEliteTask = self.inst:DoTaskInTime(0, function()
     self._applyEliteTask = nil
+    self:_ApplyBonuses()
     if self._onApplyElite then
       self._onApplyElite(self.inst, self.elite, self.level)
     end
@@ -255,6 +339,9 @@ function ArkElite:OnSave()
     currentExp = self.currentExp,
     totalExp = self.totalExp,
     overflowExp = self.overflowExp,
+    _appliedHealthBonus = self._appliedHealthBonus,
+    _appliedDamageBonus = self._appliedDamageBonus,
+    _appliedDefenseBonus = self._appliedDefenseBonus,
   }
   return data
 end
@@ -267,6 +354,9 @@ function ArkElite:OnLoad(data)
     self.currentExp = data.currentExp or self.currentExp
     self.totalExp = data.totalExp or self.totalExp
     self.overflowExp = data.overflowExp or self.overflowExp
+    self._appliedHealthBonus = data._appliedHealthBonus or 0
+    self._appliedDamageBonus = data._appliedDamageBonus or 0
+    self._appliedDefenseBonus = data._appliedDefenseBonus or 0
   end
   self:RefreshLevelTag()
   self:ApplyElite()

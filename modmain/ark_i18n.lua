@@ -23,7 +23,7 @@ function GLOBAL.MergePOFile(fname, langCode, default)
       local path = string.sub(key, 9) -- Remove "STRINGS." prefix
       local parts = {}
       for part in string.gmatch(path, "[^.]+") do
-        table.insert(parts, part)
+        table.insert(parts, tonumber(part) or part)
       end
 
       local current = GLOBAL.STRINGS
