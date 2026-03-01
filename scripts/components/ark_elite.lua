@@ -79,7 +79,7 @@ local ArkElite = Class(function(self, inst)
   self.overflowExp = 0
   self._trackedEpics = {} -- { [target] = { deathfn, time } }
   self.externalexpmultipliers = SourceModifierList(inst)
-  self.externalexpmultipliers:SetModifier("base", 10)
+  self.externalexpmultipliers:SetModifier("base", 5)
   self:RefreshLevelTag()
   self:ApplyElite()
   self.inst:ListenForEvent("killed", OnKilled)
