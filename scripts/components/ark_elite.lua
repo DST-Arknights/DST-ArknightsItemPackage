@@ -44,6 +44,9 @@ local function OnKilled(inst, data)
     return
   end
   -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的经验
+  if not target.components.health then
+    return
+  end
   local health = target.components.health.maxhealth
   local exp = math.floor(health)
   inst.components.ark_elite:AddExp(exp)

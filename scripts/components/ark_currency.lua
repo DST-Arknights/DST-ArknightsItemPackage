@@ -12,8 +12,11 @@ local function OnKilled(inst, data)
     return
   end
   -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的金币
+  if not target.components.health then
+    return
+  end
   local health = target.components.health.maxhealth
-  local gold = math.floor(health / 1)
+  local gold = math.floor(health / 100)
   inst.components.ark_currency:AddArkGold(gold)
 end
 
