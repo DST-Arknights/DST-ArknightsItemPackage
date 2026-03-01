@@ -47,7 +47,7 @@ local ArkElite = Class(function(self, inst)
   self.totalExp = 0
   self.overflowExp = 0
   self.externalexpmultipliers = SourceModifierList(inst)
-  self.externalexpmultipliers:SetModifier("base", 100)
+  self.externalexpmultipliers:SetModifier("base", 10)
   self:RefreshLevelTag()
   self:ApplyElite()
   self.inst:ListenForEvent("killed", OnKilled)
