@@ -19,11 +19,11 @@ local function onoverflowExp(self, value)
   self.inst.replica.ark_elite.state.overflowExp = value
 end
 
+-- 巨兽参与击杀追踪的有效时间（秒）
+local EPIC_TRACK_TIMEOUT = 60
+
 -- 杀怪回经验
 local function OnKilled(inst, data)
-  if not inst:HasTag("player") then
-    return
-  end
   local target = data.victim
   if not target then
     return
@@ -35,6 +35,25 @@ local function OnKilled(inst, data)
   local health = target.components.health.maxhealth
   local exp = math.floor(health)
   inst.components.ark_elite:AddExp(exp)
+  -- 如果是自己击杀的巨兽，清除追踪（避免死亡回调重复发放）
+  if target:HasTag("epic") then
+    inst.components.ark_elite:_StopTrackingEpic(target)
+  end
+end
+
+-- 巨兽被击中时记录参与者
+local function OnHitOther(inst, data)
+  local target = data and data.target
+  if not target or not target:IsValid() then
+    return
+  end
+  if not target:HasTag("epic") then
+    return
+  end
+  if not inst.components.ark_elite then
+    return
+  end
+  inst.components.ark_elite:_TrackEpic(target)
 end
 
 local ArkElite = Class(function(self, inst)
@@ -46,11 +65,13 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
+  self._trackedEpics = {} -- { [target] = { deathfn, time } }
   self.externalexpmultipliers = SourceModifierList(inst)
   self.externalexpmultipliers:SetModifier("base", 10)
   self:RefreshLevelTag()
   self:ApplyElite()
   self.inst:ListenForEvent("killed", OnKilled)
+  self.inst:ListenForEvent("onhitother", OnHitOther)
 end, nil, {
   rarity = onrarity,
   elite = onelite,
@@ -78,6 +99,71 @@ function ArkElite:RefreshLevelTag()
     end
   end)
 end
+----------------------------------------------------------
+-- 巨兽参与击杀追踪
+----------------------------------------------------------
+
+-- 当追踪的巨兽死亡时，给参与者发放额外 0.5 倍经验
+function ArkElite:_OnTrackedEpicDeath(target)
+  if not target or not target.components or not target.components.health then
+    self:_StopTrackingEpic(target)
+    return
+  end
+  local tracked = self._trackedEpics[target]
+  if not tracked then
+    return
+  end
+  -- 检查是否在有效时间内
+  local now = GetTime()
+  if now - tracked.time > EPIC_TRACK_TIMEOUT then
+    self:_StopTrackingEpic(target)
+    return
+  end
+  local health = target.components.health.maxhealth
+  local bonusExp = math.floor(health * 0.5)
+  if bonusExp > 0 then
+    self:AddExp(bonusExp)
+  end
+  self:_StopTrackingEpic(target)
+end
+
+-- 追踪一个巨兽（记录时间戳，监听其死亡事件）
+function ArkElite:_TrackEpic(target)
+  if self._trackedEpics[target] then
+    -- 已在追踪中，刷新时间
+    self._trackedEpics[target].time = GetTime()
+    return
+  end
+  local deathfn = function()
+    self:_OnTrackedEpicDeath(target)
+  end
+  self._trackedEpics[target] = {
+    deathfn = deathfn,
+    time = GetTime(),
+  }
+  self.inst:ListenForEvent("death", deathfn, target)
+end
+
+-- 停止追踪某个巨兽
+function ArkElite:_StopTrackingEpic(target)
+  local tracked = self._trackedEpics[target]
+  if not tracked then
+    return
+  end
+  self.inst:RemoveEventCallback("death", tracked.deathfn, target)
+  self._trackedEpics[target] = nil
+end
+
+-- 清除所有追踪
+function ArkElite:_ClearAllTrackedEpics()
+  for target, tracked in pairs(self._trackedEpics) do
+    if target:IsValid() then
+      self.inst:RemoveEventCallback("death", tracked.deathfn, target)
+    end
+  end
+  self._trackedEpics = {}
+end
+
 ----------------------------------------------------------
 -- 内部工具函数
 ----------------------------------------------------------
@@ -389,7 +475,9 @@ function ArkElite:OnRemoveFromEntity()
     self._applyEliteTask:Cancel()
     self._applyEliteTask = nil
   end
+  self:_ClearAllTrackedEpics()
   self.inst:RemoveEventCallback("killed", OnKilled)
+  self.inst:RemoveEventCallback("onhitother", OnHitOther)
 end
 
 return ArkElite
