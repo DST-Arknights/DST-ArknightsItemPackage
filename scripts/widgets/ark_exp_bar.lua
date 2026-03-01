@@ -34,11 +34,11 @@ local ArkExpBar = Class(Widget, function(self, owner)
         -- 滚动纹理
         scroll_speed = 50,
         -- 追赶动画 (百分比速度，与经验值无关)
-        chase_base_speed = 0.5,   -- 基础速度 (进度条百分比/秒，0.5 = 2秒填满)
+        chase_base_speed = 1,   -- 基础速度 (进度条百分比/秒，1 = 1秒填满)
         chase_min_speed = 0.08,   -- 最小速度 (接近目标时)
         chase_decel_pct = 0.15,   -- 减速阈值 (剩余进度百分比)
         -- 闪烁动画
-        flash_fade_speed = 2.0,   -- 闪烁消退速度
+        flash_fade_speed = 4.0,   -- 闪烁消退速度
     }
 
     -- 数据模型
