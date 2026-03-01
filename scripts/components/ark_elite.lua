@@ -271,6 +271,30 @@ function ArkElite:SetMaxDefenseBonus(value)
 end
 
 -- 根据累计等级 / 总等级比例，应用属性奖励
+-- Strip：把旧的奖励从属性上扣掉，回到干净的基础值
+function ArkElite:_StripBonuses()
+  local health = self.inst.components.health
+  local combat = self.inst.components.combat
+
+  if health and (self._appliedHealthBonus or 0) ~= 0 then
+    local pct = health:GetPercent()
+    health.maxhealth = health.maxhealth - self._appliedHealthBonus
+    health:SetPercent(pct)
+  end
+  self._appliedHealthBonus = 0
+
+  if combat and (self._appliedDamageBonus or 0) ~= 0 then
+    combat.defaultdamage = combat.defaultdamage - self._appliedDamageBonus
+  end
+  self._appliedDamageBonus = 0
+
+  if health then
+    health.externalabsorbmodifiers:RemoveModifier(self.inst, "ark_elite_defense")
+  end
+  self._appliedDefenseBonus = 0
+end
+
+-- Apply：根据当前累计等级从零开始叠加奖励
 function ArkElite:_ApplyBonuses()
   local totalLevels = self:_GetTotalLevels()
   local cumulativeLevel = self:_GetCumulativeLevel()
@@ -280,28 +304,24 @@ function ArkElite:_ApplyBonuses()
   if self.maxHealthBonus and self.maxHealthBonus > 0 then
     local health = self.inst.components.health
     if health then
-      local oldBonus = self._appliedHealthBonus or 0
-      local newBonus = math.floor(self.maxHealthBonus * ratio)
-      local delta = newBonus - oldBonus
-      if delta ~= 0 then
+      local bonus = math.floor(self.maxHealthBonus * ratio)
+      if bonus > 0 then
         local pct = health:GetPercent()
-        health.maxhealth = health.maxhealth + delta
+        health.maxhealth = health.maxhealth + bonus
         health:SetPercent(pct)
-        self._appliedHealthBonus = newBonus
+        self._appliedHealthBonus = bonus
       end
     end
   end
 
-  -- 攻击力奖励（直接叠加到 defaultdamage）
+  -- 攻击力奖励
   if self.maxDamageBonus and self.maxDamageBonus > 0 then
     local combat = self.inst.components.combat
     if combat then
-      local oldBonus = self._appliedDamageBonus or 0
-      local newBonus = math.floor(self.maxDamageBonus * ratio)
-      local delta = newBonus - oldBonus
-      if delta ~= 0 then
-        combat.defaultdamage = combat.defaultdamage + delta
-        self._appliedDamageBonus = newBonus
+      local bonus = math.floor(self.maxDamageBonus * ratio)
+      if bonus > 0 then
+        combat.defaultdamage = combat.defaultdamage + bonus
+        self._appliedDamageBonus = bonus
       end
     end
   end
@@ -310,9 +330,9 @@ function ArkElite:_ApplyBonuses()
   if self.maxDefenseBonus and self.maxDefenseBonus > 0 then
     local health = self.inst.components.health
     if health then
-      local newBonus = self.maxDefenseBonus * ratio
-      health.externalabsorbmodifiers:SetModifier(self.inst, newBonus, "ark_elite_defense")
-      self._appliedDefenseBonus = newBonus
+      local bonus = self.maxDefenseBonus * ratio
+      health.externalabsorbmodifiers:SetModifier(self.inst, bonus, "ark_elite_defense")
+      self._appliedDefenseBonus = bonus
     end
   end
 end
@@ -324,10 +344,14 @@ function ArkElite:ApplyElite()
   end
   self._applyEliteTask = self.inst:DoTaskInTime(0, function()
     self._applyEliteTask = nil
-    self:_ApplyBonuses()
+    -- 1) Strip：扣掉旧奖励，回到干净基础值
+    self:_StripBonuses()
+    -- 2) Callback：让角色回调在干净基础值上操作
     if self._onApplyElite then
       self._onApplyElite(self.inst, self.elite, self.level)
     end
+    -- 3) Apply：从零重新叠加奖励
+    self:_ApplyBonuses()
   end)
 end
 
@@ -339,9 +363,6 @@ function ArkElite:OnSave()
     currentExp = self.currentExp,
     totalExp = self.totalExp,
     overflowExp = self.overflowExp,
-    _appliedHealthBonus = self._appliedHealthBonus,
-    _appliedDamageBonus = self._appliedDamageBonus,
-    _appliedDefenseBonus = self._appliedDefenseBonus,
   }
   return data
 end
@@ -354,9 +375,6 @@ function ArkElite:OnLoad(data)
     self.currentExp = data.currentExp or self.currentExp
     self.totalExp = data.totalExp or self.totalExp
     self.overflowExp = data.overflowExp or self.overflowExp
-    self._appliedHealthBonus = data._appliedHealthBonus or 0
-    self._appliedDamageBonus = data._appliedDamageBonus or 0
-    self._appliedDefenseBonus = data._appliedDefenseBonus or 0
   end
   self:RefreshLevelTag()
   self:ApplyElite()
