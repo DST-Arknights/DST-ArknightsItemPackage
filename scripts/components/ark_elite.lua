@@ -21,6 +21,18 @@ end
 
 -- 巨兽参与击杀追踪的有效时间（秒）
 local EPIC_TRACK_TIMEOUT = 60
+local MAX_OVERFLOW_EXP = 2000000
+
+local function _clampOverflowExp(value)
+  value = math.floor(value or 0)
+  if value < 0 then
+    return 0
+  end
+  if value > MAX_OVERFLOW_EXP then
+    return MAX_OVERFLOW_EXP
+  end
+  return value
+end
 
 -- 杀怪回经验
 local function OnKilled(inst, data)
@@ -216,14 +228,14 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
     local levelCap = self:_GetLevelCap()
     if self.level >= levelCap then
       -- 当前精英化阶段已满级：多余经验全部进入 overflow，等待精英化后释放
-      self.overflowExp = (self.overflowExp or 0) + pool
+      self.overflowExp = _clampOverflowExp((self.overflowExp or 0) + pool)
       break
     end
 
     local need = self.inst.replica.ark_elite:GetLevelUpExp(self.level)
     if need <= 0 then
       -- 配置缺失或异常，直接把剩余经验计入 overflow，避免死循环
-      self.overflowExp = (self.overflowExp or 0) + pool
+      self.overflowExp = _clampOverflowExp((self.overflowExp or 0) + pool)
       break
     end
 
@@ -460,7 +472,7 @@ function ArkElite:OnLoad(data)
     self.level = data.level or self.level
     self.currentExp = data.currentExp or self.currentExp
     self.totalExp = data.totalExp or self.totalExp
-    self.overflowExp = data.overflowExp or self.overflowExp
+    self.overflowExp = _clampOverflowExp(data.overflowExp or self.overflowExp)
   end
   self:RefreshLevelTag()
   self:ApplyElite()
