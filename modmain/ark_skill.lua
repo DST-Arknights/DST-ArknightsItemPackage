@@ -137,8 +137,8 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
         if skill.desc then
           STRINGS.RECIPE_DESC[upperName] = skill.desc
         else
-          local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
-          local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[tostring(currentLevel)] or tostring(currentLevel)
+          local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[currentLevel] or tostring(currentLevel)
+          local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[nextLevel] or tostring(nextLevel)
           local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevelStr .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevelStr)
           STRINGS.RECIPE_DESC[upperName] = desc
         end

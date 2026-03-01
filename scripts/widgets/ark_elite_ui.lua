@@ -126,8 +126,7 @@ end)
 
 function EliteUI:GetEliteHoverText(elite)
   local hoverStrings = STRINGS.UI.ARK_ELITE.HOVER.ELITE
-  ArkLogger:Debug("elite", elite, hoverStrings[elite], hoverStrings[0])
-  return hoverStrings[tostring(elite)] or hoverStrings[""]
+  return hoverStrings[elite]
 end
 
 function EliteUI:RefreshHoverTips()
