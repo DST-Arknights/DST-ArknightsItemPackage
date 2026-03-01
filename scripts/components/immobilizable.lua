@@ -3,7 +3,6 @@ local Immobilizable = Class(function(self, inst)
     self.is_immobilized = false
     self.task = nil
     self.fxdata = {
-        { prefab = "spat_splat_fx", x = 0, y = 0, z = 0 },
     }
     self.fxchildren = {}
 
@@ -46,7 +45,10 @@ function Immobilizable:SpawnImmobilizeFX()
     for _, data in ipairs(self.fxdata) do
         local fx = self.inst:SpawnChild(data.prefab)
         if fx ~= nil then
+            local r, sz, ht = GetCombatFxSize(self.inst)
+            local scalex, scaley, scalez = self.inst.Transform:GetScale()
             fx.Transform:SetPosition(data.x, data.y, data.z)
+            fx.Transform:SetScale(1 / scalex * r, 1 / scaley * r, 1 / scalez * r)
             table.insert(self.fxchildren, fx)
         end
     end
