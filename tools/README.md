@@ -17,3 +17,17 @@ lua tools/generate_ark_item_table.lua
 ```
 
 当你更新材料声明后，重新运行一次上面命令即可自动刷新文档。
+
+### 2) 生成发布目录（dist）
+
+- 脚本：`tools/publish_dist.ps1`
+- 行为：每次执行会先清空根目录下 `dist/`，再复制发布白名单中的文件与目录
+- 当前发布白名单：
+	- 根文件：`modicon.tex`、`modicon.xml`、`modinfo.lua`、`modmain.lua`
+	- 目录：`anim/`、`fonts/`、`images/`、`languages/`、`modmain/`、`scripts/`、`shaders/`
+
+运行方式（在项目根目录）：
+
+```powershell
+pwsh ./tools/publish_dist.ps1
+```
