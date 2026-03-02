@@ -124,3 +124,9 @@ AddStategraphState("wilson_client", useArkCurrencyState)
 
 -- 货币系统ui
 table.insert(Assets, Asset("ATLAS", "images/ark_item_ui.xml"))
+
+AddPlayerPostInit(function(inst)
+  if TheWorld.ismastersim then
+    inst:AddComponent("ark_currency")
+  end
+end)

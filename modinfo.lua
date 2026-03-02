@@ -24,6 +24,13 @@ icon = "modicon.tex"
 priority = 1
 
 server_filter_tags = {"arknights", "明日方舟", "item", "物品"}
+
+local function Title(opt)
+    opt.options = {{ description = "", data = 0 }}
+    opt.default = 0
+    return opt
+end
+
 configuration_options = {{
     name = "language",
     label = ChooseTranslationTable({
@@ -48,4 +55,34 @@ configuration_options = {{
         data = "auto"
     }},
     default = "auto"
+}, Title({
+    name = "mods_compatibility",
+    label = ChooseTranslationTable({
+        en = "Other Mods Compatibility",
+        zh = "其他模组选项"
+    }),
+}), {
+    name = 'amiya_hecheng_collect',
+    label = ChooseTranslationTable({
+        en = "Amiya Diamond Collect",
+        zh = "阿米娅合成玉 采集"
+    }),
+    hover = ChooseTranslationTable({
+        en = "When enabled, the modded Amiya will no longer occupy extra inventory space when she drops the diamond.",
+        zh = "开启后, 模组阿米娅掉落的合成玉不再额外占用背包空间"
+    }),
+    options = {{
+        description = ChooseTranslationTable({
+            en = "Enable",
+            zh = "开启"
+        }),
+        data = true
+    }, {
+        description = ChooseTranslationTable({
+            en = "Disable",
+            zh = "关闭"
+        }),
+        data = false
+    }},
+    default = false
 }}

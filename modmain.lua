@@ -61,6 +61,8 @@ modimport('modmain/ark_make_fx')
 
 -- widget 扩展
 modimport('modmain/widget_extension')
+-- 其他模组兼容
+modimport('modmain/mods_compatibility/amiya')
 
 -- 定义 elite NetState
 DefineNetState("ark_elite", {
