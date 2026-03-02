@@ -185,9 +185,31 @@ return {{
       healthvalue = TUNING.HEALING_TINY,
       hungervalue = TUNING.CALORIES_SMALL
     }
-  }
+  },
+  drop = {{
+    prefab = 'hound',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }, {
+    prefab = 'icehound',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'firehound',
+    adapter = 'AddLoot',
+    value = 1
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_ht', -- 环烃聚质
+  drop = {{
+    prefab = 'tentacle',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'merm',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_plcf', -- 切削原液
   recipe = {{{
@@ -226,8 +248,30 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_ccf', -- 化合切削液
+  drop = {{
+    prefab = 'knight',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'bishop',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'rook',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_xw', -- 褐素纤维
+  drop = {{
+    prefab = 'worm',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'spider_dropper',
+    adapter = 'AddLoot',
+    value = 1
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_rs', -- 精炼溶剂
   recipe = {{{
@@ -248,6 +292,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_ss', -- 半自然溶剂
+  drop = {{
+    prefab = 'slurper',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'batilisk',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_oc4', -- 晶体电路
   recipe = {{{
@@ -268,6 +321,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_oc3', -- 晶体元件
+  drop = {{
+    prefab = 'slurtle',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'snurtle',
+    adapter = 'AddLoot',
+    value = 1
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_iam4', -- 炽合金块
   recipe = {{{
@@ -288,6 +350,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_iam3', -- 炽合金
+  drop = {{
+    prefab = 'firehound',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'spat',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_pgel4', -- 聚合凝胶
   recipe = {{{
@@ -308,6 +379,19 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_pgel3', -- 凝胶
+  drop = {{
+    prefab = 'frog',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }, {
+    prefab = 'mosquito',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }, {
+    prefab = 'snurtle',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_alcohol2', -- 白马醇
   recipe = {{{
@@ -328,6 +412,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_alcohol1', -- 扭转醇
+  drop = {{
+    prefab = 'merm',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'frog',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_manganese2', -- 三水锰矿
   recipe = {{{
@@ -348,6 +441,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_manganese1', -- 轻锰矿
+  drop = {{
+    prefab = 'rock2',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  }, {
+    prefab = 'rock1',
+    adapter = 'AddChanceLoot',
+    value = 0.1
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_pg2', -- 五水研磨石
   recipe = {{{
@@ -368,6 +470,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_pg1', -- 研磨石
+  drop = {{
+    prefab = 'rock1',
+    adapter = 'AddChanceLoot',
+    value = 0.15
+  }, {
+    prefab = 'rock_flintless',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_rma7024', -- RMA70-24
   recipe = {{{
@@ -388,6 +499,15 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_rma7012', -- RMA70-12
+  drop = {{
+    prefab = 'crawlinghorror',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'terrorbeak',
+    adapter = 'AddLoot',
+    value = 1
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_g4', -- 提纯源岩
   recipe = {{{
@@ -499,6 +619,19 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_mtl_sl_boss1', -- 破损装置
+  drop = {{
+    prefab = 'knight',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'bishop',
+    adapter = 'AddLoot',
+    value = 1
+  }, {
+    prefab = 'rook',
+    adapter = 'AddLoot',
+    value = 2
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_rush4', -- 聚酸酯块
   recipe = {{{
@@ -574,7 +707,20 @@ return {{
     MakeSmallBurnable = {
       time = 5
     }
-  }
+  },
+  drop = {{
+    prefab = 'spider',
+    adapter = 'AddChanceLoot',
+    value = 0.3
+  }, {
+    prefab = 'spider_warrior',
+    adapter = 'AddChanceLoot',
+    value = 0.5
+  }, {
+    prefab = 'lureplant',
+    adapter = 'AddLoot',
+    value = 2
+  }}
 }, {
   prefab = 'ark_item_mtl_sl_strg4', -- 糖聚块
   recipe = {{{
