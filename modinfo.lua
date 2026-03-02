@@ -3,10 +3,27 @@ name = ChooseTranslationTable({
     zh = "明日方舟 物品包"
 })
 description = ChooseTranslationTable({
-    en = [[This mod adds some items from Arknights into Don't Starve Together.]],
-    zh = [[这个mod将一些明日方舟的物品添加到饥荒联机版中。]]
+    en = [[This mod adds some items from Arknights to Don't Starve Together.
+Feedback and suggestions:
+
+Issues: https://github.com/TohsakaKuro/DST-ArknightsItemPackage/issues
+QQ: 3139902761
+Email: tohsakakuro@outlook.com
+QQ Group: 666511586
+
+Welcome to join us!
+]],
+    zh = [[这个mod将一些明日方舟的物品添加到饥荒联机版中。
+需求与建议反馈渠道:
+
+Issues: https://github.com/TohsakaKuro/DST-ArknightsItemPackage/issues
+QQ: 3139902761
+Email: tohsakakuro@outlook.com
+QQ群: 666511586
+
+欢迎大家积极参与]]
 })
-author = "望月心灵 让"
+author = "让 望月心灵"
 version = "0.0.1"
 forumthread = "https://github.com/TohsakaKuro/DST-ArknightsItemPackage/issues"
 
