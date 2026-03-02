@@ -2,3 +2,4 @@
 /shaders
 .vscode
 /animSource/**/*.zip
+/dist
