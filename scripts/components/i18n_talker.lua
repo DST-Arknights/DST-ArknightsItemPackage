@@ -43,14 +43,16 @@ function Talker:Play(string_path, params)
   elseif self.inst.SoundEmitter then
     self.inst.SoundEmitter:PlaySound(sound_data.path) 
   end
-  local text = self.text_cache_map[string_path]
-  if not text then
-    text = ResolveText(self.inst, string_path)
-    self.text_cache_map[string_path] = text
-  end
-  if text and self.inst.components.talker then
-    local time = params.time or (sound_data and sound_data.duration)
-    self.inst.components.talker:Say(text, time, params.noanim, params.force, params.nobroadcast, params.colour, params.text_filter_context, params.original_author_netid, params.onfinishedlinesfn, params.sgparam)
+  if not params.notext then
+    local text = self.text_cache_map[string_path]
+    if not text then
+      text = ResolveText(self.inst, string_path)
+      self.text_cache_map[string_path] = text
+    end
+    if text and self.inst.components.talker then
+      local time = params.time or (sound_data and sound_data.duration)
+      self.inst.components.talker:Say(text, time, params.noanim, params.force, params.nobroadcast, params.colour, params.text_filter_context, params.original_author_netid, params.onfinishedlinesfn, params.sgparam)
+    end
   end
 end
 
