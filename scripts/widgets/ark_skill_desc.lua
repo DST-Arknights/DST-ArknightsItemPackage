@@ -158,8 +158,11 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   end
 
   topOffset = topOffset - PADDING
-  if descConfig.desc then
-    local descText = self:AddChild(ArkSkillDescText(descConfig.desc, self.size[1] - PADDING * 2))
+
+  -- 锁定状态下用 lockedDesc, 否则用 desc
+  local desc = descConfig.locked and descConfig.lockedDesc or descConfig.desc
+  if desc then
+    local descText = self:AddChild(ArkSkillDescText(desc, self.size[1] - PADDING * 2))
     local descTextSizeW, descTextSizeH = descText:GetSize()
     descText:SetPosition(0, topOffset, 0)
     topOffset = topOffset -  descTextSizeH -- 更新 topOffset
