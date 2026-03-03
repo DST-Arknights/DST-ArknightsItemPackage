@@ -261,7 +261,11 @@ function ArkSkillDesc:GetSize()
 end
 
 function ArkSkillDesc:Kill()
-  ThePlayer.HUD._settingSkillHotKeyCallback = nil
+  if self._onKey then
+    local mgr = GetHotKeyManager(ThePlayer)
+    mgr:CancelListenOnce(self._onKey)
+    self._onKey = nil
+  end
   -- 调用基类的 Kill 方法
   ArkSkillDesc._base.Kill(self)
 end
