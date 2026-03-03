@@ -1,7 +1,1 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Atlas>
-	<Texture filename="ark_training_room.tex" />
-	<Elements>
-		<Element name="ark_training_room.tex" u1="0.001" u2="0.87790625" v2="0.999" v1="0.4619375" variant="" />
-	</Elements>
-</Atlas>
+<Atlas><Texture filename="ark_training_room.tex" /><Elements><Element name="ark_training_room.tex" u1="0.0078125" u2="0.8046875" v1="0.0078125" v2="0.9921875" /></Elements></Atlas>
