@@ -318,7 +318,7 @@ local function NetStateInit(self, inst, name)
       inner.net_state_classified._index:set(inner._index)
       self:AttachClassified(inner.net_state_classified, true)
       inner.net_state_classified.Network:SetClassifiedTarget(inner.inst)
-      inner.attach_target = inner.inst
+      self:Attach(inner.inst)
     else
       -- 客机：如果 classified 先于 NetStateInit 到达，则 OnEntityReplicated 会把
       -- net_state_classified 放到 inst._ns_pending_classified[state_name] 里。
