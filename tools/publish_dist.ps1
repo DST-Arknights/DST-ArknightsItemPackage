@@ -10,6 +10,23 @@ if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
     $ProjectRoot = (Resolve-Path $ProjectRoot).Path
 }
 
+$tableScriptPath = Join-Path $ProjectRoot 'tools/generate_ark_item_table.lua'
+if (Test-Path $tableScriptPath) {
+    $luaCommand = Get-Command lua -ErrorAction SilentlyContinue
+    if (-not $luaCommand) {
+        throw "未找到 lua 命令，无法生成 docs/ark_item_enhanced_table.md"
+    }
+
+    Write-Host "[run] 刷新材料增强表"
+    & $luaCommand.Source $tableScriptPath $ProjectRoot
+    if ($LASTEXITCODE -ne 0) {
+        throw "执行 tools/generate_ark_item_table.lua 失败"
+    }
+    Write-Host "[ok]   docs/ark_item_enhanced_table.md"
+} else {
+    Write-Host "[skip] tools/generate_ark_item_table.lua (not found)"
+}
+
 $distPath = Join-Path $ProjectRoot 'dist'
 
 if (Test-Path $distPath) {

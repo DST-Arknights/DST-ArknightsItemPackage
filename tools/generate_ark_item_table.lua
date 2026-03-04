@@ -9,6 +9,7 @@ end
 
 local source_path = join_path(root, "scripts/ark_item_declare.lua")
 local output_path = join_path(root, "docs/ark_item_enhanced_table.md")
+local chinese_po_path = join_path(root, "tools/resource/chinese_s.po")
 
 local function read_all(path)
   local file, err = io.open(path, "r")
@@ -42,6 +43,89 @@ for line in source_text:gmatch("[^\r\n]+") do
     names[prefab] = trim(name)
   end
 end
+
+local function unescape_po_text(text)
+  local placeholder = "\1"
+  local result = text:gsub("\\\\", placeholder)
+  result = result:gsub("\\n", "\n")
+  result = result:gsub("\\r", "\r")
+  result = result:gsub("\\t", "\t")
+  result = result:gsub('\\"', '"')
+  result = result:gsub(placeholder, "\\")
+  return result
+end
+
+local function add_name_if_missing(target, prefab_code, display_name)
+  if prefab_code == nil or display_name == nil then
+    return
+  end
+
+  local code = trim(tostring(prefab_code))
+  local name = trim(tostring(display_name))
+  if code == "" or name == "" then
+    return
+  end
+
+  if target[code] == nil or target[code] == "" then
+    target[code] = name
+  end
+
+  local normalized = code:lower()
+  if target[normalized] == nil or target[normalized] == "" then
+    target[normalized] = name
+  end
+end
+
+local function parse_po_prefab_names(path, target)
+  if path == nil or path == "" then
+    return
+  end
+
+  local file = io.open(path, "r")
+  if not file then
+    return
+  end
+
+  local PREFIX = "STRINGS.NAMES."
+  local current_context = nil
+  local msgstr_parts = nil
+
+  local function flush_entry()
+    if current_context and msgstr_parts and #msgstr_parts > 0 then
+      if current_context:sub(1, #PREFIX) == PREFIX then
+        local prefab_code = current_context:sub(#PREFIX + 1)
+        local display_name = table.concat(msgstr_parts, "")
+        add_name_if_missing(target, prefab_code, display_name)
+      end
+    end
+    msgstr_parts = nil
+  end
+
+  for line in file:lines() do
+    local context_value = line:match('^msgctxt%s+"(.*)"%s*$')
+    if context_value ~= nil then
+      flush_entry()
+      current_context = unescape_po_text(context_value)
+    else
+      local msgstr_value = line:match('^msgstr%s+"(.*)"%s*$')
+      if msgstr_value ~= nil then
+        msgstr_parts = { unescape_po_text(msgstr_value) }
+      else
+        local continuation = line:match('^"(.*)"%s*$')
+        if continuation ~= nil and msgstr_parts ~= nil then
+          msgstr_parts[#msgstr_parts + 1] = unescape_po_text(continuation)
+        elseif line:match("^msgid%s+") or line:match("^#") or trim(line) == "" then
+          flush_entry()
+        end
+      end
+    end
+  end
+
+  flush_entry()
+  file:close()
+end
+
+parse_po_prefab_names(chinese_po_path, names)
 
 local CHARACTER_INGREDIENT = {
   HEALTH = "decrease_health",
@@ -119,9 +203,9 @@ end
 
 local function format_ref(prefab)
   local prefab_text = tostring(prefab)
-  local display_name = names[prefab_text]
+  local display_name = names[prefab_text] or names[prefab_text:lower()]
   if display_name and display_name ~= "" then
-    return string.format("`%s(%s)`", prefab_text, display_name)
+    return string.format("`%s(%s)`", display_name, prefab_text)
   end
   return string.format("`%s`", prefab_text)
 end
@@ -155,7 +239,7 @@ local function format_drop(entry)
       local prefab_text = tostring(prefab)
       if not exists[prefab_text] then
         exists[prefab_text] = true
-        ordered[#ordered + 1] = string.format("`%s`", prefab_text)
+        ordered[#ordered + 1] = format_ref(prefab_text)
       end
     end
   end
