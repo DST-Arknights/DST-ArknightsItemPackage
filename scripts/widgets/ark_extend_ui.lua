@@ -159,18 +159,44 @@ end
 function ArkExtendUi:UpdateLayout()
   ArkLogger:Debug('ark_extend_ui UpdateLayout')
   self.handBase:SetPosition(-486, 130, 0)
-  if self.elite then
-    self.elite:SetPosition(20, 0, 0)
+
+  local ELITE_X = 20
+  local CONTENT_X = 50
+  local SKILLS_Y = 18
+  local BUFF_Y = -16
+  local EXP_Y = -40
+  local BUFF_GAP_AFTER_SKILLS = 16
+
+  local hasElite = self.elite ~= nil
+  local hasSkills = self.skills ~= nil
+  local hasExpBar = self.expBar ~= nil
+
+  if hasElite then
+    self.elite:SetPosition(ELITE_X, 0, 0)
   end
-  local skillsW = self.skills and self.skills:GetSize() or 0
-  if self.skills then
-    self.skills:SetPosition(50, 18, 0)
+
+  local contentX = CONTENT_X
+  if not hasElite then
+    contentX = contentX - (CONTENT_X - ELITE_X)
   end
-  if self.expBar then
-    self.expBar:SetPosition(50, -40, 0)
+
+  local collapseDownY = hasExpBar and 0 or (EXP_Y - BUFF_Y)
+  local skillsY = SKILLS_Y + collapseDownY
+  local buffY = BUFF_Y + collapseDownY
+
+  local skillsW = hasSkills and self.skills:GetSize() or 0
+  if hasSkills then
+    self.skills:SetPosition(contentX, skillsY, 0)
+  end
+  if hasExpBar then
+    self.expBar:SetPosition(contentX, EXP_Y, 0)
   end
   if self.buffIcons then
-    self.buffIcons:SetPosition(50 + skillsW + 16, -16, 0)
+    local buffX = contentX
+    if hasSkills then
+      buffX = contentX + skillsW + BUFF_GAP_AFTER_SKILLS
+    end
+    self.buffIcons:SetPosition(buffX, buffY, 0)
   end
 end
 
