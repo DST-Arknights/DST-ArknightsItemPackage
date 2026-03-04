@@ -10,7 +10,10 @@ end
 local source_path = join_path(root, "scripts/ark_item_declare.lua")
 local output_path = join_path(root, "docs/ark_item_enhanced_table.md")
 local chinese_po_path = join_path(root, "tools/resource/chinese_s.po")
-local oss_image_prefix = "https://tohsakakuro.oss-cn-shanghai.aliyuncs.com/DST/Arknights-ItemPackage/ark_item/ark_item"
+-- 公共云
+local image_path_perfix = "https://tohsakakuro.oss-cn-shanghai.aliyuncs.com/DST/Arknights-ItemPackage/ark_item/ark_item"
+-- 本地
+local image_path_perfix = '../imageSource/images/ark_item'
 
 local function read_all(path)
   local file, err = io.open(path, "r")
@@ -262,7 +265,7 @@ local lines = {
 for _, entry in ipairs(declared_items) do
   local prefab = tostring(entry.prefab)
   local item_name = names[prefab] or prefab
-  local image = string.format("![%s](%s/%s.png)", item_name, oss_image_prefix, prefab)
+  local image = string.format("![%s](%s/%s.png)", item_name, image_path_perfix, prefab)
   local code = string.format("`%s`", prefab)
   local drop = format_drop(entry)
   local recipe = format_recipe(entry)
