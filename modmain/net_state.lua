@@ -129,6 +129,31 @@ local function DoListenForKey(inst, key, fn)
   inst:ListenForEvent(dirty_event, fn)
 end
 
+local function PushDirtyForNonDefaultClassified(inner)
+  if not TheWorld.ismastersim then
+    return
+  end
+  local classified_vars = inner._classified_vars
+  local classified_schemas = inner.classified_schemas
+  local classified_inst = inner.net_state_classified
+  if classified_vars == nil or classified_schemas == nil or classified_inst == nil then
+    return
+  end
+
+  for key, def in pairs(classified_schemas) do
+    local netvar = classified_vars[key]
+    if netvar ~= nil then
+      local value = netvar:value()
+      local default_value = TYPE_DEFAULT_VALUE[def.type]
+      if value ~= default_value then
+        local dirty_event = getDirtyName(key)
+        inner.log("Attach", "re-pushing dirty for non-default key", key, value)
+        classified_inst:PushEvent(dirty_event)
+      end
+    end
+  end
+end
+
 local function RegisterClassifiedPrefab(name, schemas)
   ArkLogger:Trace('[net_state_classified]', 'RegisterClassifiedPrefab', name)
   RegisterSinglePrefab(Prefab(name, function()
@@ -293,12 +318,12 @@ local function NetStateInit(self, inst, name)
       inner.net_state_classified._index:set(inner._index)
       self:AttachClassified(inner.net_state_classified, true)
       inner.net_state_classified.Network:SetClassifiedTarget(inner.inst)
+      inner.attach_target = inner.inst
     else
       -- 客机：如果 classified 先于 NetStateInit 到达，则 OnEntityReplicated 会把
       -- net_state_classified 放到 inst._ns_pending_classified[state_name] 里。
       -- 这里在初始化完成后主动检查并尝试完成绑定。
       inner.inst:DoTaskInTime(0, function()
-        local pending_classified = inner.inst._ns_pending_classified and inner.inst._ns_pending_classified[state_name] and inner.inst._ns_pending_classified[state_name][inner._index] or nil
         local pending_classified = inner.inst._ns_pending_classified and inner.inst._ns_pending_classified[state_name] and inner.inst._ns_pending_classified[state_name][inner._index] or nil
         if pending_classified ~= nil and pending_classified:IsValid() then
           inner.log("AttachClassified", "attach from pending (classified) ", state_name)
@@ -429,6 +454,7 @@ function NetState:Attach(target)
     end
     inner.log("Attach", "attaching classified to target task", target, inner._def_name)
     inner.net_state_classified.Network:SetClassifiedTarget(target)
+    PushDirtyForNonDefaultClassified(inner)
   end)
 
   -- 计算主机玩家（ThePlayer）的可见性变更
