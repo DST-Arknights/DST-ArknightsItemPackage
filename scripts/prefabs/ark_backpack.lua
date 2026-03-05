@@ -55,7 +55,7 @@ local function fn()
 
     inst.AnimState:SetBank("ark_backpack")
     inst.AnimState:SetBuild("ark_backpack")
-    inst.AnimState:SetScale(0.5, 0.5)
+    inst.AnimState:SetScale(0.3, 0.3)
     inst.AnimState:PlayAnimation("close_idle")
 
     inst:AddTag("ark_backpack")
