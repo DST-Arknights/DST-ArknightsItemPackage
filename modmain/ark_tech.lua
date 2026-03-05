@@ -50,8 +50,8 @@ AddRecipe2('ark_workshop', {
   Ingredient('charcoal', 10),
 }, TECH.SCIENCE_TWO, {
   placer = 'ark_workshop_placer',
-})
-AddRecipeToFilter("ark_workshop", "PROTOTYPERS")
+  force_hint = true,
+}, {"MODS", "PROTOTYPERS", "STRUCTURES" })
 
 -- 训练室
 AddPrototyperDef('ark_training_room', {
@@ -69,6 +69,7 @@ AddRecipe2("ark_training_room",
   TECH.SCIENCE_TWO,
   {
     placer = 'ark_training_room_placer',
-  }
+    force_hint = true,
+  },
+  { "MODS", "PROTOTYPERS", "STRUCTURES" }
 )
-AddRecipeToFilter("ark_training_room", "PROTOTYPERS")

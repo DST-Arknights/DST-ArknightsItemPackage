@@ -229,12 +229,12 @@ msgstr "罗德岛的资源生产设施。"
 #. STRINGS.RECIPE_DESC.ARK_BACKPACK
 msgctxt "STRINGS.RECIPE_DESC.ARK_BACKPACK"
 msgid "A backpack that stores items and resources."
-msgstr "存储物品和资源的包包。"
+msgstr "存储罗德岛物品和资源的包包。"
 
 #. STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM
 msgctxt "STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM"
 msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
-msgstr "罗德岛干员的训练设施。提升你自己吧！"
+msgstr "罗德岛干员的训练设施。精英化，提升技能等级！"
 
 #. STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC
 msgctxt "STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC"
@@ -254,7 +254,7 @@ msgstr "罗德岛的资源生产设施。"
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_TRAINING_ROOM
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_TRAINING_ROOM"
 msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
-msgstr "罗德岛干员的训练设施。升级你的技能吧！"
+msgstr "罗德岛干员的训练设施。精英化，提升技能等级！"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD"
@@ -264,7 +264,7 @@ msgstr "由龙门发行的货币，用途广泛。"
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK"
 msgid "A backpack that stores items and resources."
-msgstr "存储物品和资源的背包。"
+msgstr "存储罗德岛物品和资源的背包。"
 
 #. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1
 msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1"
