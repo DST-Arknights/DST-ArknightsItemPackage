@@ -55,6 +55,7 @@ modimport('modmain/ark_skill')
 -- 精英化
 modimport('modmain/ark_elite')
 -- 扩展ui
+modimport('modmain/ark_buff_icon')
 modimport('modmain/ark_extend_ui')
 -- 武器扩展
 modimport('modmain/combat_extension')

@@ -97,16 +97,6 @@ local ArkBuffIcon = Class(Widget, function(self, owner)
   self.isBlinking = false
   self.blinkTimer = 0
   self.currentStacks = 0  -- 记录当前stack，用于检测stack变化
-  self.owner:DoTaskInTime(0, function()
-    local debuffable = self.owner.components.debuffable
-    if debuffable then
-      for name, debuff in pairs(debuffable.debuffs) do
-        if debuff.components.ark_buff_icon then
-          self:AddBuff(debuff)
-        end
-      end
-    end
-  end)
 end)
 
 function ArkBuffIcon:SetHoverContent(title, desc)
@@ -246,6 +236,16 @@ local ArkBuffIcons = Class(Widget, function(self, owner)
   self.buffClientTimers = {}
   self.gap = 10
   self.owner:StartUpdatingComponent(self)
+  if TheWorld.ismastersim then
+    local buffs = owner:GetArkBuffIcons()
+    if next(buffs) then
+      for _, buff in ipairs(buffs) do
+        self:AddBuff(buff)
+      end
+    end
+  else
+    SendModRPCToServer(GetModRPC("arkBuffIcon", "RequestBuffIcons"))
+  end
 end)
 
 function ArkBuffIcons:AddBuff(buffInst)
