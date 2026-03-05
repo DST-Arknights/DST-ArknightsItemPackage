@@ -16,7 +16,7 @@ local function OnKilled(inst, data)
     return
   end
   local health = target.components.health.maxhealth
-  local gold = math.floor(health / 100)
+  local gold = math.floor(health)
   inst.components.ark_currency:AddArkGold(gold)
 end
 
