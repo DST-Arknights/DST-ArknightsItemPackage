@@ -1,5 +1,14 @@
 local utils = require("ark_utils")
 
+local function SpawnDropAtPosition(x, y, z, prefab, count)
+  for _ = 1, count do
+    local item = SpawnPrefab(prefab)
+    if item then
+      item.Transform:SetPosition(x + (math.random() * 4 - 2), y, z + (math.random() * 4 - 2))
+    end
+  end
+end
+
 local function OnKilled(inst, data)
   if not inst:HasTag("player") then
     return
@@ -18,6 +27,17 @@ local function OnKilled(inst, data)
   local health = target.components.health.maxhealth
   local gold = math.floor(health)
   inst.components.ark_currency:AddArkGold(gold)
+
+  if target:HasTag("epic") then
+    local x, y, z = target.Transform:GetWorldPosition()
+    inst:DoTaskInTime(1, function()
+      SpawnDropAtPosition(x, y, z, "ark_item_gold2", math.random(1, 6))
+      SpawnDropAtPosition(x, y, z, "ark_item_gold1", math.random(2, 10))
+      if math.random() <= 0.1 then
+        SpawnDropAtPosition(x, y, z, "ark_item_gold3", 1)
+      end
+    end)
+  end
 end
 
 local ArkCurrency = Class(function(self, inst)
