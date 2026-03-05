@@ -1,7 +1,1 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Atlas>
-	<Texture filename="ark_backpack.tex" />
-	<Elements>
-		<Element name="ark_backpack.tex" u1="0.001" u2="0.53025" v2="0.999" v1="0.46975" variant="" />
-	</Elements>
-</Atlas>
+<Atlas><Texture filename="ark_backpack.tex" /><Elements><Element name="ark_backpack.tex" u1="0.00390625" u2="0.52734375" v1="0.47265625" v2="0.99609375" /></Elements></Atlas>
