@@ -1,11 +1,14 @@
-local function SpawnDropByLootDropper(target, prefab, count)
-  local lootdropper = target.components and target.components.lootdropper
-  if not lootdropper then
-    return
+local function CalcKillGoldReward(target)
+  local maxhealth = target.components.health.maxhealth or 0
+  if maxhealth <= 0 then
+    return 0
   end
-  for _ = 1, count do
-    lootdropper:SpawnLootPrefab(prefab)
+  local ratio = target:HasTag("epic") and 0.4 or 0.3
+  local gold = math.floor((maxhealth ^ 1.1) * ratio)
+  if gold < 1 then
+    gold = 1
   end
+  return gold
 end
 
 local function OnKilled(inst, data)
@@ -23,17 +26,8 @@ local function OnKilled(inst, data)
   if not target.components.health then
     return
   end
-  local health = target.components.health.maxhealth
-  local gold = math.floor(health)
+  local gold = CalcKillGoldReward(target)
   inst.components.ark_currency:AddArkGold(gold)
-
-  if target:HasTag("epic") then
-    SpawnDropByLootDropper(target, "ark_item_gold2", math.random(1, 6))
-    SpawnDropByLootDropper(target, "ark_item_gold1", math.random(2, 10))
-    if math.random() <= 0.1 then
-      SpawnDropByLootDropper(target, "ark_item_gold3", 1)
-    end
-  end
 end
 
 local ArkCurrency = Class(function(self, inst)
