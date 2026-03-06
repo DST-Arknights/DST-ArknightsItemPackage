@@ -64,6 +64,9 @@ end
 local function UpdateAttackSpeed(self)
     local combat = self.inst.components.combat
     local speed = self:Get()
+    if speed == nil or speed <= 0 then
+      speed = 1
+    end
 
     if not combat.base_attack_period then
         combat.base_attack_period = combat.min_attack_period
@@ -110,6 +113,9 @@ AddComponentPostInit("combat", function(self)
   function self:GetAttackSpeed()
     return self.attackspeedmodifiers:Get()
   end
+
+  -- Sync default/base attack speed to replica so client prediction does not see 0.
+  UpdateAttackSpeed(self.attackspeedmodifiers)
 
   -- 使用 SourceModifierList 的第三个参数为合并函数：
   -- 按顺序合并比例 v，使得结果为 m + (1-m)*v（序列化剩余伤害的转换）
@@ -170,7 +176,11 @@ AddClassPostConstruct("components/combat_replica", function(self)
     end
   end
   function self:GetAttackSpeed()
-    return self._ark_attack_speed:value()
+    local speed = self._ark_attack_speed:value()
+    if speed == nil or speed <= 0 then
+      return 1
+    end
+    return speed
   end
 end)
 
@@ -184,9 +194,6 @@ AddStategraphPostInit("wilson", function(sg)
             if attack_speed ~= 1 then
                 inst.AnimState:SetDeltaTimeMultiplier(attack_speed)
                 RescaleTimeline(inst.sg, attack_speed)
-                if inst.sg.timeout then
-                    inst.sg:SetTimeout(inst.sg.timeout / attack_speed)
-                end
             end
         end
     end
