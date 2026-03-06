@@ -1,11 +1,10 @@
-local utils = require("ark_utils")
-
-local function SpawnDropAtPosition(x, y, z, prefab, count)
+local function SpawnDropByLootDropper(target, prefab, count)
+  local lootdropper = target.components and target.components.lootdropper
+  if not lootdropper then
+    return
+  end
   for _ = 1, count do
-    local item = SpawnPrefab(prefab)
-    if item then
-      item.Transform:SetPosition(x + (math.random() * 4 - 2), y, z + (math.random() * 4 - 2))
-    end
+    lootdropper:SpawnLootPrefab(prefab)
   end
 end
 
@@ -29,14 +28,11 @@ local function OnKilled(inst, data)
   inst.components.ark_currency:AddArkGold(gold)
 
   if target:HasTag("epic") then
-    local x, y, z = target.Transform:GetWorldPosition()
-    inst:DoTaskInTime(1, function()
-      SpawnDropAtPosition(x, y, z, "ark_item_gold2", math.random(1, 6))
-      SpawnDropAtPosition(x, y, z, "ark_item_gold1", math.random(2, 10))
-      if math.random() <= 0.1 then
-        SpawnDropAtPosition(x, y, z, "ark_item_gold3", 1)
-      end
-    end)
+    SpawnDropByLootDropper(target, "ark_item_gold2", math.random(1, 6))
+    SpawnDropByLootDropper(target, "ark_item_gold1", math.random(2, 10))
+    if math.random() <= 0.1 then
+      SpawnDropByLootDropper(target, "ark_item_gold3", 1)
+    end
   end
 end
 
