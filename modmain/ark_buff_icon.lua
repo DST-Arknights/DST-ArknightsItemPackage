@@ -5,8 +5,8 @@ AddPlayerPostInit(function(inst)
       local buffs = debuffable.debuffs
       local buffList = {}
       for name, buff in pairs(buffs) do
-        if buff.components.ark_buff_icon then
-          table.insert(buffList, buff)
+        if buff and buff.inst and buff.inst.components.ark_buff_icon then
+          table.insert(buffList, buff.inst)
         end
       end
       return buffList

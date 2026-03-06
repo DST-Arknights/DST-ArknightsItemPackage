@@ -268,6 +268,15 @@ function ArkBuffIcons:AddBuff(buffInst)
     table.insert(self.groupOrder, groupKey)
     self:AddChild(icon)
   end
+
+  -- 同一buff实例去重：重连/重载时可能从多个入口重复触发AddBuff
+  for _, inst in ipairs(group.insts) do
+    if inst == buffInst then
+      self:_InitializeBuffTimer(buffInst)
+      self:_UpdateGroupDisplay(groupKey)
+      return
+    end
+  end
   
   -- 将buff实例加入分组
   table.insert(group.insts, buffInst)
@@ -285,50 +294,52 @@ end
 function ArkBuffIcons:RemoveBuff(buffInst)
   -- 清理客户端倒计时记录
   self.buffClientTimers[buffInst] = nil
-  
-  -- 遍历所有分组，找到包含该buff实例的分组
-  local foundGroupKey = nil
-  local foundGroup = nil
-  
+
+  -- 遍历所有分组，移除该buff实例的所有重复引用
+  local foundAny = false
+  local touchedGroups = {}
+
   for groupKey, group in pairs(self.buffGroups) do
-    for i, inst in ipairs(group.insts) do
-      if inst == buffInst then
-        -- 找到了，从分组中移除
-        ArkLogger:Debug('ark_buff_icons RemoveBuff found', buffInst, groupKey)
+    local removedInGroup = false
+    for i = #group.insts, 1, -1 do
+      if group.insts[i] == buffInst then
         table.remove(group.insts, i)
-        foundGroupKey = groupKey
-        foundGroup = group
-        break
+        removedInGroup = true
+        foundAny = true
       end
     end
-    if foundGroupKey then
-      break
+    if removedInGroup then
+      ArkLogger:Debug('ark_buff_icons RemoveBuff found', buffInst, groupKey)
+      table.insert(touchedGroups, groupKey)
     end
   end
-  
-  if not foundGroupKey then
+
+  if not foundAny then
     ArkLogger:Debug('ark_buff_icons RemoveBuff not found in any group', buffInst)
     return
   end
-  
-  -- 如果分组还有实例，更新显示
-  if #foundGroup.insts > 0 then
-    ArkLogger:Debug('ark_buff_icons RemoveBuff group still has insts', foundGroup.insts)
-    self:_UpdateGroupDisplay(foundGroupKey)
-  else
-    ArkLogger:Debug('ark_buff_icons RemoveBuff group is empty', foundGroupKey)
-    -- 分组为空，移除icon并删除分组
-    foundGroup.icon:Kill()
-    self.buffGroups[foundGroupKey] = nil
-    -- 从顺序列表中移除
-    for i, key in ipairs(self.groupOrder) do
-      if key == foundGroupKey then
-        table.remove(self.groupOrder, i)
-        break
+
+  -- 处理被修改过的分组：有实例则刷新，无实例则回收
+  for _, groupKey in ipairs(touchedGroups) do
+    local group = self.buffGroups[groupKey]
+    if group then
+      if #group.insts > 0 then
+        ArkLogger:Debug('ark_buff_icons RemoveBuff group still has insts', group.insts)
+        self:_UpdateGroupDisplay(groupKey)
+      else
+        ArkLogger:Debug('ark_buff_icons RemoveBuff group is empty', groupKey)
+        group.icon:Kill()
+        self.buffGroups[groupKey] = nil
+        for i, key in ipairs(self.groupOrder) do
+          if key == groupKey then
+            table.remove(self.groupOrder, i)
+            break
+          end
+        end
       end
     end
   end
-  
+
   -- 更新布局
   self:_UpdateLayout()
 end
