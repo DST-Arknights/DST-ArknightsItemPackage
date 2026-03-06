@@ -260,16 +260,23 @@ for i = 1, #arkItemDeclare do
   end
 end
 
-
 AddComponentPostInit("lootdropper", function(self)
-  function self:AddLoot(prefab, num)
-      if not self.loot then
-          self.loot = {}
-      end
-      for i = 1, num do
-          table.insert(self.loot, prefab)
-      end
-  end
+    function self:AddLoot(prefab, num)
+        num = math.max(1, num or 1)
+
+        if self.loot == nil then
+            self.loot = {}
+            self._loot_unshared = true
+        elseif not self._loot_unshared then
+            -- Break shared loot table reference (e.g. tallbird's local loot upvalue)
+            self.loot = shallowcopy(self.loot)
+            self._loot_unshared = true
+        end
+
+        for i = 1, num do
+            table.insert(self.loot, prefab)
+        end
+    end
 end)
 
 for k, v in pairs(dropMap) do
