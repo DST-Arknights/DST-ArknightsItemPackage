@@ -478,16 +478,24 @@ local function BlinkArkPackSlot(inst, data)
   end
   -- 获取自己的owner
   local owner = nil
-  local opened = false
-  -- 主机从组件里取
+  local needBlink = false
+  -- 主机模式, 主机从组件里取
   if inst.components.inventoryitem then
-    owner = inst.components.inventoryitem:GetOwner()
-    opened = owner and inst.components.container.openlist[owner] or false
+    owner = inst.components.inventoryitem.owner
+    if owner then
+      local normalOpened = inst.components.container.openlist[owner] == true
+      local silentOpened = inst.components.container.silent_open_list[owner] == true
+      needBlink = silentOpened and not normalOpened
+    end
   else
     owner = ThePlayer
-    opened = inst.replica.container and inst.replica.container.opener and true or false
+    if owner and inst.replica.container then
+      local normalOpened = inst.replica.container.opener == owner
+      local silentOpened = inst.replica.container.silent_opener == owner
+      needBlink = silentOpened and not normalOpened
+    end
   end
-  if not opened and owner and owner.HUD and owner.HUD.controls and owner.HUD.controls.inv then
+  if needBlink and owner and owner.HUD and owner.HUD.controls and owner.HUD.controls.inv then
     -- 找到索引
     local items = owner.replica.inventory and owner.replica.inventory:GetItems() or {}
     for i, v in ipairs(items) do
