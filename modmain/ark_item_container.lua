@@ -184,7 +184,7 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
   end
 
   local _Close = self.Close
-  self.Close = function(self, doer)
+  self.Close = function(self)
     if self[containerScrollWidgetSymbol] then
       self[containerScrollWidgetSymbol]:Kill()
       self[containerScrollWidgetSymbol] = nil
@@ -430,8 +430,12 @@ AddComponentPostInit("container", function(self)
       end
     end, doer)
     if doer == nil then
-      for doer, _ in pairs(self.silent_open_list) do
-        self:CloseSilently(doer)
+      local doers = {}
+      for opener, _ in pairs(self.silent_open_list) do
+        table.insert(doers, opener)
+      end
+      for _, opener in ipairs(doers) do
+        self:CloseSilently(opener)
       end
       return
     end
@@ -476,7 +480,7 @@ local function BlinkArkPackSlot(inst, data)
   local owner = nil
   local opened = false
   -- 主机从组件里取
-  if inst.components.inventoryitemm then
+  if inst.components.inventoryitem then
     owner = inst.components.inventoryitem:GetOwner()
     opened = owner and inst.components.container.openlist[owner] or false
   else
@@ -532,6 +536,14 @@ AddClassPostConstruct("components/container_replica", function(self)
   end
 
   function self:AttachSilentOpener(opener)
+    if opener == nil then
+      return
+    end
+    if self.silent_opener ~= nil and self.silent_opener ~= opener then
+      self:DetachSilentOpener()
+    elseif self.silent_opener == opener then
+      return
+    end
     self.silent_opener = opener
     self.ondetachsilentopener = function()
       self:DetachSilentOpener()
@@ -545,7 +557,12 @@ AddClassPostConstruct("components/container_replica", function(self)
   end
 
   function self:DetachSilentOpener()
-    self.inst:RemoveEventCallback("onremove", self.ondetachsilentopener, self.silent_opener)
+    if self.silent_opener == nil and self.ondetachsilentopener == nil then
+      return
+    end
+    if self.silent_opener ~= nil and self.ondetachsilentopener ~= nil then
+      self.inst:RemoveEventCallback("onremove", self.ondetachsilentopener, self.silent_opener)
+    end
     self.inst:RemoveEventCallback("itemget", OnRefreshCrafting)
     self.inst:RemoveEventCallback("itemlose", OnRefreshCrafting)
     self.silent_opener = nil
@@ -586,10 +603,10 @@ AddClassPostConstruct("components/container_replica", function(self)
 
   if not TheWorld.ismastersim then
     if self.silent_opener == nil and self.inst.container_silent_opener ~= nil then
-      self.silent_opener = self.inst.container_silent_opener
-      self.inst.container_silent_opener.OnRemoveEntity = nil
+      local container_silent_opener = self.inst.container_silent_opener
+      container_silent_opener.OnRemoveEntity = nil
       self.inst.container_silent_opener = nil
-      self:AttachSilentOpener(self.inst.container_silent_opener)
+      self:AttachSilentOpener(container_silent_opener)
     end
   end
   if not TheNet:IsDedicated() then
