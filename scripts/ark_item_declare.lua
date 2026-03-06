@@ -670,19 +670,6 @@ return {{
     prefab = CHARACTER_INGREDIENT.SANITY,
     count = 10
   }}},
-  drop = {{
-    prefab = 'spider',
-    adapter = 'AddChanceLoot',
-    value = 0.1
-  }, {
-    prefab = 'spider_warrior',
-    adapter = 'AddChanceLoot',
-    value = 0.2
-  }, {
-    prefab = 'lureplant',
-    adapter = 'AddLoot',
-    value = 1
-  }},
   template = {
     MakeSmallBurnable = {
       time = 10
@@ -703,6 +690,19 @@ return {{
     prefab = CHARACTER_INGREDIENT.SANITY,
     count = 5
   }}},
+  drop = {{
+    prefab = 'spider',
+    adapter = 'AddChanceLoot',
+    value = 0.1
+  }, {
+    prefab = 'spider_warrior',
+    adapter = 'AddChanceLoot',
+    value = 0.2
+  }, {
+    prefab = 'lureplant',
+    adapter = 'AddLoot',
+    value = 1
+  }},
   template = {
     MakeSmallBurnable = {
       time = 10
