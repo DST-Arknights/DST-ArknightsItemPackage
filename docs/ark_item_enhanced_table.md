@@ -48,8 +48,8 @@
 | ![装置](../imageSource/images/ark_item/ark_item_mtl_sl_boss2.png) | 装置 | `ark_item_mtl_sl_boss2` |  | `破损装置(ark_item_mtl_sl_boss1)`, `龙门币(ark_gold)` |
 | ![破损装置](../imageSource/images/ark_item/ark_item_mtl_sl_boss1.png) | 破损装置 | `ark_item_mtl_sl_boss1` | `发条骑士(knight)`, `发条主教(bishop)`, `发条战车(rook)` |  |
 | ![聚酸酯块](../imageSource/images/ark_item/ark_item_mtl_sl_rush4.png) | 聚酸酯块 | `ark_item_mtl_sl_rush4` |  | `聚酸酯组(ark_item_mtl_sl_rush3)`, `酮凝集组(ark_item_mtl_sl_ketone3)`, `扭转醇(ark_item_mtl_sl_alcohol1)`, `龙门币(ark_gold)` |
-| ![聚酸酯组](../imageSource/images/ark_item/ark_item_mtl_sl_rush3.png) | 聚酸酯组 | `ark_item_mtl_sl_rush3` | `蜘蛛(spider)`, `蜘蛛战士(spider_warrior)`, `食人花(lureplant)` | `聚酸酯(ark_item_mtl_sl_rush2)`, `龙门币(ark_gold)` |
-| ![聚酸酯](../imageSource/images/ark_item/ark_item_mtl_sl_rush2.png) | 聚酸酯 | `ark_item_mtl_sl_rush2` |  | `酯原料(ark_item_mtl_sl_rush1)`, `龙门币(ark_gold)` |
+| ![聚酸酯组](../imageSource/images/ark_item/ark_item_mtl_sl_rush3.png) | 聚酸酯组 | `ark_item_mtl_sl_rush3` |  | `聚酸酯(ark_item_mtl_sl_rush2)`, `龙门币(ark_gold)` |
+| ![聚酸酯](../imageSource/images/ark_item/ark_item_mtl_sl_rush2.png) | 聚酸酯 | `ark_item_mtl_sl_rush2` | `蜘蛛(spider)`, `蜘蛛战士(spider_warrior)`, `食人花(lureplant)` | `酯原料(ark_item_mtl_sl_rush1)`, `龙门币(ark_gold)` |
 | ![酯原料](../imageSource/images/ark_item/ark_item_mtl_sl_rush1.png) | 酯原料 | `ark_item_mtl_sl_rush1` | `蜘蛛(spider)`, `蜘蛛战士(spider_warrior)`, `食人花(lureplant)` |  |
 | ![糖聚块](../imageSource/images/ark_item/ark_item_mtl_sl_strg4.png) | 糖聚块 | `ark_item_mtl_sl_strg4` |  | `糖组(ark_item_mtl_sl_strg3)`, `异铁组(ark_item_mtl_sl_iron3)`, `轻锰矿(ark_item_mtl_sl_manganese1)`, `龙门币(ark_gold)` |
 | ![糖组](../imageSource/images/ark_item/ark_item_mtl_sl_strg3.png) | 糖组 | `ark_item_mtl_sl_strg3` |  | `糖(ark_item_mtl_sl_strg2)`, `龙门币(ark_gold)` |
