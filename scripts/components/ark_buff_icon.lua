@@ -2,7 +2,12 @@ local function ontotalTime(self, value)
   self.inst.replica.ark_buff_icon.state.totalTime = value
 end
 local function onremainingTime(self, value)
+  local same_value = self.remainingTime == value
   self.inst.replica.ark_buff_icon.state.remainingTime = value
+  if same_value then
+    -- 同值刷新不会触发 netvar dirty，手动强制同步一次。
+    self.inst.replica.ark_buff_icon.state:ForceSync()
+  end
 end
 local function onatlas(self, value)
   self.inst.replica.ark_buff_icon.state.atlas = value
