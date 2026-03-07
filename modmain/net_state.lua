@@ -100,6 +100,22 @@ local function getDirtyName(key)
   return "net_state" .. key .. "_dirty"
 end
 
+local function sanitizeName(name)
+  return string.gsub(name, "[^%w_]", "_")
+end
+
+local function getForceFieldName(def_name)
+  return "__ns_force_tick_" .. sanitizeName(def_name)
+end
+
+local function getForceNetName(def_name)
+  return "net_state." .. def_name .. ".__force_tick"
+end
+
+local function getForceDirtyName(def_name)
+  return "net_state" .. sanitizeName(def_name) .. "__force_dirty"
+end
+
 -- 模块级通用绑定函数（使用 inner）
 local function bindNetVars(inner, owner, schemas)
   if not schemas or next(schemas) == nil then
@@ -154,10 +170,10 @@ local function PushDirtyForNonDefaultClassified(inner)
   end
 end
 
-local function RegisterClassifiedPrefab(name, schemas)
-  ArkLogger:Trace('[net_state_classified]', 'RegisterClassifiedPrefab', name)
-  RegisterSinglePrefab(Prefab(name, function()
-    ArkLogger:Trace('[net_state_classified]', 'Prefab', name, 'create')
+local function RegisterClassifiedPrefab(prefab_name, def_name, schemas)
+  ArkLogger:Trace('[net_state_classified]', 'RegisterClassifiedPrefab', prefab_name, def_name)
+  RegisterSinglePrefab(Prefab(prefab_name, function()
+    ArkLogger:Trace('[net_state_classified]', 'Prefab', prefab_name, 'create')
     local inst = CreateEntity()
     if TheWorld.ismastersim then
       inst.entity:AddTransform()
@@ -167,6 +183,9 @@ local function RegisterClassifiedPrefab(name, schemas)
     inst.entity:SetCanSleep(false)
     inst:AddTag("CLASSIFIED")
     inst._index = net_uint(inst.GUID, "net_state._index", "indexdirty")
+    local force_field = getForceFieldName(def_name)
+    local force_dirty_event = getForceDirtyName(def_name)
+    inst[force_field] = net_uint(inst.GUID, getForceNetName(def_name), force_dirty_event)
     for key, def in pairs(schemas) do
       local constructor = TYPE_MAP[def.type]
       local dirty_event = getDirtyName(key)
@@ -187,6 +206,12 @@ local function RegisterClassifiedPrefab(name, schemas)
           end
         end)
       end
+      inst:ListenForEvent(force_dirty_event, function()
+        if inst._state == nil then
+          inst._pending_force_dirty = true
+          ArkLogger:Trace('[net_state_classified]', 'pending force dirty')
+        end
+      end)
 
       inst:ListenForEvent("indexdirty", function()
       -- inst.OnEntityReplicated = function(inst)
@@ -197,13 +222,13 @@ local function RegisterClassifiedPrefab(name, schemas)
           inst:Remove()
           return
         end
-        local state = parent._ns_state_by_name and parent._ns_state_by_name[name] and parent._ns_state_by_name[name][index] or nil
+        local state = parent._ns_state_by_name and parent._ns_state_by_name[prefab_name] and parent._ns_state_by_name[prefab_name][index] or nil
         if state == nil then
           -- 没找到, 等待
-          ArkLogger:Trace('[net_state_classified]', 'OnEntityReplicated state == nil, push pending', name)
+          ArkLogger:Trace('[net_state_classified]', 'OnEntityReplicated state == nil, push pending', prefab_name)
           parent._ns_pending_classified = parent._ns_pending_classified or {}
-          parent._ns_pending_classified[name] = parent._ns_pending_classified[name] or {}
-          parent._ns_pending_classified[name][index] = inst
+          parent._ns_pending_classified[prefab_name] = parent._ns_pending_classified[prefab_name] or {}
+          parent._ns_pending_classified[prefab_name][index] = inst
           return
         else
           state:AttachClassified(inst)
@@ -216,7 +241,7 @@ local function RegisterClassifiedPrefab(name, schemas)
           -- 解除_ns_pending_classified
           local pending = parent._ns_pending_classified
           if pending ~= nil then
-            pending[name] = nil
+            pending[prefab_name] = nil
           end
         end
         if inst._state ~= nil then
@@ -256,7 +281,7 @@ local function DefineNetState(name, schema_def)
   -- 立即注册 classified prefab（在 mod 加载阶段）
   local prefab_name = "net_state_" .. name
   if next(classified) then
-    RegisterClassifiedPrefab(prefab_name, classified)
+    RegisterClassifiedPrefab(prefab_name, name, classified)
   end
 
   ArkLogger:Trace('[DefineNetState]', 'Defined', name, 'prefab:', prefab_name)
@@ -285,6 +310,21 @@ local function NetStateInit(self, inst, name)
   inner._id = stateId
   stateId = stateId + 1
   inner._def_name = name
+  inner._force_field = getForceFieldName(name)
+  inner._force_dirty_event = getForceDirtyName(name)
+  inner._force_dirty_handler = function()
+    inner.log("ForceSync", "force dirty received, replay all keys")
+    if inner.normal_schemas then
+      for key, _ in pairs(inner.normal_schemas) do
+        inner.inst:PushEvent(getDirtyName(key))
+      end
+    end
+    if inner.classified_schemas and inner.net_state_classified then
+      for key, _ in pairs(inner.classified_schemas) do
+        inner.net_state_classified:PushEvent(getDirtyName(key))
+      end
+    end
+  end
 
   local state_name = "net_state_" .. name
   if not inst._ns_state_by_name then
@@ -309,6 +349,13 @@ local function NetStateInit(self, inst, name)
   inner.log("Init", "binding normal netvars", "def_name", name)
   inner._vars = bindNetVars(inner, inner.inst, inner.normal_schemas)
   inner._pending_classified_listeners = {}
+  if not next(inner.classified_schemas) then
+    if inner.inst[inner._force_field] == nil then
+      inner.inst[inner._force_field] = net_uint(inner.inst.GUID, getForceNetName(name), inner._force_dirty_event)
+    end
+    inner._force_var = inner.inst[inner._force_field]
+    inner.inst:ListenForEvent(inner._force_dirty_event, inner._force_dirty_handler)
+  end
   -- 若存在 classified 字段，则在主机上生成 classified，在客机上尝试消费 pending
   if next(inner.classified_schemas) then
     -- prefab 已在 DefineNetState 时注册，可以同步执行
@@ -364,6 +411,12 @@ function NetState:AttachClassified(net_state_classified, skip_attach)
   local inner = NetStateMap[self]
   inner.net_state_classified = net_state_classified
   net_state_classified._state = self
+  inner._force_var = net_state_classified[inner._force_field]
+  if inner._force_var ~= nil then
+    net_state_classified:ListenForEvent(inner._force_dirty_event, inner._force_dirty_handler)
+  else
+    inner.log("AttachClassified", "force var bind failed", inner._force_field, inner._def_name)
+  end
   inner.log("AttachClassified", "attaching classified", net_state_classified)
   -- 注册所有 pending 的 classified 监听
   if inner._pending_classified_listeners and #inner._pending_classified_listeners > 0 then
@@ -382,6 +435,11 @@ function NetState:AttachClassified(net_state_classified, skip_attach)
       net_state_classified:PushEvent(dirty_event)
     end
     net_state_classified._pending_dirty_keys = nil
+  end
+  if net_state_classified._pending_force_dirty then
+    inner.log("AttachClassified", "re-pushing pending force dirty")
+    net_state_classified:PushEvent(inner._force_dirty_event)
+    net_state_classified._pending_force_dirty = nil
   end
 
   -- 恢复缓存值
@@ -411,11 +469,32 @@ end
 function NetState:DetachClassified()
   local inner = NetStateMap[self]
   inner.log("DetachClassified")
+  inner._force_var = nil
   inner.net_state_classified = nil
   inner._classified_vars = nil
   if inner._on_detached then
     inner._on_detached(ThePlayer)
   end
+end
+
+--- 强制同步：即使字段值未变化，也让监听端触发一次该 state 的字段更新事件。
+function NetState:ForceSync()
+  local inner = NetStateMap[self]
+  if not TheWorld.ismastersim then
+    inner.log("ForceSync", "ignored on non-master")
+    return
+  end
+  local force_var = inner._force_var
+  if force_var == nil then
+    inner.log("ForceSync", "force var unavailable")
+    return
+  end
+  local next_value = force_var:value() + 1
+  if next_value > 4294967295 then
+    next_value = 0
+  end
+  inner.log("ForceSync", "tick", next_value)
+  force_var:set(next_value)
 end
 
 --- 主机端：手动控制 classified 的目标玩家
