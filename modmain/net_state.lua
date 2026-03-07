@@ -307,6 +307,8 @@ local function NetStateInit(self, inst, name)
   local inner = {}
   NetStateMap[self] = inner
   inner.inst = inst
+  inner._owner_removed = false
+  inner._classified_detached = false
   inner._id = stateId
   stateId = stateId + 1
   inner._def_name = name
@@ -349,6 +351,19 @@ local function NetStateInit(self, inst, name)
   inner.log("Init", "binding normal netvars", "def_name", name)
   inner._vars = bindNetVars(inner, inner.inst, inner.normal_schemas)
   inner._pending_classified_listeners = {}
+  inner.inst:ListenForEvent("onremove", function()
+    if inner._owner_removed then
+      return
+    end
+    inner._owner_removed = true
+    inner.log("Detach", "owner removed")
+    if inner.net_state_classified ~= nil then
+      self:DetachClassified()
+    elseif inner._on_detached then
+      inner._on_detached(ThePlayer)
+    end
+  end)
+
   if not next(inner.classified_schemas) then
     if inner.inst[inner._force_field] == nil then
       inner.inst[inner._force_field] = net_uint(inner.inst.GUID, getForceNetName(name), inner._force_dirty_event)
@@ -409,6 +424,7 @@ end
 
 function NetState:AttachClassified(net_state_classified, skip_attach)
   local inner = NetStateMap[self]
+  inner._classified_detached = false
   inner.net_state_classified = net_state_classified
   net_state_classified._state = self
   inner._force_var = net_state_classified[inner._force_field]
@@ -468,6 +484,10 @@ end
 --- 客户端：当 classified 实体被销毁时调用
 function NetState:DetachClassified()
   local inner = NetStateMap[self]
+  if inner._classified_detached then
+    return
+  end
+  inner._classified_detached = true
   inner.log("DetachClassified")
   inner._force_var = nil
   inner.net_state_classified = nil
