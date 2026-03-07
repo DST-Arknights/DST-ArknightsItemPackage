@@ -109,7 +109,6 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   -- 闪烁效果相关变量
   self.blinkTimer = 0
   self.isBlinking = false
-  self.previousActivationStacks = 0  -- 用于检测充能状态变化
 
   self:SetHoverWidget(function()
     return self:CreateSkillDescWidget()
@@ -274,26 +273,28 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
   self.level = level
   self.levelConfig = self.config.levels[level]
 
-  -- 检测充能状态变化并触发闪烁效果
-  -- 条件：初始化完成后，从0充能变为1充能，且是手动触发类型的技能
-  if wasInitComplete and
-     self.previousActivationStacks == 0 and
-     activationStacks >= 1 and
-     self.config.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL then
+  local previousActivationStacks = self.activationStacks or 0
+  local currentActivationStacks = activationStacks or 0
+  local activationMode = self.config.activationMode
+  local autoActivationMode = isAutoActivation(activationMode)
+  local readyStacks = autoActivationMode and self.levelConfig.maxActivationStacks or 1
+  local stacksIncreased = wasInitComplete and currentActivationStacks > previousActivationStacks
+
+  -- 充能层数增加时闪烁一次（含自动触发达到满充能）
+  if stacksIncreased then
     self:StartBlink()
   end
 
-  self.previousActivationStacks = self.activationStacks
-  self.activationStacks = activationStacks
+  self.activationStacks = currentActivationStacks
   if self.levelConfig.maxActivationStacks > 1 then
     self.activationStacksWidget:Show()
-    self.activationStacksText:SetString(tostring(activationStacks))
+    self.activationStacksText:SetString(tostring(currentActivationStacks))
   else
     self.activationStacksWidget:Hide()
   end
 
   -- 自动触发图案
-  if isAutoActivation(self.config.activationMode) then
+  if autoActivationMode then
     if status == CONSTANTS.SKILL_STATUS.LOCKED then
       self.autoActivation:Hide()
     else
@@ -331,8 +332,12 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
     self.lock:Hide()
   end
 
-  -- 手动触发的遮罩
-  if (self.config.activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE) or (self.activationStacks > 0 and not isAutoActivation(self.config.activationMode) and status ~= CONSTANTS.SKILL_STATUS.BUFFING and status ~= CONSTANTS.SKILL_STATUS.LOCKED) then
+  -- 手动触发的遮罩：自动触发类型始终保留灰色蒙层，避免与旋转环视觉冲突
+  if activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE then
+    self.manualActivationShadow:Hide()
+  elseif autoActivationMode then
+    self.manualActivationShadow:Show()
+  elseif self.activationStacks >= readyStacks and status ~= CONSTANTS.SKILL_STATUS.BUFFING and status ~= CONSTANTS.SKILL_STATUS.LOCKED then
     self.manualActivationShadow:Hide()
   else
     self.manualActivationShadow:Show()
@@ -342,7 +347,7 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
 
   self:SetEnergyProgress(energyProgress)
   if self.config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
-    and activationStacks < self.levelConfig.maxActivationStacks then
+    and currentActivationStacks < self.levelConfig.maxActivationStacks then
     self:StartTimeEnergy(energyProgress)
   else
     self:StopTimeEnergy()
@@ -352,10 +357,14 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
     self.statusText:SetColour(1, 1, 1, 1)
     self.statusText:SetString("LOCK")
   elseif status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
-    if isAutoActivation(self.config.activationMode) then
-      self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
+    if autoActivationMode then
       if self.activationStacks >= self.levelConfig.maxActivationStacks then
-        self.statusText:SetString("")
+        self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_ready.tex")
+        self.statusText:SetColour(0, 0, 0, 1)
+        self.statusText:SetString("READY")
+      else
+        self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
+        self.statusText:SetColour(1, 1, 1, 1)
       end
     else
       if self.activationStacks >= 1 then
