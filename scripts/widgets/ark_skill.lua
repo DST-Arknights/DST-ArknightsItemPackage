@@ -266,6 +266,126 @@ function ArkSkill:UpdateBlink(dt)
   self.blinkMask:SetTint(1, 1, 1, alpha)
 end
 
+function ArkSkill:UpdateActivationStacks(currentActivationStacks)
+  self.activationStacks = currentActivationStacks
+  if self.levelConfig.maxActivationStacks > 1 and currentActivationStacks > 0 then
+    self.activationStacksWidget:Show()
+    self.activationStacksText:SetString(tostring(currentActivationStacks))
+  else
+    self.activationStacksWidget:Hide()
+  end
+end
+
+function ArkSkill:UpdateModeIndicators(status, autoActivationMode)
+  if autoActivationMode then
+    if status == CONSTANTS.SKILL_STATUS.LOCKED then
+      self.autoActivation:Hide()
+    else
+      self.autoActivation:Show()
+    end
+  else
+    self.autoActivation:Hide()
+  end
+
+  if status == CONSTANTS.SKILL_STATUS.LOCKED then
+    self.lock:Show()
+  else
+    self.lock:Hide()
+  end
+end
+
+function ArkSkill:UpdateChargeShadow(status)
+  if status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+    self.chargeShadow:Show()
+  else
+    self.chargeShadow:Hide()
+  end
+end
+
+function ArkSkill:UpdateManualActivationShadow(status, activationMode, autoActivationMode, readyStacks)
+  -- 自动触发类型始终保留灰色蒙层，避免与旋转环视觉冲突
+  local hideManualShadow = activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE
+    or (not autoActivationMode
+      and self.activationStacks >= readyStacks
+      and status ~= CONSTANTS.SKILL_STATUS.BUFFING
+      and status ~= CONSTANTS.SKILL_STATUS.LOCKED)
+
+  if hideManualShadow then
+    self.manualActivationShadow:Hide()
+  else
+    self.manualActivationShadow:Show()
+  end
+end
+
+function ArkSkill:UpdateBuffShadow(status, buffProgress)
+  if status == CONSTANTS.SKILL_STATUS.BUFFING then
+    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
+    self.statusText:SetColour(1, 1, 1, 1)
+    self:StartTimeBuff(buffProgress)
+    self.buffShadow:Show()
+  else
+    self:StopTimeBuff()
+    self.buffShadow:Hide()
+  end
+end
+
+function ArkSkill:UpdateStateShadows(status, activationMode, autoActivationMode, readyStacks, buffProgress)
+  self:UpdateChargeShadow(status)
+  self:UpdateManualActivationShadow(status, activationMode, autoActivationMode, readyStacks)
+  self:UpdateBuffShadow(status, buffProgress)
+end
+
+function ArkSkill:UpdateEnergyTimer(status, energyProgress, currentActivationStacks)
+  self:SetEnergyProgress(energyProgress)
+
+  local shouldTickEnergy = self.config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO
+    and status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
+    and currentActivationStacks < self.levelConfig.maxActivationStacks
+
+  if shouldTickEnergy then
+    self:StartTimeEnergy(energyProgress)
+  else
+    self:StopTimeEnergy()
+  end
+end
+
+function ArkSkill:UpdateStatusBar(status, autoActivationMode, bulletCount)
+  if status == CONSTANTS.SKILL_STATUS.BULLETING then
+    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_bullet.tex")
+    self.statusText:SetColour(1, 1, 1, 1)
+    self:SetBulletCount(bulletCount)
+    self.stop:Show()
+    return
+  end
+  self.stop:Hide()
+
+  if status == CONSTANTS.SKILL_STATUS.LOCKED then
+    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
+    self.statusText:SetColour(1, 1, 1, 1)
+    self.statusText:SetString("LOCK")
+    return
+  end
+
+  if status ~= CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+    return
+  end
+
+  local fullStacks = self.activationStacks >= self.levelConfig.maxActivationStacks
+  local readyForCurrentMode = autoActivationMode and fullStacks or self.activationStacks >= 1
+
+  if readyForCurrentMode then
+    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_ready.tex")
+    self.statusText:SetColour(0, 0, 0, 1)
+  else
+    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
+    self.statusText:SetColour(1, 1, 1, 1)
+  end
+
+  if fullStacks then
+    self.statusText:SetString("READY")
+  end
+end
+
 function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bulletCount, activationStacks)
   self.status = status
   local wasInitComplete = self.initComplete
@@ -278,107 +398,16 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
   local activationMode = self.config.activationMode
   local autoActivationMode = isAutoActivation(activationMode)
   local readyStacks = autoActivationMode and self.levelConfig.maxActivationStacks or 1
-  local stacksIncreased = wasInitComplete and currentActivationStacks > previousActivationStacks
 
-  -- 充能层数增加时闪烁一次（含自动触发达到满充能）
-  if stacksIncreased then
+  if wasInitComplete and currentActivationStacks > previousActivationStacks then
     self:StartBlink()
   end
 
-  self.activationStacks = currentActivationStacks
-  if self.levelConfig.maxActivationStacks > 1 then
-    self.activationStacksWidget:Show()
-    self.activationStacksText:SetString(tostring(currentActivationStacks))
-  else
-    self.activationStacksWidget:Hide()
-  end
-
-  -- 自动触发图案
-  if autoActivationMode then
-    if status == CONSTANTS.SKILL_STATUS.LOCKED then
-      self.autoActivation:Hide()
-    else
-      self.autoActivation:Show()
-    end
-  end
-  -- 充能遮罩只在充能状态且充能没满时展示, 其余隐藏
-  if status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
-    self.chargeShadow:Show()
-  else
-    self.chargeShadow:Hide()
-  end
-  -- 状态栏, 弹药模式固定展示弹药
-  if status == CONSTANTS.SKILL_STATUS.BULLETING then
-    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_bullet.tex")
-    self.statusText:SetColour(1, 1, 1, 1)
-    self:SetBulletCount(bulletCount)
-    self.stop:Show()
-  else
-    self.stop:Hide()
-  end
-  -- buff遮罩只在buff状态且buff没满时展示, 其余隐藏
-  if status == CONSTANTS.SKILL_STATUS.BUFFING then
-    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
-    self.statusText:SetColour(1, 1, 1, 1)
-    self:StartTimeBuff(buffProgress)
-    self.buffShadow:Show()
-  else
-    self:StopTimeBuff()
-    self.buffShadow:Hide()
-  end
-  if status == CONSTANTS.SKILL_STATUS.LOCKED then
-    self.lock:Show()
-  else
-    self.lock:Hide()
-  end
-
-  -- 手动触发的遮罩：自动触发类型始终保留灰色蒙层，避免与旋转环视觉冲突
-  if activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE then
-    self.manualActivationShadow:Hide()
-  elseif autoActivationMode then
-    self.manualActivationShadow:Show()
-  elseif self.activationStacks >= readyStacks and status ~= CONSTANTS.SKILL_STATUS.BUFFING and status ~= CONSTANTS.SKILL_STATUS.LOCKED then
-    self.manualActivationShadow:Hide()
-  else
-    self.manualActivationShadow:Show()
-  end
-
-  -- 充能计时器只在类型为时间充能且充能状态且充能没满时启动, 其余停止
-
-  self:SetEnergyProgress(energyProgress)
-  if self.config.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
-    and currentActivationStacks < self.levelConfig.maxActivationStacks then
-    self:StartTimeEnergy(energyProgress)
-  else
-    self:StopTimeEnergy()
-  end
-  if status == CONSTANTS.SKILL_STATUS.LOCKED then
-    self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
-    self.statusText:SetColour(1, 1, 1, 1)
-    self.statusText:SetString("LOCK")
-  elseif status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
-    if autoActivationMode then
-      if self.activationStacks >= self.levelConfig.maxActivationStacks then
-        self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_ready.tex")
-        self.statusText:SetColour(0, 0, 0, 1)
-        self.statusText:SetString("READY")
-      else
-        self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
-        self.statusText:SetColour(1, 1, 1, 1)
-      end
-    else
-      if self.activationStacks >= 1 then
-        self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_ready.tex")
-        self.statusText:SetColour(0, 0, 0, 1)
-      else
-        self.statusImg:SetTexture("images/ark_skill.xml", "sprite_skill_notready.tex")
-        self.statusText:SetColour(1, 1, 1, 1)
-      end
-      if self.activationStacks >= self.levelConfig.maxActivationStacks then
-        self.statusText:SetString("READY")
-      end
-    end
-  end
+  self:UpdateActivationStacks(currentActivationStacks)
+  self:UpdateModeIndicators(status, autoActivationMode)
+  self:UpdateStateShadows(status, activationMode, autoActivationMode, readyStacks, buffProgress)
+  self:UpdateEnergyTimer(status, energyProgress, currentActivationStacks)
+  self:UpdateStatusBar(status, autoActivationMode, bulletCount)
 
   self:RecurrentStatusImageSize()
 end
