@@ -2,7 +2,6 @@ local CONSTANTS = require "ark_constants"
 local common = require "ark_common"
 local utils = require "ark_utils"
 
-local EFFECTS_SYNC_REASON = CONSTANTS.SKILL_EFFECTS_SYNC_REASON
 local ArkSkill = Class(function(self, inst)
   self.inst = inst
   self.inst:AddTag("ark_skill")
@@ -62,40 +61,7 @@ local SingleSkill = Class(function(self, manager, config)
   -- 注册事件回调（按事件名索引）
   self._callbacks = {}
   self._activateTest = nil
-
-  -- 技能效果同步（ark_skill_effects_sync）专用：记录上一次已同步的“效果态快照”
-  -- 注意：此字段不参与存档，仅用于计算 from/to 与 changed。
-  self._effects_last_state = nil
 end)
-
-local function _BuildEffectsState(data)
-  return {
-    status = data.status,
-    level = data.level,
-    energyProgress = data.energyProgress,
-    buffProgress = data.buffProgress,
-    bulletCount = data.bulletCount,
-    activationStacks = data.activationStacks,
-    force = data.force,
-    tickEnergy = data.tickEnergy,
-    tickBuff = data.tickBuff,
-  }
-end
-
-local function _BuildChangedMap(from, to)
-  local changed = {}
-  for k, v in pairs(to) do
-    if from[k] ~= v then
-      changed[k] = true
-    end
-  end
-  for k, v in pairs(from) do
-    if to[k] ~= v then
-      changed[k] = true
-    end
-  end
-  return changed
-end
 
 -- 事件工具方法
 function SingleSkill:_AddCallback(eventName, fn)
@@ -147,61 +113,18 @@ function SingleSkill:_Emit(eventName, payload)
   self.inst:PushEvent(eventName, payload)
 end
 
--- 统一的“效果态同步”事件：用于让外部模组在【存档恢复】和【状态切换】时都能幂等地恢复/校准一次性挂载效果。
--- 事件名：ark_skill_effects_sync
--- payload:
---   reason: CONSTANTS.SKILL_EFFECTS_SYNC_REASON.*
---   from/to: 效果态快照（表）
---   prev: 上一次效果态快照（表，来自存档/上次切换前），用于在 load 时也能拿到“上次状态”
---   fromStatus/fromLevel: 便捷字段
---   prevStatus/prevLevel: 便捷字段
---   changed: 变更字段集合（map: key->true）
-function SingleSkill:_EmitEffectsSync(reason)
-  local to = _BuildEffectsState(self.data)
-  local prev = self.data.effects_prev
-      or {
-        status = self.data.prevStatus,
-        level = self.data.prevLevel,
-      }
-      or {}
-
-  local r = reason or EFFECTS_SYNC_REASON.MANUAL
-
-  -- from/to 表示“本次同步前后的效果态”。
-  -- 对于 load/register，这不是一次状态切换，而是对账；因此 from 默认等于 to。
-  local from
-  if self._effects_last_state ~= nil then
-    from = self._effects_last_state
-  elseif r == EFFECTS_SYNC_REASON.STATUS_CHANGE or r == EFFECTS_SYNC_REASON.LEVEL_CHANGE then
-    from = prev
-  else
-    from = to
-  end
-
-  -- 防止监听者修改 payload 表影响内部状态
-  local payloadFrom = utils.cloneTable(from)
-  local payloadTo = utils.cloneTable(to)
-  local payloadPrev = utils.cloneTable(prev)
-
-  self:_Emit("ark_skill_effects_sync", {
-    reason = r,
-    from = payloadFrom,
-    to = payloadTo,
-    prev = payloadPrev,
-    fromStatus = payloadFrom.status,
-    fromLevel = payloadFrom.level,
-    prevStatus = payloadPrev.status,
-    prevLevel = payloadPrev.level,
-    changed = _BuildChangedMap(payloadFrom, payloadTo),
+function SingleSkill:_EmitActivateEffect(payload)
+  local data = self.data
+  self:_Emit("ark_skill_activate_effect", {
+    source = payload.source,
+    target = payload.target,
+    targetPos = payload.targetPos,
+    force = data.force,
+    energyProgress = data.energyProgress,
+    buffProgress = data.buffProgress,
+    bulletCount = data.bulletCount,
+    activationStacks = data.activationStacks,
   })
-
-  -- 内部保留一份不可被外部持有的快照
-  self._effects_last_state = utils.cloneTable(to)
-end
-
--- 对外公开：允许外部在需要时主动触发一次“效果态同步”（例如自身初始化完成后）。
-function SingleSkill:SyncEffects(reason)
-  self:_EmitEffectsSync(reason)
 end
 
 -- 事件注册/反注册接口（相同函数不会重复添加）
@@ -233,19 +156,19 @@ function SingleSkill:UnsetOnActivateReady(fn)
   self:_RemoveCallback("ark_skill_activate_ready", fn)
 end
 
--- 效果同步事件（推荐依赖方使用此事件做幂等挂载/卸载）
-function SingleSkill:SetOnEffectsSync(fn)
-  self:_AddCallback("ark_skill_effects_sync", fn)
+-- 持续效果应用事件：正常激活时在 activate 之后触发，读档恢复时只触发此事件。
+function SingleSkill:SetOnActivateEffect(fn)
+  self:_AddCallback("ark_skill_activate_effect", fn)
 end
-function SingleSkill:UnsetOnEffectsSync(fn)
-  self:_RemoveCallback("ark_skill_effects_sync", fn)
+function SingleSkill:UnsetOnActivateEffect(fn)
+  self:_RemoveCallback("ark_skill_activate_effect", fn)
 end
 
-function SingleSkill:SetOnActive(fn)
-  self:_AddCallback("ark_skill_activated", fn)
+function SingleSkill:SetOnActivate(fn)
+  self:_AddCallback("ark_skill_activate", fn)
 end
-function SingleSkill:UnsetOnActive(fn)
-  self:_RemoveCallback("ark_skill_activated", fn)
+function SingleSkill:UnsetOnActivate(fn)
+  self:_RemoveCallback("ark_skill_activate", fn)
 end
 
 function SingleSkill:SetOnDeactivate(fn)
@@ -280,12 +203,6 @@ function SingleSkill:SetEnergyRecovering(force)
   local prevStatus = data.status
   force = force == true
 
-  -- 保存“上一次效果态快照”（用于存档恢复/外部无感对账）
-  data.effects_prev = _BuildEffectsState(data)
-
-  -- 记录上一次状态（用于存档恢复与事件 payload）
-  data.prevStatus = prevStatus
-
   data.status = CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING
   if cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
     if data.activationStacks >= lvl.maxActivationStacks then
@@ -299,10 +216,6 @@ function SingleSkill:SetEnergyRecovering(force)
   end
   data.tickBuff = false
   self.manager:SyncSkillStatus(self.id)
-
-  -- 效果态同步：状态变更后，要求外部将挂载效果校准到当前状态
-
-  self:_EmitEffectsSync(EFFECTS_SYNC_REASON.STATUS_CHANGE)
 
   -- 从 BUFF/BULLET 状态回到充能，视为一次“结束激活”
   if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
@@ -321,25 +234,18 @@ end
 
 function SingleSkill:SetBuffing()
   local data = self.data
-  data.effects_prev = _BuildEffectsState(data)
-  data.prevStatus = data.status
   data.status = CONSTANTS.SKILL_STATUS.BUFFING
   data.tickBuff = true
   data.tickEnergy = false
   self.manager:SyncSkillStatus(self.id)
-
-  self:_EmitEffectsSync(EFFECTS_SYNC_REASON.STATUS_CHANGE)
 end
 
 function SingleSkill:SetBulleting()
   local data = self.data
-  data.effects_prev = _BuildEffectsState(data)
-  data.prevStatus = data.status
   data.status = CONSTANTS.SKILL_STATUS.BULLETING
   self.manager:SyncSkillStatus(self.id)
   data.tickEnergy = false
   data.tickBuff = false
-  self:_EmitEffectsSync(EFFECTS_SYNC_REASON.STATUS_CHANGE)
 end
 
 function SingleSkill:IsActivating()
@@ -349,8 +255,6 @@ end
 function SingleSkill:Lock()
   local data = self.data
   local prevStatus = data.status
-  data.effects_prev = _BuildEffectsState(data)
-  data.prevStatus = prevStatus
   data.status = CONSTANTS.SKILL_STATUS.LOCKED
   data.tickEnergy = false
   data.tickBuff = false
@@ -361,7 +265,12 @@ function SingleSkill:Lock()
   data.force = false
   self.manager:SyncSkillStatus(self.id)
 
-  self:_EmitEffectsSync(EFFECTS_SYNC_REASON.STATUS_CHANGE)
+  if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
+    self:_Emit("ark_skill_deactivate", {
+      fromStatus = prevStatus,
+      force = false
+    })
+  end
   self:_Emit("ark_skill_locked", {
     fromStatus = prevStatus
   })
@@ -412,8 +321,6 @@ function SingleSkill:SetLevel(level)
   if oldLevel == level then
     return
   end
-  self.data.effects_prev = _BuildEffectsState(self.data)
-  self.data.prevLevel = oldLevel
   self.data.level = level
   self.levelConfig = levelConfig
 
@@ -435,7 +342,6 @@ function SingleSkill:SetLevel(level)
 
   self.manager:SyncSkillStatus(self.id)
 
-  self:_EmitEffectsSync(EFFECTS_SYNC_REASON.LEVEL_CHANGE)
   if oldLevel ~= level then
     self:_Emit("ark_skill_level_change", {
       oldLevel = oldLevel,
@@ -499,7 +405,8 @@ function SingleSkill:AddBuffProgress(value)
   return leftBuff
 end
 
-function SingleSkill:CanActivate(target, targetPos, force)
+function SingleSkill:CanActivate(params)
+  if not params then params = {} end
   local data = self.data
   if data.status == CONSTANTS.SKILL_STATUS.LOCKED then
     return false
@@ -508,15 +415,16 @@ function SingleSkill:CanActivate(target, targetPos, force)
     return false
   end
   if self._activateTest then
-    return self:_activateTest(target, targetPos, force)
+    return self._activateTest(self.inst, {
+      target = params.target,
+      targetPos = params.targetPos,
+      force = params.force
+    })
   end
   return true
 end
 
-function SingleSkill:Activate(target, targetPos, force)
-  if not self:CanActivate(target, targetPos, force) then
-    return false
-  end
+function SingleSkill:Activate(params)
   local data = self.data
   data.activationStacks = data.activationStacks - 1
   if self.levelConfig.bulletCount then
@@ -524,22 +432,27 @@ function SingleSkill:Activate(target, targetPos, force)
   else
     data.buffProgress = 0
   end
-  data.force = force
+  data.force = params.force
   if self.levelConfig.bulletCount then
     self:SetBulleting()
   else
     self:SetBuffing()
   end
-  self:_Emit("ark_skill_activated", {
-    force = force,
-    target = target,
-    targetPos = targetPos
+  self:_Emit("ark_skill_activate", params)
+  self:_EmitActivateEffect({
+    source = "activate",
+    target = params.target,
+    targetPos = params.targetPos,
   })
   return true
 end
 
-function SingleSkill:TryActivate(...)
-  return self:Activate(...)
+function SingleSkill:TryActivate(params)
+  if not params then params = { target = nil, targetPos = nil, force = false } end
+  if not self:CanActivate(params) then
+    return false
+  end
+  return self:Activate(params)
 end
 
 function SingleSkill:Cancel()
@@ -592,23 +505,20 @@ function SingleSkill:OnLoad(saved)
   self.data.level = math.min(self.data.level or 1, maxLevel)
   self.levelConfig = self.config.levels[self.data.level]
 
-  -- 兼容空值：若旧存档没有 prev 字段，则默认与当前一致，避免外部误判。
-  if self.data.prevStatus == nil then
-    self.data.prevStatus = self.data.status
-  end
-  if self.data.prevLevel == nil then
-    self.data.prevLevel = self.data.level
-  end
-
-  if self.data.effects_prev == nil then
-    self.data.effects_prev = {
-      status = self.data.prevStatus,
-      level = self.data.prevLevel,
-    }
-  end
-
   self.manager:SyncSkillStatus(self.id)
   self:RefreshTag()
+
+  if self:IsActivating() then
+    self:_EmitActivateEffect({ source = "load" })
+  end
+end
+
+function SingleSkill:OnRemoveFromEntity()
+  if self.refreshTagTask then
+    self.refreshTagTask:Cancel()
+    self.refreshTagTask = nil
+  end
+  self:Cancel()
 end
 
 function ArkSkill:RegisterSkill(config)
@@ -626,14 +536,6 @@ function ArkSkill:RegisterSkill(config)
   -- 开始更新
   self.inst:StartUpdatingComponent(self)
   self.inst.replica.ark_skill:RegisterSkill(config)
-
-  -- 延迟一帧触发一次效果态同步，保证外部模组有机会先注册监听。
-  -- （新技能默认 LOCKED，也应当让外部有机会做一次幂等清理/初始化。）
-  self.inst:DoTaskInTime(0, function()
-    if self.skillsById and self.skillsById[id] then
-      self.skillsById[id]:SyncEffects(EFFECTS_SYNC_REASON.REGISTER)
-    end
-  end)
   return skill
 end
 
@@ -652,24 +554,6 @@ end
 
 function ArkSkill:RequestSyncSkillStatus(id)
   self:SyncSkillStatus(id)
-end
-
--- 对外：按技能 id 触发一次效果态同步
-function ArkSkill:SyncSkillEffects(id, reason)
-  local s = self:GetSkill(id)
-  if not s then
-    return
-  end
-  s:SyncEffects(reason)
-end
-
--- 对外：对所有技能触发一次效果态同步
-function ArkSkill:SyncAllSkillEffects(reason)
-  for _, s in pairs(self.skillsById) do
-    if s and s.SyncEffects then
-      s:SyncEffects(reason)
-    end
-  end
 end
 
 function ArkSkill:OnUpdate(dt)
@@ -700,15 +584,14 @@ function ArkSkill:OnLoad(data)
       s:OnLoad(skillData)
     end
   end
+end
 
-  -- 存档恢复后：延迟一帧，对所有技能做一次“效果态同步”
-  -- 让依赖方可以在一个事件里同时处理：
-  --   - 读档恢复（reason=CONSTANTS.SKILL_EFFECTS_SYNC_REASON.LOAD）
-  --   - 运行时切换（reason=CONSTANTS.SKILL_EFFECTS_SYNC_REASON.STATUS_CHANGE/LEVEL_CHANGE）
-  self.inst:DoTaskInTime(0, function()
-    if self.inst and self.inst.components and self.inst.components.ark_skill == self then
-      self:SyncAllSkillEffects(EFFECTS_SYNC_REASON.LOAD)
+-- OnRemoveFromEntity
+function ArkSkill:OnRemoveFromEntity()
+  for _, s in pairs(self.skillsById) do
+    if s and s.OnRemoveFromEntity then
+      s:OnRemoveFromEntity()
     end
-  end)
+  end
 end
 return ArkSkill

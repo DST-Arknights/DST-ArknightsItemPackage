@@ -51,7 +51,13 @@ AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, id, target,
   end
   local deserializedPos = string.split(targetPos, ",")
   targetPos = Vector3(tonumber(deserializedPos[1]), tonumber(deserializedPos[2]), tonumber(deserializedPos[3]))
-  skill:TryActivate(target, targetPos, force)
+  skill:TryActivate(
+    {
+      target = target,
+      targetPos = targetPos,
+      force = force
+    }
+  )
 end)
 
 -- 手动取消技能 RPC 处理
@@ -114,7 +120,7 @@ function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
       local nextLevel = currentLevel + 1
       if levelConfig.ingredients then
         local prefabName = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, nextLevel)
-        local ingredients = levelConfig.ingredients
+        local ingredients = levelConfig.nextLevelIngredients
         local rep = AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
           nounlock = true,
           atlas = skill.atlas,

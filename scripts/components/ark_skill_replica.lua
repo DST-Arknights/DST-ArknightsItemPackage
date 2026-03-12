@@ -183,7 +183,11 @@ function ArkSkillReplica:TryActivateSkill(id)
   local serializedPos = string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z)
   local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
   if self.inst.components.ark_skill then
-    self.inst.components.ark_skill:GetSkill(id):TryActivate(target, targetPos, force)
+    self.inst.components.ark_skill:GetSkill(id):TryActivate({
+      target = target,
+      targetPos = targetPos,
+      force = force
+    })
   else
     SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), id, target, serializedPos, force)
   end
