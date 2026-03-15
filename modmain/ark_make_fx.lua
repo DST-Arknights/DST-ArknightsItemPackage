@@ -2,6 +2,8 @@ local function PlaySound(inst, sound)
     inst.SoundEmitter:PlaySound(sound)
 end
 
+
+-- t.loop: 是否循环播放动画，循环时不会自动消失
 local function MakeFx(t)
     local assets
     if t.build_is_skin then
@@ -18,6 +20,7 @@ local function MakeFx(t)
     local function startfx(proxy)
         --print ("SPAWN", debugstack())
         local inst = CreateEntity(t.name)
+        proxy.fx_ent = inst
 
         inst.entity:AddTransform()
         inst.entity:AddAnimState()
@@ -62,7 +65,7 @@ local function MakeFx(t)
 
         inst.AnimState:SetBank(t.bank)
         inst.AnimState:SetBuild(t.build)
-        inst.AnimState:PlayAnimation(FunctionOrValue(t.anim)) -- THIS IS A CLIENT SIDE FUNCTION
+        inst.AnimState:PlayAnimation(FunctionOrValue(t.anim), t.loop == true) -- 支持循环
         if t.update_while_paused then
             inst.AnimState:AnimateWhilePaused(true)
         end
@@ -95,11 +98,22 @@ local function MakeFx(t)
             inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
         end
 
-		if t.animqueue then
-	        inst:ListenForEvent("animqueueover", inst.Remove)
-	    else
-	        inst:ListenForEvent("animover", inst.Remove)
-	    end
+        -- loop 特效需要跟随 proxy 生命周期，但不能直接传 inst.Remove，
+        -- 否则 onremove 回调会对 proxy 自身再次调用 Remove 导致递归。
+        if t.loop then
+            inst:ListenForEvent("onremove", function()
+                if inst:IsValid() then
+                    inst:Remove()
+                    proxy.fx_ent = nil
+                end
+            end, proxy)
+        else
+            if t.animqueue then
+                inst:ListenForEvent("animqueueover", inst.Remove)
+            else
+                inst:ListenForEvent("animover", inst.Remove)
+            end
+        end
 
         if t.fn ~= nil then
             if t.fntime ~= nil then
@@ -155,7 +169,9 @@ local function MakeFx(t)
         end
 
         inst.persists = false
-        inst:DoTaskInTime(1, inst.Remove)
+        if not t.loop then
+            inst:DoTaskInTime(1, inst.Remove)
+        end
 
         return inst
     end
