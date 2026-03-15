@@ -45,6 +45,8 @@ local SingleSkill = Class(function(self, manager, config)
   self.inst = manager.inst
   self.config = config
   self.id = config.id
+  self._lastActivateTime = nil
+  self.cancelDebounceTime = 0.3
   -- 运行态数据（含定时器控制）
   self.data = {
     level = 1,
@@ -425,6 +427,11 @@ function SingleSkill:CanActivate(params)
 end
 
 function SingleSkill:Activate(params)
+  -- 处于激活状态跳过
+  if self:IsActivating() then
+    return true
+  end
+  if not params then params = { target = nil, targetPos = nil, force = false } end
   local data = self.data
   data.activationStacks = data.activationStacks - 1
   if self.levelConfig.bulletCount then
@@ -433,6 +440,7 @@ function SingleSkill:Activate(params)
     data.buffProgress = 0
   end
   data.force = params.force
+  self._lastActivateTime = GetTime()
   if self.levelConfig.bulletCount then
     self:SetBulleting()
   else
@@ -456,11 +464,16 @@ function SingleSkill:TryActivate(params)
 end
 
 function SingleSkill:Cancel()
+  if self._lastActivateTime ~= nil and GetTime() - self._lastActivateTime < self.cancelDebounceTime then
+    return false
+  end
+  if not self:IsActivating() then
+    return false
+  end
   self.data.force = false
   self.data.tickBuff = false
-  if self.levelConfig.bulletCount then
-    self:SetEnergyRecovering(true)
-  end
+  self:SetEnergyRecovering(true)
+  return true
 end
 
 function SingleSkill:CutBullet(value)
@@ -507,6 +520,7 @@ function SingleSkill:OnLoad(saved)
 
   self.manager:SyncSkillStatus(self.id)
   self:RefreshTag()
+  self._lastActivateTime = nil
 
   if self:IsActivating() then
     self:_EmitActivateEffect({ source = "load" })
