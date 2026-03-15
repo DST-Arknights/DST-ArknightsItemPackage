@@ -167,7 +167,8 @@ function ArkSkillReplica:SetHotkey(id, hotkey)
       hotkey_mgr:SetHotkey(name, hotkey)
     else
       hotkey_mgr:Register(name, function()
-        if self:IsActivating(id) then
+        -- 弹药模式下再次按会取消
+        if self:GetState(id).status == CONSTANTS.SKILL_STATUS.BULLETING then
           self:CancelSkill(id)
         else
           self:TryActivateSkill(id)
@@ -195,7 +196,7 @@ end
 
 function ArkSkillReplica:IsActivating(id)
   local state = self:GetState(id)
-  return state and state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING
+  return state ~= nil and (state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING)
 end
 
 function ArkSkillReplica:CancelSkill(id)
