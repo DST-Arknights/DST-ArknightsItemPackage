@@ -59,6 +59,12 @@ modimport('modmain/ark_buff_icon')
 modimport('modmain/ark_extend_ui')
 -- 武器扩展
 modimport('modmain/combat_extension')
+-- 护甲扩展
+modimport('modmain/armor_extension')
+-- 生命值扩展
+modimport('modmain/health_extension')
+-- 事件回调优先级
+modimport('modmain/priority_event_callback')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
 
