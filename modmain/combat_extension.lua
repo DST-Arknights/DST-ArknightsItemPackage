@@ -61,49 +61,29 @@ local function RescaleTimeline(self, val)
     end
 end
 
-local function UpdateAttackSpeed(self)
-    local combat = self.inst.components.combat
-    local speed = self:Get()
-    if speed == nil or speed <= 0 then
-      speed = 1
-    end
-
+local function UpdateAttackSpeed(inst, speed)
+    local combat = inst.components.combat
     if not combat.base_attack_period then
         combat.base_attack_period = combat.min_attack_period
     end
-
     -- 将实际周期的计算交给 SetAttackPeriod 的包装器：传入基准周期（unscaled base），
     -- 包装器会根据当前攻速重新计算并调用底层实现，避免重复缩放。
     combat:SetAttackPeriod(combat.base_attack_period)
 
-    self.inst.replica.combat:SetAttackSpeed(speed)
+    inst.replica.combat:SetAttackSpeed(speed)
+    -- 推送攻速事件
+    inst:PushEvent("attackspeedchanged", { speed = speed })
 end
 
 AddComponentPostInit("combat", function(self)
+  self.inst.replica.combat:SetAttackSpeed(1)
   -- 初始化攻击速度修改器
-  self.attackspeedmodifiers = SourceModifierList(self.inst)
-  local _SetModifier = self.attackspeedmodifiers.SetModifier
-  function self.attackspeedmodifiers:SetModifier(source, multiplier, key)
-    _SetModifier(self, source, multiplier, key)
-    UpdateAttackSpeed(self)
-  end
-  local _RemoveModifier = self.attackspeedmodifiers.RemoveModifier
-  function self.attackspeedmodifiers:RemoveModifier(source, key)
-    _RemoveModifier(self, source, key)
-    UpdateAttackSpeed(self)
-  end
+  self.attackspeedmodifiers = SourceModifierList(self.inst, nil, nil, UpdateAttackSpeed)
   -- Wrap SetAttackPeriod to store an unscaled base period and apply current attack speed
   local _SetAttackPeriod = self.SetAttackPeriod
   function self:SetAttackPeriod(period)
     self.base_attack_period = period
-    local speed = 1
-    if self.GetAttackSpeed then
-      speed = self:GetAttackSpeed()
-    end
-    if speed == 0 then
-      speed = 1
-    end
-    _SetAttackPeriod(self, period / speed)
+    _SetAttackPeriod(self, period / self:GetAttackSpeed())
   end
 
   function self:SetAttackSpeed(speed)
@@ -113,10 +93,6 @@ AddComponentPostInit("combat", function(self)
   function self:GetAttackSpeed()
     return self.attackspeedmodifiers:Get()
   end
-
-  -- Sync default/base attack speed to replica so client prediction does not see 0.
-  UpdateAttackSpeed(self.attackspeedmodifiers)
-
   -- 使用 SourceModifierList 的第三个参数为合并函数：
   -- 按顺序合并比例 v，使得结果为 m + (1-m)*v（序列化剩余伤害的转换）
   self.truedamagemultipliers = SourceModifierList(self.inst, 0, function(m, v)
@@ -177,7 +153,7 @@ AddClassPostConstruct("components/combat_replica", function(self)
   end
   function self:GetAttackSpeed()
     local speed = self._ark_attack_speed:value()
-    if speed == nil or speed <= 0 then
+    if speed <= 0 then
       return 1
     end
     return speed
