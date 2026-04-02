@@ -12,6 +12,7 @@ Assets = {
   Asset("ATLAS", "images/ark_training_room.xml"),
   Asset("ATLAS", "images/ark_training_room_prototyper.xml"),
   Asset("ATLAS", "images/map_icons/ark_training_room.xml"),
+  Asset("ATLAS", "images/emoticon_btn.xml"),
   Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ANIM", "anim/ark_backpack_bg.zip"),
 }
@@ -23,7 +24,7 @@ AddReplicableComponent("ark_buff_icon")
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
-ArkLogger:DeclareLogger('TRACE', 'ARK-ITEM')
+ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
 -- 加载符号
 modimport('modmain/symbol')
 -- 加载 NetState
@@ -67,7 +68,8 @@ modimport('modmain/health_extension')
 modimport('modmain/priority_event_callback')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
-
+-- 聊天表情
+modimport('modmain/richchat_emoticons')
 -- widget 扩展
 modimport('modmain/widget_extension')
 -- 其他模组兼容

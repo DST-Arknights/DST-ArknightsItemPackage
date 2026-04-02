@@ -4,6 +4,7 @@ local Widget = require "widgets/widget"
 local UIArkCurrency = require "widgets/ui_ark_currency"
 local ExpBar = require "widgets/ark_exp_bar"
 local ArkBuffIcons = require "widgets/ark_buff_icons"
+local EmoticonBtn = require "widgets/emoticon_btn"
 
 local ArkExtendUi =Class(Widget, function(self, owner, controls)
   Widget._ctor(self, "ArkExtendUi")
@@ -25,6 +26,7 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
     self.setup_task = nil
   end)
   self:SetupBuffIcons()
+  self:SetupEmoticonBtn()
 end)
 
 function ArkExtendUi:Kill()
@@ -58,6 +60,22 @@ function ArkExtendUi:SetupSkill()
   self.skills = self.handBase:AddChild(ArkSkills(self.owner, self.owner.replica.ark_skill and self.owner.replica.ark_skill.configs))
   self.skills.updatedLayout = function()
     self:UpdateLayout()
+  end
+  self:UpdateLayout()
+end
+
+function ArkExtendUi:SetupEmoticonBtn()
+  if self.emoticonBtn then
+    return
+  end
+  self.emoticonBtn = self.handBase:AddChild(EmoticonBtn())
+  self:UpdateLayout()
+end
+
+function ArkExtendUi:RemoveEmoticonBtn()
+  if self.emoticonBtn then
+    self.emoticonBtn:Kill()
+    self.emoticonBtn = nil
   end
   self:UpdateLayout()
 end
@@ -158,14 +176,19 @@ function ArkExtendUi:RemoveBuffIcons()
 end
 function ArkExtendUi:UpdateLayout()
   ArkLogger:Debug('ark_extend_ui UpdateLayout')
-  self.handBase:SetPosition(-486, 130, 0)
+  self.handBase:SetPosition(-486, 120, 0)
 
   local ELITE_X = 20
+  local ELITE_WIDTH = 40
+  local ELITE_HEIGHT = 100
   local CONTENT_X = 50
   local SKILLS_Y = 18
   local BUFF_Y = -16
   local EXP_Y = -40
   local BUFF_GAP_AFTER_SKILLS = 16
+  local EMOTICON_BUTTON_GAP = 12
+  local EMOTICON_PANEL_LEFT = -6
+  local EMOTICON_PANEL_GAP = 12
 
   local hasElite = self.elite ~= nil
   local hasSkills = self.skills ~= nil
@@ -197,6 +220,18 @@ function ArkExtendUi:UpdateLayout()
       buffX = contentX + skillsW + BUFF_GAP_AFTER_SKILLS
     end
     self.buffIcons:SetPosition(buffX, buffY, 0)
+  end
+
+  if self.emoticonBtn then
+    local panelHeight = self.emoticonBtn.panelHeight or self.emoticonBtn:GetPanelOpenHeight() or 0
+    local panelX = EMOTICON_PANEL_LEFT + (self.emoticonBtn.panelWidth or 0) * 0.5
+    local panelBottomY = hasElite and (ELITE_HEIGHT * 0.5 + EMOTICON_PANEL_GAP) or EMOTICON_PANEL_GAP
+    local panelY = panelBottomY + panelHeight * 0.5
+    local buttonWidth = self.emoticonBtn:GetButtonWidth()
+    local buttonX = ELITE_X - ELITE_WIDTH * 0.5 - EMOTICON_BUTTON_GAP - buttonWidth * 0.5
+    local buttonHeight = self.emoticonBtn:GetButtonHeight()
+    local buttonY = -ELITE_HEIGHT * 0.5 + buttonHeight * 0.5
+    self.emoticonBtn:SetAnchors(buttonX, buttonY, panelX, panelY)
   end
 end
 
