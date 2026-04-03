@@ -164,13 +164,10 @@ AddClassPostConstruct("widgets/containerwidget", function(self)
     -- 禁止滚动游戏屏幕
     local old_OnControl = scrollWidget.OnControl
     function scrollWidget:OnControl(control, down)
-      local time = GetStaticTime()
       local result = old_OnControl(self, control, down)
       if down and (self.focus or FunctionOrValue(self.custom_focus_check)) and self.scroll_bar:IsVisible() then
         if control == self.control_up or control == self.control_down then
-          if ThePlayer and ThePlayer.components.playercontroller then
-            ThePlayer.components.playercontroller.lastzoomtime = time
-          end
+          PreventScrollZoom()
         end
       end
       return result

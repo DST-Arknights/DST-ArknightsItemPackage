@@ -223,8 +223,8 @@ function ArkExtendUi:UpdateLayout()
   end
 
   if self.emoticonBtn then
-    local panelHeight = self.emoticonBtn.panelHeight or self.emoticonBtn:GetPanelOpenHeight() or 0
-    local panelX = EMOTICON_PANEL_LEFT + (self.emoticonBtn.panelWidth or 0) * 0.5
+    local panelHeight = self.emoticonBtn:GetPanelHeight()
+    local panelX = EMOTICON_PANEL_LEFT + self.emoticonBtn:GetPanelWidth() * 0.5
     local panelBottomY = hasElite and (ELITE_HEIGHT * 0.5 + EMOTICON_PANEL_GAP) or EMOTICON_PANEL_GAP
     local panelY = panelBottomY + panelHeight * 0.5
     local buttonWidth = self.emoticonBtn:GetButtonWidth()

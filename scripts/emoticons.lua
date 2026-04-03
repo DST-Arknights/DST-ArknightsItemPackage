@@ -26,6 +26,7 @@ for _, group in ipairs(emotion_groups) do
             alt = key,
             group_name = group.name,
             order = order,
+            sound = "ark_item/HUD/emojidialogue"
         })
         table.insert(emotions, {
             group = "test_group_2" .. group.key,
@@ -35,6 +36,7 @@ for _, group in ipairs(emotion_groups) do
             alt = key,
             group_name = group.name,
             order = order,
+            sound = "ark_item/HUD/emojidialogue"
         })
     end
 end

@@ -23,6 +23,14 @@ AddReplicableComponent("ark_skill")
 AddReplicableComponent("ark_currency")
 AddReplicableComponent("ark_elite")
 AddReplicableComponent("ark_buff_icon")
+
+-- 阻止滚轮缩放游戏视角，仅让面板滚动生效
+function GLOBAL.PreventScrollZoom()
+  if ThePlayer and ThePlayer.components.playercontroller then
+    local currentTime = GetStaticTime()
+    ThePlayer.components.playercontroller.lastzoomtime = currentTime
+  end
+end
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
