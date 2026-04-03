@@ -118,6 +118,7 @@ local function RegisterChatEmoticon(def)
         baseline = def.baseline or -2,
         valign = NormalizeVAlign(def.valign),
         tint = def.tint,
+        sound = def.sound,
         alt = def.alt or def.name,
         group = group_key,
         group_name = ResolveGroupName(group_key, def),
@@ -151,6 +152,7 @@ local function GetRegisteredChatEmoticons()
                     width = def.width,
                     height = def.height,
                     tint = CopyArray(def.tint),
+                    sound = def.sound,
                     alt = def.alt,
                     emoticon_code = MakeEmoticonCode(def.group, def.name),
                     order = def.order or 0,
@@ -261,6 +263,24 @@ end
 
 local function ContainsRichToken(raw)
     return type(raw) == "string" and raw:find(":img/", 1, true) ~= nil
+end
+
+local function FindFirstEmoticonSound(raw)
+    if not ContainsRichToken(raw) then
+        return nil
+    end
+
+    local tokens = ParseRichChat(raw)
+    for _, token in ipairs(tokens) do
+        if token.type == "image" then
+            local def = _registry[MakeRegistryKey(token.group, token.name)]
+            if def ~= nil and type(def.sound) == "string" and def.sound ~= "" then
+                return def.sound
+            end
+        end
+    end
+
+    return nil
 end
 
 local function SplitTextForLayout(text)
@@ -806,6 +826,45 @@ local function InstallChatInputScreen(self)
     end
 end
 
+local function GetTalkerMessage(script)
+    if type(script) == "string" then
+        return script
+    end
+    if type(script) == "table" then
+        return script.message
+    end
+end
+
+AddPlayerPostInit(function(inst)
+    if inst._richchat_talker_say_hooked then
+        return
+    end
+
+    local talker = inst.components.talker
+    if talker == nil then
+        return
+    end
+
+    inst._richchat_talker_say_hooked = true
+
+    local base_say = talker.Say
+    function talker:Say(script, ...)
+        local message = GetTalkerMessage(script)
+        if ContainsRichToken(message) then
+            return
+        end
+        return base_say(self, script, ...)
+    end
+end)
+
+local _OnSay = ChatHistory.OnSay
+function ChatHistory:OnSay(guid, userid, netid, name, prefab, message, ...)
+    local sound = FindFirstEmoticonSound(message)
+    if sound ~= nil then
+        TheFrontEnd:GetSound():PlaySound(sound)
+    end
+    _OnSay(self, guid, userid, netid, name, prefab, message, ...)
+end
 
 AddClassPostConstruct("widgets/redux/chatline", InstallChatLine)
 

@@ -3,3 +3,7 @@
 /animSource/**/*.zip
 /dist
 /images/**/*.png
+/soundSource/.fsbcache
+/soundSource/**/*.bak
+/soundSource/**/*.fev
+/soundSource/**/*.fsb

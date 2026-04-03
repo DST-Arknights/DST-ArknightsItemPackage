@@ -15,6 +15,8 @@ Assets = {
   Asset("ATLAS", "images/emoticon_btn.xml"),
   Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ANIM", "anim/ark_backpack_bg.zip"),
+  Asset("SOUNDPACKAGE", "sound/ark_item.fev"),
+  Asset("FILE", "sound/ark_item.fsb"),
 }
 
 AddReplicableComponent("ark_skill")
