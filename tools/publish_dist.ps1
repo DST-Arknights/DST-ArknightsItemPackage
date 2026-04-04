@@ -50,7 +50,8 @@ $rootDirs = @(
     'languages',
     'modmain',
     'scripts',
-    'shaders'
+    'shaders',
+    'sound'
 )
 
 function Copy-ReleasePath {
