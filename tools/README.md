@@ -21,10 +21,10 @@ lua tools/generate_ark_item_table.lua
 ### 2) 生成发布目录（dist）
 
 - 脚本：`tools/publish_dist.ps1`
-- 行为：每次执行会先清空根目录下 `dist/`，再复制发布白名单中的文件与目录
-- 当前发布白名单：
-	- 根文件：`modicon.tex`、`modicon.xml`、`modinfo.lua`、`modmain.lua`
-	- 目录：`anim/`、`fonts/`、`images/`、`languages/`、`modmain/`、`scripts/`、`shaders/`
+- 行为：每次执行会先清空根目录下 `dist/`，再复制项目根目录下除黑名单外的所有文件与目录
+- 当前发布黑名单：
+	- 根目录：`dist/`、`tools/`、`.git/`、`.gitignore`、`.gitattributes`、`.vscode/`、`docs/`、`animSource/`、`imageSource/`、`shaderSource/`、`soundSource/`
+	- 根文件：`ITEM_DESIGN.md`
 
 运行方式（在项目根目录）：
 

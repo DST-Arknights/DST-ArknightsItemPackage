@@ -35,53 +35,45 @@ if (Test-Path $distPath) {
 
 New-Item -Path $distPath -ItemType Directory | Out-Null
 
-$rootFiles = @(
-    'modicon.tex',
-    'modicon.xml',
-    'modinfo.lua',
-    'modmain.lua',
-    'LICENSE.md'
+$blacklist = @(
+    'dist',
+    'tools',
+    '.git',
+    '.gitignore',
+    '.gitattributes',
+    '.vscode',
+    'docs',
+    'animSource',
+    'imageSource',
+    'shaderSource',
+    'soundSource',
+    'ITEM_DESIGN.md'
 )
 
-$rootDirs = @(
-    'anim',
-    'fonts',
-    'images',
-    'languages',
-    'modmain',
-    'scripts',
-    'shaders',
-    'sound'
-)
-
-function Copy-ReleasePath {
+function Copy-ReleaseItem {
     param(
         [Parameter(Mandatory = $true)]
-        [string]$RelativePath
+        [System.IO.FileSystemInfo]$Item
     )
 
-    $sourcePath = Join-Path $ProjectRoot $RelativePath
-    if (-not (Test-Path $sourcePath)) {
-        Write-Host "[skip] $RelativePath (not found)"
-        return
+    $sourcePath = $Item.FullName
+    $targetPath = Join-Path $distPath $Item.Name
+
+    if ($Item.PSIsContainer) {
+        Copy-Item -Path $sourcePath -Destination $targetPath -Recurse -Force
+    } else {
+        Copy-Item -Path $sourcePath -Destination $targetPath -Force
     }
 
-    $targetPath = Join-Path $distPath $RelativePath
-    $targetParent = Split-Path -Parent $targetPath
-    if ($targetParent -and -not (Test-Path $targetParent)) {
-        New-Item -Path $targetParent -ItemType Directory -Force | Out-Null
-    }
-
-    Copy-Item -Path $sourcePath -Destination $targetPath -Recurse -Force
-    Write-Host "[ok]   $RelativePath"
+    Write-Host "[ok]   $($Item.Name)"
 }
 
-foreach ($file in $rootFiles) {
-    Copy-ReleasePath -RelativePath $file
+$releaseItems = Get-ChildItem -Path $ProjectRoot -Force | Where-Object {
+    $_.Name -notin $blacklist
 }
 
-foreach ($dir in $rootDirs) {
-    Copy-ReleasePath -RelativePath $dir
+foreach ($item in $releaseItems) {
+    Copy-ReleaseItem -Item $item
 }
 
 Write-Host "`n发布目录已生成: $distPath"
