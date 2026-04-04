@@ -874,10 +874,6 @@ AddClassPostConstruct("widgets/redux/scrollablechatqueue", InstallScrollableChat
 
 AddClassPostConstruct("screens/chatinputscreen", InstallChatInputScreen)
 
-if Assets ~= nil and Asset ~= nil then
-    table.insert(Assets, Asset("ATLAS", "images/emoticon_autochess_basic.xml"))
-end
-
 local inner_emotions = require('emoticons')
 for _, emotion in ipairs(inner_emotions) do
     RegisterChatEmoticon(emotion)
