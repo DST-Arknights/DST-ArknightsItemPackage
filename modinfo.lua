@@ -24,7 +24,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "1.0.12"
+version = "1.1.0"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
