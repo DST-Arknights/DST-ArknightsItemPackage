@@ -528,11 +528,15 @@ function SingleSkill:OnLoad(saved)
 end
 
 function SingleSkill:OnRemoveFromEntity()
+end
+
+function SingleSkill:OnPreRemoveFromEntity()
   if self.refreshTagTask then
     self.refreshTagTask:Cancel()
     self.refreshTagTask = nil
   end
   self:Cancel()
+  self:Lock()
 end
 
 function ArkSkill:RegisterSkill(config)
@@ -603,9 +607,14 @@ end
 -- OnRemoveFromEntity
 function ArkSkill:OnRemoveFromEntity()
   for _, s in pairs(self.skillsById) do
-    if s and s.OnRemoveFromEntity then
-      s:OnRemoveFromEntity()
-    end
+    s:OnRemoveFromEntity()
   end
 end
+-- OnPreRemoveFromEntity
+function ArkSkill:OnPreRemoveFromEntity()
+  for _, s in pairs(self.skillsById) do
+    s:OnPreRemoveFromEntity()
+  end
+end
+
 return ArkSkill

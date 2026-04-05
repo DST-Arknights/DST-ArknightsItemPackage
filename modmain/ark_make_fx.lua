@@ -4,6 +4,7 @@ end
 
 
 -- t.loop: 是否循环播放动画，循环时不会自动消失
+-- t.scale_with_parent_size: 是否按父实体的 combat fx 尺寸自适应缩放
 local function MakeFx(t)
     local assets
     if t.build_is_skin then
@@ -125,6 +126,13 @@ local function MakeFx(t)
             else
                 t.fn(inst, proxy)
             end
+        end
+
+        if t.scale_with_parent_size and parent ~= nil then
+            local r = GetCombatFxSize(parent)
+            local scalex, scaley, scalez = parent.Transform:GetScale()
+            local selfscalex, selfscaley, selfscalez = inst.Transform:GetScale()
+            inst.Transform:SetScale(r / scalex * selfscalex, r / scaley * selfscaley, r / scalez * selfscalez)
         end
 
         if TheWorld then

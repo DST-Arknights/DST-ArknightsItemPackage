@@ -47,6 +47,8 @@ modimport('scripts/ark_hotkey')
 -- 加载语言
 -- 导出全局变量MergePOFile
 modimport('modmain/ark_i18n')
+-- 脚本扩展
+modimport('modmain/entityscript_extension')
 -- 加载中文语言包
 MergePOFile('languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S), true)
 -- 加载字体
