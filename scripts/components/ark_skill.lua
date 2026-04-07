@@ -615,6 +615,7 @@ function ArkSkill:OnPreRemoveFromEntity()
   for _, s in pairs(self.skillsById) do
     s:OnPreRemoveFromEntity()
   end
+  self.inst.replica.ark_skill:ClientRemoveSkill()
 end
 
 return ArkSkill

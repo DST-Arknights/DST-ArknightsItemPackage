@@ -67,6 +67,8 @@ end
 
 -- 添加单个技能
 function ArkSkills:AddSkill(cfg)
+  ArkLogger:Debug("ArkSkills:AddSkill", cfg.id, cfg.index)
+   -- 如果有id，先移除同id的技能
   -- 相同的id杀掉然后添加
   if cfg.id then
     self:RemoveSkill(cfg.id)

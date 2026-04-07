@@ -28,7 +28,6 @@ local ArkSkillReplica = Class(function(self, inst)
     self.states[i] = state
     state:Attach(self.inst)
     state:Watch({ "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
-      ArkLogger:Trace('ark_skill_replica Watch OnDirty', i, state.status, state.level, state.energyProgress, state.buffProgress, state.bulletCount, state.activationStacks)
       local skillUI = SafeGetSkillsUI(self.inst):GetSkillByIndex(i)
       if skillUI then
         skillUI:SyncSkillStatus(
@@ -51,7 +50,6 @@ local ArkSkillReplica = Class(function(self, inst)
 end)
 
 function ArkSkillReplica:ClientRegisterSkill(config)
-  ArkLogger:Debug("ark_skill_replica ClientRegisterSkill", config.id)
   if TheWorld.ismastersim then
     return
   end
@@ -59,10 +57,7 @@ function ArkSkillReplica:ClientRegisterSkill(config)
   self.skillIdToIndex[config.id] = index
   self.configs[index] = config
   self:SetHotkey(config.id, config.hotkey)
-  local skillUI = SafeGetSkillsUI(self.inst).skills
-  if not skillUI then
-    SafeGetArkExtendUi(self.inst):SetupSkill()
-  end
+  SafeGetArkExtendUi(self.inst):SetupSkill()
   SafeGetSkillsUI(self.inst):AddSkill(config)
 end
 
@@ -98,10 +93,11 @@ function ArkSkillReplica:RegisterSkill(config)
       self._register_tasks[config.id]:Cancel()
     end
     self._register_tasks[config.id] = self.inst:DoTaskInTime(0, function()
-      if ThePlayer == self.inst then
+      if self.inst.HUD then
         self:SetHotkey(config.id, config.hotkey)
+        SafeGetArkExtendUi(self.inst):SetupSkill()
+        SafeGetSkillsUI(self.inst):AddSkill(config)
       else
-        ArkLogger:Debug("ark_skill_replica register skill send rpc", config.id)
         SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
         self._register_tasks[config.id] = nil
       end
@@ -207,19 +203,30 @@ function ArkSkillReplica:CancelSkill(id)
   end
 end
 
-function ArkSkillReplica:OnRemoveFromEntity()
-  -- 卸载按键
-  if not TheNet:IsDedicated() then
+function ArkSkillReplica:ClearSkillData()
+  self.skillIdToIndex = {}
+  self.configs = {}
+  self.skillCount = 0
+  self.inst.pending_ark_skill_configs = nil
+end
+
+function ArkSkillReplica:ClientRemoveSkill()
+  if self.inst.HUD then
+    -- 卸载按键
     for id, _ in pairs(self.skillIdToIndex) do
       local hotkey = GetHotKeyManager(self.inst)
       local name = getHotkeyName(self.inst, id)
       hotkey:Unregister(name)
     end
     SafeGetArkExtendUi(self.inst):RemoveSkill()
+    for _, task in pairs(self._register_tasks) do
+      local _ = task and task:Cancel()
+    end
+    self._register_tasks = {}
+  else
+    SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRemoveSkill"), self.inst.userid)
   end
-  for _, task in pairs(self._register_tasks) do
-    local _ = task and task:Cancel()
-  end
+  self:ClearSkillData()
 end
 
 return ArkSkillReplica

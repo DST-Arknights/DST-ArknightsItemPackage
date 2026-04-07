@@ -94,6 +94,12 @@ AddClientModRPCHandler("arkSkill", "ClientRegisterSkill", function(config)
   arkSkillLevelUpImages[resolveAtlas][config.image] = true
 end)
 
+AddClientModRPCHandler("arkSkill", "ClientRemoveSkill", function()
+  if ThePlayer and ThePlayer.replica.ark_skill then
+    ThePlayer.replica.ark_skill:ClientRemoveSkill()
+  end
+end)
+
 -- 修改技能升级图标的尺寸, 维持高清
 AddClassPostConstruct("widgets/spinner", function(self)
   local SetSelectedIndex = self.SetSelectedIndex

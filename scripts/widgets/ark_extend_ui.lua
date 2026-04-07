@@ -55,8 +55,10 @@ end
 
 function ArkExtendUi:SetupSkill()
   if self.skills then
+    ArkLogger:Debug("ArkExtendUi:SetupSkill already has skills")
     return
   end
+  ArkLogger:Debug("ArkExtendUi:SetupSkill")
   self.skills = self.handBase:AddChild(ArkSkills(self.owner, self.owner.replica.ark_skill and self.owner.replica.ark_skill.configs))
   self.skills.updatedLayout = function()
     self:UpdateLayout()
@@ -81,6 +83,7 @@ function ArkExtendUi:RemoveEmoticonBtn()
 end
 
 function ArkExtendUi:RemoveSkill()
+  ArkLogger:Debug("ArkExtendUi:RemoveSkill")
   if self.skills then
     self.skills:Kill()
     self.skills = nil
@@ -223,14 +226,27 @@ function ArkExtendUi:UpdateLayout()
   end
 
   if self.emoticonBtn then
+    local topY = 0
+    if hasElite then
+      topY = math.max(topY, ELITE_HEIGHT * 0.5)
+    end
+    if hasSkills then
+      local _, skillsH = self.skills:GetSize()
+      topY = math.max(topY, skillsY + skillsH * 0.5)
+    end
+    if hasExpBar then
+      local _, expBarH = self.expBar:GetSize()
+      topY = math.max(topY, EXP_Y + expBarH * 0.5)
+    end
+
     local panelHeight = self.emoticonBtn:GetPanelHeight()
     local panelX = EMOTICON_PANEL_LEFT + self.emoticonBtn:GetPanelWidth() * 0.5
-    local panelBottomY = hasElite and (ELITE_HEIGHT * 0.5 + EMOTICON_PANEL_GAP) or EMOTICON_PANEL_GAP
-    local panelY = panelBottomY + panelHeight * 0.5
     local buttonWidth = self.emoticonBtn:GetButtonWidth()
     local buttonX = ELITE_X - ELITE_WIDTH * 0.5 - EMOTICON_BUTTON_GAP - buttonWidth * 0.5
     local buttonHeight = self.emoticonBtn:GetButtonHeight()
     local buttonY = -ELITE_HEIGHT * 0.5 + buttonHeight * 0.5
+    local panelBottomY = topY + EMOTICON_PANEL_GAP
+    local panelY = panelBottomY + panelHeight * 0.5
     self.emoticonBtn:SetAnchors(buttonX, buttonY, panelX, panelY)
   end
 end
