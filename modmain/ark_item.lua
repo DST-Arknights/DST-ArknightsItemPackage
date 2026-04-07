@@ -243,7 +243,9 @@ for i = 1, #arkItemDeclare do
   local assetsCode = common.getPrefabAssetsCode(item.prefab)
   RegisterInventoryItemAtlas(assetsCode.atlas, assetsCode.image)
   addItemRecipe(item)
-  addItemDrop(item)
+  if TUNING.ARK_CONFIG.enable_all_materials_drop then
+    addItemDrop(item)
+  end
   addItemTemplate(item)
   if item.ingredientValues then
     -- cancook 默认为true

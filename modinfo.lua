@@ -72,6 +72,31 @@ configuration_options = {{
         data = "auto"
     }},
     default = "auto"
+}, {
+    -- 开启全模组材料掉落, 默认关闭
+    name = "enable_all_materials_drop",
+    label = ChooseTranslationTable({
+        en = "Enable All Arknights Materials Drop",
+        zh = "开启明日方舟材料掉落"
+    }),
+    hover = ChooseTranslationTable({
+        en = "When enabled, all materials from the Arknights mod will drop.",
+        zh = "开启后, 明日方舟模组中的所有材料都会掉落"
+    }),
+    options = {{
+        description = ChooseTranslationTable({
+            en = "Disable",
+            zh = "关闭"
+        }),
+        data = false
+    }, {
+        description = ChooseTranslationTable({
+            en = "Enable",
+            zh = "开启"
+        }),
+        data = true
+    }},
+    default = false
 }, Title({
     name = "mods_compatibility",
     label = ChooseTranslationTable({
@@ -81,8 +106,8 @@ configuration_options = {{
 }), {
     name = 'amiya_hecheng_collect',
     label = ChooseTranslationTable({
-        en = "Amiya Diamond Collect",
-        zh = "阿米娅合成玉 采集"
+        en = "Amiya Diamond Optimization",
+        zh = "阿米娅合成玉 优化"
     }),
     hover = ChooseTranslationTable({
         en = "When enabled, the modded Amiya will no longer occupy extra inventory space when she drops the diamond.",

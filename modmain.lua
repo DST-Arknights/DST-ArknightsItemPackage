@@ -25,6 +25,8 @@ AddReplicableComponent("ark_currency")
 AddReplicableComponent("ark_elite")
 AddReplicableComponent("ark_buff_icon")
 
+TUNING.ARK_CONFIG = {}
+
 -- 阻止滚轮缩放游戏视角，仅让面板滚动生效
 function GLOBAL.PreventScrollZoom()
   if ThePlayer and ThePlayer.components.playercontroller then

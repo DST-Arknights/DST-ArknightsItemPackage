@@ -102,15 +102,17 @@ function ArkElite:RefreshLevelTag()
   end
   self._refreshLevelTagTask = self.inst:DoTaskInTime(0, function()
     self._refreshLevelTagTask = nil
+    -- 先清理当前星级下所有可能的升级提示 tag，避免连续升级时残留旧 tag
+    local cfg = CONSTANTS.EXP_CONFIG.maxLevel[self.rarity]
+    local maxElite = (cfg and #cfg) or self.elite
+    for i = 1, maxElite do
+      local clearTag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, i)
+      self.inst:RemoveTag(clearTag)
+    end
+
     if self:CanEliteUp() then
       local tag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, self.elite)
       self.inst:AddTag(tag)
-    else
-      -- 循环删除所有tag
-      for i = 1, self.elite do
-        local tag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, i)
-        self.inst:RemoveTag(tag)
-      end
     end
   end)
 end
