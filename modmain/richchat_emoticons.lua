@@ -9,6 +9,14 @@ local CHAT_BOTTOM_Y = -624
 local CHAT_SCROLL_VISUAL_SIZE = 14
 local DEFAULT_EMOTICON_GROUP = "default"
 
+local LOBBY_CHAT_SIZE = 20
+local LOBBY_LINE_MAXWIDTH = 235
+local LOBBY_MULTILINE_INDENT = 10
+local LOBBY_USERNAME_PADDING = 3
+local LOBBY_ICON_PADDING = 6.67
+local LOBBY_USER_Y_OFFSET = 0
+local LOBBY_ICON_Y_OFFSET = -10
+
 local _registry_revision = 0
 local _max_rich_line_height = CHAT_SIZE + CHAT_ROW_GAP
 
@@ -440,6 +448,92 @@ local function BuildLines(self, items)
     return lines
 end
 
+local function BuildVariableWidthLines(self, items, first_line_width, next_line_width, base_line_height)
+    local lines = {}
+    local current =
+    {
+        items = {},
+        width = 0,
+        height = base_line_height,
+        maxwidth = first_line_width,
+    }
+
+    local function PushLine()
+        if #current.items > 0 then
+            table.insert(lines, current)
+        end
+        current =
+        {
+            items = {},
+            width = 0,
+            height = base_line_height,
+            maxwidth = next_line_width,
+        }
+    end
+
+    local function AppendMeasuredText(value)
+        local width = MeasureText(self, value)
+        if #current.items > 0 and current.width + width > current.maxwidth then
+            PushLine()
+        end
+
+        table.insert(current.items,
+        {
+            type = "text",
+            value = value,
+            width = width,
+        })
+        current.width = current.width + width
+    end
+
+    for _, item in ipairs(items) do
+        local item_width = item.width or 0
+        local maxwidth = current.maxwidth
+
+        if item.type == "text" and item_width > maxwidth and not item.value:match("^%s+$") then
+            local chunks = MeasureCharWrappedText(self, item.value, maxwidth)
+            for _, chunk in ipairs(chunks) do
+                AppendMeasuredText(chunk)
+            end
+        else
+            if #current.items > 0 and current.width + item_width > maxwidth then
+                PushLine()
+                maxwidth = current.maxwidth
+            end
+
+            if item.type == "text" and item_width > maxwidth and not item.value:match("^%s+$") then
+                local chunks = MeasureCharWrappedText(self, item.value, maxwidth)
+                for _, chunk in ipairs(chunks) do
+                    AppendMeasuredText(chunk)
+                end
+            else
+                table.insert(current.items, item)
+                current.width = current.width + item_width
+
+                if item.type == "image" and item.height ~= nil then
+                    current.height = math.max(current.height, item.height + math.abs(item.baseline or 0) * 2 + CHAT_ROW_GAP)
+                end
+            end
+        end
+    end
+
+    if #current.items > 0 then
+        table.insert(lines, current)
+    end
+
+    if #lines == 0 then
+        table.insert(lines,
+        {
+            items = {},
+            width = 0,
+            height = base_line_height,
+            maxwidth = first_line_width,
+        })
+    end
+
+    return lines
+end
+
 local function ClearRichNodes(self)
     if self._richchat_nodes ~= nil then
         for _, node in ipairs(self._richchat_nodes) do
@@ -450,13 +544,14 @@ local function ClearRichNodes(self)
     self._richchat_content_height = CHAT_SIZE + CHAT_ROW_GAP
 end
 
-local function GetImageCenterY(line_center_y, def)
+local function GetImageCenterY(line_center_y, def, text_size)
     local baseline = def.baseline or -2
     local valign = def.valign or "bottom"
     local image_height = def.height or CHAT_SIZE
+    text_size = text_size or CHAT_SIZE
 
-    local text_top = line_center_y + CHAT_SIZE * 0.5
-    local text_baseline = line_center_y - CHAT_SIZE * 0.5
+    local text_top = line_center_y + text_size * 0.5
+    local text_baseline = line_center_y - text_size * 0.5
 
     if valign == "top" then
         return text_top - image_height * 0.5 + baseline
@@ -505,7 +600,7 @@ local function RenderRichMessage(self, message, colour)
                 if def ~= nil then
                     local img = line_root:AddChild(Image(def.atlas, def.tex))
                     img:ScaleToSize(def.width, def.height)
-                    img:SetPosition(x + def.width * 0.5, GetImageCenterY(y, def))
+                    img:SetPosition(x + def.width * 0.5, GetImageCenterY(y, def, CHAT_SIZE))
                     img:SetHoverText(MakeEmoticonCode(def.group, def.name), { offset_y = -40 })
 
                     if def.tint ~= nil then
@@ -519,6 +614,146 @@ local function RenderRichMessage(self, message, colour)
 
         y = y - line.height
     end
+end
+
+local function GetLobbyLineStartOffset(self)
+    local next_offset = 0
+
+    if self.user then
+        local username_width = self.user:GetRegionSize()
+        next_offset = next_offset + username_width + LOBBY_USERNAME_PADDING
+    end
+
+    if self.icon then
+        local icon_width = self.icon:GetSize()
+        next_offset = next_offset + icon_width + LOBBY_ICON_PADDING
+    end
+
+    return next_offset
+end
+
+local function ClearLobbyRichNodes(self)
+    if self._richchat_lobby_nodes ~= nil then
+        for _, node in ipairs(self._richchat_lobby_nodes) do
+            node:Kill()
+        end
+    end
+    self._richchat_lobby_nodes = {}
+    self._richchat_lobby_extra_lines = 0
+end
+
+local function RepositionLobbyPrefixToBottom(self)
+    local bottom_y = -(self._richchat_lobby_extra_lines or 0) * LOBBY_CHAT_SIZE
+
+    if self.user ~= nil and self._richchat_lobby_user_base_pos ~= nil then
+        local pos = self._richchat_lobby_user_base_pos
+        self.user:SetPosition(pos.x, bottom_y + LOBBY_USER_Y_OFFSET, pos.z)
+    end
+
+    if self.icon ~= nil and self._richchat_lobby_icon_base_pos ~= nil then
+        local pos = self._richchat_lobby_icon_base_pos
+        self.icon:SetPosition(pos.x, bottom_y + LOBBY_ICON_Y_OFFSET, pos.z)
+    end
+end
+
+local function RenderLobbyRichMessage(self, message, colour)
+    ClearLobbyRichNodes(self)
+
+    local original_width = self.message_width
+    self.message_width = LOBBY_LINE_MAXWIDTH - math.min(GetLobbyLineStartOffset(self), LOBBY_LINE_MAXWIDTH)
+
+    local items = BuildItems(self, message)
+    local first_offset = math.max(GetLobbyLineStartOffset(self), LOBBY_MULTILINE_INDENT)
+    local lines = BuildVariableWidthLines(
+        self,
+        items,
+        math.max(1, LOBBY_LINE_MAXWIDTH - first_offset),
+        math.max(1, LOBBY_LINE_MAXWIDTH - LOBBY_MULTILINE_INDENT),
+        LOBBY_CHAT_SIZE
+    )
+
+    self.message_width = original_width
+
+    local total_rows = 0
+    for _, line in ipairs(lines) do
+        line.start_offset = total_rows == 0 and first_offset or LOBBY_MULTILINE_INDENT
+        line.row_count = math.max(1, math.ceil(line.height / LOBBY_CHAT_SIZE))
+        total_rows = total_rows + line.row_count
+    end
+
+    self._richchat_lobby_extra_lines = math.max(0, total_rows - 1)
+
+    local rows_before = 0
+    for _, line in ipairs(lines) do
+        local center_y = -((rows_before * LOBBY_CHAT_SIZE) + ((line.row_count - 1) * LOBBY_CHAT_SIZE * 0.5))
+        local bottom_y = center_y - ((line.row_count - 1) * LOBBY_CHAT_SIZE * 0.5)
+        local line_root = self.root:AddChild(Widget("richchat_lobby_line"))
+        table.insert(self._richchat_lobby_nodes, line_root)
+
+        local x = line.start_offset
+        for _, item in ipairs(line.items) do
+            if item.type == "text" then
+                local txt = line_root:AddChild(Text(self._richchat_font, LOBBY_CHAT_SIZE))
+                txt:SetHAlign(GLOBAL.ANCHOR_LEFT)
+                txt:SetString(item.value)
+                txt:SetColour(unpack(colour))
+                txt:SetPosition(x + item.width * 0.5, bottom_y)
+                x = x + item.width
+            else
+                local def = _registry[MakeRegistryKey(item.group, item.name)]
+                if def ~= nil then
+                    local img = line_root:AddChild(Image(def.atlas, def.tex))
+                    img:ScaleToSize(def.width, def.height)
+                    img:SetPosition(x + def.width * 0.5, GetImageCenterY(bottom_y, def, LOBBY_CHAT_SIZE))
+                    img:SetHoverText(MakeEmoticonCode(def.group, def.name), { offset_y = -30 })
+
+                    if def.tint ~= nil then
+                        img:SetTint(unpack(def.tint))
+                    end
+
+                    x = x + def.width
+                end
+            end
+        end
+
+        rows_before = rows_before + line.row_count
+    end
+end
+
+local function InstallLobbyChatLine(self, chat_font, type, message, m_colour)
+    if self._richchat_lobby_installed then
+        return
+    end
+    self._richchat_lobby_installed = true
+
+    if type == GLOBAL.ChatTypes.SkinAnnouncement or not ContainsRichToken(message) then
+        return
+    end
+
+    self._richchat_font = chat_font or self.chat_font or GLOBAL.CHATFONT
+    self._richchat_measure = self._richchat_measure or self.root:AddChild(Text(self._richchat_font, LOBBY_CHAT_SIZE))
+    self._richchat_measure:Hide()
+    self._richchat_lobby_nodes = {}
+    self._richchat_lobby_extra_lines = 0
+
+    local base_update_positions = self.UpdatePositions
+    function self:UpdatePositions()
+        base_update_positions(self)
+
+        if self.message == nil then
+            return
+        end
+
+        self._richchat_lobby_user_base_pos = self.user ~= nil and self.user:GetPosition() or nil
+        self._richchat_lobby_icon_base_pos = self.icon ~= nil and self.icon:GetPosition() or nil
+
+        self.message:Hide()
+        RenderLobbyRichMessage(self, message, m_colour)
+        self.extra_line_count = self._richchat_lobby_extra_lines
+        RepositionLobbyPrefixToBottom(self)
+    end
+
+    self:UpdatePositions()
 end
 
 local function InstallChatLine(self, chat_font)
@@ -867,6 +1102,8 @@ function ChatHistory:OnSay(guid, userid, netid, name, prefab, message, ...)
 end
 
 AddClassPostConstruct("widgets/redux/chatline", InstallChatLine)
+
+AddClassPostConstruct("widgets/redux/lobbychatline", InstallLobbyChatLine)
 
 AddClassPostConstruct("widgets/redux/chatqueue", InstallChatQueue)
 
