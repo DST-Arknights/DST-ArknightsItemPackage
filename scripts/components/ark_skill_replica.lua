@@ -1,12 +1,12 @@
 local CONSTANTS = require "ark_constants"
 
 local function getHotkeyName(inst, id)
-  return inst.prefab .. "_ark_skill_" .. id
+  return 'ark_skill_' .. id
 end
 
 
 local SafeGetArkExtendUi = GenSafeCall(function(inst)
-  return inst and inst.HUD and inst.HUD.controls and inst.HUD.controls.arkExtendUi or nil
+  return inst and inst.HUD and inst.HUD.controls and inst.HUD.controls.arkExtendUi
 end)
 
 local SafeGetSkillsUI = GenSafeCall(function(inst)
@@ -18,92 +18,120 @@ local MAX_SKILL_COUNT = 4
 local ArkSkillReplica = Class(function(self, inst)
   self.inst = inst
   self.states = {}           -- 索引 -> state
-  self.skillIdToIndex = {}   -- 技能id -> 索引
-  self.skillCount = 0
-  self.configs = {}
-  self._register_tasks = {}
+  self.skillIds = {}          -- 索引 -> 技能id
+  self.skillIdToIndex = {}    -- 技能id -> 索引
   -- 预制 4 个 state，用于同步状态数据
   for i = 1, MAX_SKILL_COUNT do
     local state = NetState(self.inst, "ark_skill")
     self.states[i] = state
     state:Attach(self.inst)
-    state:Watch({ "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
-      local skillUI = SafeGetSkillsUI(self.inst):GetSkillByIndex(i)
-      if skillUI then
-        skillUI:SyncSkillStatus(
-          state.status,
-          state.level,
-          state.energyProgress,
-          state.buffProgress,
-          state.bulletCount,
-          state.activationStacks
-        )
+    state:Watch({ "id", "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
+      self:SkillDataDirty(i)
+    end)
+    state:Watch({ "id", "status", "level"}, function ()
+      if self.inst.HUD then
+        self.inst:PushEvent("refreshcrafting")
       end
     end)
-  end
-  if self.inst.pending_ark_skill_configs then
-    for _, config in pairs(self.inst.pending_ark_skill_configs) do
-      self:ClientRegisterSkill(config)
-    end
-    self.inst.pending_ark_skill_configs = nil
   end
 end)
 
-function ArkSkillReplica:ClientRegisterSkill(config)
-  if TheWorld.ismastersim then
-    return
-  end
-  local index = config.index
-  self.skillIdToIndex[config.id] = index
-  self.configs[index] = config
-  self:SetHotkey(config.id, config.hotkey)
-  SafeGetArkExtendUi(self.inst):SetupSkill()
-  SafeGetSkillsUI(self.inst):AddSkill(config)
+function ArkSkillReplica:GetConfigById(id)
+  return GetArkSkillConfigById(id)
 end
 
-function ArkSkillReplica:RequestSkillsConfig()
-  if TheWorld.ismastersim then
-    return
-  end 
-  SendModRPCToServer(GetModRPC("arkSkill", "ResponseSkillsConfig"))
-end
-
-function ArkSkillReplica:ResponseSkillsConfig()
-  for _, config in pairs(self.configs) do
-    SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
-  end
-end
--- 主机端注册技能，返回分配的索引
-function ArkSkillReplica:RegisterSkill(config)
-  ArkLogger:Debug("ark_skill_replica register skill", config.id)
-
-  self.skillCount = self.skillCount + 1
-  if self.skillCount > MAX_SKILL_COUNT then
-    ArkLogger:Error("ark_skill_replica: 超过最大技能数量限制 " .. MAX_SKILL_COUNT)
-    return nil
-  end
-
-  local index = self.skillCount
-  self.skillIdToIndex[config.id] = index
-  self.configs[index] = config
-  if TheWorld.ismastersim then
-      -- 发送rpc, 同步配置
-      -- 延时发送, 不然获取不到userid
-    if self._register_tasks[config.id] then
-      self._register_tasks[config.id]:Cancel()
+function ArkSkillReplica:AddSkill(id)
+  local cfg = self:GetConfigById(id)
+  assert(cfg, "No config found for skill id: " .. tostring(id))
+  -- 找到一个空插槽, 设置id, 后续安装交给dirty
+  for i, state in pairs(self.states) do
+    if state.id == "" then
+      state.id = id
+      self.skillIdToIndex[id] = i
+      return
     end
-    self._register_tasks[config.id] = self.inst:DoTaskInTime(0, function()
-      if self.inst.HUD then
-        self:SetHotkey(config.id, config.hotkey)
-        SafeGetArkExtendUi(self.inst):SetupSkill()
-        SafeGetSkillsUI(self.inst):AddSkill(config)
-      else
-        SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRegisterSkill"), self.inst.userid, json.encode(config))
-        self._register_tasks[config.id] = nil
-      end
-    end)
   end
-  return index
+  assert(false, "No empty slot found for skill id: " .. tostring(id))
+end
+
+function ArkSkillReplica:RemoveSkill(id)
+  local index = self.skillIdToIndex[id]
+  if not index then
+    ArkLogger:Error("ark_skill_replica: RemoveSkill failed, skill id not found " .. tostring(id))
+    return
+  end
+  local state = self.states[index]
+  if state.id ~= id then
+    ArkLogger:Error("ark_skill_replica: RemoveSkill failed, skill id mismatch " .. tostring(id))
+    return
+  end
+  state.id = ""
+end
+
+function ArkSkillReplica:DoUninstallSkill(id)
+  if not id or id == "" then
+    return
+  end
+  self:UnregisterHotkey(id)
+  SafeGetSkillsUI(self.inst):RemoveSkill(id)
+  self.skillIdToIndex[id] = nil
+end
+
+function ArkSkillReplica:DoInstallSkill(id, index)
+  if not id or id == "" then
+    return
+  end
+  local cfg = self:GetConfigById(id)
+  self:RegisterHotkey(id, cfg.hotkey)
+  SafeGetSkillsUI(self.inst):AddSkill(id, index)
+  self.skillIdToIndex[id] = index
+end
+
+function ArkSkillReplica:TrySyncSkillData(id, state)
+  if not id or id == "" then
+    return
+  end
+  SafeGetSkillsUI(self.inst):GetSkillById(id):SyncSkillStatus(
+    state.status,
+    state.level,
+    state.energyProgress,
+    state.buffProgress,
+    state.bulletCount,
+    state.activationStacks
+  )
+end
+
+function ArkSkillReplica:SkillDataDirty(index)
+  local oldId = self.skillIds[index]
+  local state = self.states[index]
+  local newId = state.id
+  local hasOldId = oldId ~= nil and oldId ~= ""
+  local hasNewId = newId ~= nil and newId ~= ""
+
+  if hasOldId and not hasNewId then
+    self:DoUninstallSkill(oldId)
+    self.skillIds[index] = nil
+    return
+  end
+
+  if not hasOldId and hasNewId then
+    self:DoInstallSkill(newId, index)
+    self.skillIds[index] = newId
+    self:TrySyncSkillData(newId, state)
+    return
+  end
+
+  if hasOldId and hasNewId and oldId ~= newId then
+    self:DoUninstallSkill(oldId)
+    self:DoInstallSkill(newId, index)
+    self.skillIds[index] = newId
+    self:TrySyncSkillData(newId, state)
+    return
+  end
+
+  if hasNewId then
+    self:TrySyncSkillData(newId, state)
+  end
 end
 
 function ArkSkillReplica:GetStateByIndex(index)
@@ -136,11 +164,10 @@ function ArkSkillReplica:GetState(id)
 end
 
 function ArkSkillReplica:RestoreDefaultHotkey(id)
-  if not TheNet:IsDedicated() then
-    local hotkey_mgr = GetHotKeyManager(self.inst)
-    local name = getHotkeyName(self.inst, id)
-    hotkey_mgr:RestoreDefaultHotkey(name)
-  end
+  if TheNet:IsDedicated() then return end
+  local hotkey_mgr = GetHotKeyManager(self.inst)
+  local name = getHotkeyName(self.inst, id)
+  hotkey_mgr:RestoreDefaultHotkey(name)
 end
 
 function ArkSkillReplica:GetHotkey(id)
@@ -151,27 +178,39 @@ function ArkSkillReplica:GetHotkey(id)
   end
 end
 
-function ArkSkillReplica:SetHotkey(id, hotkey)
-  if not hotkey then return end
-  if not TheNet:IsDedicated() then
-    local hotkey_mgr = GetHotKeyManager(self.inst)
-    local name = getHotkeyName(self.inst, id)
-    -- 检查是否已经有按键了
-    local oldHotkey = hotkey_mgr:GetHotkey(name)
-    ArkLogger:Debug('ark_skill_replica SetHotkey', id, hotkey, oldHotkey)
-    if oldHotkey then
-      hotkey_mgr:SetHotkey(name, hotkey)
+function ArkSkillReplica:UnregisterHotkey(id)
+  if TheNet:IsDedicated() then return end
+  local hotkey = GetHotKeyManager(self.inst)
+  local name = getHotkeyName(self.inst, id)
+  hotkey:Unregister(name)
+end
+
+function ArkSkillReplica:RegisterHotkey(id, hotkey)
+  if TheNet:IsDedicated() then return end
+  local hotkey_mgr = GetHotKeyManager(self.inst)
+  local name = getHotkeyName(self.inst, id)
+  hotkey_mgr:Register(name, function()
+    -- 弹药模式下再次按会取消
+    if self:GetState(id).status == CONSTANTS.SKILL_STATUS.BULLETING then
+      self:CancelSkill(id)
     else
-      hotkey_mgr:Register(name, function()
-        -- 弹药模式下再次按会取消
-        if self:GetState(id).status == CONSTANTS.SKILL_STATUS.BULLETING then
-          self:CancelSkill(id)
-        else
-          self:TryActivateSkill(id)
-        end
-      end, hotkey)
+      self:TryActivateSkill(id)
     end
+  end, hotkey)
+end
+
+function ArkSkillReplica:SetHotkey(id, hotkey)
+  ArkLogger:Info("Setting hotkey for skill " .. id .. ": " .. tostring(hotkey))
+  if not hotkey then return end
+  if TheNet:IsDedicated() then return end
+  local hotkey_mgr = GetHotKeyManager(self.inst)
+  local name = getHotkeyName(self.inst, id)
+  -- 检查是否已经有按键了
+  local oldHotkey = hotkey_mgr:GetHotkey(name)
+  if not oldHotkey then
+    self:RegisterHotkey(id, hotkey)
   end
+  hotkey_mgr:SetHotkey(name, hotkey)
 end
 
 function ArkSkillReplica:TryActivateSkill(id)
@@ -201,32 +240,6 @@ function ArkSkillReplica:CancelSkill(id)
   else
     SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), id)
   end
-end
-
-function ArkSkillReplica:ClearSkillData()
-  self.skillIdToIndex = {}
-  self.configs = {}
-  self.skillCount = 0
-  self.inst.pending_ark_skill_configs = nil
-end
-
-function ArkSkillReplica:ClientRemoveSkill()
-  if self.inst.HUD then
-    -- 卸载按键
-    for id, _ in pairs(self.skillIdToIndex) do
-      local hotkey = GetHotKeyManager(self.inst)
-      local name = getHotkeyName(self.inst, id)
-      hotkey:Unregister(name)
-    end
-    SafeGetArkExtendUi(self.inst):RemoveSkill()
-    for _, task in pairs(self._register_tasks) do
-      local _ = task and task:Cancel()
-    end
-    self._register_tasks = {}
-  else
-    SendModRPCToClient(GetClientModRPC("arkSkill", "ClientRemoveSkill"), self.inst.userid)
-  end
-  self:ClearSkillData()
 end
 
 return ArkSkillReplica

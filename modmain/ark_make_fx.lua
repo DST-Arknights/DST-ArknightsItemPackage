@@ -141,7 +141,6 @@ local function MakeFx(t)
     end
 
     local function fn()
-      ArkLogger:Debug("ark_make_fx", t.name)
         local inst = CreateEntity()
 
         inst.entity:AddTransform()

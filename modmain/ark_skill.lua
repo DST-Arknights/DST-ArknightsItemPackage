@@ -1,51 +1,12 @@
 local CONSTANTS = require "ark_constants"
 local common = require "ark_common"
 
--- 技能升级 RPC 处理
-AddModRPCHandler("arkSkill", "LevelUpSkill", function(player, skillId)
-  if not player or not player.components.ark_skill then return end
-  local skill = player.components.ark_skill:GetSkill(skillId)
-  if not skill then return end
-  local level = (skill.data.level or 1) + 1
-  skill:SetLevel(level)
-end)
-
--- 技能设置等级 RPC 处理
-AddModRPCHandler("arkSkill", "SetSkillLevel", function(player, skillId, level)
-  if not player or not player.components.ark_skill then return end
-  local skill = player.components.ark_skill:GetSkill(skillId)
-  if not skill then return end
-  skill:SetLevel(level)
-end)
-
--- 请求同步技能状态 RPC 处理
-AddModRPCHandler("arkSkill", "RequestSyncSkillStatus", function(player, id)
-  if not player or not player.components.ark_skill then return end
-  player.components.ark_skill:RequestSyncSkillStatus(id)
-end)
-
--- 客户端同步技能状态
-AddClientModRPCHandler("arkSkill", "SyncSkillStatus", function (skillId, ...)
-  if not ThePlayer then
-    return
-  end
-  local arkSkillUi = ThePlayer.HUD.controls.arkSkillUi
-  if not arkSkillUi then
-    return
-  end
-  local skillUi = arkSkillUi.skills.GetSkillById and arkSkillUi.skills:GetSkillById(skillId) or nil
-  if not skillUi then
-    return
-  end
-  skillUi:SyncSkillStatus(...)
-end)
-
 -- 手动激活技能 RPC 处理
 AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, id, target, targetPos, force)
   if not player or not player.components.ark_skill then return end
   local skill = player.components.ark_skill:GetSkill(id)
   if not skill then return end
-  local config = skill.config
+  local config = skill:GetConfig()
   if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
     return
   end
@@ -68,37 +29,120 @@ AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
   skill:Cancel()
 end)
 
--- 请求技能配置 RPC 处理
-AddModRPCHandler("arkSkill", "ResponseSkillsConfig", function(player)
-  if not player or not player.replica.ark_skill then return end
-  player.replica.ark_skill:ResponseSkillsConfig()
-end)
+local function defaultLevelConfigs(levelConfigs)
+  local copyLevelConfigs = {}
+  for _, levelConfig in ipairs(levelConfigs) do
+    local copyLevelConfig = {
+      activationEnergy = levelConfig.activationEnergy or 1,
+      buffDuration = levelConfig.buffDuration or 0.3,
+      bulletCount = levelConfig.bulletCount or nil,
+      maxActivationStacks = levelConfig.maxActivationStacks or 1,
+      desc = levelConfig.desc or '',
+      params = levelConfig.params or {},
+      recipeIngredients = levelConfig.recipeIngredients or nil,
+    }
+    table.insert(copyLevelConfigs, copyLevelConfig)
+  end
+  return copyLevelConfigs
+end
 
-local arkSkillLevelUpImages = {}
-
-AddClientModRPCHandler("arkSkill", "ClientRegisterSkill", function(config)
-  config = json.decode(config)
-  if ThePlayer and ThePlayer.replica.ark_skill then
-    if ThePlayer.replica.ark_skill then
-      ThePlayer.replica.ark_skill:ClientRegisterSkill(config)
-    else
-      ThePlayer.pending_ark_skill_configs = ThePlayer.pending_ark_skill_configs or {}
-      table.insert(ThePlayer.pending_ark_skill_configs, config)
+local function checkAndDefaultSkill(skill)
+  assert(skill, "Skill config is nil.")
+  assert(skill.id, "Skill config missing id.")
+  if skill.energyRecoveryMode then
+    assert(table.contains(CONSTANTS.ENERGY_RECOVERY_MODE, skill.energyRecoveryMode), "Invalid energyRecoveryMode for skill " .. skill.id)
+  end
+  if skill.activationMode then
+    assert(table.contains(CONSTANTS.ACTIVATION_MODE, skill.activationMode), "Invalid activationMode for skill " .. skill.id)
+  end
+  assert(type(skill.levels) == "table" and #skill.levels > 0, "Skill " .. skill.id .. " must have at least one level config.")
+  local copySkill = {
+    id = skill.id,
+    atlas = skill.atlas or '',
+    image = skill.image or '',
+    name = skill.name or skill.id,
+    lockedDesc = skill.lockedDesc or '',
+    energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
+    activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
+    hotkey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
+    levels = defaultLevelConfigs(skill.levels)
+  }
+  -- 透传所有回调字段
+  local callbackFields = {
+    "ActivateTest",
+    "OnActivate", "OnDeactivate", "OnLocked", "OnUnlocked",
+    "OnEnergyRecovering", "OnActivateReady", "OnActivateEffect",
+    "OnBulletCut", "OnLevelChange",
+    "OnInstall", "OnAdd", "OnRemove", "OnStep", "OnSave", "OnLoad",
+  }
+  for _, field in ipairs(callbackFields) do
+    if skill[field] ~= nil then
+      copySkill[field] = skill[field]
     end
   end
-  -- 替换高清资源
-  local resolveAtlas = resolvefilepath(config.atlas)
-  if not arkSkillLevelUpImages[resolveAtlas] then
-    arkSkillLevelUpImages[resolveAtlas] = {}
+  return copySkill
+end
+local arkSkillLevelUpImages = {}
+local SkillsSymbol = Symbol("ARK_SKILLS")
+TUNING[SkillsSymbol] = {}
+function GLOBAL.RegisterArkSkill(skill)
+  assert(skill and skill.id, "Invalid skill config, missing id: " .. tostring(skill))
+  if TUNING[SkillsSymbol][skill.id] then
+    ArkLogger:Warn("Skill with id " .. skill.id .. " already exists, skipping registration.")
+    return
   end
-  arkSkillLevelUpImages[resolveAtlas][config.image] = true
-end)
+  skill = checkAndDefaultSkill(skill)
+  TUNING[SkillsSymbol][skill.id] = skill
+   -- 替换高清资源
+  if not TheNet:IsDedicated() then
+    local resolveAtlas = resolvefilepath(skill.atlas)
+    if not arkSkillLevelUpImages[resolveAtlas] then
+      arkSkillLevelUpImages[resolveAtlas] = {}
+    end
+    arkSkillLevelUpImages[resolveAtlas][skill.image] = true
+  end
+  -- 安装配方
+  for level, levelConfig in ipairs(skill.levels) do
+    local ingredients = levelConfig.recipeIngredients
+    if ingredients then
+      local previousLevel = level - 1
+      local prefabName = common.genArkSkillLevelUpPrefabNameById(skill.id, level)
+      local rep = AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
+        nounlock = true,
+        atlas = skill.atlas,
+        image = skill.image,
+        actionstr = level <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
+        builder_tag = common.genArkSkillLevelUpPrefabNameById(skill.id, previousLevel),
+        manufactured = true,
+      }, { "CRAFTING_STATION" })
+      -- 机器制造回调
+      rep.manufacturedfn = function(inst, doer)
+        if doer and doer.components.ark_skill then
+          local skill = doer.components.ark_skill:GetSkill(skill.id)
+          if skill then
+            skill:SetLevel(level)
+          end
+        end
+      end
+      local upperName = string.upper(prefabName)
+      STRINGS.NAMES[upperName] = skill.name or (STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name)
+      if skill.desc then
+        STRINGS.RECIPE_DESC[upperName] = skill.desc
+      else
+        local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[previousLevel] or tostring(previousLevel)
+        local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[level] or tostring(level)
+        local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevelStr .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevelStr)
+        STRINGS.RECIPE_DESC[upperName] = desc
+      end
+    end
+  end
+end
 
-AddClientModRPCHandler("arkSkill", "ClientRemoveSkill", function()
-  if ThePlayer and ThePlayer.replica.ark_skill then
-    ThePlayer.replica.ark_skill:ClientRemoveSkill()
-  end
-end)
+function GLOBAL.GetArkSkillConfigById(id)
+  local cfg = TUNING[SkillsSymbol][id]
+  assert(cfg, "No skill config found for id: " .. tostring(id))
+  return cfg
+end
 
 -- 修改技能升级图标的尺寸, 维持高清
 AddClassPostConstruct("widgets/spinner", function(self)
@@ -114,47 +158,8 @@ AddClassPostConstruct("widgets/spinner", function(self)
   end
 end)
 
-function GLOBAL.AddSkillLevelUpRecipes(characterPrefab,skills)
-  for i, skill in ipairs(skills) do
-    if i > CONSTANTS.MAX_SKILL_LIMIT then
-      break
-    end
-    for currentLevel, levelConfig in ipairs(skill.levels) do
-      if currentLevel > CONSTANTS.MAX_SKILL_LEVEL then
-        break
-      end
-      local nextLevel = currentLevel + 1
-      if levelConfig.ingredients then
-        local prefabName = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, nextLevel)
-        local ingredients = levelConfig.nextLevelIngredients
-        local rep = AddCharacterRecipe(prefabName, ingredients, TECH.ARK_TRAINING_ONE, {
-          nounlock = true,
-          atlas = skill.atlas,
-          image = skill.image,
-          actionstr = nextLevel <= 7 and "ARK_SKILL_UPDATE" or "ARK_SKILL_SPECIALIZATION",
-          builder_tag = common.genArkSkillLevelUpPrefabNameById(characterPrefab,skill.id, currentLevel),
-          manufactured = true,
-        }, { "CRAFTING_STATION" })
-        -- 机器制造回调
-        rep.manufacturedfn = function(inst, doer)
-          if doer and doer.components.ark_skill then
-            local skill = doer.components.ark_skill:GetSkill(skill.id)
-            if skill then
-              skill:SetLevel(nextLevel)
-            end
-          end
-        end
-        local upperName = string.upper(prefabName)
-        STRINGS.NAMES[upperName] = skill.name or (STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name)
-        if skill.desc then
-          STRINGS.RECIPE_DESC[upperName] = skill.desc
-        else
-          local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[currentLevel] or tostring(currentLevel)
-          local nextLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[nextLevel] or tostring(nextLevel)
-          local desc = STRINGS.UI.ARK_SKILL.CURRENT_LEVEL .. " " .. " " .. currentLevelStr .. "\n" .. (STRINGS.UI.ARK_SKILL.NEXT_LEVEL .. " " .. nextLevelStr)
-          STRINGS.RECIPE_DESC[upperName] = desc
-        end
-      end
-    end
+AddPlayerPostInit(function(inst)
+  if TheWorld.ismastersim and not inst.components.ark_skill then
+    inst:AddComponent("ark_skill")
   end
-end
+end)

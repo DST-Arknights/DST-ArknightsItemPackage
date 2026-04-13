@@ -3,6 +3,8 @@ local HotKeyManager = {
     persistentData = {}     -- [userid] = { [name] = hotkey }
 }
 
+local PERSISTENT_KEY_PREFIX = "ark_hotkey_"
+
 -- 浅拷贝工具函数
 local function shallowCopy(t)
     local copy = {}
@@ -10,6 +12,50 @@ local function shallowCopy(t)
         copy[k] = v
     end
     return copy
+end
+
+local function getUserId(player)
+    return player.userid or "local_player"
+end
+
+local function getPersistentKey(player)
+    return PERSISTENT_KEY_PREFIX .. getUserId(player)
+end
+
+local function serializeData(data)
+    local lines = { "return {" }
+    for name, hotkey in pairs(data) do
+        if hotkey ~= nil then
+            local serializedHotkey = type(hotkey) == "string" and string.format("%q", hotkey) or tostring(hotkey)
+            lines[#lines + 1] = string.format("[%q]=%s,", tostring(name), serializedHotkey)
+        end
+    end
+    lines[#lines + 1] = "}"
+    return table.concat(lines, "\n")
+end
+
+local function deserializeData(raw)
+    if raw == nil or raw == "" then
+        return {}
+    end
+
+    local loader = loadstring(raw)
+    if type(loader) ~= "function" then
+        return {}
+    end
+
+    local ok, data = pcall(loader)
+    if not ok or type(data) ~= "table" then
+        return {}
+    end
+
+    local result = {}
+    for name, hotkey in pairs(data) do
+        if type(name) == "string" and (type(hotkey) == "number" or type(hotkey) == "string") then
+            result[name] = hotkey
+        end
+    end
+    return result
 end
 
 function HotKeyManager.Get(player)
@@ -28,6 +74,9 @@ function HotKeyManager._Create(player)
         hooksInstalled = false,
         controlHandler = nil,  -- 事件处理器引用，用于移除
         tempListeners = {}, -- 临时监听器数组 { callback = function }
+        loaded = false,
+        loading = false,
+        pendingHotkeys = {},
     }
     
     -- 获取热键对应的handler数量
@@ -45,24 +94,82 @@ function HotKeyManager._Create(player)
 
     -- 加载持久化数据
     local function loadData()
-        local userid = player.userid or ""
+        local userid = getUserId(player)
         return HotKeyManager.persistentData[userid] or {}
     end
     
     -- 保存数据
     local function saveData(data)
-        local userid = player.userid or ""
-        HotKeyManager.persistentData[userid] = data
+        local userid = getUserId(player)
+        HotKeyManager.persistentData[userid] = shallowCopy(data)
+        TheSim:SetPersistentString(getPersistentKey(player), serializeData(data), false)
+    end
+
+    function manager:_ApplyLoadedData()
+        local data = loadData()
+        local changed = false
+
+        for name, hotkey in pairs(self.pendingHotkeys) do
+            data[name] = hotkey
+            changed = true
+        end
+        self.pendingHotkeys = {}
+
+        for name, info in pairs(self.registry) do
+            local hotkey = data[name]
+            if hotkey == nil and info.defaultHotkey ~= nil then
+                hotkey = info.defaultHotkey
+                data[name] = hotkey
+                changed = true
+            end
+            info.hotkey = hotkey
+        end
+
+        if changed then
+            saveData(data)
+        end
+    end
+
+    function manager:_EnsureLoaded()
+        if self.loaded or self.loading then
+            return
+        end
+
+        self.loading = true
+        TheSim:GetPersistentString(getPersistentKey(player), function(success, raw)
+            local userid = getUserId(player)
+            HotKeyManager.persistentData[userid] = success and deserializeData(raw) or {}
+            self.loading = false
+            self.loaded = true
+            self:_ApplyLoadedData()
+        end)
     end
     
     -- 获取当前热键
     function manager:GetHotkey(name)
+        self:_EnsureLoaded()
+        if not self.loaded then
+            local pendingHotkey = self.pendingHotkeys[name]
+            if pendingHotkey ~= nil then
+                return pendingHotkey
+            end
+            return self.registry[name] and self.registry[name].hotkey or nil
+        end
         local data = loadData()
         return data[name]
     end
     
     -- 设置热键
     function manager:SetHotkey(name, hotkey)
+        self:_EnsureLoaded()
+        if not self.loaded then
+            self.pendingHotkeys[name] = hotkey
+            if self.registry[name] then
+                self.registry[name].hotkey = hotkey
+            end
+            return
+        end
+
         local data = loadData()
         data[name] = hotkey
         saveData(data)
@@ -83,17 +190,22 @@ function HotKeyManager._Create(player)
 
     -- 注册热键处理器
     function manager:Register(name, handler, defaultHotkey)
-        local hotkey = self:GetHotkey(name)
-        if not hotkey and defaultHotkey then
-            -- 如果没有已保存的热键，使用默认值并保存
-            hotkey = defaultHotkey
-            self:SetHotkey(name, hotkey)
-        end
         self.registry[name] = {
-            hotkey = hotkey,
+            hotkey = defaultHotkey,
             handler = handler,
             defaultHotkey = defaultHotkey,  -- 保存默认值
         }
+
+        self:_EnsureLoaded()
+        if self.loaded then
+            local hotkey = self:GetHotkey(name)
+            if hotkey == nil and defaultHotkey ~= nil then
+                hotkey = defaultHotkey
+                self:SetHotkey(name, hotkey)
+            else
+                self.registry[name].hotkey = hotkey
+            end
+        end
 
         self:_installHook()
     end
@@ -168,7 +280,9 @@ function HotKeyManager._Create(player)
         self.hooksInstalled = false
     end
 
+    manager:_EnsureLoaded()
     return manager
 end
+
 GLOBAL.GetHotKeyManager = HotKeyManager.Get
 return HotKeyManager

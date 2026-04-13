@@ -101,6 +101,7 @@ DefineNetState("ark_elite", {
 })
 
 DefineNetState("ark_skill", {
+  id = "string:classified",
   status = "int:classified",
   level = "int:classified",
   energyProgress = "float:classified",

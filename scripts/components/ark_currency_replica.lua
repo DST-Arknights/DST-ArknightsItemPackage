@@ -11,8 +11,10 @@ local ArkCurrency = Class(function(self, inst)
   self.state:Attach(self.inst)
   if not TheNet:IsDedicated() then
     self.state:Watch(TUNING.ARK_CURRENCY_TYPES, function()
-      ArkLogger:Debug('ark_currency_replica Watch OnDirty')
       SafeCallArkCurrencyUI(self.inst):Refresh()
+      if self.inst.HUD then
+        self.inst:PushEvent("refreshcrafting")
+      end
     end)
     SafeCallArkExtendUI(self.inst):SetupCurrency()
   end

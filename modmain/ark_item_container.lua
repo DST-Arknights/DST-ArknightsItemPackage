@@ -449,7 +449,6 @@ AddComponentPostInit("container", function(self)
 end)
 
 local function OnRefreshCrafting(inst)
-  ArkLogger:Trace('container', 'OnRefreshCrafting', inst)
   if ThePlayer ~= nil and ThePlayer.HUD ~= nil then
     ThePlayer:PushEvent("refreshcrafting")
   end

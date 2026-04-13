@@ -154,11 +154,6 @@ local function UpdateTimeEnergy(self, dt)
   return leftTime
 end
 
--- 保留旧函数名称以兼容现有代码
-local function UpdateTimeCharge(self, dt)
-  return UpdateTimeEnergy(self, dt)
-end
-
 local function UpdateTimeBuff(self, dt)
   if self.timeBuff == nil then
     return nil
@@ -412,7 +407,8 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
   self:RecurrentStatusImageSize()
 end
 
-local function OnUpdate(self, dt)
+-- OnUpdate 需要第一帧检测, 第一帧要作点事情
+function ArkSkill:OnUpdate(dt)
   if not self.inst:IsValid() then
     return
   end
@@ -430,32 +426,6 @@ local function OnUpdate(self, dt)
   elseif leftBuffTime > 0 then
     UpdateTimeEnergy(self, dt + leftBuffTime)
   end
-end
-
-function ArkSkill:RequestSyncSkillStatus()
-  local state = self.owner.replica.ark_skill:GetState(self.id)
-  if state.status ~= 0 then
-    self:SyncSkillStatus(
-      state.status,
-      state.level,
-      state.energyProgress,
-      state.buffProgress,
-      state.bulletCount,
-      state.activationStacks
-    )
-  end
-  if self.owner.components.ark_skill then
-    self.owner.components.ark_skill:RequestSyncSkillStatus(self.id)
-  else
-    SendModRPCToServer(GetModRPC("arkSkill", "RequestSyncSkillStatus"), self.id)
-  end
-end
-
--- OnUpdate 需要第一帧检测, 第一帧要作点事情
-function ArkSkill:OnUpdate(dt)
-  ArkLogger:Debug("ark_skill first update", self.id)
-  self:RequestSyncSkillStatus()
-  self.OnUpdate = OnUpdate
 end
 
 function ArkSkill:OnGainFocus()

@@ -13,9 +13,6 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
   self.handBase = controls.bottom_root:AddChild(Widget("arkExtendUiHandBase"))
   self.toprightBase = controls.topright_root:AddChild(Widget("arkExtendUiToprightBase"))
   self.setup_task = owner:DoTaskInTime(0, function()
-    if owner.replica.ark_skill then
-      self:SetupSkill()
-    end
     if owner.replica.ark_elite then
       self:SetupElite()
       self:SetupExpBar()
@@ -25,6 +22,7 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
     end
     self.setup_task = nil
   end)
+  self:SetupSkill()
   self:SetupBuffIcons()
   self:SetupEmoticonBtn()
 end)
@@ -59,7 +57,7 @@ function ArkExtendUi:SetupSkill()
     return
   end
   ArkLogger:Debug("ArkExtendUi:SetupSkill")
-  self.skills = self.handBase:AddChild(ArkSkills(self.owner, self.owner.replica.ark_skill and self.owner.replica.ark_skill.configs))
+  self.skills = self.handBase:AddChild(ArkSkills(self.owner))
   self.skills.updatedLayout = function()
     self:UpdateLayout()
   end

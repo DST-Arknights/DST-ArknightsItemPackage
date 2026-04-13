@@ -19,17 +19,8 @@ local function getPrefabAssetsCode(prefab, withTex)
     }
 end
 
-local function genArkSkillLevelUpPrefabNameById(prefab,id, level)
-  return 'ark_skill_level_up_' .. prefab .. '_' .. id .. '_' .. level .. '_level'
-end
-
-local function parseArkSkillLevelUpPrefabName(prefabName)
-  -- 匹配格式: ark_skill_level_up_<id>_<level>_level，其中 id 为字符串（可含下划线），level 为数字
-  local _, id, level = string.match(prefabName, "^ark_skill_level_up_(.+)_(.+)_(%d+)_level$")
-  if id and level then
-    return id, tonumber(level)
-  end
-  return nil, nil
+local function genArkSkillLevelUpPrefabNameById(id, level)
+  return 'ark_skill_level_up_' .. id .. '_' .. level .. '_level'
 end
 
 -- 精英化等级tag
@@ -50,7 +41,6 @@ end
 return {
     getPrefabAssetsCode = getPrefabAssetsCode,
     genArkSkillLevelUpPrefabNameById = genArkSkillLevelUpPrefabNameById,
-    parseArkSkillLevelUpPrefabName = parseArkSkillLevelUpPrefabName,
     genArkEliteLevelUpPrefabName = genArkEliteLevelUpPrefabName,
     parseArkEliteLevelUpPrefabName = parseArkEliteLevelUpPrefabName,
 }

@@ -3,7 +3,7 @@ local ArkSkill = require "widgets/ark_skill"
 -- 技能间隔
 local SKILL_GAP = 20
 
-local ArkSkills = Class(Widget, function(self, owner, skillsConfig)
+local ArkSkills = Class(Widget, function(self, owner)
   Widget._ctor(self, "ArkSkills")
   self.owner = owner
   self.skillSlots = {} -- 按index排序的技能槽位数组
@@ -11,21 +11,11 @@ local ArkSkills = Class(Widget, function(self, owner, skillsConfig)
   self.width = 0
   self.height = 0
   self.singleSkillWidth = 0
-  if skillsConfig then
-    for _, skill in pairs(skillsConfig) do
-      self:AddSkill(skill)
-    end
-  end
-  self.owner:DoTaskInTime(0, function()
-    if owner.replica.ark_skill then
-      owner.replica.ark_skill:RequestSkillsConfig()
-    end
-  end)
 end)
 
 -- 按index排序的比较函数
 local function sortByIndex(a, b)
-  return (a.cfg.index or 0) < (b.cfg.index or 0)
+  return (a.index or 0) < (b.index or 0)
 end
 
 -- 重新计算布局和尺寸
@@ -66,18 +56,14 @@ function ArkSkills:UpdateLayout()
 end
 
 -- 添加单个技能
-function ArkSkills:AddSkill(cfg)
-  ArkLogger:Debug("ArkSkills:AddSkill", cfg.id, cfg.index)
-   -- 如果有id，先移除同id的技能
-  -- 相同的id杀掉然后添加
-  if cfg.id then
-    self:RemoveSkill(cfg.id)
-  end
+function ArkSkills:AddSkill(id, index)
+  local cfg = GetArkSkillConfigById(id)
   local skill = self:AddChild(ArkSkill(self.owner, cfg))
 
   table.insert(self.skillSlots, {
     skill = skill,
-    cfg = cfg
+    cfg = cfg,
+    index = index
   })
 
   if cfg.id then
@@ -133,7 +119,7 @@ end
 
 function ArkSkills:GetSkillByIndex(index)
   for _, slot in ipairs(self.skillSlots) do
-    if slot.cfg.index == index then
+    if slot.index == index then
       return slot.skill
     end
   end
