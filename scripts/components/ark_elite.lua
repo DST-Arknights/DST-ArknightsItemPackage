@@ -312,6 +312,7 @@ function ArkElite:SetElite(elite)
     return false
   end
 
+  local oldElite = self.elite
   local targetElite = math.floor(elite)
   local maxElite = _getMaxEliteByRarity(self.rarity)
   if maxElite <= 0 then
@@ -345,6 +346,13 @@ function ArkElite:SetElite(elite)
   end
   self:RefreshLevelTag()
   self:ApplyElite()
+  if oldElite ~= self.elite then
+    self.inst:PushEvent("ark_elite_changed", {
+      oldElite = oldElite,
+      newElite = self.elite,
+      level = self.level,
+    })
+  end
   return true
 end
 

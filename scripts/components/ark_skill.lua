@@ -7,8 +7,13 @@ local ArkSkill = Class(function(self, inst)
   self.inst:AddTag("ark_skill")
   self.skillsById = {}
   self.installedSkills = {}
+  self.builtinSkillProfilesById = {}
   -- 共享 hook 链注册表：每个 (obj, funcName) 只包装一次，避免多技能嵌套
   self._sharedHookRegistry = {}
+  self._onBuiltinEliteChanged = function()
+    self:_SyncBuiltinSkills()
+  end
+  self.inst:ListenForEvent("ark_elite_changed", self._onBuiltinEliteChanged)
 end)
 
 
@@ -31,6 +36,24 @@ local function CopySaveData(data)
     copy[key] = value
   end
   return copy
+end
+
+local function NormalizeBuiltinSkillProfile(profile)
+  profile = profile or {}
+
+  local normalized = {}
+  local requiredElite = profile.requiredElite
+  if requiredElite == nil then
+    requiredElite = 1
+  end
+  requiredElite = math.max(1, math.floor(requiredElite))
+  normalized.requiredElite = requiredElite
+
+  if profile.slot ~= nil then
+    normalized.slot = math.max(1, math.floor(profile.slot))
+  end
+
+  return normalized
 end
 
 -- 单技能对象（SingleSkill）：封装技能自身的运行态与行为
@@ -720,6 +743,75 @@ function SingleSkill:Remove()
   self.manager:RemoveSkill(self.id)
 end
 
+function ArkSkill:_GetCurrentElite()
+  local elite = self.inst.components.ark_elite
+  return elite and elite.elite or nil
+end
+
+function ArkSkill:CanAddSkill(id)
+  assert(id, "Skill id is required")
+  assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
+  return true, nil
+end
+
+function ArkSkill:CanUnlockSkill(id)
+  assert(id, "Skill id is required")
+  assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
+
+  local profile = self.builtinSkillProfilesById[id]
+  if not profile then
+    return true, nil
+  end
+
+  local currentElite = self:_GetCurrentElite()
+  if currentElite == nil or currentElite >= profile.requiredElite then
+    return true, nil
+  end
+
+  return false, "elite_insufficient"
+end
+
+function ArkSkill:_SyncBuiltinSkillState(id)
+  local profile = self.builtinSkillProfilesById[id]
+  if not profile then
+    return
+  end
+
+  local skill = self.skillsById[id]
+  if not skill then
+    return
+  end
+
+  local shouldUnlock = self:CanUnlockSkill(id)
+  if shouldUnlock then
+    if skill.data.status == CONSTANTS.SKILL_STATUS.LOCKED then
+      skill:Unlock()
+    end
+  else
+    if skill.data.status ~= CONSTANTS.SKILL_STATUS.LOCKED then
+      skill:Lock()
+    end
+  end
+end
+
+function ArkSkill:_SyncBuiltinSkills()
+  for id in pairs(self.builtinSkillProfilesById) do
+    self:_SyncBuiltinSkillState(id)
+  end
+end
+
+function ArkSkill:DeclareBuiltinSkill(id, profile)
+  assert(id, "Skill id is required")
+  assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
+
+  self.builtinSkillProfilesById[id] = NormalizeBuiltinSkillProfile(profile)
+  self:_SyncBuiltinSkillState(id)
+end
+
+function ArkSkill:GetBuiltinSkillProfile(id)
+  return self.builtinSkillProfilesById[id]
+end
+
 -- 内部核心：创建并接入 SingleSkill，返回新建的 skill 对象
 function ArkSkill:_InstallSkill(id)
   local skill = SingleSkill(self, id)
@@ -757,6 +849,7 @@ function ArkSkill:AddSkill(id)
   if skill._cfgOnAdd then
     skill._cfgOnAdd(skill, {})
   end
+  self:_SyncBuiltinSkillState(id)
   self.inst:PushEvent("ark_skill_added", { id = id })
 end
 
@@ -839,10 +932,12 @@ function ArkSkill:OnLoad(data)
       end
     end
   end
+  self:_SyncBuiltinSkills()
 end
 
 -- OnPreRemoveFromEntity
 function ArkSkill:OnPreRemoveFromEntity()
+  self.inst:RemoveEventCallback("ark_elite_changed", self._onBuiltinEliteChanged)
   for _, s in pairs(self.skillsById) do
     s:Remove()
   end
