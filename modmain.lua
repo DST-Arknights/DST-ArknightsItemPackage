@@ -24,6 +24,7 @@ AddReplicableComponent("ark_skill")
 AddReplicableComponent("ark_currency")
 AddReplicableComponent("ark_elite")
 AddReplicableComponent("ark_buff_icon")
+AddReplicableComponent("ark_talent")
 
 TUNING.ARK_CONFIG = {}
 
@@ -38,25 +39,47 @@ end
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
 ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
+-- tools
+modimport('modmain/ark_tools')
 -- 加载符号
 modimport('modmain/symbol')
 -- 加载 NetState
 modimport('modmain/net_state')
 -- 加载安全调用
 modimport('modmain/safe_call')
--- 加载热键管理器
-modimport('scripts/ark_hotkey')
--- 加载语言
 -- 导出全局变量MergePOFile
+-- 加载语言
 modimport('modmain/ark_i18n')
--- 脚本扩展
-modimport('modmain/entityscript_extension')
+
 -- 加载中文语言包
 MergePOFile('languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S), true)
--- 加载字体
-modimport('modmain/ark_fonts')
+-- 加载热键管理器
+modimport('scripts/ark_hotkey')
+-- 加载属性修改器安装器
+modimport('modmain/modifier_installer')
+-- 脚本扩展
+modimport('modmain/entityscript_extension')
+-- 事件回调优先级
+modimport('modmain/priority_event_callback')
+-- 武器扩展
+modimport('modmain/combat_extension')
+-- 护甲扩展
+modimport('modmain/armor_extension')
+-- 生命值扩展
+modimport('modmain/health_extension')
+-- 特效生成器
+modimport('modmain/ark_make_fx')
+-- widget 扩展
+modimport('modmain/widget_extension')
+-- 聊天表情
+modimport('modmain/richchat_emoticons')
+-- 扩展ui
+modimport('modmain/ark_buff_icon')
+modimport('modmain/ark_extend_ui')
 -- 初始化配置
 modimport('modmain/ark_config')
+-- 加载字体
+modimport('modmain/ark_fonts')
 -- 科技
 modimport('modmain/ark_tech')
 -- 货币
@@ -66,27 +89,12 @@ modimport('modmain/ark_item')
 -- 背包
 modimport('modmain/ark_item_container')
 -- 技能
--- 导出全局变量AddSkillLevelUpRecipes
-modimport('modmain/ark_skill')
 -- 精英化
 modimport('modmain/ark_elite')
--- 扩展ui
-modimport('modmain/ark_buff_icon')
-modimport('modmain/ark_extend_ui')
--- 武器扩展
-modimport('modmain/combat_extension')
--- 护甲扩展
-modimport('modmain/armor_extension')
--- 生命值扩展
-modimport('modmain/health_extension')
--- 事件回调优先级
-modimport('modmain/priority_event_callback')
--- 特效生成器
-modimport('modmain/ark_make_fx')
--- 聊天表情
-modimport('modmain/richchat_emoticons')
--- widget 扩展
-modimport('modmain/widget_extension')
+-- 天赋
+modimport('modmain/ark_talent')
+-- 导出全局变量AddSkillLevelUpRecipes
+modimport('modmain/ark_skill')
 -- 其他模组兼容
 modimport('modmain/mods_compatibility/amiya')
 
@@ -102,6 +110,7 @@ DefineNetState("ark_elite", {
 
 DefineNetState("ark_skill", {
   id = "string:classified",
+  configPatch = "string:classified",
   status = "int:classified",
   level = "int:classified",
   energyProgress = "float:classified",
@@ -118,6 +127,12 @@ DefineNetState("ark_currency", (function()
   end
   return stateDef
 end)())
+
+DefineNetState("ark_talent", {
+  id     = "string:classified",
+  status = "int:classified",
+  level  = "int:classified",
+})
 
 DefineNetState("ark_buff_icon", {
   atlas = "string:classified",

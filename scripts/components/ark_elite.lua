@@ -22,6 +22,8 @@ end
 -- 巨兽参与击杀追踪的有效时间（秒）
 local EPIC_TRACK_TIMEOUT = 60
 local MAX_OVERFLOW_EXP = 2000000
+local HEALTH_BONUS_MODIFIER_KEY = "ark_elite_health_bonus"
+local DAMAGE_BONUS_MODIFIER_KEY = "ark_elite_damage_bonus"
 
 local function _clampOverflowExp(value)
   value = math.floor(value or 0)
@@ -364,7 +366,7 @@ function ArkElite:EliteUp()
   return self:SetElite(self.elite + 1)
 end
 
-function ArkElite:OnApplyElite(fn)
+function ArkElite:SetOnApplyElite(fn)
   self._onApplyElite = fn
 end
 
@@ -387,22 +389,17 @@ function ArkElite:_StripBonuses()
   local health = self.inst.components.health
   local combat = self.inst.components.combat
 
-  if health and (self._appliedHealthBonus or 0) ~= 0 then
-    local pct = health:GetPercent()
-    health.maxhealth = health.maxhealth - self._appliedHealthBonus
-    health:SetPercent(pct)
+  if health then
+    health.maxhealthaddmodifiers:RemoveModifier(HEALTH_BONUS_MODIFIER_KEY)
   end
-  self._appliedHealthBonus = 0
 
-  if combat and (self._appliedDamageBonus or 0) ~= 0 then
-    combat.defaultdamage = combat.defaultdamage - self._appliedDamageBonus
+  if combat then
+    combat.defaultdamageaddmodifiers:RemoveModifier(DAMAGE_BONUS_MODIFIER_KEY)
   end
-  self._appliedDamageBonus = 0
 
   if health then
     health.externalabsorbmodifiers:RemoveModifier(self.inst, "ark_elite_defense")
   end
-  self._appliedDefenseBonus = 0
 end
 
 -- Apply：根据当前累计等级从零开始叠加奖励
@@ -410,40 +407,36 @@ function ArkElite:_ApplyBonuses()
   local totalLevels = self:_GetTotalLevels()
   local cumulativeLevel = self:_GetCumulativeLevel()
   local ratio = cumulativeLevel / totalLevels
+  local health = self.inst.components.health
+  local combat = self.inst.components.combat
 
   -- 生命上限奖励
-  if self.maxHealthBonus and self.maxHealthBonus > 0 then
-    local health = self.inst.components.health
-    if health then
-      local bonus = math.floor(self.maxHealthBonus * ratio)
-      if bonus > 0 then
-        local pct = health:GetPercent()
-        health.maxhealth = health.maxhealth + bonus
-        health:SetPercent(pct)
-        self._appliedHealthBonus = bonus
-      end
+  if health then
+    local bonus = self.maxHealthBonus and self.maxHealthBonus > 0 and math.floor(self.maxHealthBonus * ratio) or 0
+    if bonus > 0 then
+      health.maxhealthaddmodifiers:SetModifier(HEALTH_BONUS_MODIFIER_KEY, bonus)
+    else
+      health.maxhealthaddmodifiers:RemoveModifier(HEALTH_BONUS_MODIFIER_KEY)
     end
   end
 
   -- 攻击力奖励
-  if self.maxDamageBonus and self.maxDamageBonus > 0 then
-    local combat = self.inst.components.combat
-    if combat then
-      local bonus = math.floor(self.maxDamageBonus * ratio)
-      if bonus > 0 then
-        combat.defaultdamage = combat.defaultdamage + bonus
-        self._appliedDamageBonus = bonus
-      end
+  if combat then
+    local bonus = self.maxDamageBonus and self.maxDamageBonus > 0 and math.floor(self.maxDamageBonus * ratio) or 0
+    if bonus > 0 then
+      combat.defaultdamageaddmodifiers:SetModifier(DAMAGE_BONUS_MODIFIER_KEY, bonus)
+    else
+      combat.defaultdamageaddmodifiers:RemoveModifier(DAMAGE_BONUS_MODIFIER_KEY)
     end
   end
 
   -- 防御奖励（通过 externalabsorbmodifiers 应用，值为 0~1 的吸收比例）
-  if self.maxDefenseBonus and self.maxDefenseBonus > 0 then
-    local health = self.inst.components.health
-    if health then
-      local bonus = self.maxDefenseBonus * ratio
+  if health then
+    local bonus = self.maxDefenseBonus and self.maxDefenseBonus > 0 and self.maxDefenseBonus * ratio or 0
+    if bonus > 0 then
       health.externalabsorbmodifiers:SetModifier(self.inst, bonus, "ark_elite_defense")
-      self._appliedDefenseBonus = bonus
+    else
+      health.externalabsorbmodifiers:RemoveModifier(self.inst, "ark_elite_defense")
     end
   end
 end
@@ -455,13 +448,11 @@ function ArkElite:ApplyElite()
   end
   self._applyEliteTask = self.inst:DoTaskInTime(0, function()
     self._applyEliteTask = nil
-    -- 1) Strip：扣掉旧奖励，回到干净基础值
-    self:_StripBonuses()
-    -- 2) Callback：让角色回调在干净基础值上操作
+    -- 1) Callback：先让角色回调处理自身逻辑
     if self._onApplyElite then
       self._onApplyElite(self.inst, self.elite, self.level)
     end
-    -- 3) Apply：从零重新叠加奖励
+    -- 2) Apply：内部会自行回收旧奖励并重算当前奖励
     self:_ApplyBonuses()
   end)
 end
@@ -479,6 +470,7 @@ function ArkElite:OnSave()
 end
 
 function ArkElite:OnLoad(data)
+  local oldElite = self.elite
   if data then
     self.potential = data.potential or self.potential
     self.elite = data.elite or self.elite
@@ -489,6 +481,14 @@ function ArkElite:OnLoad(data)
   end
   self:RefreshLevelTag()
   self:ApplyElite()
+  if data and oldElite ~= self.elite then
+    self.inst:PushEvent("ark_elite_changed", {
+      oldElite = oldElite,
+      newElite = self.elite,
+      level = self.level,
+      source = "load",
+    })
+  end
 end
 
 function ArkElite:OnRemoveFromEntity()
@@ -500,6 +500,7 @@ function ArkElite:OnRemoveFromEntity()
     self._applyEliteTask:Cancel()
     self._applyEliteTask = nil
   end
+  self:_StripBonuses()
   self:_ClearAllTrackedEpics()
   self.inst:RemoveEventCallback("killed", OnKilled)
   self.inst:RemoveEventCallback("onhitother", OnHitOther)

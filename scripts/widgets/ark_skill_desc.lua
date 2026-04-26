@@ -18,6 +18,15 @@ local function GetEnergyRecoveryTagBgTex(energyRecoveryMode)
   return ENERGY_RECOVERY_MODE_TO_TAG_BG_TEX[energyRecoveryMode] or "skill_desc_bg1.tex"
 end
 
+local function ClearWidgetChildren(widget)
+  local children = widget:GetChildren()
+  for _, child in pairs(children) do
+    widget:RemoveChild(child)
+    child:Hide()
+    child:Kill()
+  end
+end
+
 local ArkSkillDescText = Class(Widget, function(self, text, maxWidth)
   Widget._ctor(self, "ArkSkillDescText")
   self.h = 0
@@ -93,27 +102,40 @@ end
 local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
   Widget._ctor(self, "ArkSkillDesc")
   self.owner = owner
-  self.size = {400, 0} -- 初始时高度为0
   self.id = id
-  
+  self.size = {400, 0}
+  self:RefreshConfig(descConfig)
+end)
+
+function ArkSkillDesc:RefreshConfig(descConfig)
+  self.descConfig = descConfig
+  if self._onKey then
+    local mgr = GetHotKeyManager(ThePlayer)
+    mgr:CancelListenOnce(self._onKey)
+    self._onKey = nil
+  end
+
+  self.hotKeyText = nil
+  self.hotKeyButton = nil
+  self.cancelHotkeyButton = nil
+  self.size = {400, 0}
+  ClearWidgetChildren(self)
+
   local bg = self:AddChild(BorderWidget(self.size[1], 0, {
     borderWidth = 2,
     borderColor = { 0.45, 0.45, 0.45, 0.9 },
     backgroundColor = { 0.23, 0.23, 0.23, 0.7 },
   }))
   local leftOffset = -self.size[1] / 2 + PADDING
-  local topOffset = -PADDING -- 初始时从顶部开始布局
+  local topOffset = -PADDING
 
-    -- 技能名称
   local skillName = self:AddChild(Text(FALLBACK_FONT_FULL, 40, descConfig.name))
   local skillNameSizeX, skillNameSizeY = skillName:GetRegionSize()
   skillName:SetPosition(leftOffset + skillNameSizeX / 2, topOffset - skillNameSizeY / 2, 0)
-  topOffset = topOffset - skillNameSizeY -- 更新 topOffset
+  topOffset = topOffset - skillNameSizeY
 
   topOffset = topOffset - PADDING
   local tagLeftOffset = leftOffset
-  -- 小标题
-  -- 被动, 没有充能方式, 没有触发方式, 没有充能值, 没有buff持续时间
   local tags = {}
   if descConfig.activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE then
     tags = {
@@ -149,7 +171,6 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     end
   end
 
-  -- 统一计算与布局tag，减少冗余
   for _, tagCfg in ipairs(tags) do
     local tag = self:AddChild(ArkSkillDescTag(tagCfg))
     local tagW = select(1, tag:GetSize())
@@ -159,31 +180,29 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
 
   topOffset = topOffset - PADDING
 
-  -- 锁定状态下用 lockedDesc, 否则用 desc
   local desc = descConfig.locked and descConfig.lockedDesc or descConfig.desc
   if desc then
     local descText = self:AddChild(ArkSkillDescText(desc, self.size[1] - PADDING * 2))
-    local descTextSizeW, descTextSizeH = descText:GetSize()
+    local _, descTextSizeH = descText:GetSize()
     descText:SetPosition(0, topOffset, 0)
-    topOffset = topOffset -  descTextSizeH -- 更新 topOffset
+    topOffset = topOffset - descTextSizeH
   end
 
   topOffset = topOffset - PADDING
-  -- 脚部
   local foot = self:AddChild(Widget("foot"))
   foot:SetPosition(0, topOffset, 0)
   local levelString = "LV: " .. (STRINGS.UI.ARK_SKILL.LEVEL[descConfig.level] or tostring(descConfig.level))
   local levelText = foot:AddChild(Text(FALLBACK_FONT_FULL, 32, levelString))
   local levelTextSizeX, levelTextSizeY = levelText:GetRegionSize()
   levelText:SetPosition(leftOffset + levelTextSizeX / 2, 0, 0)
-  topOffset = topOffset - levelTextSizeY -- 更新 topOffset
+  topOffset = topOffset - levelTextSizeY
 
-  -- 热键
   if descConfig.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL then
     local hotKeyText = foot:AddChild(Text(FALLBACK_FONT_FULL, 32))
     self.hotKeyText = hotKeyText
     hotKeyText:SetPosition(self.size[1] / 2 - 176, 0, 0)
     self:RefreshHotKey()
+
     local hotKeyButton = foot:AddChild(TextButton("hotkeySetting"))
     self.hotKeyButton = hotKeyButton
     hotKeyButton:SetTextSize(32)
@@ -193,6 +212,7 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
     hotKeyButton:SetOnClick(function()
       self:SettingHotKey()
     end)
+
     local cancelHotkeyButton = foot:AddChild(TextButton("cancelHotkey"))
     self.cancelHotkeyButton = cancelHotkeyButton
     cancelHotkeyButton:SetTextSize(32)
@@ -203,6 +223,7 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
       self:CancelSettingHotKey()
     end)
     cancelHotkeyButton:Hide()
+
     local hotKeyResetButton = foot:AddChild(TextButton("hotkeyReset"))
     hotKeyResetButton:SetTextSize(32)
     hotKeyResetButton:SetText("[" .. STRINGS.UI.ARK_SKILL.RESET .. "]")
@@ -213,14 +234,16 @@ local ArkSkillDesc = Class(Widget, function(self, owner, descConfig, id)
       self:RefreshHotKey()
     end)
   end
-  -- topOffset = topOffset - PADDING -- 更新 topOffset
-  -- 计算最终高度
+
   self.size[2] = self.size[2] - topOffset
   bg:SetSize(self.size)
   bg:SetPosition(0, -self.size[2] / 2, 0)
-end)
+end
 
 function ArkSkillDesc:RefreshHotKey()
+  if self.hotKeyText == nil then
+    return
+  end
   local hotkey = ThePlayer.replica.ark_skill:GetHotkey(self.id)
   local hotKeyString = nil
   if hotkey ~= nil then

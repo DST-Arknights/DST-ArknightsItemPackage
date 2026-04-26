@@ -1,6 +1,7 @@
 local CONSTANTS = require "ark_constants"
 local common = require "ark_common"
 local utils = require "ark_utils"
+local hooks = require "ark_entity_hooks"
 
 local ArkSkill = Class(function(self, inst)
   self.inst = inst
@@ -30,12 +31,142 @@ local CONFIG_CALLBACK_EVENT_MAP = {
   OnLevelChange      = "ark_skill_level_change",
 }
 
-local function CopySaveData(data)
+local CopySaveData = hooks.CopySaveData
+
+local CONFIG_PATCH_FIELD_DEFS = {
+  activationMode = {
+    normalize = function(value, skillId)
+      assert(type(value) == "string", "Skill " .. skillId .. " config patch field activationMode must be a string.")
+      assert(table.contains(CONSTANTS.ACTIVATION_MODE, value), "Invalid activationMode for skill " .. skillId)
+      return value
+    end,
+  },
+  energyRecoveryMode = {
+    normalize = function(value, skillId)
+      assert(type(value) == "string", "Skill " .. skillId .. " config patch field energyRecoveryMode must be a string.")
+      assert(table.contains(CONSTANTS.ENERGY_RECOVERY_MODE, value), "Invalid energyRecoveryMode for skill " .. skillId)
+      return value
+    end,
+  },
+  hotkey = {
+    normalize = function(value, skillId)
+      assert(type(value) == "number" or type(value) == "string", "Skill " .. skillId .. " config patch field hotkey must be a number or string.")
+      return value
+    end,
+  },
+  lockedDesc = {
+    normalize = function(value, skillId)
+      assert(type(value) == "string", "Skill " .. skillId .. " config patch field lockedDesc must be a string.")
+      return value
+    end,
+  },
+  name = {
+    normalize = function(value, skillId)
+      assert(type(value) == "string", "Skill " .. skillId .. " config patch field name must be a string.")
+      return value
+    end,
+  },
+}
+
+local function ShallowCopyMap(source)
   local copy = {}
-  for key, value in pairs(data) do
+  for key, value in pairs(source or {}) do
     copy[key] = value
   end
   return copy
+end
+
+local function GetSortedMapKeys(source)
+  local keys = {}
+  for key in pairs(source or {}) do
+    table.insert(keys, key)
+  end
+  table.sort(keys)
+  return keys
+end
+
+local function NormalizeConfigPatch(configPatch, skillId)
+  assert(type(configPatch) == "table", "Skill " .. skillId .. " config patch must be a table.")
+  local normalized = {}
+  for key, value in pairs(configPatch) do
+    local fieldDef = CONFIG_PATCH_FIELD_DEFS[key]
+    assert(fieldDef ~= nil, "Unsupported config patch field for skill " .. skillId .. ": " .. tostring(key))
+    if value ~= nil then
+      normalized[key] = fieldDef.normalize(value, skillId)
+    end
+  end
+  return normalized
+end
+
+local function SerializeConfigPatch(configPatch)
+  local keys = GetSortedMapKeys(configPatch)
+  if #keys <= 0 then
+    return ""
+  end
+
+  local serialized = {}
+  for _, key in ipairs(keys) do
+    local value = configPatch[key]
+    local valueType = type(value)
+    assert(valueType == "string" or valueType == "number" or valueType == "boolean",
+      "Unsupported config patch value type for field " .. tostring(key) .. ": " .. valueType)
+    local valueLiteral = valueType == "string" and string.format("%q", value) or tostring(value)
+    table.insert(serialized, string.format("[%q]=%s", key, valueLiteral))
+  end
+
+  return "{" .. table.concat(serialized, ",") .. "}"
+end
+
+local function DeserializeConfigPatch(configPatchString, skillId)
+  if configPatchString == nil or configPatchString == "" then
+    return {}
+  end
+
+  local chunk, err = loadstring("return " .. configPatchString)
+  if chunk == nil then
+    ArkLogger:Warn("Failed to deserialize config patch for skill " .. tostring(skillId) .. ": " .. tostring(err))
+    return {}
+  end
+
+  local ok, configPatch = pcall(chunk)
+  if not ok or type(configPatch) ~= "table" then
+    ArkLogger:Warn("Invalid deserialized config patch for skill " .. tostring(skillId))
+    return {}
+  end
+
+  local okNormalize, normalized = pcall(NormalizeConfigPatch, configPatch, skillId)
+  if not okNormalize then
+    ArkLogger:Warn("Failed to normalize config patch for skill " .. tostring(skillId) .. ": " .. tostring(normalized))
+    return {}
+  end
+
+  return normalized
+end
+
+local function MergeSkillConfig(baseConfig, configPatch)
+  local merged = ShallowCopyMap(baseConfig)
+  for key, value in pairs(configPatch or {}) do
+    merged[key] = value
+  end
+  return merged
+end
+
+local function GetChangedConfigPatchKeys(previousPatch, nextPatch)
+  local changedKeys = {}
+  local keySet = {}
+  for key in pairs(previousPatch or {}) do
+    keySet[key] = true
+  end
+  for key in pairs(nextPatch or {}) do
+    keySet[key] = true
+  end
+  for key in pairs(keySet) do
+    if previousPatch[key] ~= nextPatch[key] then
+      table.insert(changedKeys, key)
+    end
+  end
+  table.sort(changedKeys)
+  return changedKeys
 end
 
 local function NormalizeBuiltinSkillProfile(profile)
@@ -61,7 +192,10 @@ local SingleSkill = Class(function(self, manager, id)
   self.manager = manager
   self.inst = manager.inst
   self.id = id
+  self.configPatch = {}
+  self.configPatchString = ""
   self._lastActivateTime = nil
+  self._lastDeactivateTime = nil
   self.cancelDebounceTime = 0.3
   -- 运行态数据（含定时器控制）
   self.data = {
@@ -73,10 +207,11 @@ local SingleSkill = Class(function(self, manager, id)
     activationStacks = 0,
     force = false,
     tickEnergy = false,
-    tickBuff = false
+    tickBuff = false,
+    activateCount = 0,
   }
   -- 注册事件回调（按事件名索引）
-  self._callbacks = {}
+  self:_InitItemBase()
   self._activateTest = nil
   -- 从配置中自动注册事件回调
   local cfg = GetArkSkillConfigById(id)
@@ -101,20 +236,82 @@ local SingleSkill = Class(function(self, manager, id)
   self._cfgOnRemove = cfg.OnRemove
   self._cfgOnSave   = cfg.OnSave
   self._cfgOnLoad   = cfg.OnLoad
-  -- 本技能注册的所有 hook token，供 _CleanupOwnedHooks 兜底清理
-  self._ownedTokens = {}
-  -- 本技能注册的所有事件监听记录，供 _CleanupOwnedHooks 兜底清理
-  -- 每条记录：{ listener, event, fn, source, sourceRemoveFn }
-  -- source == nil 表示监听自身（skill.inst）
-  self._ownedListeners = {}
 end)
 
-function SingleSkill:GetConfig()
+function SingleSkill:GetBaseConfig()
   return GetArkSkillConfigById(self.id)
 end
 
+function SingleSkill:GetConfigPatch()
+  return ShallowCopyMap(self.configPatch)
+end
+
+function SingleSkill:GetConfigPatchString()
+  return self.configPatchString
+end
+
+function SingleSkill:GetResolvedConfig()
+  return MergeSkillConfig(self:GetBaseConfig(), self.configPatch)
+end
+
+function SingleSkill:GetConfig()
+  return self:GetResolvedConfig()
+end
+
+function SingleSkill:_ApplyConfigPatch(nextPatch, opts)
+  opts = opts or {}
+  nextPatch = NormalizeConfigPatch(nextPatch, self.id)
+  local nextPatchString = SerializeConfigPatch(nextPatch)
+  if nextPatchString == self.configPatchString then
+    return false
+  end
+
+  local previousPatch = self:GetConfigPatch()
+  self.configPatch = nextPatch
+  self.configPatchString = nextPatchString
+
+  if opts.sync ~= false then
+    self.manager:SyncSkillStatus(self.id)
+  end
+
+  self.inst:PushEvent("ark_skill_config_patch", {
+    skillId = self.id,
+    previousPatch = previousPatch,
+    patch = self:GetConfigPatch(),
+    changedKeys = GetChangedConfigPatchKeys(previousPatch, self.configPatch),
+    source = opts.source,
+  })
+  return true
+end
+
+function SingleSkill:PatchConfig(patch, opts)
+  assert(type(patch) == "table", "Skill " .. self.id .. " PatchConfig patch must be a table.")
+  local nextPatch = self:GetConfigPatch()
+  for key, value in pairs(patch) do
+    nextPatch[key] = value
+  end
+  return self:_ApplyConfigPatch(nextPatch, opts)
+end
+
+function SingleSkill:ClearConfigPatch(keys, opts)
+  local nextPatch
+  if keys == nil then
+    nextPatch = {}
+  else
+    if type(keys) ~= "table" then
+      keys = { keys }
+    end
+    nextPatch = self:GetConfigPatch()
+    for _, key in ipairs(keys) do
+      assert(CONFIG_PATCH_FIELD_DEFS[key] ~= nil, "Unsupported config patch field for skill " .. self.id .. ": " .. tostring(key))
+      nextPatch[key] = nil
+    end
+  end
+  return self:_ApplyConfigPatch(nextPatch, opts)
+end
+
 function SingleSkill:GetConfigLevels()
-  return self:GetConfig().levels
+  return self:GetBaseConfig().levels
 end
 
 function SingleSkill:GetMaxLevel()
@@ -130,44 +327,23 @@ function SingleSkill:GetLevelParams()
   return self:GetLevelConfig().params or {}
 end
 
+function SingleSkill:GetLastActivateTime()
+  return self._lastActivateTime
+end
+
+function SingleSkill:GetLastDeactivateTime()
+  return self._lastDeactivateTime
+end
+
+function SingleSkill:GetActivateCount()
+  return self.data.activateCount
+end
+
 function SingleSkill:SyncStatus()
   self.manager:SyncSkillStatus(self.id)
 end
 
 -- 事件工具方法
-function SingleSkill:_AddCallback(eventName, fn)
-  if fn == nil then
-    return
-  end
-  local list = self._callbacks[eventName]
-  if not list then
-    list = {}
-    self._callbacks[eventName] = list
-  end
-  for _, cb in ipairs(list) do
-    if cb == fn then
-      return
-    end
-  end
-  table.insert(list, fn)
-end
-
-function SingleSkill:_RemoveCallback(eventName, fn)
-  if fn == nil then
-    return
-  end
-  local list = self._callbacks[eventName]
-  if not list then
-    return
-  end
-  for i, cb in ipairs(list) do
-    if cb == fn then
-      table.remove(list, i)
-      return
-    end
-  end
-end
-
 function SingleSkill:_Emit(eventName, payload)
   if payload == nil then
     payload = {}
@@ -268,32 +444,13 @@ function SingleSkill:SetActivateTest(fn)
 end
 
 -- ── Hook 系统（SingleSkill 层） ───────────────────────────────────────────────
-
--- 注册一个与本技能生命周期绑定的函数中间件。
--- fn 签名：function(next, ...) ... return next(...) end
--- 返回 token，可传入 UnhookFunction 做定点移除。
-function SingleSkill:HookFunction(obj, funcName, fn)
-  local token, entryId = self.manager:_HookRegister(obj, funcName, fn)
-  table.insert(self._ownedTokens, { token = token, entryId = entryId })
-  return token
-end
-
--- 定点移除指定 token 的中间件；token 不存在或已清理时静默返回（幂等）。
-function SingleSkill:UnhookFunction(token)
-  if token == nil then return end
-  for i, owned in ipairs(self._ownedTokens) do
-    if owned.token == token then
-      self.manager:_HookUnregister(token, owned.entryId)
-      table.remove(self._ownedTokens, i)
-      return
-    end
-  end
-end
+-- HookFunction / UnhookFunction / ListenForEvent / RemoveEventCallback /
+-- _CleanupOwnedHooks 由 hooks.InstallItemBase(SingleSkill) 注入（见文件末尾）。
 
 -- 仅在激活期间（BUFFING/BULLETING）生效的 hook。
 -- 激活时自动挂载，deactivate（含 Cancel）时自动清除，读档恢复时也会正确挂载。
 -- fn 签名同 HookFunction。
-function SingleSkill:HookWhileActive(obj, funcName, fn)
+function SingleSkill:HookFunctionWhileActivating(obj, funcName, fn)
   local activeToken = nil
   self:_AddCallback("ark_skill_activate_effect", function()
     if not activeToken then
@@ -312,76 +469,13 @@ function SingleSkill:HookWhileActive(obj, funcName, fn)
   end
 end
 
--- 清理本技能注册的所有 hook 与事件监听（由 Remove 在最后调用，作为安全兜底）。
-function SingleSkill:_CleanupOwnedHooks()
-  for _, owned in ipairs(self._ownedTokens) do
-    self.manager:_HookUnregister(owned.token, owned.entryId)
-  end
-  self._ownedTokens = {}
-  -- 同时清理所有事件监听
-  local listeners = self._ownedListeners
-  self._ownedListeners = {}
-  for _, entry in ipairs(listeners) do
-    entry.listener:RemoveEventCallback(entry.event, entry.fn, entry.source)
-    -- 若有为 source 的 onremove 注册的守卫回调，也一并移除
-    if entry.sourceRemoveFn then
-      entry.listener:RemoveEventCallback("onremove", entry.sourceRemoveFn, entry.source)
-    end
-  end
-end
-
 -- ── 事件监听系统（SingleSkill 层）─────────────────────────────────────────
-
--- 注册一个与本技能生命周期绑定的事件监听。
--- 签名：ListenForEvent(event, fn, [source])
---   event    : 事件名
---   fn       : 回调，签名 function(source_inst, data)
---   source   : 可选，被监听的实体（默认为 skill.inst 自身）
--- 返回 token，可传入 RemoveEventCallback 做定点移除。
--- 若 source 是外部实体，框架自动在其 onremove 时清理本监听，防止悬空。
-function SingleSkill:ListenForEvent(event, fn, source)
-  local listener = self.inst
-  local token = Symbol("listen_" .. tostring(event))
-  local entry = {
-    token          = token,
-    listener       = listener,
-    event          = event,
-    fn             = fn,
-    source         = source,  -- nil == 监听自身
-    sourceRemoveFn = nil,
-  }
-  -- source 是外部实体时，注册 onremove 守卫，source 死亡时自动清理本条记录
-  if source ~= nil and source ~= listener then
-    entry.sourceRemoveFn = function()
-      self:RemoveEventCallback(token)
-    end
-    listener:ListenForEvent("onremove", entry.sourceRemoveFn, source)
-  end
-  table.insert(self._ownedListeners, entry)
-  listener:ListenForEvent(event, fn, source)
-  return token
-end
-
--- 定点移除指定 token 的事件监听；token 不存在或已清理时静默返回（幂等）。
-function SingleSkill:RemoveEventCallback(token)
-  if token == nil then return end
-  local listeners = self._ownedListeners
-  for i, entry in ipairs(listeners) do
-    if entry.token == token then
-      entry.listener:RemoveEventCallback(entry.event, entry.fn, entry.source)
-      if entry.sourceRemoveFn then
-        entry.listener:RemoveEventCallback("onremove", entry.sourceRemoveFn, entry.source)
-      end
-      table.remove(listeners, i)
-      return
-    end
-  end
-end
+-- ListenForEvent / RemoveEventCallback / _CleanupOwnedHooks 由共享模块注入。
 
 -- 仅在激活期间（BUFFING/BULLETING）生效的事件监听。
 -- 激活时自动注册，deactivate（含 Cancel）时自动移除，读档恢复时也会正确挂载。
 -- 签名与 ListenForEvent 相同；无需手动管理生命周期。
-function SingleSkill:ListenForEventWhileActive(event, fn, source)
+function SingleSkill:ListenForEventWhileActivating(event, fn, source)
   local activeToken = nil
   self:_AddCallback("ark_skill_activate_effect", function()
     if not activeToken then
@@ -422,6 +516,7 @@ function SingleSkill:SetEnergyRecovering(force)
 
   -- 从 BUFF/BULLET 状态回到充能，视为一次“结束激活”
   if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
+    self._lastDeactivateTime = GetTime()
     self:_Emit("ark_skill_deactivate", {
       fromStatus = prevStatus,
       force = force
@@ -469,6 +564,7 @@ function SingleSkill:Lock()
   self.manager:SyncSkillStatus(self.id)
 
   if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
+    self._lastDeactivateTime = GetTime()
     self:_Emit("ark_skill_deactivate", {
       fromStatus = prevStatus,
       force = false
@@ -624,6 +720,7 @@ function SingleSkill:Activate(params)
   if not params then params = { target = nil, targetPos = nil, force = false } end
   local data = self.data
   data.activationStacks = data.activationStacks - 1
+  data.activateCount = data.activateCount + 1
   local lvl = self:GetLevelConfig()
   if lvl.bulletCount then
     data.bulletCount = lvl.bulletCount
@@ -648,7 +745,11 @@ end
 
 function SingleSkill:TryActivate(params)
   if not params then params = { target = nil, targetPos = nil, force = false } end
-  if not self:CanActivate(params) then
+  local can, reason = self:CanActivate(params)
+  if not can then
+    if reason then
+      SayAndVoice(self.inst, reason)
+    end
     return false
   end
   return self:Activate(params)
@@ -676,14 +777,14 @@ function SingleSkill:CutBullet(value)
   if data.bulletCount < 0 then
     data.bulletCount = 0
   end
-  self.manager:SyncSkillStatus(self.id)
   self:_Emit("ark_skill_bullet_cut", {
     cut = value,
     bulletCount = data.bulletCount
   })
   if data.bulletCount == 0 then
-    self:SetEnergyRecovering()
+       self:SetEnergyRecovering()
   end
+  self.manager:SyncSkillStatus(self.id)
 end
 
 function SingleSkill:Step(dt)
@@ -714,11 +815,14 @@ function SingleSkill:OnLoad(saved)
   if not table.contains(CONSTANTS.SKILL_STATUS, stateData.status) then
     return
   end
+  self.configPatch = DeserializeConfigPatch(saved.configPatch, self.id)
+  self.configPatchString = SerializeConfigPatch(self.configPatch)
   self.data = MergeMaps(self.data, stateData)
   self.data.level = math.min(self.data.level or 1, self:GetMaxLevel())
   self.manager:SyncSkillStatus(self.id)
   self:RefreshTag()
   self._lastActivateTime = nil
+  self._lastDeactivateTime = nil
 
   if self:IsActivating() then
     self:_EmitActivateEffect({ source = "load" })
@@ -733,7 +837,7 @@ function SingleSkill:Remove()
     self.refreshTagTask:Cancel()
     self.refreshTagTask = nil
   end
-  self:Cancel()  -- 若在激活中，触发 deactivate → HookWhileActive 自动清除
+  self:Cancel()  -- 若在激活中，触发 deactivate → HookFunctionWhileActivating 自动清除
   self:Lock()
   if self._cfgOnRemove and not self._removing then
     self._cfgOnRemove(self, {})
@@ -783,14 +887,8 @@ function ArkSkill:_SyncBuiltinSkillState(id)
   end
 
   local shouldUnlock = self:CanUnlockSkill(id)
-  if shouldUnlock then
-    if skill.data.status == CONSTANTS.SKILL_STATUS.LOCKED then
-      skill:Unlock()
-    end
-  else
-    if skill.data.status ~= CONSTANTS.SKILL_STATUS.LOCKED then
-      skill:Lock()
-    end
+  if shouldUnlock and skill.data.status == CONSTANTS.SKILL_STATUS.LOCKED then
+    skill:Unlock()
   end
 end
 
@@ -868,16 +966,39 @@ function ArkSkill:GetSkill(id)
   return self.skillsById[id]
 end
 
+function ArkSkill:GetSkillLastActivateTime(id)
+  local skill = self:GetSkill(id)
+  return skill and skill:GetLastActivateTime() or nil
+end
+
+function ArkSkill:GetSkillLastDeactivateTime(id)
+  local skill = self:GetSkill(id)
+  return skill and skill:GetLastDeactivateTime() or nil
+end
+
+-- 获取全部技能
+function ArkSkill:GetAllSkills()
+  local res = {}
+  for _, value in pairs(self.skillsById) do
+    table.insert(res, value)
+  end
+  return res
+end
+
 function ArkSkill:SyncSkillStatus(id)
   local s = self:GetSkill(id)
   if not s then
     return
   end
-  self.inst.replica.ark_skill:SyncSkillStatus(id, s.data)
-end
-
-function ArkSkill:RequestSyncSkillStatus(id)
-  self:SyncSkillStatus(id)
+  self.inst.replica.ark_skill:SyncSkillStatus(id, {
+    status = s.data.status,
+    level = s.data.level,
+    energyProgress = s.data.energyProgress,
+    buffProgress = s.data.buffProgress,
+    bulletCount = s.data.bulletCount,
+    activationStacks = s.data.activationStacks,
+    configPatch = s:GetConfigPatchString(),
+  })
 end
 
 function ArkSkill:OnUpdate(dt)
@@ -899,6 +1020,7 @@ function ArkSkill:OnSave()
       table.insert(data.installedSkills, id)
       local savedSkill = {
         data = CopySaveData(skill.data),
+        configPatch = skill:GetConfigPatchString() ~= "" and skill:GetConfigPatchString() or nil,
         cfg = nil,
       }
       if skill._cfgOnSave then
@@ -944,62 +1066,12 @@ function ArkSkill:OnPreRemoveFromEntity()
 end
 
 -- ── Hook 系统（ArkSkill manager 层） ─────────────────────────────────────────
--- 每个 (obj, funcName) 对只替换一次原函数，所有 SingleSkill 的中间件统一调度，
--- 避免多个技能重复包装同一函数导致的调用栈嵌套问题。
+-- _GetOrCreateHookChain / _HookRegister / _HookUnregister 由共享模块注入。
+hooks.InstallManagerHooks(ArkSkill)
 
--- 获取或创建 hook 链；首次调用时替换 obj[funcName] 为调度器。
-function ArkSkill:_GetOrCreateHookChain(obj, funcName)
-  local id = tostring(obj) .. "\0" .. funcName
-  if not self._sharedHookRegistry[id] then
-    local original = obj[funcName]
-    assert(type(original) == "function",
-      "HookFunction: '" .. tostring(funcName) .. "' 不是函数: " .. tostring(obj))
-    local entry = {
-      id       = id,
-      obj      = obj,
-      key      = funcName,
-      original = original,
-      mws      = {},  -- 有序列表 { token, fn }，无空洞
-    }
-    obj[funcName] = function(...)
-      local mws = entry.mws
-      local idx = 0
-      local function callNext(...)
-        idx = idx + 1
-        if mws[idx] then
-          return mws[idx].fn(callNext, ...)
-        else
-          return entry.original(...)
-        end
-      end
-      return callNext(...)
-    end
-    self._sharedHookRegistry[id] = entry
-  end
-  return self._sharedHookRegistry[id]
-end
-
--- 向 hook 链末尾追加一个中间件，返回 (token, entryId)。
-function ArkSkill:_HookRegister(obj, funcName, fn)
-  local entry = self:_GetOrCreateHookChain(obj, funcName)
-  local token = Symbol("hook_" .. tostring(funcName))
-  table.insert(entry.mws, { token = token, fn = fn })
-  return token, entry.id
-end
-
--- 移除指定 token 的中间件。
--- 链空时调度器仍留在 obj 上作为透传，不还原原函数：
--- 其他模组可能在任意时刻包装了同一接口，强制还原会抹掉它们的 hook。
-function ArkSkill:_HookUnregister(token, entryId)
-  if token == nil then return end
-  local entry = self._sharedHookRegistry[entryId]
-  if not entry then return end
-  for i, mw in ipairs(entry.mws) do
-    if mw.token == token then
-      table.remove(entry.mws, i)
-      return
-    end
-  end
-end
+-- SingleSkill 基础设施由共享模块注入：
+-- _InitItemBase / _AddCallback / _RemoveCallback / HookFunction / UnhookFunction /
+-- ListenForEvent / RemoveEventCallback / _CleanupOwnedHooks
+hooks.InstallItemBase(SingleSkill)
 
 return ArkSkill

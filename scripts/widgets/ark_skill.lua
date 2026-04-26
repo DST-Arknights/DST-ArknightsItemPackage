@@ -6,13 +6,31 @@ local Text = require "widgets/text"
 
 local ArkSkillDesc = require "widgets/ark_skill_desc"
 
+local function ShallowCopyMap(source)
+  local copy = {}
+  for key, value in pairs(source or {}) do
+    copy[key] = value
+  end
+  return copy
+end
+
+local function MergeSkillConfig(baseConfig, configPatch)
+  local merged = ShallowCopyMap(baseConfig)
+  for key, value in pairs(configPatch or {}) do
+    merged[key] = value
+  end
+  return merged
+end
+
 -- 闪烁效果配置
 local BLINK_DURATION = 0.3  -- 单次闪烁持续时间（秒）
 
 local ArkSkill = Class(Widget, function(self, owner, config)
   Widget._ctor(self, "ArkSkill")
   self.owner = owner
-  self.config = config
+  self.baseConfig = config
+  self.configPatch = {}
+  self.config = MergeSkillConfig(self.baseConfig, self.configPatch)
 
   self.id = config.id -- 服务端通信改为按 id
   self.iconSize = {64, 64}
@@ -102,6 +120,11 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.activationStacksText = activationChargeText
 
   self.levelConfig = self.config.levels[1]
+  self.level = 1
+  self.status = CONSTANTS.SKILL_STATUS.LOCKED
+  self.energyProgress = 0
+  self.buffProgress = 0
+  self.bulletCount = 0
   self.activationStacks = 0
   self:SetEnergyProgress(0)
   self:SetBuffProgress(0)
@@ -183,6 +206,18 @@ function ArkSkill:GetSkillDescConfig()
     level = self.level or 1,
     desc = self.levelConfig.desc,
   }
+end
+
+function ArkSkill:SyncConfigPatch(configPatch)
+  self.configPatch = ShallowCopyMap(configPatch)
+  self.config = MergeSkillConfig(self.baseConfig, self.configPatch)
+  self.levelConfig = self.config.levels[self.level or 1]
+  if self.hoverwidget and self.hoverwidget.RefreshConfig then
+    self.hoverwidget:RefreshConfig(self:GetSkillDescConfig())
+  end
+  if self.initComplete then
+    self:RefreshVisualState()
+  end
 end
 
 function ArkSkill:CreateSkillDescWidget()
@@ -381,30 +416,40 @@ function ArkSkill:UpdateStatusBar(status, autoActivationMode, bulletCount)
   end
 end
 
+function ArkSkill:RefreshVisualState()
+  local status = self.status
+  local activationMode = self.config.activationMode
+  local autoActivationMode = isAutoActivation(activationMode)
+  local currentActivationStacks = self.activationStacks or 0
+  local readyStacks = autoActivationMode and self.levelConfig.maxActivationStacks or 1
+
+  self:UpdateActivationStacks(currentActivationStacks)
+  self:UpdateModeIndicators(status, autoActivationMode)
+  self:UpdateStateShadows(status, activationMode, autoActivationMode, readyStacks, self.buffProgress or 0)
+  self:UpdateEnergyTimer(status, self.energyProgress or 0, currentActivationStacks)
+  self:UpdateStatusBar(status, autoActivationMode, self.bulletCount or 0)
+  self:RecurrentStatusImageSize()
+end
+
 function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bulletCount, activationStacks)
   self.status = status
   local wasInitComplete = self.initComplete
   self.initComplete = true
   self.level = level
+  self.energyProgress = energyProgress
+  self.buffProgress = buffProgress
+  self.bulletCount = bulletCount
   self.levelConfig = self.config.levels[level]
 
   local previousActivationStacks = self.activationStacks or 0
   local currentActivationStacks = activationStacks or 0
-  local activationMode = self.config.activationMode
-  local autoActivationMode = isAutoActivation(activationMode)
-  local readyStacks = autoActivationMode and self.levelConfig.maxActivationStacks or 1
 
   if wasInitComplete and currentActivationStacks > previousActivationStacks then
     self:StartBlink()
   end
 
-  self:UpdateActivationStacks(currentActivationStacks)
-  self:UpdateModeIndicators(status, autoActivationMode)
-  self:UpdateStateShadows(status, activationMode, autoActivationMode, readyStacks, buffProgress)
-  self:UpdateEnergyTimer(status, energyProgress, currentActivationStacks)
-  self:UpdateStatusBar(status, autoActivationMode, bulletCount)
-
-  self:RecurrentStatusImageSize()
+  self.activationStacks = currentActivationStacks
+  self:RefreshVisualState()
 end
 
 -- OnUpdate 需要第一帧检测, 第一帧要作点事情
@@ -446,7 +491,7 @@ function ArkSkill:OnControl(control, down)
     return true
   end
   if control == CONTROL_ACCEPT then
-    if down and self.owner.replica.ark_skill then
+    if down and self.config.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and self.owner.replica.ark_skill then
       self.owner.replica.ark_skill:TryActivateSkill(self.id)
       return true
     end

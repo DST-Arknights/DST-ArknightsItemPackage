@@ -246,6 +246,11 @@ return {
     BULLETING = 4,
   },
 
+  TALENT_STATUS = {
+    LOCKED = 1,
+    ACTIVE = 2,
+  },
+
   ENERGY_RECOVERY_MODE = {
     NONE = "none",
     AUTO = "auto",

@@ -1,5 +1,6 @@
 local ArkEliteUI = require "widgets/ark_elite_ui"
 local ArkSkills = require "widgets/ark_skills"
+local ArkTalents = require "widgets/ark_talents"
 local Widget = require "widgets/widget"
 local UIArkCurrency = require "widgets/ui_ark_currency"
 local ExpBar = require "widgets/ark_exp_bar"
@@ -10,7 +11,7 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
   Widget._ctor(self, "ArkExtendUi")
   self.owner = owner
   self.controls = controls
-  self.handBase = controls.bottom_root:AddChild(Widget("arkExtendUiHandBase"))
+  self.handBase = controls.inv.root:AddChild(Widget("arkExtendUiHandBase"))
   self.toprightBase = controls.topright_root:AddChild(Widget("arkExtendUiToprightBase"))
   self.setup_task = owner:DoTaskInTime(0, function()
     if owner.replica.ark_elite then
@@ -23,6 +24,7 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
     self.setup_task = nil
   end)
   self:SetupSkill()
+  self:SetupTalents()
   self:SetupBuffIcons()
   self:SetupEmoticonBtn()
 end)
@@ -85,6 +87,24 @@ function ArkExtendUi:RemoveSkill()
   if self.skills then
     self.skills:Kill()
     self.skills = nil
+  end
+  self:UpdateLayout()
+end
+
+function ArkExtendUi:SetupTalents()
+  if self.talents then return end
+  local talents = self.handBase:AddChild(ArkTalents(self.owner))
+  self.talents = talents
+  self.talents.updatedLayout = function()
+    self:UpdateLayout()
+  end
+  self:UpdateLayout()
+end
+
+function ArkExtendUi:RemoveTalents()
+  if self.talents then
+    self.talents:Kill()
+    self.talents = nil
   end
   self:UpdateLayout()
 end
@@ -176,24 +196,38 @@ function ArkExtendUi:RemoveBuffIcons()
   self:UpdateLayout()
 end
 function ArkExtendUi:UpdateLayout()
-  ArkLogger:Debug('ark_extend_ui UpdateLayout')
-  self.handBase:SetPosition(-486, 120, 0)
+  local invScale = 0.6
+	if TheNet:GetServerGameMode() == "lavaarena" then
+	    invScale = .55
+  elseif TheNet:GetServerGameMode() == "quagmire" then
+    invScale = 0.75
+  end
+  local BASE_Y = 130
+  local y = BASE_Y
+  if self.controls.inv.toprow then
+    local pos = self.controls.inv.toprow:GetPosition()
+    y = y + pos.y
+  end
+  self.handBase:SetPosition(-810, y, 0)
 
   local ELITE_X = 20
   local ELITE_WIDTH = 40
   local ELITE_HEIGHT = 100
   local CONTENT_X = 50
   local SKILLS_Y = 18
-  local BUFF_Y = -16
+  local TALENTS_Y = -8        -- 天赋栏 Y，位于技能与 buff 之间
+  local BUFF_Y = -12
   local EXP_Y = -40
-  local BUFF_GAP_AFTER_SKILLS = 16
+  local BUFF_GAP_AFTER_TALENTS = 10
+  local TALENT_GAP_AFTER_SKILLS = 16
   local EMOTICON_BUTTON_GAP = 12
   local EMOTICON_PANEL_LEFT = -6
   local EMOTICON_PANEL_GAP = 12
 
-  local hasElite = self.elite ~= nil
-  local hasSkills = self.skills ~= nil
-  local hasExpBar = self.expBar ~= nil
+  local hasElite  = self.elite   ~= nil
+  local hasSkills = self.skills  ~= nil
+  local hasTalents = self.talents ~= nil
+  local hasExpBar = self.expBar  ~= nil
 
   if hasElite then
     self.elite:SetPosition(ELITE_X, 0, 0)
@@ -205,20 +239,38 @@ function ArkExtendUi:UpdateLayout()
   end
 
   local collapseDownY = hasExpBar and 0 or (EXP_Y - BUFF_Y)
-  local skillsY = SKILLS_Y + collapseDownY
-  local buffY = BUFF_Y + collapseDownY
+  local skillsY  = SKILLS_Y  + collapseDownY
+  local talentsY = TALENTS_Y + collapseDownY
+  local buffY    = BUFF_Y    + collapseDownY
 
-  local skillsW = hasSkills and self.skills:GetSize() or 0
+  local skillsW  = hasSkills  and self.skills:GetSize()  or 0
+  local talentsW = hasTalents and self.talents:GetSize() or 0
+
   if hasSkills then
     self.skills:SetPosition(contentX, skillsY, 0)
   end
   if hasExpBar then
     self.expBar:SetPosition(contentX, EXP_Y, 0)
   end
+
+  -- 天赋栏：紧接在技能后，X 轴延续技能右边缘+间距
+  if hasTalents then
+    local talentX = contentX
+    if hasSkills then
+      talentX = contentX + skillsW + TALENT_GAP_AFTER_SKILLS
+    end
+    self.talents:SetPosition(talentX, talentsY, 0)
+  end
+
+  -- buff栏：紧接在天赋后（或技能后）
   if self.buffIcons then
     local buffX = contentX
-    if hasSkills then
-      buffX = contentX + skillsW + BUFF_GAP_AFTER_SKILLS
+    if hasTalents and talentsW > 0 then
+      local talentStartX = contentX
+      if hasSkills then talentStartX = contentX + skillsW + TALENT_GAP_AFTER_SKILLS end
+      buffX = talentStartX + talentsW + BUFF_GAP_AFTER_TALENTS
+    elseif hasSkills then
+      buffX = contentX + skillsW + TALENT_GAP_AFTER_SKILLS
     end
     self.buffIcons:SetPosition(buffX, buffY, 0)
   end
@@ -247,6 +299,7 @@ function ArkExtendUi:UpdateLayout()
     local panelY = panelBottomY + panelHeight * 0.5
     self.emoticonBtn:SetAnchors(buttonX, buttonY, panelX, panelY)
   end
+  self.handBase:SetScale(1.2,1.2)
 end
 
 return ArkExtendUi

@@ -1,6 +1,3 @@
-local utils = require('ark_utils')
-local CONSTANTS = require "ark_constants"
-
 local function getPrefabAssetsCode(prefab, withTex)
     -- 默认为true
     withTex = withTex == nil and true or withTex
@@ -28,6 +25,10 @@ local function genArkEliteLevelUpPrefabName(prefab, level)
   return 'ark_elite_level_up_' .. prefab .. '_' .. level
 end
 
+local function genArkTalentPrefabNameById(id)
+  return 'ark_talent_' .. id
+end
+
 local function parseArkEliteLevelUpPrefabName(prefabName)
   -- 匹配格式: ark_elite_level_up_<level>，其中 level 为数字
   local _, level = string.match(prefabName, "^ark_elite_level_up_(.+)_(%d+)$")
@@ -38,9 +39,12 @@ local function parseArkEliteLevelUpPrefabName(prefabName)
 end
 
 
-return {
+
+local ArkCommon = {
     getPrefabAssetsCode = getPrefabAssetsCode,
     genArkSkillLevelUpPrefabNameById = genArkSkillLevelUpPrefabNameById,
     genArkEliteLevelUpPrefabName = genArkEliteLevelUpPrefabName,
     parseArkEliteLevelUpPrefabName = parseArkEliteLevelUpPrefabName,
+    genArkTalentPrefabNameById = genArkTalentPrefabNameById,
 }
+return ArkCommon

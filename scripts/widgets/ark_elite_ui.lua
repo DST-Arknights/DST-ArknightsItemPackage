@@ -130,7 +130,6 @@ function EliteUI:GetEliteHoverText(elite)
 end
 
 function EliteUI:RefreshHoverTips()
-  ArkLogger:Debug("RefreshHoverTips", self.currentPotential, self.currentElite, self.currentLevel)
   self.potentialHoverTip:SetText(string.format(STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL, self.currentPotential or 0))
   self.eliteHoverTip:SetText(self:GetEliteHoverText(self.currentElite))
   self.levelHoverTip:SetText(string.format(STRINGS.UI.ARK_ELITE.HOVER.LEVEL, self.currentLevel))

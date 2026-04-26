@@ -41,7 +41,10 @@ function Talker:Play(string_path, params)
   if not sound_data then
     ArkLogger:Warn("Talker:Play sound_key not found", string_path)
   elseif self.inst.SoundEmitter then
-    self.inst.SoundEmitter:PlaySound(sound_data.path) 
+    if not params.overlap then
+      self.inst.SoundEmitter:KillSound(string_path)
+    end
+    self.inst.SoundEmitter:PlaySound(sound_data.path, string_path)
   end
   if not params.notext then
     local text = self.text_cache_map[string_path]

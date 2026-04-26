@@ -76,6 +76,21 @@ local function UpdateAttackSpeed(inst, speed)
 end
 
 AddComponentPostInit("combat", function(self)
+  local function cacl_func(inst, modifier, base_value)
+    return (base_value + self.defaultdamageaddmodifiers:Get()) * self.defaultdamagemultmodifiers:Get()
+  end
+  InstallClassPropertyModifier(self, "defaultdamage", {
+    modifier_name = "defaultdamageaddmodifiers",
+    default_value = 0,
+    combine_fun = SourceModifierList.additive,
+    calc_fun = cacl_func
+  })
+  InstallClassPropertyModifier(self, "defaultdamage", {
+    modifier_name = "defaultdamagemultmodifiers",
+    default_value = 1,
+    combine_fun = SourceModifierList.multiply,
+    calc_fun = cacl_func
+  })
   self.inst.replica.combat:SetAttackSpeed(1)
   -- 初始化攻击速度修改器
   self.attackspeedmodifiers = SourceModifierList(self.inst, nil, nil, UpdateAttackSpeed)
