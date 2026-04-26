@@ -1,4 +1,5 @@
 local CONSTANTS = require "ark_constants"
+local builtinProfile = require "ark_builtin_profile"
 local hooks = require "ark_entity_hooks"
 
 local CopySaveData = hooks.CopySaveData
@@ -11,26 +12,6 @@ local CONFIG_CALLBACK_EVENT_MAP = {
   OnUnlocked    = "ark_talent_unlocked",
   OnLevelChange = "ark_talent_level_change",
 }
-
-local function NormalizeBuiltinTalentProfile(profile)
-  profile = profile or {}
-
-  local normalized = {}
-  local requiredElite = profile.requiredElite
-  if requiredElite == nil then
-    requiredElite = 1
-  end
-  requiredElite = math.max(1, math.floor(requiredElite))
-  normalized.requiredElite = requiredElite
-
-  -- eliteLevelMap: { [eliteLevel] = talentLevel }
-  -- 精英等级变化时用于自动设置天赋等级
-  if type(profile.eliteLevelMap) == "table" then
-    normalized.eliteLevelMap = profile.eliteLevelMap
-  end
-
-  return normalized
-end
 
 -- ── SingleTalent ─────────────────────────────────────────────────────────────
 -- 封装单个天赋的运行态与行为。天赋无激活状态机，仅有 LOCKED / ACTIVE 两态。
@@ -260,22 +241,9 @@ function ArkTalent:CanUnlockTalent(id)
   return false, "elite_insufficient"
 end
 
--- 根据当前 elite 计算内置天赋应有的等级（仅当 profile.eliteLevelMap 有映射时）
 function ArkTalent:_GetBuiltinTalentTargetLevel(id)
   local profile = self.builtinTalentProfilesById[id]
-  if not profile or not profile.eliteLevelMap then return nil end
-  local currentElite = self:_GetCurrentElite()
-  if currentElite == nil then return nil end
-  -- 取 eliteLevelMap 中 <= currentElite 的最大 elite 键对应的等级
-  local targetLevel = nil
-  for eliteKey, level in pairs(profile.eliteLevelMap) do
-    if eliteKey <= currentElite then
-      if targetLevel == nil or level > targetLevel then
-        targetLevel = level
-      end
-    end
-  end
-  return targetLevel
+  return builtinProfile.GetTargetLevelByElite(profile, self:_GetCurrentElite())
 end
 
 function ArkTalent:_SyncBuiltinTalentState(id)
@@ -308,12 +276,12 @@ function ArkTalent:_SyncBuiltinTalents()
   end
 end
 
--- 声明内置天赋（由 prefab 在 OnAdd 时调用）
+-- 声明内置对象（由 prefab 在 OnAdd 时调用）
 -- profile = { requiredElite = 1, eliteLevelMap = { [1]=1, [2]=2 } }
-function ArkTalent:DeclareBuiltinTalent(id, profile)
+function ArkTalent:DeclareBuiltin(id, profile)
   assert(id, "Talent id is required")
   assert(GetArkTalentConfigById(id), "Config not found for talent id: " .. tostring(id))
-  self.builtinTalentProfilesById[id] = NormalizeBuiltinTalentProfile(profile)
+  self.builtinTalentProfilesById[id] = builtinProfile.NormalizeProfile(profile)
   self:_SyncBuiltinTalentState(id)
 end
 

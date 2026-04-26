@@ -104,8 +104,8 @@ configuration_options = {{
         zh = "技能栏大小"
     }),
     hover = ChooseTranslationTable({
-        en = "Adjust the overall hand UI scale. 1.2 matches the current standard size.",
-        zh = "调整 handBase 整体缩放。1.2 为当前标准大小"
+        en = "Adjust the overall skill bar UI scale. 1.2 matches the current standard size.",
+        zh = "调整 技能栏 整体缩放。1.2 为当前标准大小"
     }),
     options = {{
         description = ChooseTranslationTable({

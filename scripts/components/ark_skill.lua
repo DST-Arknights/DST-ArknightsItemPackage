@@ -1,5 +1,6 @@
 local CONSTANTS = require "ark_constants"
 local common = require "ark_common"
+local builtinProfile = require "ark_builtin_profile"
 local utils = require "ark_utils"
 local hooks = require "ark_entity_hooks"
 
@@ -167,24 +168,6 @@ local function GetChangedConfigPatchKeys(previousPatch, nextPatch)
   end
   table.sort(changedKeys)
   return changedKeys
-end
-
-local function NormalizeBuiltinSkillProfile(profile)
-  profile = profile or {}
-
-  local normalized = {}
-  local requiredElite = profile.requiredElite
-  if requiredElite == nil then
-    requiredElite = 1
-  end
-  requiredElite = math.max(1, math.floor(requiredElite))
-  normalized.requiredElite = requiredElite
-
-  if profile.slot ~= nil then
-    normalized.slot = math.max(1, math.floor(profile.slot))
-  end
-
-  return normalized
 end
 
 -- 单技能对象（SingleSkill）：封装技能自身的运行态与行为
@@ -875,6 +858,11 @@ function ArkSkill:CanUnlockSkill(id)
   return false, "elite_insufficient"
 end
 
+function ArkSkill:_GetBuiltinSkillTargetLevel(id)
+  local profile = self.builtinSkillProfilesById[id]
+  return builtinProfile.GetTargetLevelByElite(profile, self:_GetCurrentElite())
+end
+
 function ArkSkill:_SyncBuiltinSkillState(id)
   local profile = self.builtinSkillProfilesById[id]
   if not profile then
@@ -887,8 +875,14 @@ function ArkSkill:_SyncBuiltinSkillState(id)
   end
 
   local shouldUnlock = self:CanUnlockSkill(id)
-  if shouldUnlock and skill.data.status == CONSTANTS.SKILL_STATUS.LOCKED then
-    skill:Unlock()
+  if shouldUnlock then
+    if skill.data.status == CONSTANTS.SKILL_STATUS.LOCKED then
+      skill:Unlock()
+    end
+    local targetLevel = self:_GetBuiltinSkillTargetLevel(id)
+    if targetLevel ~= nil and skill:GetLevel() ~= targetLevel then
+      skill:SetLevel(math.min(targetLevel, skill:GetMaxLevel()))
+    end
   end
 end
 
@@ -898,11 +892,11 @@ function ArkSkill:_SyncBuiltinSkills()
   end
 end
 
-function ArkSkill:DeclareBuiltinSkill(id, profile)
+function ArkSkill:DeclareBuiltin(id, profile)
   assert(id, "Skill id is required")
   assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
 
-  self.builtinSkillProfilesById[id] = NormalizeBuiltinSkillProfile(profile)
+  self.builtinSkillProfilesById[id] = builtinProfile.NormalizeProfile(profile, { keepSlot = true })
   self:_SyncBuiltinSkillState(id)
 end
 
