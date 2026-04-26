@@ -138,7 +138,8 @@ end
 function ArkTalentIcon:SetLevel(level)
   if level and level > 1 then
     self.levelText:SetString(tostring(level))
-    self.levelBadge:Show()
+    -- 暂时先永远不显示
+    -- self.levelBadge:Show()
   else
     self.levelBadge:Hide()
   end
