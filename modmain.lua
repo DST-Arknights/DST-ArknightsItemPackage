@@ -68,6 +68,8 @@ modimport('modmain/combat_extension')
 modimport('modmain/armor_extension')
 -- 生命值扩展
 modimport('modmain/health_extension')
+-- 控制定义注册
+modimport('modmain/control_definition')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
 -- widget 扩展
