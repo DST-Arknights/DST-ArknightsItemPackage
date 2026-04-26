@@ -97,6 +97,42 @@ configuration_options = {{
         data = true
     }},
     default = false
+}, {
+    name = "hand_base_scale",
+    label = ChooseTranslationTable({
+        en = "Skill Bar Size",
+        zh = "技能栏大小"
+    }),
+    hover = ChooseTranslationTable({
+        en = "Adjust the overall hand UI scale. 1.2 matches the current standard size.",
+        zh = "调整 handBase 整体缩放。1.2 为当前标准大小"
+    }),
+    options = {{
+        description = ChooseTranslationTable({
+            en = "Small (1.0)",
+            zh = "较小 (1.0)"
+        }),
+        data = 1.0
+    }, {
+        description = ChooseTranslationTable({
+            en = "Standard (1.2)",
+            zh = "标准 (1.2)"
+        }),
+        data = 1.2
+    }, {
+        description = ChooseTranslationTable({
+            en = "Large (1.4)",
+            zh = "较大 (1.4)"
+        }),
+        data = 1.4
+    }, {
+        description = ChooseTranslationTable({
+            en = "Extra Large (1.6)",
+            zh = "超大 (1.6)"
+        }),
+        data = 1.6
+    }},
+    default = 1.2
 }, Title({
     name = "mods_compatibility",
     label = ChooseTranslationTable({

@@ -299,7 +299,8 @@ function ArkExtendUi:UpdateLayout()
     local panelY = panelBottomY + panelHeight * 0.5
     self.emoticonBtn:SetAnchors(buttonX, buttonY, panelX, panelY)
   end
-  self.handBase:SetScale(1.2,1.2)
+  local handBaseScale = TUNING.ARK_CONFIG.hand_base_scale
+  self.handBase:SetScale(handBaseScale, handBaseScale)
 end
 
 return ArkExtendUi
