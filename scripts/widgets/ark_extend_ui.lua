@@ -196,14 +196,9 @@ function ArkExtendUi:RemoveBuffIcons()
   self:UpdateLayout()
 end
 function ArkExtendUi:UpdateLayout()
-  local invScale = 0.6
-	if TheNet:GetServerGameMode() == "lavaarena" then
-	    invScale = .55
-  elseif TheNet:GetServerGameMode() == "quagmire" then
-    invScale = 0.75
-  end
-  local BASE_Y = 130
-  local y = BASE_Y
+  local handBaseScale = TUNING.ARK_CONFIG.hand_base_scale
+  local BASE_Y = 100
+  local y = BASE_Y * handBaseScale
   if self.controls.inv.toprow then
     local pos = self.controls.inv.toprow:GetPosition()
     y = y + pos.y
@@ -299,7 +294,6 @@ function ArkExtendUi:UpdateLayout()
     local panelY = panelBottomY + panelHeight * 0.5
     self.emoticonBtn:SetAnchors(buttonX, buttonY, panelX, panelY)
   end
-  local handBaseScale = TUNING.ARK_CONFIG.hand_base_scale
   self.handBase:SetScale(handBaseScale, handBaseScale)
 end
 
