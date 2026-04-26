@@ -197,7 +197,7 @@ function ArkExtendUi:RemoveBuffIcons()
 end
 function ArkExtendUi:UpdateLayout()
   local handBaseScale = TUNING.ARK_CONFIG.hand_base_scale
-  local BASE_Y = 100
+  local BASE_Y = 110
   local y = BASE_Y * handBaseScale
   if self.controls.inv.toprow then
     local pos = self.controls.inv.toprow:GetPosition()
