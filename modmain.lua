@@ -14,6 +14,7 @@ Assets = {
   Asset("ATLAS", "images/map_icons/ark_training_room.xml"),
   Asset("ATLAS", "images/emoticon_btn.xml"),
   Asset("ATLAS", "images/ark_emoticon.xml"),
+  Asset("ATLAS", "images/ark_elite.xml"),
   Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ANIM", "anim/ark_backpack_bg.zip"),
   Asset("SOUNDPACKAGE", "sound/ark_item.fev"),
