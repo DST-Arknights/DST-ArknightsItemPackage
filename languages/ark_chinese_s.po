@@ -1150,3 +1150,18 @@ msgstr "记载了专家技巧的书籍，用于升级干员技能。"
 msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL3"
 msgid ""
 msgstr "记录着干员们所需的专家级技艺，需要特定领域长久的经验积累才能一窥其中的奥妙。"
+
+#. STRINGS.NAMES.ARK_PORTABLE_SUPPLY
+msgctxt "STRINGS.NAMES.ARK_PORTABLE_SUPPLY"
+msgid "portable supply"
+msgstr "便携补给站"
+
+#. STRINGS.RECIPE_DESC.ARK_PORTABLE_SUPPLY
+msgctxt "STRINGS.RECIPE_DESC.ARK_PORTABLE_SUPPLY"
+msgid "A supply station that can be carried with you"
+msgstr "一个可以随身携带的补给站"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY"
+msgid "A supply station that can be carried with you"
+msgstr "一个可以随身携带的补给站"

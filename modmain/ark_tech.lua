@@ -4,14 +4,14 @@ table.insert(TechTree.AVAILABLE_TECH, 'ARK_TRAINING_TECH')
 table.insert(TechTree.AVAILABLE_TECH, 'ARK_ELITE_TECH')
 
 TECH.NONE.ARK_ITEM_TECH = 0
-TECH.ARK_ITEM_ONE = { ARK_ITEM_TECH = 1}
+TECH.ARK_ITEM_ONE = { ARK_ITEM_TECH = 1 }
 TECH.NONE.ARK_TRAINING_TECH = 0
-TECH.ARK_TRAINING_ONE = { ARK_TRAINING_TECH = 1}
+TECH.ARK_TRAINING_ONE = { ARK_TRAINING_TECH = 1 }
 TECH.NONE.ARK_ELITE_TECH = 0
-TECH.ARK_ELITE_ONE = { ARK_ELITE_TECH = 1}
-TECH.ARK_ELITE_TWO = { ARK_ELITE_TECH = 2}
+TECH.ARK_ELITE_ONE = { ARK_ELITE_TECH = 1 }
+TECH.ARK_ELITE_TWO = { ARK_ELITE_TECH = 2 }
 
-for k,v in pairs(TUNING.PROTOTYPER_TREES) do
+for k, v in pairs(TUNING.PROTOTYPER_TREES) do
   v.ARK_ITEM_TECH = 0
   v.ARK_TRAINING_TECH = 0
   v.ARK_ELITE_TECH = 0
@@ -31,7 +31,7 @@ TUNING.PROTOTYPER_TREES.ARK_ELITE_TWO = TechTree.Create({
 })
 
 for i, v in pairs(AllRecipes) do
-	v.level.ARK_ITEM_TECH = v.level.ARK_ITEM_TECH or 0
+  v.level.ARK_ITEM_TECH = v.level.ARK_ITEM_TECH or 0
   v.level.ARK_TRAINING_TECH = v.level.ARK_TRAINING_TECH or 0
   v.level.ARK_ELITE_TECH = v.level.ARK_ELITE_TECH or 0
 end
@@ -51,7 +51,7 @@ AddRecipe2('ark_workshop', {
 }, TECH.SCIENCE_TWO, {
   placer = 'ark_workshop_placer',
   force_hint = true,
-}, {"MODS", "PROTOTYPERS", "STRUCTURES" })
+}, { "MODS", "PROTOTYPERS", "STRUCTURES" })
 
 -- 训练室
 AddPrototyperDef('ark_training_room', {
@@ -65,7 +65,7 @@ AddPrototyperDef('ark_training_room', {
 RegisterInventoryItemAtlas("images/ark_training_room.xml", "ark_training_room.tex")
 
 AddRecipe2("ark_training_room",
-  {Ingredient("boards", 4), Ingredient("goldnugget", 2)},
+  { Ingredient("boards", 4), Ingredient("goldnugget", 2) },
   TECH.SCIENCE_TWO,
   {
     placer = 'ark_training_room_placer',
