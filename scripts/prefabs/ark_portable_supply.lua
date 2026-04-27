@@ -10,7 +10,6 @@ local MAX_FUEL = TUNING.TOTAL_DAY_TIME
 local DEFAULT_SCAN_RANGE = 16
 local DEFAULT_SCAN_INTERVAL = 1
 local DEFAULT_CHARGE_AMOUNT = 5
-local DEFAULT_RANGE_FX_SCALE = 3.0
 
 RegisterInventoryItemAtlas("images/inventoryimages/ark_portable_supply.xml", "ark_portable_supply.tex")
 
@@ -142,10 +141,6 @@ local function EnsureRangeFx(inst)
 
   fx.entity:SetParent(inst.entity)
   fx.Transform:SetPosition(0, 0, 0)
-  if fx.SetDisplayScale ~= nil then
-    fx:SetDisplayScale(DEFAULT_RANGE_FX_SCALE)
-  end
-
   inst._rangefx = fx
   return fx
 end
