@@ -23,9 +23,13 @@ AddPrefabPostInitAny(function(inst)
 end)
 
 function GLOBAL.AddAliveFx(inst, fx)
+  if inst.components.health and inst.components.health:IsDead() then
+    return nil
+  end
   local fxs = inst[aliveFxSymbol]
   local symbol = Symbol("alive_fx")
   fxs[symbol] = fx
+  fx.entity:SetParent(inst.entity)
   fx:ListenForEvent("onremove", function()
     RemoveAliveFx(inst, symbol)
   end)

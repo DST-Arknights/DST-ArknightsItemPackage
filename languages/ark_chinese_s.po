@@ -1154,14 +1154,14 @@ msgstr "记录着干员们所需的专家级技艺，需要特定领域长久的
 #. STRINGS.NAMES.ARK_PORTABLE_SUPPLY
 msgctxt "STRINGS.NAMES.ARK_PORTABLE_SUPPLY"
 msgid "portable supply"
-msgstr "便携补给站"
+msgstr "便携式补给站"
 
 #. STRINGS.RECIPE_DESC.ARK_PORTABLE_SUPPLY
 msgctxt "STRINGS.RECIPE_DESC.ARK_PORTABLE_SUPPLY"
 msgid "A supply station that can be carried with you"
-msgstr "一个可以随身携带的补给站"
+msgstr "对部分明日方舟角色的技能进行快速充能"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY"
 msgid "A supply station that can be carried with you"
-msgstr "一个可以随身携带的补给站"
+msgstr "对技能进行快速充能"
