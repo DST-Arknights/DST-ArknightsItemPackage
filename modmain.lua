@@ -70,6 +70,8 @@ modimport('modmain/armor_extension')
 modimport('modmain/health_extension')
 -- 控制定义注册
 modimport('modmain/control_definition')
+-- 活fx
+modimport('modmain/ark_alive_fx')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
 -- widget 扩展

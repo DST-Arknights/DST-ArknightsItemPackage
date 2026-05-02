@@ -98,8 +98,8 @@ AddStategraphPostInit("wilson", function(sg)
     end
     if WouldEnterFinalElse(inst, data) and (immune_stun or inst:HasTag("immune_stun")) then
       ArkLogger:Debug("immune_stun")
-      inst.SoundEmitter:PlaySound("dontstarve/wilson/hit")
-      DoHurtSound(inst)
+      -- inst.SoundEmitter:PlaySound("dontstarve/wilson/hit")
+      -- DoHurtSound(inst)
       return
     end
     return OldEventAttackedFn(inst, data)

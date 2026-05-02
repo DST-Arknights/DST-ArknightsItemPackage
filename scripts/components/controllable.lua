@@ -61,10 +61,8 @@ function Controllable:_CancelControlTask(control)
 end
 
 function Controllable:_ClearControlFX(control)
-    for i, fx in ipairs(control.fxchildren) do
-        if fx ~= nil and fx:IsValid() then
-            fx:Remove()
-        end
+    for i, entry in ipairs(control.fxchildren) do
+        RemoveAliveFx(self.inst, entry.symbol)
         control.fxchildren[i] = nil
     end
 end
@@ -82,7 +80,8 @@ function Controllable:_SpawnControlFX(control)
             local scalex, scaley, scalez = self.inst.Transform:GetScale()
             fx.Transform:SetPosition(data.x, data.y, data.z)
             fx.Transform:SetScale(1 / scalex * radius, 1 / scaley * radius, 1 / scalez * radius)
-            table.insert(control.fxchildren, fx)
+            local symbol = AddAliveFx(self.inst, fx)
+            table.insert(control.fxchildren, { fx = fx, symbol = symbol })
         end
     end
 end
