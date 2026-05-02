@@ -34,6 +34,45 @@ local CONFIG_CALLBACK_EVENT_MAP = {
 
 local CopySaveData = hooks.CopySaveData
 
+-- 序列化/反序列化 state 中的 entity 引用（两阶段加载）
+-- SerializeState 返回两个值：清理后的 state（不含 entity 引用）和 entity refs 映射
+-- 这样 OnLoad 到 LoadPostPass 之间，state 中的 entity 字段为 nil，而不是占位符
+local function SerializeState(state, refs)
+  if type(state) ~= "table" then return state, nil end
+  local copy = {}
+  local entityRefs = nil
+  for k, v in pairs(state) do
+    if EntityScript.is_instance(v) then
+      entityRefs = entityRefs or {}
+      entityRefs[k] = { _ark_entity_ref = v.GUID }
+      table.insert(refs, v.GUID)
+      -- 不在 copy 中保留，让 OnLoad 到 LoadPostPass 之间读到 nil
+    elseif type(v) == "table" then
+      local subCopy, subRefs = SerializeState(v, refs)
+      copy[k] = subCopy
+      if subRefs then
+        entityRefs = entityRefs or {}
+        entityRefs[k] = subRefs
+      end
+    else
+      copy[k] = v
+    end
+  end
+  return copy, entityRefs
+end
+
+local function DeserializeState(state, entityRefs, newents)
+  if type(state) ~= "table" or type(entityRefs) ~= "table" then return end
+  for k, ref in pairs(entityRefs) do
+    if ref._ark_entity_ref then
+      local entry = newents[ref._ark_entity_ref]
+      state[k] = EntityScript.is_instance(entry) and entry or nil
+    elseif type(ref) == "table" and type(state[k]) == "table" then
+      DeserializeState(state[k], ref, newents)
+    end
+  end
+end
+
 local CONFIG_PATCH_FIELD_DEFS = {
   activationMode = {
     normalize = function(value, skillId)
@@ -192,6 +231,8 @@ local SingleSkill = Class(function(self, manager, id)
     tickEnergy = false,
     tickBuff = false,
     activateCount = 0,
+    -- 技能运行时状态存储（随 data 一起序列化，读档自动恢复）
+    state = {},
   }
   -- 注册事件回调（按事件名索引）
   self:_InitItemBase()
@@ -320,6 +361,35 @@ end
 
 function SingleSkill:GetActivateCount()
   return self.data.activateCount
+end
+
+-- ── 技能状态存储（Persistent State）────────────────────────────────────────────
+-- 用于在技能运行期间保存自定义数据，随 data 一起序列化，读档自动恢复。
+-- 生命周期完全由开发者控制：Activate 时建议手动 ClearState，Deactivate 时可选择性读取。
+-- 被动技能没有 Activate/Deactivate 边界，state 一直保留直到技能被移除。
+
+function SingleSkill:SetState(key, value)
+  self.data.state[key] = value
+end
+
+function SingleSkill:GetState(key)
+  return self.data.state[key]
+end
+
+function SingleSkill:HasState(key)
+  return self.data.state[key] ~= nil
+end
+
+function SingleSkill:RemoveState(key)
+  self.data.state[key] = nil
+end
+
+function SingleSkill:ClearState()
+  self.data.state = {}
+end
+
+function SingleSkill:GetAllState()
+  return ShallowCopyMap(self.data.state)
 end
 
 function SingleSkill:SyncStatus()
@@ -544,6 +614,7 @@ function SingleSkill:Lock()
   data.bulletCount = 0
   data.activationStacks = 0
   data.force = false
+  data.state = {}
   self.manager:SyncSkillStatus(self.id)
 
   if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
@@ -806,13 +877,6 @@ function SingleSkill:OnLoad(saved)
   self:RefreshTag()
   self._lastActivateTime = nil
   self._lastDeactivateTime = nil
-
-  if self:IsActivating() then
-    self:_EmitActivateEffect({ source = "load" })
-  end
-  if self._cfgOnLoad then
-    self._cfgOnLoad(self, saved.cfg or {})
-  end
 end
 
 function SingleSkill:Remove()
@@ -1008,6 +1072,7 @@ function ArkSkill:OnSave()
     installedSkills = {},
     skills = {}
   }
+  local refs = {}
   for _, id in ipairs(self.installedSkills) do
     local skill = self.skillsById[id]
     if skill then
@@ -1017,6 +1082,11 @@ function ArkSkill:OnSave()
         configPatch = skill:GetConfigPatchString() ~= "" and skill:GetConfigPatchString() or nil,
         cfg = nil,
       }
+      -- 将 state 中的 entity 引用剥离到单独的 stateEntityRefs 表
+      -- 这样 OnLoad 到 LoadPostPass 之间，state 中的 entity 字段为 nil
+      if savedSkill.data.state then
+        savedSkill.data.state, savedSkill.stateEntityRefs = SerializeState(savedSkill.data.state, refs)
+      end
       if skill._cfgOnSave then
         local cfgData = {}
         cfgData = skill._cfgOnSave(skill, cfgData) or cfgData
@@ -1025,7 +1095,7 @@ function ArkSkill:OnSave()
       data.skills[id] = savedSkill
     end
   end
-  return data
+  return data, refs
 end
 
 function ArkSkill:OnLoad(data)
@@ -1049,6 +1119,35 @@ function ArkSkill:OnLoad(data)
     end
   end
   self:_SyncBuiltinSkills()
+  if self.inst:HasTag("player") then
+    self.inst:DoTaskInTime(0, function()
+      self:LoadPostPass(Ents, data)
+    end)
+  end
+end
+
+function ArkSkill:LoadPostPass(newents, data)
+  ArkLogger:Info("ArkSkill LoadPostPass", newents, data)
+  if not data or not data.skills then
+    return
+  end
+  for id, _ in pairs(data.skills) do
+    local s = self.skillsById[id]
+    if s then
+      -- 恢复 state 中的 entity 引用（从单独的 stateEntityRefs 表恢复）
+      if s.data.state and data.skills[id].stateEntityRefs then
+        DeserializeState(s.data.state, data.skills[id].stateEntityRefs, newents)
+      end
+      if s._cfgOnLoad then
+        s._cfgOnLoad(s, data.skills[id].cfg or {})
+      end
+      -- 若读档前处于激活状态，在 entity 恢复后再触发 activate_effect
+      ArkLogger:Info("ArkSkill LoadPostPass", id, "IsActivating:", s:IsActivating())
+      if s:IsActivating() then
+        s:_EmitActivateEffect({ source = "load" })
+      end
+    end
+  end
 end
 
 -- OnPreRemoveFromEntity

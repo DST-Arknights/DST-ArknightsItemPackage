@@ -186,7 +186,7 @@ local function SetInventoryState(inst)
   inst.components.ark_supply_charger:SetEnabled(false)
   RemoveRangeFx(inst)
 
-  PlayIdleAnimation(inst)
+  inst.AnimState:PlayAnimation("place", true)
 end
 
 local function SetDeployedState(inst, playopen)
