@@ -94,6 +94,22 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   local frame = skillIcon:AddChild(Image("images/ark_skill.xml", "frame.tex"))
   frame:SetSize(self.iconSize)
 
+  -- 临时技能剩余时间指示条（灰底橙面，高2px，位于图标底部）
+  local limitBarBg = skillIcon:AddChild(Image("images/ui.xml", "white.tex"))
+  self.limitBarBg = limitBarBg
+  limitBarBg:SetPosition(4, -self.iconSize[2] / 2 - 1, 0)
+  limitBarBg:SetSize(self.iconSize[1] - 8, 2)
+  limitBarBg:SetTint(0.3, 0.3, 0.3, 1)
+  limitBarBg:Hide()
+
+  local limitBarFg = skillIcon:AddChild(Image("images/ui.xml", "white.tex"))
+  self.limitBarFg = limitBarFg
+  limitBarFg:SetPosition(-self.iconSize[1] / 2, -self.iconSize[2] / 2 - 1, 0)
+  limitBarFg:SetHRegPoint(ANCHOR_LEFT)
+  limitBarFg:SetSize(self.iconSize[1], 2)
+  limitBarFg:SetTint(1, 0.5, 0, 1)
+  limitBarFg:Hide()
+
   local status = self:AddChild(Widget("ark_skill_status"))
   status:SetPosition(0, -self.iconSize[2] / 2 - 14, 0)
   local statusImg = status:AddChild(Image("images/ark_skill.xml", "sprite_skill_ready.tex"))
@@ -126,6 +142,9 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   self.buffProgress = 0
   self.bulletCount = 0
   self.activationStacks = 0
+  self.isTemporary = false
+  self.limitTimeInitial = 0
+  self.limitRemaining = 0
   self:SetEnergyProgress(0)
   self:SetBuffProgress(0)
 
@@ -205,6 +224,9 @@ function ArkSkill:GetSkillDescConfig()
     hotkey = self.config.hotkey,
     level = self.level or 1,
     desc = self.levelConfig.desc,
+    isTemporary = self.isTemporary,
+    limitTimeInitial = self.limitTimeInitial,
+    limitRemaining = self.limitRemaining,
   }
 end
 
@@ -252,6 +274,18 @@ function ArkSkill:SetBuffProgress(current)
   local total = self.levelConfig.buffDuration
   self.buffShadow:SetScale(1, 1 - CaseShadowScale(current / total))
   return total - current
+end
+
+function ArkSkill:UpdateLimitBar()
+  if not self.isTemporary or self.limitTimeInitial <= 0 then
+    self.limitBarBg:Hide()
+    self.limitBarFg:Hide()
+    return
+  end
+  self.limitBarBg:Show()
+  self.limitBarFg:Show()
+  local ratio = math.max(0, math.min(1, self.limitRemaining / self.limitTimeInitial))
+  self.limitBarFg:SetSize(math.max(1, self.iconSize[1] * ratio), 2)
 end
 
 function ArkSkill:StartTimeBuff(from)
@@ -431,7 +465,7 @@ function ArkSkill:RefreshVisualState()
   self:RecurrentStatusImageSize()
 end
 
-function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bulletCount, activationStacks)
+function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, bulletCount, activationStacks, isTemporary, limitTimeInitial, limitRemaining)
   self.status = status
   local wasInitComplete = self.initComplete
   self.initComplete = true
@@ -449,7 +483,11 @@ function ArkSkill:SyncSkillStatus(status, level, energyProgress, buffProgress, b
   end
 
   self.activationStacks = currentActivationStacks
+  self.isTemporary = isTemporary or false
+  self.limitTimeInitial = limitTimeInitial or 0
+  self.limitRemaining = limitRemaining or 0
   self:RefreshVisualState()
+  self:UpdateLimitBar()
 end
 
 -- OnUpdate 需要第一帧检测, 第一帧要作点事情
@@ -470,6 +508,12 @@ function ArkSkill:OnUpdate(dt)
     UpdateTimeEnergy(self, dt)
   elseif leftBuffTime > 0 then
     UpdateTimeEnergy(self, dt + leftBuffTime)
+  end
+
+  -- 临时技能客户端倒计时（平滑动画）
+  if self.isTemporary and self.limitTimeInitial > 0 and self.limitRemaining > 0 then
+    self.limitRemaining = self.limitRemaining - dt
+    self:UpdateLimitBar()
   end
 end
 

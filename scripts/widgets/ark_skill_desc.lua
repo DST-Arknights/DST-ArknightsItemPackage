@@ -235,6 +235,40 @@ function ArkSkillDesc:RefreshConfig(descConfig)
     end)
   end
 
+  -- 临时技能：剩余时间 + 卸载按钮
+  if descConfig.isTemporary then
+    topOffset = topOffset - PADDING
+    local tempFoot = self:AddChild(Widget("tempFoot"))
+    tempFoot:SetPosition(0, topOffset, 0)
+
+    local timeStr
+    if (descConfig.limitTimeInitial or 0) > 0 then
+      local remainingDays = (descConfig.limitRemaining or 0) / (8 * 60)
+      timeStr = string.format("%.1f", remainingDays) .. STRINGS.UI.ARK_SKILL.DAYS
+    else
+      timeStr = STRINGS.UI.ARK_SKILL.UNLIMITED
+    end
+    local timeLabel = string.format(STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT, timeStr)
+    local timeText = tempFoot:AddChild(Text(FALLBACK_FONT_FULL, 32, timeLabel))
+    local timeTextW, timeTextH = timeText:GetRegionSize()
+    timeText:SetPosition(leftOffset + timeTextW / 2, 0, 0)
+
+    local uninstallBtn = tempFoot:AddChild(TextButton("uninstall"))
+    uninstallBtn:SetTextSize(32)
+    uninstallBtn:SetText("[" .. STRINGS.UI.ARK_SKILL.UNINSTALL .. "]")
+    uninstallBtn:SetFont(FALLBACK_FONT_FULL)
+    local uninstallBtnW, _ = uninstallBtn:GetSize()
+    uninstallBtn:SetPosition(self.size[1] / 2 - uninstallBtnW / 2 - 18, 0, 0)
+    local _skillId = self.id
+    uninstallBtn:SetOnClick(function()
+      if ThePlayer and ThePlayer.replica and ThePlayer.replica.ark_skill then
+        ThePlayer.replica.ark_skill:UninstallSkill(_skillId)
+      end
+    end)
+
+    topOffset = topOffset - timeTextH
+  end
+
   self.size[2] = self.size[2] - topOffset
   bg:SetSize(self.size)
   bg:SetPosition(0, -self.size[2] / 2, 0)
@@ -252,6 +286,13 @@ function ArkSkillDesc:RefreshHotKey()
     hotKeyString = STRINGS.UI.ARK_SKILL.NONE
   end
   self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.HOT_KEY .. ": " .. hotKeyString)
+
+  local isDuplicate = hotkey ~= nil and GetHotKeyManager(ThePlayer):GetHotkeyHandlerCount(hotkey) > 1
+  if isDuplicate then
+    self.hotKeyText:SetColour(1, 0.2, 0.2, 1)
+  else
+    self.hotKeyText:SetColour(1, 1, 1, 1)
+  end
 end
 
 

@@ -243,7 +243,7 @@ local function fn()
 
   inst.AnimState:SetBank("ark_portable_supply")
   inst.AnimState:SetBuild("ark_portable_supply")
-  inst.AnimState:PlayAnimation("idle_3", true)
+  inst.AnimState:PlayAnimation("place", true)
 
   MakeInventoryFloatable(inst)
 

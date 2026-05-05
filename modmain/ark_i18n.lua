@@ -47,13 +47,32 @@ function GLOBAL.SayAndVoice(inst, key, params)
   if not params then
     params = {}
   end
-  if inst.components.i18n_talker then
-    inst.components.i18n_talker:Play(key, params)
-  elseif inst.components.talker then
-    local text = GetString(inst, key)
-    if not text then
-      text = table.getfield(key)
-    end
-    inst.components.talker:Say(text, params.time, params.noanim, params.force, params.nobroadcast, params.colour, params.text_filter_context, params.original_author_netid, params.onfinishedlinesfn, params.sgparam)
+  if not inst.components.i18n_talker then
+    inst:AddComponent("i18n_talker")
   end
+  inst.components.i18n_talker:Play(key, params)
+  -- if inst.components.i18n_talker then
+  --   inst.components.i18n_talker:Play(key, params)
+  -- elseif inst.components.talker then
+  --   local text = GetString(inst, key)
+  --   if not text then
+  --     text = table.getfield(key)
+  --   end
+  --   inst.components.talker:Say(text, params.time, params.noanim, params.force, params.nobroadcast, params.colour, params.text_filter_context, params.original_author_netid, params.onfinishedlinesfn, params.sgparam)
+  -- end
 end
+
+TUNING.GLOBAL_SOUND_MAP = {}
+function GLOBAL.RegisterVoice(key, lang)
+  TUNING.GLOBAL_SOUND_MAP[key] = lang
+end
+
+AddStategraphPostInit("wilson", function(sg)
+  local Old = sg.events.ontalk.fn
+  sg.events.ontalk.fn = function(inst, data)
+    if data and data.sgparam and data.sgparam.played_by_i18n_talker then
+      return
+    end
+    return Old(inst, data)
+  end
+end)

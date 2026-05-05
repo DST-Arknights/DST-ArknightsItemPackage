@@ -29,6 +29,15 @@ AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
   skill:Cancel()
 end)
 
+-- 卸载临时技能 RPC 处理
+AddModRPCHandler("arkSkill", "UninstallSkill", function(player, id)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(id)
+  if skill and skill.data.isTemporary then
+    player.components.ark_skill:RemoveSkill(id)
+  end
+end)
+
 local function defaultLevelConfigs(levelConfigs)
   local copyLevelConfigs = {}
   for _, levelConfig in ipairs(levelConfigs) do
@@ -61,6 +70,8 @@ local function checkAndDefaultSkill(skill)
     atlas = skill.atlas or '',
     image = skill.image or '',
     name = skill.name or skill.id,
+    recipe_atlas = skill.recipe_atlas,
+    recipe_image = skill.recipe_image,
     lockedDesc = skill.lockedDesc or '',
     energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
     activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
@@ -136,6 +147,38 @@ function GLOBAL.RegisterArkSkill(skill)
       end
     end
   end
+  -- 学习配方（临时安装技能，供其他角色学习使用）
+  local DEFAULT_INSTALL_LIMIT_TIME = 3 * 8 * 60
+  local installPrefabName = common.genArkSkillInstallPrefabNameById(skill.id)
+  local installRep = AddCharacterRecipe(installPrefabName, {
+    Ingredient("ark_gold", 180000),
+    Ingredient(CHARACTER_INGREDIENT.SANITY, 50),
+  }, TECH.ARK_TRAINING_ONE, {
+    nounlock = true,
+    atlas = skill.recipe_atlas or skill.atlas,
+    image = skill.recipe_image or skill.image,
+    actionstr = "ARK_SKILL_INSTALL",
+    manufactured = true,
+  }, { "CRAFTING_STATION" })
+  local _skillId = skill.id
+  installRep.canbuild = function(recipe, inst, pt, rotation, prototyper, skin)
+    if inst and inst.components.ark_skill then
+      return inst.components.ark_skill:CanAddSkill(_skillId)
+    end
+    return false, "ARK_SKILL_CANNOT_LEARN"
+  end
+  installRep.manufacturedfn = function(inst, doer)
+    if doer and doer.components.ark_skill then
+      local can = doer.components.ark_skill:CanAddSkill(_skillId)
+      if can then
+        doer.components.ark_skill:AddSkill(_skillId, DEFAULT_INSTALL_LIMIT_TIME)
+        doer.components.ark_skill:GetSkill(_skillId):Unlock()
+      end
+    end
+  end
+  local upperInstallName = string.upper(installPrefabName)
+  STRINGS.NAMES[upperInstallName] = skill.name
+  STRINGS.RECIPE_DESC[upperInstallName] = STRINGS.UI.ARK_SKILL.INSTALL_SKILL_DESC
 end
 
 function GLOBAL.GetArkSkillConfigById(id)

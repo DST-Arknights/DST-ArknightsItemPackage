@@ -1165,3 +1165,48 @@ msgstr "对部分明日方舟角色的技能进行快速充能"
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY"
 msgid "A supply station that can be carried with you"
 msgstr "对技能进行快速充能"
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_INSTALL
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_INSTALL"
+msgid "Learn"
+msgstr "学习"
+
+#. STRINGS.UI.ARK_SKILL.UNINSTALL
+msgctxt "STRINGS.UI.ARK_SKILL.UNINSTALL"
+msgid "Uninstall"
+msgstr "卸载"
+
+#. STRINGS.UI.ARK_SKILL.DAYS
+msgctxt "STRINGS.UI.ARK_SKILL.DAYS"
+msgid "d"
+msgstr "天"
+
+#. STRINGS.UI.ARK_SKILL.UNLIMITED
+msgctxt "STRINGS.UI.ARK_SKILL.UNLIMITED"
+msgid "Unlimited"
+msgstr "无限"
+
+#. STRINGS.UI.ARK_SKILL.INSTALL_SKILL_DESC
+msgctxt "STRINGS.UI.ARK_SKILL.INSTALL_SKILL_DESC"
+msgid "Temporarily learn this skill"
+msgstr "临时学习此技能"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_ALREADY_LEARNED
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_ALREADY_LEARNED"
+msgid "Already learned this skill"
+msgstr "已经学习了该技能"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_MAX_LIMIT
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_MAX_LIMIT"
+msgid "Skill slot limit reached"
+msgstr "已达技能学习上限"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_SKILL_CANNOT_LEARN
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_SKILL_CANNOT_LEARN"
+msgid "Cannot learn this skill"
+msgstr "无法学习该技能"
+
+#. STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT
+msgctxt "STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT"
+msgid "Remaining: %s"
+msgstr "剩余时间: %s"

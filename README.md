@@ -129,6 +129,7 @@
 
 ## 内置开发工具
 用作便捷开发. 详情待补充, 可见源码
+面向其他 AI 的协作指南见 AGENTS.md
 * 国际化PO文件合并 ark_i18n
 * 国际化语音定义 component/i18n_talker
 * 日志系统 ark_logger

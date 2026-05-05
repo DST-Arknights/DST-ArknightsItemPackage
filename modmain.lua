@@ -124,6 +124,9 @@ DefineNetState("ark_skill", {
   buffProgress = "float:classified",
   bulletCount = "int:classified",
   activationStacks = "int:classified",
+  isTemporary = "int:classified",
+  limitTimeInitial = "float:classified",
+  limitRemaining = "float:classified",
 })
 
 -- 定义货币 NetState

@@ -231,6 +231,9 @@ local SingleSkill = Class(function(self, manager, id)
     tickEnergy = false,
     tickBuff = false,
     activateCount = 0,
+    isTemporary = false,
+    limitTimeInitial = 0,
+    limitRemaining = 0,
     -- 技能运行时状态存储（随 data 一起序列化，读档自动恢复）
     state = {},
   }
@@ -856,6 +859,20 @@ function SingleSkill:Step(dt)
   if self._cfgOnStep then
     self._cfgOnStep(self, dt)
   end
+  -- 临时技能倒计时
+  if data.isTemporary and data.limitTimeInitial > 0 then
+    local oldRemaining = data.limitRemaining
+    data.limitRemaining = math.max(0, data.limitRemaining - dt)
+    if math.floor(oldRemaining) ~= math.floor(data.limitRemaining) then
+      self.manager:SyncSkillStatus(self.id)
+    end
+    if data.limitRemaining <= 0 and not self._removingByTimeout then
+      self._removingByTimeout = true
+      self.inst:DoTaskInTime(0, function()
+        self.manager:RemoveSkill(self.id)
+      end)
+    end
+  end
 end
 
 function SingleSkill:OnLoad(saved)
@@ -902,6 +919,12 @@ end
 function ArkSkill:CanAddSkill(id)
   assert(id, "Skill id is required")
   assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
+  if self.skillsById[id] then
+    return false, "SKILL_ALREADY_LEARNED"
+  end
+  if #self.installedSkills >= self.inst.replica.ark_skill.maxSkillCount then
+    return false, "SKILL_MAX_LIMIT"
+  end
   return true, nil
 end
 
@@ -974,6 +997,7 @@ function ArkSkill:_InstallSkill(id)
   self.skillsById[id] = skill
   table.insert(self.installedSkills, id)
   self.inst:StartUpdatingComponent(self)
+  self.inst:AddTag(common.genArkSkillInstalledTagById(id))
   self.inst.replica.ark_skill:AddSkill(id)
   self:SyncSkillStatus(id)
   if skill._cfgOnInstall then
@@ -994,7 +1018,7 @@ function ArkSkill:_RestoreSkill(id)
   self:_InstallSkill(id)
 end
 
-function ArkSkill:AddSkill(id)
+function ArkSkill:AddSkill(id, limitTime)
   assert(id, "Skill id is required")
   assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
   if self.skillsById[id] then
@@ -1002,6 +1026,12 @@ function ArkSkill:AddSkill(id)
     return
   end
   local skill = self:_InstallSkill(id)
+  if limitTime ~= nil then
+    skill.data.isTemporary = true
+    skill.data.limitTimeInitial = limitTime
+    skill.data.limitRemaining = limitTime
+    self:SyncSkillStatus(id)
+  end
   if skill._cfgOnAdd then
     skill._cfgOnAdd(skill, {})
   end
@@ -1013,6 +1043,7 @@ function ArkSkill:RemoveSkill(id)
   local skill = self.skillsById[id]
   if skill and not skill._removing then
     skill:Remove()
+    self.inst:RemoveTag(common.genArkSkillInstalledTagById(id))
     self.inst.replica.ark_skill:RemoveSkill(id)
     self.skillsById[id] = nil
     table.removearrayvalue(self.installedSkills, id)
@@ -1056,6 +1087,9 @@ function ArkSkill:SyncSkillStatus(id)
     bulletCount = s.data.bulletCount,
     activationStacks = s.data.activationStacks,
     configPatch = s:GetConfigPatchString(),
+    isTemporary = s.data.isTemporary and 1 or 0,
+    limitTimeInitial = s.data.limitTimeInitial or 0,
+    limitRemaining = s.data.limitRemaining or 0,
   })
 end
 

@@ -20,6 +20,14 @@ local function genArkSkillLevelUpPrefabNameById(id, level)
   return 'ark_skill_level_up_' .. id .. '_' .. level .. '_level'
 end
 
+local function genArkSkillInstallPrefabNameById(id)
+  return 'ark_skill_install_' .. id
+end
+
+local function genArkSkillInstalledTagById(id)
+  return 'ark_skill_installed_' .. id
+end
+
 -- 精英化等级tag
 local function genArkEliteLevelUpPrefabName(prefab, level)
   return 'ark_elite_level_up_' .. prefab .. '_' .. level
@@ -43,6 +51,8 @@ end
 local ArkCommon = {
     getPrefabAssetsCode = getPrefabAssetsCode,
     genArkSkillLevelUpPrefabNameById = genArkSkillLevelUpPrefabNameById,
+    genArkSkillInstallPrefabNameById = genArkSkillInstallPrefabNameById,
+    genArkSkillInstalledTagById = genArkSkillInstalledTagById,
     genArkEliteLevelUpPrefabName = genArkEliteLevelUpPrefabName,
     parseArkEliteLevelUpPrefabName = parseArkEliteLevelUpPrefabName,
     genArkTalentPrefabNameById = genArkTalentPrefabNameById,

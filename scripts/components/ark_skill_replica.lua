@@ -113,12 +113,13 @@ local ArkSkillReplica = Class(function(self, inst)
   self.skillIdToIndex = {}    -- 技能id -> 索引
   self.configPatchStrings = {}
   self.configPatches = {}
+  self.maxSkillCount = MAX_SKILL_COUNT
   -- 预制 4 个 state，用于同步状态数据
   for i = 1, MAX_SKILL_COUNT do
     local state = NetState(self.inst, "ark_skill")
     self.states[i] = state
     state:Attach(self.inst)
-    state:Watch({ "id", "configPatch", "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks" }, function()
+    state:Watch({ "id", "configPatch", "status", "level", "energyProgress", "buffProgress", "bulletCount", "activationStacks", "isTemporary", "limitTimeInitial", "limitRemaining" }, function()
       self:SkillDataDirty(i)
     end)
     state:Watch({ "id", "status", "level"}, function ()
@@ -255,7 +256,10 @@ function ArkSkillReplica:TrySyncSkillData(id, state)
     state.energyProgress,
     state.buffProgress,
     state.bulletCount,
-    state.activationStacks
+    state.activationStacks,
+    state.isTemporary == 1,
+    state.limitTimeInitial,
+    state.limitRemaining
   )
 end
 
@@ -315,6 +319,9 @@ function ArkSkillReplica:SyncSkillStatus(id, data)
   state.bulletCount = data.bulletCount
   state.activationStacks = data.activationStacks
   state.configPatch = data.configPatch or ""
+  state.isTemporary = data.isTemporary or 0
+  state.limitTimeInitial = data.limitTimeInitial or 0
+  state.limitRemaining = data.limitRemaining or 0
 end
 
 function ArkSkillReplica:GetState(id)
@@ -403,6 +410,17 @@ function ArkSkillReplica:CancelSkill(id)
     self.inst.components.ark_skill:GetSkill(id):Cancel()
   else
     SendModRPCToServer(GetModRPC("arkSkill", "ManualCancelSkill"), id)
+  end
+end
+
+function ArkSkillReplica:UninstallSkill(id)
+  if self.inst.components.ark_skill then
+    local skill = self.inst.components.ark_skill:GetSkill(id)
+    if skill and skill.data.isTemporary then
+      self.inst.components.ark_skill:RemoveSkill(id)
+    end
+  else
+    SendModRPCToServer(GetModRPC("arkSkill", "UninstallSkill"), id)
   end
 end
 
