@@ -17,6 +17,7 @@ Assets = {
   Asset("ATLAS", "images/ark_elite.xml"),
   Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ANIM", "anim/ark_backpack_bg.zip"),
+  Asset("ANIM", "anim/ark_fly.zip"),
   Asset("SOUNDPACKAGE", "sound/ark_item.fev"),
   Asset("FILE", "sound/ark_item.fsb"),
 }
@@ -70,6 +71,8 @@ modimport('modmain/armor_extension')
 modimport('modmain/health_extension')
 -- 控制定义注册
 modimport('modmain/control_definition')
+-- 飞行组件
+modimport('modmain/ark_flyer')
 -- 活fx
 modimport('modmain/ark_alive_fx')
 -- 特效生成器
