@@ -96,20 +96,14 @@ end
 
 -- 天赋解锁时自动挂载，锁定时自动清除，读档恢复时也会正确挂载。
 function SingleTalent:HookFunctionWhileActivating(obj, funcName, fn)
-  local activeToken = nil
   self:_AddCallback("ark_talent_unlocked", function()
-    if not activeToken then
-      activeToken = self:HookFunction(obj, funcName, fn)
-    end
+    self:HookFunction(obj, funcName, fn)
   end)
   self:_AddCallback("ark_talent_locked", function()
-    if activeToken then
-      self:UnhookFunction(activeToken)
-      activeToken = nil
-    end
+    self:UnhookFunction(obj, funcName, fn)
   end)
   if self:IsActivating() then
-    activeToken = self:HookFunction(obj, funcName, fn)
+    self:HookFunction(obj, funcName, fn)
   end
 end
 
@@ -212,16 +206,11 @@ local ArkTalent = Class(function(self, inst)
   self.talentsById         = {}
   self.installedTalents    = {}  -- 有序数组，记录安装顺序
   self.builtinTalentProfilesById = {}
-  -- 共享 hook 链注册表
-  self._sharedHookRegistry = {}
   self._onBuiltinEliteChanged = function()
     self:_SyncBuiltinTalents()
   end
   self.inst:ListenForEvent("ark_elite_changed", self._onBuiltinEliteChanged)
 end)
-
--- 安装共享 hook 链管理方法
-hooks.InstallManagerHooks(ArkTalent)
 
 -- ── 内置天赋（builtin）── 与 elite 联动 ──────────────────────────────────────
 

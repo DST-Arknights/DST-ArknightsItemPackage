@@ -10,8 +10,6 @@ local ArkSkill = Class(function(self, inst)
   self.skillsById = {}
   self.installedSkills = {}
   self.builtinSkillProfilesById = {}
-  -- 共享 hook 链注册表：每个 (obj, funcName) 只包装一次，避免多技能嵌套
-  self._sharedHookRegistry = {}
   self._onBuiltinEliteChanged = function()
     self:_SyncBuiltinSkills()
   end
@@ -507,21 +505,15 @@ end
 -- 激活时自动挂载，deactivate（含 Cancel）时自动清除，读档恢复时也会正确挂载。
 -- fn 签名同 HookFunction。
 function SingleSkill:HookFunctionWhileActivating(obj, funcName, fn)
-  local activeToken = nil
   self:_AddCallback("ark_skill_activate_effect", function()
-    if not activeToken then
-      activeToken = self:HookFunction(obj, funcName, fn)
-    end
+    self:HookFunction(obj, funcName, fn)
   end)
   self:_AddCallback("ark_skill_deactivate", function()
-    if activeToken then
-      self:UnhookFunction(activeToken)
-      activeToken = nil
-    end
+    self:UnhookFunction(obj, funcName, fn)
   end)
   -- 读档恢复：已处于激活状态则立即挂载
   if self:IsActivating() then
-    activeToken = self:HookFunction(obj, funcName, fn)
+    self:HookFunction(obj, funcName, fn)
   end
 end
 
@@ -1193,9 +1185,6 @@ function ArkSkill:OnPreRemoveFromEntity()
 end
 
 -- ── Hook 系统（ArkSkill manager 层） ─────────────────────────────────────────
--- _GetOrCreateHookChain / _HookRegister / _HookUnregister 由共享模块注入。
-hooks.InstallManagerHooks(ArkSkill)
-
 -- SingleSkill 基础设施由共享模块注入：
 -- _InitItemBase / _AddCallback / _RemoveCallback / HookFunction / UnhookFunction /
 -- ListenForEvent / RemoveEventCallback / _CleanupOwnedHooks

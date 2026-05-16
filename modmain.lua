@@ -45,6 +45,8 @@ ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
 modimport('modmain/ark_tools')
 -- 加载符号
 modimport('modmain/symbol')
+-- 函数 Hook 工具（依赖 Symbol，早于其他扩展加载）
+modimport('modmain/ark_function_hook')
 -- 加载 NetState
 modimport('modmain/net_state')
 -- 加载安全调用
