@@ -47,6 +47,8 @@ modimport('modmain/ark_tools')
 modimport('modmain/symbol')
 -- 函数 Hook 工具（依赖 Symbol，早于其他扩展加载）
 modimport('modmain/ark_function_hook')
+-- 自定义配方材料注册系统（依赖 ArkHookFunction）
+modimport('modmain/ark_character_ingredient')
 -- 加载 NetState
 modimport('modmain/net_state')
 -- 加载安全调用

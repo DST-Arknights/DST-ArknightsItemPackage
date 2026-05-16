@@ -1,80 +1,24 @@
-local utils = require("ark_utils")
 
 TUNING.ARK_CURRENCY_TYPES = {"ark_gold", "ark_diamond_shd", "ark_diamond", "ark_exgg_shd", "ark_hgg_shd", "ark_lgg_shd"}
 
-for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
-  CHARACTER_INGREDIENT[string.upper(type)] = type
-end
-
-local _IsCharacterIngredient = GLOBAL.IsCharacterIngredient
-local is_ark_currency_ingredient = nil
-function GLOBAL.IsCharacterIngredient(ingredient)
-  if is_ark_currency_ingredient == nil then
-    is_ark_currency_ingredient = {}
-    for _, type in pairs(TUNING.ARK_CURRENCY_TYPES) do
-      is_ark_currency_ingredient[type] = true
-    end
-  end
-  if ingredient ~= nil and is_ark_currency_ingredient[ingredient] then
-    return true
-  end
-  return _IsCharacterIngredient(ingredient)
+for _, t in pairs(TUNING.ARK_CURRENCY_TYPES) do
+  AddCharacterIngredient(t, {
+    Has = function(inst, amount)
+      local cur = inst.replica.ark_currency
+        and inst.replica.ark_currency:GetArkCurrencyByType(t) or 0
+      return cur >= amount, cur
+    end,
+    Consume = function(inst, amount)
+      if inst.components.ark_currency then
+        inst.components.ark_currency:AddArkCurrencyByType(t, -amount)
+      end
+    end,
+  })
 end
 
 AddPrefabPostInit("world", function(inst)
   if TheNet:GetIsServer() then
     inst:AddComponent("ark_currency_data")
-  end
-end)
-
-AddComponentPostInit("builder", function(self)
-  local _HasCharacterIngredient = self.HasCharacterIngredient
-  function self:HasCharacterIngredient(ingredient)
-    if self.inst.components.ark_currency ~= nil then
-      if is_ark_currency_ingredient[ingredient.type] then
-        local has = self.inst.components.ark_currency:GetArkCurrencyByType(ingredient.type)
-        if has ~= nil and has >= ingredient.amount then
-          return true, has
-        else
-          return false, 0
-        end
-      end
-    end
-    return _HasCharacterIngredient(self, ingredient)
-  end
-  local _RemoveIngredients = self.RemoveIngredients
-  self.RemoveIngredients = function(self, ingredients, recname, discounted)
-    if self.freebuildmode then
-      return
-    end
-    if self.inst.components.ark_currency ~= nil then
-      local recipe = AllRecipes[recname]
-      if recipe then
-        for _, v in pairs(recipe.character_ingredients) do
-          if is_ark_currency_ingredient[v.type] then
-            self.inst.components.ark_currency:AddArkCurrencyByType(v.type, -v.amount)
-          end
-        end
-      end
-    end
-    return _RemoveIngredients(self, ingredients, recname, discounted)
-  end
-end)
-
-AddClassPostConstruct('components/builder_replica', function(self)
-  local _HasCharacterIngredient = self.HasCharacterIngredient
-  self.HasCharacterIngredient = function(self, ingredient, ...)
-    if self.inst.replica.ark_currency ~= nil then
-      if is_ark_currency_ingredient[ingredient.type] then
-        local has = self.inst.replica.ark_currency:GetArkCurrencyByType(ingredient.type)
-        if has ~= nil and has >= ingredient.amount then
-          return true, has
-        else
-          return false, 0
-        end
-      end
-    end
-    return _HasCharacterIngredient(self, ingredient, ...)
   end
 end)
 
