@@ -73,3 +73,28 @@ AddRecipe2("ark_training_room",
   },
   { "MODS", "PROTOTYPERS", "STRUCTURES" }
 )
+
+AddClassPostConstruct("widgets/redux/craftingmenu_widget", function(self)
+  ArkHookFunction(self, "OnCraftingMenuOpen", function(next, self, set_focus)
+    local builder = self.owner ~= nil and self.owner.replica.builder or nil
+    local prototyper = builder ~= nil and builder:GetCurrentPrototyper() or nil
+    local def = prototyper ~= nil and PROTOTYPER_DEFS[prototyper.prefab] or nil
+
+    if def ~= nil and def.skip_default_station_focus then
+      local old_is_crafting_station = def.is_crafting_station
+      def.is_crafting_station = false
+
+      local ok, result = pcall(next, self, set_focus)
+
+      def.is_crafting_station = old_is_crafting_station
+
+      if not ok then
+        error(result)
+      end
+
+      return result
+    end
+
+    return next(self, set_focus)
+  end)
+end)

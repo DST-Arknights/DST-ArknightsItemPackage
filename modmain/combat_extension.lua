@@ -141,8 +141,7 @@ AddComponentPostInit("combat", function(self)
   end
 
   -- hook
-  local _GetAttacked = self.GetAttacked
-  function self:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
+  ArkHookFunction(self, "GetAttacked", function(next, self, attacker, damage, weapon, stimuli, spdamage)
     -- 作为被攻击者, 如果攻击者启用了真实伤害，则将伤害转换为真实伤害
     local tdprop = attacker and attacker.components.combat and attacker.components.combat.truedamagemultipliers:Get() or 0
     if tdprop > 0 then
@@ -170,8 +169,8 @@ AddComponentPostInit("combat", function(self)
       spdamage.true_damage = (spdamage.true_damage or 0) + true_damage
       ArkLogger:Debug("true_damage", true_damage, damage)
     end
-    return _GetAttacked(self, attacker, damage, weapon, stimuli, spdamage)
-  end
+    return next(self, attacker, damage, weapon, stimuli, spdamage)
+  end)
 end)
 
 AddClassPostConstruct("components/combat_replica", function(self)
@@ -192,9 +191,8 @@ end)
 
 
 AddStategraphPostInit("wilson", function(sg)
-    local OldAttackOnEnter = sg.states["attack"].onenter
-    sg.states["attack"].onenter = function(inst, ...)
-        OldAttackOnEnter(inst, ...)
+    ArkHookFunction(sg.states["attack"], "onenter", function(next, inst, ...)
+        next(inst, ...)
         if not inst.components.rider:IsRiding() and inst.sg.currentstate.name == "attack" then
             local attack_speed = inst.components.combat:GetAttackSpeed()
             if attack_speed ~= 1 then
@@ -202,21 +200,18 @@ AddStategraphPostInit("wilson", function(sg)
                 RescaleTimeline(inst.sg, attack_speed)
             end
         end
-    end
+    end)
 
-    local OldAttackOnExit = sg.states["attack"].onexit
-    sg.states["attack"].onexit = function(inst, ...)
-        OldAttackOnExit(inst, ...)
+    ArkHookFunction(sg.states["attack"], "onexit", function(next, inst, ...)
+        next(inst, ...)
         inst.AnimState:SetDeltaTimeMultiplier(1)
         RescaleTimeline(inst.sg)
-    end
+    end)
 end)
 
 AddStategraphPostInit("wilson_client", function(sg)
-    local OldAttackOnEnter = sg.states["attack"].onenter
-    sg.states["attack"].onenter = function(inst, ...)
-        OldAttackOnEnter(inst, ...)
-
+    ArkHookFunction(sg.states["attack"], "onenter", function(next, inst, ...)
+        next(inst, ...)
         if not inst.replica.rider:IsRiding() and inst.sg.currentstate.name == "attack" then
             local attack_speed = inst.replica.combat:GetAttackSpeed()
             if attack_speed ~= 1 then
@@ -227,12 +222,11 @@ AddStategraphPostInit("wilson_client", function(sg)
                 end
             end
         end
-    end
+    end)
 
-    local OldAttackOnExit = sg.states["attack"].onexit
-    sg.states["attack"].onexit = function(inst, ...)
-        OldAttackOnExit(inst, ...)
+    ArkHookFunction(sg.states["attack"], "onexit", function(next, inst, ...)
+        next(inst, ...)
         inst.AnimState:SetDeltaTimeMultiplier(1)
         RescaleTimeline(inst.sg)
-    end
+    end)
 end)
