@@ -165,6 +165,7 @@ health.externalabsorbmodifiers:RemoveModifier(inst, "my_mod_defense")
 2. 同一来源的 SetModifier 与 RemoveModifier 必须使用同一个 key。
 3. source 型 modifier（例如 externalabsorbmodifiers）应保持 source 和 key 都稳定，便于覆盖与清理。
 4. 需要新增属性修改器时，优先参考 modmain/modifier_installer.lua 的现有模式，不要另起一套叠加逻辑。
+5. hook 类函数改动统一使用 ArkHookFunction / ArkUnhookFunction，不要直接覆写目标函数；需要插入逻辑时优先走 modmain/ark_function_hook.lua 提供的中间件链接口。
 
 ## 技能系统 State 管理
 

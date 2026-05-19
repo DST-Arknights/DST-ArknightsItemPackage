@@ -81,6 +81,8 @@ modimport('modmain/ark_flyer')
 modimport('modmain/ark_alive_fx')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
+-- badge 管理
+modimport('modmain/ark_badge')
 -- widget 扩展
 modimport('modmain/widget_extension')
 -- 聊天表情
