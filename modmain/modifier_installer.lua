@@ -60,7 +60,7 @@ function GLOBAL.InstallClassPropertyModifier(class, property_name, config)
   local modifier_name = config.modifier_name or property_name .. "modifiers"
   local default_value = config.default_value or 1
   local combine_fun = config.combine_fun or SourceModifierList.multiply
-  local calc_fun = config.calc_fun or function(inst, modifier, value) return value * modifier:Get() end
+  local calc_fun = config.calc_fun or function(inst, modifier, value) return combine_fun(value, modifier:Get()) end
   local modified_callback = config.modified_callback or function(inst, modifier) end
 
   -- 先占位，modifier 创建后填入
