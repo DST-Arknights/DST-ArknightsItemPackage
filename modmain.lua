@@ -41,6 +41,8 @@ end
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
 ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
+-- ArkUpValue
+modimport('modmain/ark_upvalue')
 -- tools
 modimport('modmain/ark_tools')
 -- 加载符号
@@ -73,6 +75,8 @@ modimport('modmain/combat_extension')
 modimport('modmain/armor_extension')
 -- 生命值扩展
 modimport('modmain/health_extension')
+-- builder 扩展
+modimport('modmain/builder_extension')
 -- 控制定义注册
 modimport('modmain/control_definition')
 -- 飞行组件

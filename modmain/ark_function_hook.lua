@@ -2,6 +2,9 @@
 -- 对同一 (obj, funcName) 只安装一次调度器，所有中间件共享同一条链，
 -- 避免多次包装导致的调用栈嵌套。
 --
+-- 包装器会直接保留一条到 original 的函数 upvalue 链，
+-- 兼容 soraupvaluehelper 这类仅递归 function upvalue 的查找工具。
+--
 -- 注册表以弱 key 持有 obj，obj 被 GC 后对应条目自动消失。
 --
 -- 用法：
@@ -29,21 +32,26 @@ local function _getOrCreateEntry(obj, funcName)
     local original = obj[funcName]
     assert(type(original) == "function",
       "ArkHooks.HookFunction: '" .. tostring(funcName) .. "' 不是函数: " .. tostring(obj))
+    local mws = {}
+    local original_ref = original
+    local dispatch
+
+    dispatch = function(i, ...)
+      if mws[i] then
+        return mws[i](function(...) return dispatch(i + 1, ...) end, ...)
+      else
+        return original(...)
+      end
+    end
+
     entry = {
       original = original,
-      mws      = {},
+      mws      = mws,
     }
     -- 安装调度器；链空时透传，不还原原函数（保持与其他模组 hook 的兼容性）
     -- dispatch(i) 每层使用独立的 i 值，支持同一函数的递归/重入调用。
     obj[funcName] = function(...)
-      local mws = entry.mws
-      local function dispatch(i, ...)
-        if mws[i] then
-          return mws[i](function(...) return dispatch(i + 1, ...) end, ...)
-        else
-          return entry.original(...)
-        end
-      end
+      local _ = original_ref
       return dispatch(1, ...)
     end
     objHooks[funcName] = entry
