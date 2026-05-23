@@ -98,6 +98,8 @@ modimport('modmain/ark_extend_ui')
 modimport('modmain/ark_config')
 -- 加载字体
 modimport('modmain/ark_fonts')
+-- 科技树工具
+modimport('modmain/ark_tech_tree')
 -- 科技
 modimport('modmain/ark_tech')
 -- 货币
