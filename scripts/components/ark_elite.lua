@@ -1,4 +1,3 @@
-local common = require "ark_common"
 local CONSTANTS = require "ark_constants"
 local SourceModifierList = require("util/sourcemodifierlist")
 
@@ -85,7 +84,6 @@ local ArkElite = Class(function(self, inst)
   self._trackedEpics = {} -- { [target] = { deathfn, time } }
   self.externalexpmultipliers = SourceModifierList(inst)
   self.externalexpmultipliers:SetModifier("base", 5)
-  self:RefreshLevelTag()
   self:ApplyElite()
   self.inst:ListenForEvent("killed", OnKilled)
   self.inst:ListenForEvent("onhitother", OnHitOther)
@@ -96,28 +94,6 @@ end, nil, {
   currentExp = oncurrentExp,
   overflowExp = onoverflowExp
 })
-
-function ArkElite:RefreshLevelTag()
-  -- 下一帧任务
-  if self._refreshLevelTagTask then
-    return
-  end
-  self._refreshLevelTagTask = self.inst:DoTaskInTime(0, function()
-    self._refreshLevelTagTask = nil
-    -- 先清理当前星级下所有可能的升级提示 tag，避免连续升级时残留旧 tag
-    local cfg = CONSTANTS.EXP_CONFIG.maxLevel[self.rarity]
-    local maxElite = (cfg and #cfg) or self.elite
-    for i = 1, maxElite do
-      local clearTag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, i)
-      self.inst:RemoveTag(clearTag)
-    end
-
-    if self:CanEliteUp() then
-      local tag = common.genArkEliteLevelUpPrefabName(self.inst.prefab, self.elite)
-      self.inst:AddTag(tag)
-    end
-  end)
-end
 ----------------------------------------------------------
 -- 巨兽参与击杀追踪
 ----------------------------------------------------------
@@ -270,7 +246,6 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
   if countToTotal and amount > 0 then
     self.totalExp = self.totalExp + amount
   end
-  self:RefreshLevelTag()
   if self.level ~= oldLevel then
     self:ApplyElite()
   end
@@ -291,7 +266,6 @@ function ArkElite:SetRarity(rarity)
     self.level = levelCap
     self.currentExp = 0
   end
-  self:RefreshLevelTag()
 end
 
 -- 增加经验值：负责自动小等级升级与封顶阶段溢出经验的记录
@@ -346,7 +320,6 @@ function ArkElite:SetElite(elite)
       self.inst.components.builder:UnlockRecipesForTech(TECH.ARK_ELITE_TWO)
     end
   end
-  self:RefreshLevelTag()
   self:ApplyElite()
   if oldElite ~= self.elite then
     self.inst:PushEvent("ark_elite_changed", {
@@ -479,7 +452,6 @@ function ArkElite:OnLoad(data)
     self.totalExp = data.totalExp or self.totalExp
     self.overflowExp = _clampOverflowExp(data.overflowExp or self.overflowExp)
   end
-  self:RefreshLevelTag()
   self:ApplyElite()
   if data and oldElite ~= self.elite then
     self.inst:PushEvent("ark_elite_changed", {
@@ -492,10 +464,6 @@ function ArkElite:OnLoad(data)
 end
 
 function ArkElite:OnRemoveFromEntity()
-  if self._refreshLevelTagTask then
-    self._refreshLevelTagTask:Cancel()
-    self._refreshLevelTagTask = nil
-  end
   if self._applyEliteTask then
     self._applyEliteTask:Cancel()
     self._applyEliteTask = nil

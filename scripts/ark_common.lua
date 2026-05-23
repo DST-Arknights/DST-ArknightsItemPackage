@@ -28,33 +28,15 @@ local function genArkSkillInstalledTagById(id)
   return 'ark_skill_installed_' .. id
 end
 
--- 精英化等级tag
-local function genArkEliteLevelUpPrefabName(prefab, level)
-  return 'ark_elite_level_up_' .. prefab .. '_' .. level
-end
-
 local function genArkTalentPrefabNameById(id)
   return 'ark_talent_' .. id
 end
-
-local function parseArkEliteLevelUpPrefabName(prefabName)
-  -- 匹配格式: ark_elite_level_up_<level>，其中 level 为数字
-  local _, level = string.match(prefabName, "^ark_elite_level_up_(.+)_(%d+)$")
-  if level then
-    return tonumber(level)
-  end
-  return nil
-end
-
-
 
 local ArkCommon = {
     getPrefabAssetsCode = getPrefabAssetsCode,
     genArkSkillLevelUpPrefabNameById = genArkSkillLevelUpPrefabNameById,
     genArkSkillInstallPrefabNameById = genArkSkillInstallPrefabNameById,
     genArkSkillInstalledTagById = genArkSkillInstalledTagById,
-    genArkEliteLevelUpPrefabName = genArkEliteLevelUpPrefabName,
-    parseArkEliteLevelUpPrefabName = parseArkEliteLevelUpPrefabName,
     genArkTalentPrefabNameById = genArkTalentPrefabNameById,
 }
 return ArkCommon
