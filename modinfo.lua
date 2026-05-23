@@ -3,28 +3,30 @@ name = ChooseTranslationTable({
     zh = "明日方舟 物品包"
 })
 description = ChooseTranslationTable({
-    en = [[This mod adds some items from Arknights to Don't Starve Together.
+    en = [[An Arknights-themed expansion and shared framework for Don't Starve Together.
+Includes materials, currencies, crafting stations, elite progression, skills, talents, buff icons, and emoticons.
+
 Feedback and suggestions:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
-QQ: 3139902761
 Email: tohsakakuro@outlook.com
 QQ Group: 666511586
 
 Welcome to join us!
 ]],
-    zh = [[这个mod将一些明日方舟的物品添加到饥荒联机版中。
+    zh = [[这是一个饥荒联机版的明日方舟主题扩展与通用前置模组。
+包含材料掉落、货币、加工站与训练站、精英化养成、技能、天赋、Buff图标和表情等内容。
+
 需求与建议反馈渠道:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
-QQ: 3139902761
 Email: tohsakakuro@outlook.com
 QQ群: 666511586
 
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.0.0"
+version = "2.1.0"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
