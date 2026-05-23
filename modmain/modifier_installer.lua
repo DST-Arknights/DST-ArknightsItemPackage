@@ -8,8 +8,13 @@ local __index, __newindex = GetClassIndex()
 
 local function RunPipeline(class, pipeline)
   local value = class[pipeline.base_symbol]
-  for _, step in ipairs(pipeline.steps) do
-    value = step.calc_fun(class.inst, step.modifier, value)
+  if value ~= nil then
+    for _, step in ipairs(pipeline.steps) do
+      value = step.calc_fun(class.inst, step.modifier, value)
+      if value == nil then
+        break
+      end
+    end
   end
   local props = rawget(class, "_")
   local old = props[pipeline.prop_name][1]
@@ -60,7 +65,12 @@ function GLOBAL.InstallClassPropertyModifier(class, property_name, config)
   local modifier_name = config.modifier_name or property_name .. "modifiers"
   local default_value = config.default_value or 1
   local combine_fun = config.combine_fun or SourceModifierList.multiply
-  local calc_fun = config.calc_fun or function(inst, modifier, value) return combine_fun(value, modifier:Get()) end
+  local calc_fun = config.calc_fun or function(inst, modifier, value)
+    if value == nil then
+      return nil
+    end
+    return combine_fun(value, modifier:Get())
+  end
   local modified_callback = config.modified_callback or function(inst, modifier) end
 
   -- 先占位，modifier 创建后填入
