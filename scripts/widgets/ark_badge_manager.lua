@@ -103,7 +103,7 @@ function ArkBadgeManager:RefreshBadges()
   self:RequestLayout()
 end
 
-function ArkBadgeManager:IsLineDisplay()
+function ArkBadgeManager:WithCombinedStatus()
   local anchor = self:GetAnchor()
   if anchor == nil then
     return false
@@ -112,7 +112,7 @@ function ArkBadgeManager:IsLineDisplay()
 end
 
 function ArkBadgeManager:GetBadgeOffsetX()
-  if self:IsLineDisplay() then
+  if self:WithCombinedStatus() then
     return 62
   else
     return 80

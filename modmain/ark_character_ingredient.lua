@@ -78,4 +78,7 @@ function GLOBAL.AddCharacterIngredient(typeName, handlers)
 
   CHARACTER_INGREDIENT[string.upper(typeName)] = typeName
   _registry[typeName] = handlers
+  if handlers.atlas and handlers.image then
+    RegisterInventoryItemAtlas(handlers.atlas, handlers.image)
+  end
 end
