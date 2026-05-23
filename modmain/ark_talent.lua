@@ -24,6 +24,7 @@ local function checkAndDefaultTalent(talent)
 
   -- 透传所有回调字段
   local callbackFields = {
+    "OnActivate", "OnDeactivate",
     "OnLocked", "OnUnlocked", "OnLevelChange",
     "OnInstall", "OnAdd", "OnRemove", "OnSave", "OnLoad",
   }
