@@ -7,10 +7,8 @@ local function NormalizeOptions(opts)
     opts = opts or {}
 
     return {
-        maxdepth = opts.maxdepth or opts.maxlevel or 5,
-        maxupvalues = opts.maxupvalues or opts.max or 20,
+        maxdepth = opts.maxdepth or 5,
         file = opts.file,
-        searchreplaced = opts.searchreplaced ~= false,
     }
 end
 
@@ -104,7 +102,8 @@ local function Find(fn, name, opts, state)
     end
     state.visited[fn] = true
 
-    for i = 1, state.opts.maxupvalues do
+    local i = 1
+    while true do
         local upname, upvalue = debug.getupvalue(fn, i)
         if not upname then
             break
@@ -124,9 +123,11 @@ local function Find(fn, name, opts, state)
                 return found
             end
         end
+
+        i = i + 1
     end
 
-    if state.depth < state.opts.maxdepth and state.opts.searchreplaced then
+    if state.depth < state.opts.maxdepth then
         local chain = REPLACED_FUNCTION_CHAIN[fn]
         if chain then
             for _, previous in ipairs(chain) do
