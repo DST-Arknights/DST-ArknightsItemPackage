@@ -1,11 +1,11 @@
 AddTechBranch("ARK_ITEM_TECH")
-AddTechLevel("ARK_ITEM_ONE", "ARK_ITEM_TECH", 1)
+AddTechRequirement("ARK_ITEM_ONE", "ARK_ITEM_TECH", 1)
 AddPrototyperTree('ARK_WORKSHOP_ONE', {
   ARK_ITEM_TECH = 1,
 })
 
 AddTechBranch("ARK_TRAINING_TECH")
-AddTechLevel("ARK_TRAINING_ONE", "ARK_TRAINING_TECH", 1)
+AddTechRequirement("ARK_TRAINING_ONE", "ARK_TRAINING_TECH", 1)
 AddPrototyperTree('ARK_TRAINING_ROOM_ONE', {
   ARK_TRAINING_TECH = 1,
 })
