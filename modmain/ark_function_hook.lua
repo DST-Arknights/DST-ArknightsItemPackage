@@ -18,6 +18,9 @@
 -- entry = { original = fn, mws = [ fn, ... ] }
 local _registry = setmetatable({}, { __mode = "k" })
 
+local function _noop(...)
+end
+
 -- ── 核心逻辑 ──────────────────────────────────────────────────────────────────
 
 local function _getOrCreateEntry(obj, funcName)
@@ -30,17 +33,17 @@ local function _getOrCreateEntry(obj, funcName)
   local entry = objHooks[funcName]
   if not entry then
     local original = obj[funcName]
-    assert(type(original) == "function",
-      "ArkHooks.HookFunction: '" .. tostring(funcName) .. "' 不是函数: " .. tostring(obj))
+    assert(original == nil or type(original) == "function",
+      "ArkHooks.HookFunction: '" .. tostring(funcName) .. "' 必须是函数或 nil: " .. tostring(obj))
     local mws = {}
-    local original_ref = original
+    local original_ref = original or _noop
     local dispatch
 
     dispatch = function(i, ...)
       if mws[i] then
         return mws[i](function(...) return dispatch(i + 1, ...) end, ...)
       else
-        return original(...)
+        return original_ref(...)
       end
     end
 
