@@ -167,6 +167,140 @@ health.externalabsorbmodifiers:RemoveModifier(inst, "my_mod_defense")
 4. 需要新增属性修改器时，优先参考 modmain/modifier_installer.lua 的现有模式，不要另起一套叠加逻辑。
 5. hook 类函数改动统一使用 ArkHookFunction / ArkUnhookFunction，不要直接覆写目标函数；需要插入逻辑时优先走 modmain/ark_function_hook.lua 提供的中间件链接口。
 
+## Upvalue 搜索与替换
+
+实现位置：modmain/ark_upvalue.lua
+
+### 接口定位
+
+当前公开接口：
+
+1. `ArkFindUpvalue(fn, name, opts)`：返回 slot，对已定位的 upvalue 做多次读取、设置、替换时使用。
+2. `ArkGetUpvalue(fn, name, opts)`：返回 `found, value, slot`，适合只读一次当前值。
+3. `ArkSetUpvalue(fn, name, value, opts)`：返回 `found, oldValue, newValue, slot`。
+4. `ArkReplaceUpvalue(fn, name, replacer, opts)`：返回 `found, oldValue, newValue, slot`，适合基于旧值生成新值。
+5. `ArkUpdateUpvalue(...)`：`ArkReplaceUpvalue(...)` 的别名。
+
+推荐理解：
+
+1. `Find` 是定位接口。
+2. `Get` 是便捷读取接口，本质上是 `Find` 的语法糖。
+3. 真正的核心能力是 `Find`、`Set`、`Replace`；`Get` 只是为了让“一次性读值”更顺手。
+
+### Find 与 Get 的区别
+
+`ArkFindUpvalue` 返回的是 slot，表示“这个 upvalue 在哪里”。
+slot 上自带：
+
+1. `slot:Get()`
+2. `slot:Set(newValue)`
+3. `slot:Replace(replacer)`
+4. `slot.owner`
+5. `slot.index`
+6. `slot.name`
+7. `slot.value`
+8. `slot.source`
+9. `slot.depth`
+
+`ArkGetUpvalue` 返回的是值，表示“我只想拿当前值，不关心槽位信息”。
+
+如果后续还要继续操作同一个 upvalue，优先用 `Find`，避免每次都从根函数重新递归搜索。
+
+### 用法示例
+
+#### 只读取一次 upvalue
+
+```lua
+local found, value, slot = ArkGetUpvalue(targetfn, "some_upvalue")
+if found then
+  print("当前值", value)
+  print("来源", slot.source)
+end
+```
+
+#### 先定位，再多次读取或设置
+
+```lua
+local slot = ArkFindUpvalue(targetfn, "some_upvalue")
+if slot then
+  local oldValue = slot:Get()
+  slot:Set("new value")
+  print("旧值", oldValue)
+  print("当前值", slot:Get())
+end
+```
+
+这种写法适合一个 upvalue 需要被多次访问的场景。
+
+#### 直接设置一次
+
+```lua
+local found, oldValue, newValue = ArkSetUpvalue(targetfn, "some_upvalue", 123)
+if found then
+  print("旧值", oldValue)
+  print("新值", newValue)
+end
+```
+
+如果只是一次性改值，用 `ArkSetUpvalue` 比先 `Find` 再 `Set` 更短。
+
+#### 用 Replace 包裹函数型 upvalue
+
+```lua
+local found, oldFn, newFn = ArkReplaceUpvalue(targetfn, "DoSomething", function(previous, slot)
+  if type(previous) ~= "function" then
+    return previous
+  end
+
+  return function(...)
+    print("before")
+    local result = previous(...)
+    print("after")
+    return result
+  end
+end)
+
+if found then
+  print("替换成功")
+end
+```
+
+`Replace` 适合做“基于旧值构造新值”的改写，尤其适合包装旧函数。
+
+#### 连续多次替换同一个函数型 upvalue
+
+```lua
+ArkReplaceUpvalue(targetfn, "DoSomething", function(previous)
+  return function(...)
+    print("wrap 1")
+    return previous(...)
+  end
+end)
+
+ArkReplaceUpvalue(targetfn, "DoSomething", function(previous)
+  return function(...)
+    print("wrap 2")
+    return previous(...)
+  end
+end)
+```
+
+当前实现会保留函数替换链。函数型 upvalue 被替换后，后续搜索仍然可以沿着替换链继续深入，不会出现“替换一次后就再也搜不到原路径里更深的 upvalue”的问题。
+
+#### 按文件来源过滤
+
+```lua
+local slot = ArkFindUpvalue(targetfn, "some_upvalue", {
+  file = "scripts/components"
+})
+
+if slot then
+  print("命中来源", slot.source)
+end
+```
+
+当同名 upvalue 可能出现在多个闭包层级或多个文件来源里时，优先加 `file` 过滤，避免误命中。
+
 ## 技能系统 State 管理
 
 实现位置：scripts/components/ark_skill.lua
