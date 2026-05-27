@@ -14,20 +14,19 @@
 
 <img src="docs/images/modicon/chongyue.png" alt="重岳" width="64" height="64">
 
-**重岳** 接入中,即将发布[DST-Arknights-Chongyue 源码](https://github.com/DST-Arknights/DST-Arknights-Chongyue)
+**重岳** [DST-Arknights-Chongyue 源码](https://github.com/DST-Arknights/DST-Arknights-Chongyue)
 
 <img src="docs/images/modicon/mon3tr.png" alt="Mon3tr" width="64" height="64">
 
 **Mon3tr** 接入中[DST-Arknights-Mon3tr 源码](https://github.com/DST-Arknights/DST-Arknights-Mon3tr)
+
+**凯尔希·思衡托** 接入中[DST-Arknights-Kelsey 源码](https://github.com/DST-Arknights/DST-Arknights-KaltsitEsperanta)
 
 **佩佩** 未立项
 
 ## 饼
 **战术小队**<br>
 已安装激活的模组, 可在战术小队面板召唤空投, 协同作战(含自动释放技能, 策略偏好等brain能力)
-
-**技能偷学**<br>
-即将实装🤗, 所有角色均可限时内使用模组角色的技能.
 
 ## 玩法包含内容
 
