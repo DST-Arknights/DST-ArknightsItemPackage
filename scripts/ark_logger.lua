@@ -87,52 +87,8 @@ end
 -- 持久化存储键
 local COVER_PERSISTENT_KEY = "ark_logger_cover_level"
 
--- 类级别覆盖等级（nil = 无覆盖）
+-- 类级别覆盖等级（nil = 无覆盖，由 ArkLogger:CoverLoggerLevel 管理）
 Logger.coverLevel = nil
-
--- 设置覆盖等级，level 为 nil 则移除覆盖
--- 支持数字或字符串（如 "DEBUG", "INFO" 等）
--- 设置后通过 TheSim:SetPersistentString 持久化，一次设置永久生效
-function Logger.CoverLoggerLevel(level)
-    if level == nil then
-        Logger.coverLevel = nil
-        if TheSim then
-            TheSim:SetPersistentString(COVER_PERSISTENT_KEY, "", false)
-        end
-        return
-    end
-
-    local parsed
-    if type(level) == "number" then
-        parsed = level
-    elseif type(level) == "string" then
-        parsed = LOG_LEVEL[level:upper()]
-    end
-
-    if parsed == nil then
-        return
-    end
-
-    Logger.coverLevel = parsed
-    if TheSim then
-        TheSim:SetPersistentString(COVER_PERSISTENT_KEY, tostring(parsed), false)
-    end
-end
-
--- 从持久化存储恢复覆盖等级（模组加载时调用）
-function Logger.RestoreCoverLevel()
-    if not TheSim or not TheSim.GetPersistentString then
-        return
-    end
-    TheSim:GetPersistentString(COVER_PERSISTENT_KEY, function(success, raw)
-        if success and raw and raw ~= "" then
-            local level = tonumber(raw)
-            if level then
-                Logger.coverLevel = level
-            end
-        end
-    end)
-end
 
 --------------------------------------------------------------------------
 -- 公开调用的方法
@@ -272,9 +228,52 @@ function ArkLogger:Error(...)
     self:GetLogger():Error(...)
 end
 
-GLOBAL.ArkLogger = ArkLogger()
+-- 设置覆盖等级，level 为 nil 则移除覆盖
+-- 支持数字或字符串（如 "DEBUG", "INFO" 等）
+-- 设置后通过 TheSim:SetPersistentString 持久化，一次设置永久生效
+function ArkLogger:CoverLoggerLevel(level)
+    if level == nil then
+        Logger.coverLevel = nil
+        if TheSim then
+            TheSim:SetPersistentString(COVER_PERSISTENT_KEY, "", false)
+        end
+        return
+    end
 
+    local parsed
+    if type(level) == "number" then
+        parsed = level
+    elseif type(level) == "string" then
+        parsed = LOG_LEVEL[level:upper()]
+    end
+
+    if parsed == nil then
+        return
+    end
+
+    Logger.coverLevel = parsed
+    if TheSim then
+        TheSim:SetPersistentString(COVER_PERSISTENT_KEY, tostring(parsed), false)
+    end
+end
+
+-- 从持久化存储恢复覆盖等级（模组加载时调用）
+function ArkLogger:RestoreCoverLevel()
+    if not TheSim or not TheSim.GetPersistentString then
+        return
+    end
+    TheSim:GetPersistentString(COVER_PERSISTENT_KEY, function(success, raw)
+        if success and raw and raw ~= "" then
+            local level = tonumber(raw)
+            if level then
+                Logger.coverLevel = level
+            end
+        end
+    end)
+end
+
+GLOBAL.ArkLogger = ArkLogger()
 -- 模组加载时自动从持久化存储恢复覆盖等级
-AddGamePostInit(Logger.RestoreCoverLevel)
+GLOBAL.ArkLogger:RestoreCoverLevel()
 
 return Logger
