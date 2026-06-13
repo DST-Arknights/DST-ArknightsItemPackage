@@ -40,7 +40,7 @@ end
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
-ArkLogger:DeclareLogger('DEBUG', 'ARK-ITEM')
+ArkLogger:DeclareLogger('INFO', 'ARK-ITEM')
 -- ArkUpValue
 modimport('modmain/ark_upvalue')
 -- tools

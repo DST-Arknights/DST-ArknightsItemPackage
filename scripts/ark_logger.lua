@@ -52,8 +52,9 @@ end
 
 -- 核心打印函数
 function Logger:Log(level, ...)
-    -- 检查开关和级别
-    if not self.enabled or level < self.level then
+    -- 检查开关和级别（coverLevel 覆盖所有实例的等级）
+    local effectiveLevel = Logger.coverLevel or self.level
+    if not self.enabled or level < effectiveLevel then
         return
     end
 
@@ -77,6 +78,60 @@ function Logger:Log(level, ...)
     
     -- 饥荒中通常使用 print，如果你的环境有 modprint，可以替换下面这行
     print(prefix, unpack({...}))
+end
+
+--------------------------------------------------------------------------
+-- 覆盖等级（类级别静态字段，覆盖所有实例的日志等级）
+--------------------------------------------------------------------------
+
+-- 持久化存储键
+local COVER_PERSISTENT_KEY = "ark_logger_cover_level"
+
+-- 类级别覆盖等级（nil = 无覆盖）
+Logger.coverLevel = nil
+
+-- 设置覆盖等级，level 为 nil 则移除覆盖
+-- 支持数字或字符串（如 "DEBUG", "INFO" 等）
+-- 设置后通过 TheSim:SetPersistentString 持久化，一次设置永久生效
+function Logger.CoverLoggerLevel(level)
+    if level == nil then
+        Logger.coverLevel = nil
+        if TheSim then
+            TheSim:SetPersistentString(COVER_PERSISTENT_KEY, "", false)
+        end
+        return
+    end
+
+    local parsed
+    if type(level) == "number" then
+        parsed = level
+    elseif type(level) == "string" then
+        parsed = LOG_LEVEL[level:upper()]
+    end
+
+    if parsed == nil then
+        return
+    end
+
+    Logger.coverLevel = parsed
+    if TheSim then
+        TheSim:SetPersistentString(COVER_PERSISTENT_KEY, tostring(parsed), false)
+    end
+end
+
+-- 从持久化存储恢复覆盖等级（模组加载时调用）
+function Logger.RestoreCoverLevel()
+    if not TheSim or not TheSim.GetPersistentString then
+        return
+    end
+    TheSim:GetPersistentString(COVER_PERSISTENT_KEY, function(success, raw)
+        if success and raw and raw ~= "" then
+            local level = tonumber(raw)
+            if level then
+                Logger.coverLevel = level
+            end
+        end
+    end)
 end
 
 --------------------------------------------------------------------------
@@ -218,4 +273,8 @@ function ArkLogger:Error(...)
 end
 
 GLOBAL.ArkLogger = ArkLogger()
+
+-- 模组加载时自动从持久化存储恢复覆盖等级
+AddGamePostInit(Logger.RestoreCoverLevel)
+
 return Logger
