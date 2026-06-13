@@ -10,6 +10,10 @@ AddPrototyperTree('ARK_TRAINING_ROOM_ONE', {
   ARK_TRAINING_TECH = 1,
 })
 
+AddTechBranch("ARK_ELITE_TECH")
+AddTechRequirement("ARK_ELITE_ONE", "ARK_ELITE_TECH", 1)
+AddTechRequirement("ARK_ELITE_TWO", "ARK_ELITE_TECH", 2)
+
 RegisterInventoryItemAtlas("images/ark_workshop.xml", "ark_workshop.tex")
 -- 制造站
 AddRecipe2('ark_workshop', {

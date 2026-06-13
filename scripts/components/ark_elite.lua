@@ -84,7 +84,10 @@ local ArkElite = Class(function(self, inst)
   self._trackedEpics = {} -- { [target] = { deathfn, time } }
   self.externalexpmultipliers = SourceModifierList(inst)
   self.externalexpmultipliers:SetModifier("base", 5)
-  self:ApplyElite()
+  self._apply_elite_task = self.inst:DoTaskInTime(0, function()
+    self._apply_elite_task = nil
+    self:ApplyElite()
+  end)
   self.inst:ListenForEvent("killed", OnKilled)
   self.inst:ListenForEvent("onhitother", OnHitOther)
 end, nil, {
@@ -387,6 +390,7 @@ function ArkElite:_ApplyBonuses()
   if health then
     local bonus = self.maxHealthBonus and self.maxHealthBonus > 0 and math.floor(self.maxHealthBonus * ratio) or 0
     if bonus > 0 then
+      ArkLogger:Debug("Applying health bonus", bonus, "ratio", ratio, "cumulativeLevel", cumulativeLevel, "totalLevels", totalLevels)
       health.maxhealthaddmodifiers:SetModifier(HEALTH_BONUS_MODIFIER_KEY, bonus)
     else
       health.maxhealthaddmodifiers:RemoveModifier(HEALTH_BONUS_MODIFIER_KEY)
@@ -415,19 +419,15 @@ function ArkElite:_ApplyBonuses()
 end
 
 function ArkElite:ApplyElite()
-  -- 下一帧任务
-  if self._applyEliteTask then
-    return
+  if self._apply_elite_task then
+    self._apply_elite_task:Cancel()
+    self._apply_elite_task = nil
   end
-  self._applyEliteTask = self.inst:DoTaskInTime(0, function()
-    self._applyEliteTask = nil
-    -- 1) Callback：先让角色回调处理自身逻辑
-    if self._onApplyElite then
-      self._onApplyElite(self.inst, self.elite, self.level)
-    end
-    -- 2) Apply：内部会自行回收旧奖励并重算当前奖励
-    self:_ApplyBonuses()
-  end)
+  if self._onApplyElite then
+    self._onApplyElite(self.inst, self.elite, self.level)
+  end
+  -- 2) Apply：内部会自行回收旧奖励并重算当前奖励
+  self:_ApplyBonuses()
 end
 
 function ArkElite:OnSave()
@@ -464,9 +464,9 @@ function ArkElite:OnLoad(data)
 end
 
 function ArkElite:OnRemoveFromEntity()
-  if self._applyEliteTask then
-    self._applyEliteTask:Cancel()
-    self._applyEliteTask = nil
+  if self._apply_elite_task then
+    self._apply_elite_task:Cancel()
+    self._apply_elite_task = nil
   end
   self:_StripBonuses()
   self:_ClearAllTrackedEpics()

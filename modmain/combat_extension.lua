@@ -76,26 +76,6 @@ local function UpdateAttackSpeed(inst, speed)
 end
 
 AddComponentPostInit("combat", function(self)
-  InstallClassPropertyModifier(self, "defaultdamage", {
-    modifier_name = "defaultdamageaddmodifiers",
-    default_value = 0,
-    combine_fun = SourceModifierList.additive,
-  })
-  InstallClassPropertyModifier(self, "defaultdamage", {
-    modifier_name = "defaultdamagemultmodifiers",
-    default_value = 1,
-    combine_fun = SourceModifierList.multiply,
-  })
-  InstallClassPropertyModifier(self, "attackrange", {
-    modifier_name = "attackrangeaddmodifiers",
-    default_value = 0,
-    combine_fun = SourceModifierList.additive,
-  })
-  InstallClassPropertyModifier(self, "hitrange", {
-    modifier_name = "hitrangeaddmodifiers",
-    default_value = 0,
-    combine_fun = SourceModifierList.additive,
-  })
   self.inst.replica.combat:SetAttackSpeed(1)
   -- 初始化攻击速度修改器
   self.attackspeedmodifiers = SourceModifierList(self.inst, nil, nil, UpdateAttackSpeed)

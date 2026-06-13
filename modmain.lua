@@ -65,6 +65,8 @@ MergePOFile('languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S),
 modimport('scripts/ark_hotkey')
 -- 加载属性修改器安装器
 modimport('modmain/modifier_installer')
+-- 加载属性修改器实现
+modimport('modmain/modifier_implement')
 -- 脚本扩展
 modimport('modmain/entityscript_extension')
 -- 事件回调优先级
@@ -73,10 +75,6 @@ modimport('modmain/priority_event_callback')
 modimport('modmain/combat_extension')
 -- 护甲扩展
 modimport('modmain/armor_extension')
--- 生命值扩展
-modimport('modmain/health_extension')
--- builder 扩展
-modimport('modmain/builder_extension')
 -- 控制定义注册
 modimport('modmain/control_definition')
 -- 飞行组件
