@@ -83,6 +83,8 @@ modimport('modmain/ark_flyer')
 modimport('modmain/ark_alive_fx')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
+-- buff生成器
+modimport('modmain/ark_make_buff')
 -- badge 管理
 modimport('modmain/ark_badge')
 -- widget 扩展
@@ -165,3 +167,5 @@ DefineNetState("ark_buff_icon", {
   title = "string:classified",
   desc = "string:classified",
 })
+-- 声明前置模块已安装
+GLOBAL.ARK_ITEM_PACKAGE_LOADED = true
