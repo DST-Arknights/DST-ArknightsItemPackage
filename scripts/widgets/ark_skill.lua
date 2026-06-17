@@ -387,6 +387,8 @@ function ArkSkill:UpdateBuffShadow(status, buffProgress)
     self.statusText:SetColour(1, 1, 1, 1)
     self:StartTimeBuff(buffProgress)
     self.buffShadow:Show()
+  elseif status == CONSTANTS.SKILL_STATUS.BULLETING then
+    self.buffShadow:Show()
   else
     self:StopTimeBuff()
     self.buffShadow:Hide()
