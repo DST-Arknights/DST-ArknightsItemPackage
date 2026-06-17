@@ -182,6 +182,7 @@ function ArkSkillDesc:RefreshConfig(descConfig)
 
   local desc = descConfig.locked and descConfig.lockedDesc or descConfig.desc
   if desc then
+    desc = FunctionOrValue(desc, self.owner.replica.ark_skill:GetSkill(self.id))
     local descText = self:AddChild(ArkSkillDescText(desc, self.size[1] - PADDING * 2))
     local _, descTextSizeH = descText:GetSize()
     descText:SetPosition(0, topOffset, 0)

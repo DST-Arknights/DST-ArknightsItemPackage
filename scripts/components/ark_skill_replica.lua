@@ -106,6 +106,34 @@ end)
 
 local MAX_SKILL_COUNT = 4
 
+-- Replica 端单技能对象：与 server 端 SingleSkill 保持接口一致，数据源来自 ArkSkillReplica 的 NetState 与 configPatch 缓存。
+local ReplicaSingleSkill = Class(function(self, manager, id)
+  self.manager = manager
+  self.inst = manager.inst
+  self.id = id
+end)
+
+function ReplicaSingleSkill:IsActivating()
+  local state = self.manager:GetState(self.id)
+  return state ~= nil and (state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING)
+end
+
+function ReplicaSingleSkill:GetConfig()
+  return self.manager:GetResolvedConfigById(self.id)
+end
+
+function ReplicaSingleSkill:GetLevelConfig()
+  local config = self:GetConfig()
+  local state = self.manager:GetState(self.id)
+  if config == nil or state == nil then return nil end
+  return config.levels[state.level]
+end
+
+function ReplicaSingleSkill:GetLevelParams()
+  local levelConfig = self:GetLevelConfig()
+  return levelConfig and levelConfig.params or {}
+end
+
 local ArkSkillReplica = Class(function(self, inst)
   self.inst = inst
   self.states = {}           -- 索引 -> state
@@ -113,6 +141,7 @@ local ArkSkillReplica = Class(function(self, inst)
   self.skillIdToIndex = {}    -- 技能id -> 索引
   self.configPatchStrings = {}
   self.configPatches = {}
+  self.replicaSkills = {}     -- 技能id -> ReplicaSingleSkill 缓存
   self.maxSkillCount = MAX_SKILL_COUNT
   -- 预制 4 个 state，用于同步状态数据
   for i = 1, MAX_SKILL_COUNT do
@@ -181,6 +210,7 @@ function ArkSkillReplica:DoUninstallSkill(id)
   self.skillIdToIndex[id] = nil
   self.configPatchStrings[id] = nil
   self.configPatches[id] = nil
+  self.replicaSkills[id] = nil
 end
 
 function ArkSkillReplica:DoInstallSkill(id, index)
@@ -327,6 +357,18 @@ end
 function ArkSkillReplica:GetState(id)
   local index = self.skillIdToIndex[id]
   return index and self.states[index] or nil
+end
+
+function ArkSkillReplica:GetSkill(id)
+  if not id or id == "" then return nil end
+  local cached = self.replicaSkills[id]
+  if not cached then
+    -- 技能未安装时不创建缓存对象
+    if not self.skillIdToIndex[id] then return nil end
+    cached = ReplicaSingleSkill(self, id)
+    self.replicaSkills[id] = cached
+  end
+  return cached
 end
 
 function ArkSkillReplica:RestoreDefaultHotkey(id)

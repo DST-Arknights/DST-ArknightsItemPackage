@@ -2,6 +2,14 @@ local SourceModifierList = require("util/sourcemodifierlist")
 local SpDamageUtil = GLOBAL.require("components/spdamageutil")
 
 SpDamageUtil.DefineSpType("true_damage", {
+    GetDamage = function(ent)
+        if not ent.components.weapon then
+            return 0
+        end
+        local multi = ent.components.weapon.truedamagemultipliers:Get() or 1
+        local damage = ent.components.weapon.true_damage or 0
+        return damage * multi
+    end,
     -- 真实伤害不考虑防御，所以总是返回0
     GetDefense = function(ent)
         return 0
@@ -75,6 +83,10 @@ local function UpdateAttackSpeed(inst, speed)
     inst:PushEvent("attackspeedchanged", { speed = speed })
 end
 
+AddComponentPostInit("weapon", function(self)
+    self.truedamagemultipliers = SourceModifierList(self.inst, 1, SourceModifierList.multiply)
+end)
+
 AddComponentPostInit("combat", function(self)
   self.inst.replica.combat:SetAttackSpeed(1)
   -- 初始化攻击速度修改器
@@ -119,9 +131,9 @@ AddComponentPostInit("combat", function(self)
         spdamage = {}
       end
       local true_damage = 0
-      damage = damage or 0
+      damage = math.max(damage or 0, 0)
       true_damage = damage * tdprop
-      damage = damage - true_damage
+      damage = math.max(damage - true_damage, 0)
       local removed_spdamage = {}
       for k, v in pairs(spdamage) do
         if k ~= "true_damage" then
