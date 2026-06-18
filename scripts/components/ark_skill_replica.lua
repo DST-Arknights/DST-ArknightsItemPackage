@@ -113,8 +113,13 @@ local ReplicaSingleSkill = Class(function(self, manager, id)
   self.id = id
 end)
 
+-- 获取该技能的 NetState 同步对象（status/level/energyProgress 等网络状态）
+function ReplicaSingleSkill:GetNetState()
+  return self.manager:GetNetState(self.id)
+end
+
 function ReplicaSingleSkill:IsActivating()
-  local state = self.manager:GetState(self.id)
+  local state = self:GetNetState()
   return state ~= nil and (state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING)
 end
 
@@ -124,7 +129,7 @@ end
 
 function ReplicaSingleSkill:GetLevelConfig()
   local config = self:GetConfig()
-  local state = self.manager:GetState(self.id)
+  local state = self:GetNetState()
   if config == nil or state == nil then return nil end
   return config.levels[state.level]
 end
@@ -326,10 +331,6 @@ function ArkSkillReplica:SkillDataDirty(index)
   end
 end
 
-function ArkSkillReplica:GetStateByIndex(index)
-  return self.states[index]
-end
-
 -- 主机端同步状态到客机
 function ArkSkillReplica:SyncSkillStatus(id, data)
   local index = self.skillIdToIndex[id]
@@ -354,7 +355,9 @@ function ArkSkillReplica:SyncSkillStatus(id, data)
   state.limitRemaining = data.limitRemaining or 0
 end
 
-function ArkSkillReplica:GetState(id)
+-- 获取技能的 NetState 同步对象（网络状态：status/level/energyProgress 等）
+-- 注意：与 Server 端 SingleSkill:GetState(key) 语义不同，后者是开发者自定义的持久化 key-value 存储
+function ArkSkillReplica:GetNetState(id)
   local index = self.skillIdToIndex[id]
   return index and self.states[index] or nil
 end
@@ -399,7 +402,7 @@ function ArkSkillReplica:RegisterHotkey(id, hotkey)
   local name = getHotkeyName(self.inst, id)
   hotkey_mgr:Register(name, function()
     -- 弹药模式下再次按会取消
-    if self:GetState(id).status == CONSTANTS.SKILL_STATUS.BULLETING then
+    if self:GetNetState(id).status == CONSTANTS.SKILL_STATUS.BULLETING then
       self:CancelSkill(id)
     else
       self:TryActivateSkill(id)
@@ -443,7 +446,7 @@ function ArkSkillReplica:TryActivateSkill(id)
 end
 
 function ArkSkillReplica:IsActivating(id)
-  local state = self:GetState(id)
+  local state = self:GetNetState(id)
   return state ~= nil and (state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING)
 end
 
