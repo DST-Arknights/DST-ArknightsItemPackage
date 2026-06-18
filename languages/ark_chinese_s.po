@@ -1230,3 +1230,8 @@ msgstr "请先将当前精英阶段升到满级"
 msgctxt "STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT"
 msgid "Remaining: %s"
 msgstr "剩余时间: %s"
+
+#. STRINGS.CHARACTERS.GENERIC.SKILL_CANNOT_ACTIVATE
+msgctxt "STRINGS.CHARACTERS.GENERIC.SKILL_CANNOT_ACTIVATE"
+msgid "Cannot activate this skill"
+msgstr "现在还不行"

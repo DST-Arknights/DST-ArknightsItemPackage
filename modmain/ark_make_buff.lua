@@ -22,8 +22,8 @@ local function OnUpdateBuffInfo(inst)
     inst.components.ark_buff_icon:SetDesc(FunctionOrValue(cfg.description, inst, data, cfg))
   end
   if cfg.icon_atlas and cfg.icon_image then
-    local icon_atlas = FunctionOrValue(cfg.icon_atlas, inst, nil, cfg)
-    local icon_image = FunctionOrValue(cfg.icon_image, inst, nil, cfg)
+    local icon_atlas = FunctionOrValue(cfg.icon_atlas, inst, data, cfg)
+    local icon_image = FunctionOrValue(cfg.icon_image, inst, data, cfg)
     inst.components.ark_buff_icon:SetTexture(icon_atlas, icon_image)
   end
   if cfg.duration then
