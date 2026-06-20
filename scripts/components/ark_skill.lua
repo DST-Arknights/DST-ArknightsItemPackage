@@ -793,6 +793,12 @@ function SingleSkill:Activate(params)
 end
 
 function SingleSkill:TryActivate(params)
+  if true then
+    StartAoeSelect(self.inst, nil, function(doer, pos)
+      ArkLogger:Debug("Selected target for skill activation", doer, pos)
+    end)
+    return
+  end
   if not params then params = { target = nil, targetPos = nil, force = false } end
   local can, reason = self:CanActivate(params)
   if not can then

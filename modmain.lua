@@ -2,7 +2,8 @@ GLOBAL.setmetatable(env, {
   __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
 
-PrefabFiles = {"ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener', 'ark_portable_supply', 'ark_portable_supply_range'}
+PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
+  'ark_portable_supply', 'ark_portable_supply_range', "ark_skill_spell" }
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -37,6 +38,7 @@ function GLOBAL.PreventScrollZoom()
     ThePlayer.components.playercontroller.lastzoomtime = currentTime
   end
 end
+
 -- 加载日志
 -- 导出全局变量ArkLogger
 modimport('scripts/ark_logger')
@@ -71,6 +73,8 @@ modimport('modmain/modifier_implement')
 modimport('modmain/entityscript_extension')
 -- 事件回调优先级
 modimport('modmain/priority_event_callback')
+-- AOE 选择器
+modimport('modmain/ark_aoe_selector')
 -- 武器扩展
 modimport('modmain/combat_extension')
 -- 护甲扩展
