@@ -87,6 +87,8 @@ modimport('modmain/ark_flyer')
 modimport('modmain/ark_alive_fx')
 -- 特效生成器
 modimport('modmain/ark_make_fx')
+-- reticule aoe
+modimport('modmain/ark_reticuleaoe')
 -- buff生成器
 modimport('modmain/ark_make_buff')
 -- badge 管理
