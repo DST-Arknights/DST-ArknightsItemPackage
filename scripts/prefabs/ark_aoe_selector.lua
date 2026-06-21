@@ -12,7 +12,7 @@ local DEFAULT_CONFIG = {
   },
   aoetargeting = {
     allowWater = false,
-    deployRadius = 1,
+    deployRadius = 3,
   },
 }
 
