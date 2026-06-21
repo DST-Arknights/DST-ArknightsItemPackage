@@ -429,17 +429,27 @@ function ArkSkillReplica:TryActivateSkill(id)
   if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
     return false
   end
+
+  local targeting = config.targeting
+  local hasTargeting = targeting and targeting.mode == "aoe"
+
   local target = TheInput:GetWorldEntityUnderMouse()
-  local targetPos = TheInput:GetWorldPosition()
-  local serializedPos = string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z)
   local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
+
   if self.inst.components.ark_skill then
-    self.inst.components.ark_skill:GetSkill(id):TryActivate({
+    -- 主机端：如果有选择器，不传 targetPos（由 TryActivate 内部处理）
+    local params = {
       target = target,
-      targetPos = targetPos,
-      force = force
-    })
+      force = force,
+    }
+    if not hasTargeting then
+      params.targetPos = TheInput:GetWorldPosition()
+    end
+    self.inst.components.ark_skill:GetSkill(id):TryActivate(params)
   else
+    -- 客机端：如果有选择器，不传 targetPos（由服务端 TryActivate 处理）
+    local targetPos = hasTargeting and nil or TheInput:GetWorldPosition()
+    local serializedPos = targetPos and string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z) or ""
     SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), id, target, serializedPos, force)
   end
   return true

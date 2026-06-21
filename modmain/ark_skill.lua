@@ -10,12 +10,16 @@ AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, id, target,
   if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
     return
   end
-  local deserializedPos = string.split(targetPos, ",")
-  targetPos = Vector3(tonumber(deserializedPos[1]), tonumber(deserializedPos[2]), tonumber(deserializedPos[3]))
+  -- 解析 targetPos（空字符串表示无 targetPos，由 TryActivate 内部处理选择器）
+  local parsedPos = nil
+  if targetPos and targetPos ~= "" then
+    local deserializedPos = string.split(targetPos, ",")
+    parsedPos = Vector3(tonumber(deserializedPos[1]), tonumber(deserializedPos[2]), tonumber(deserializedPos[3]))
+  end
   skill:TryActivate(
     {
       target = target,
-      targetPos = targetPos,
+      targetPos = parsedPos,
       force = force
     }
   )
@@ -76,6 +80,7 @@ local function checkAndDefaultSkill(skill)
     energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
     activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
     hotkey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
+    targeting = skill.targeting or nil,
     levels = defaultLevelConfigs(skill.levels)
   }
   -- 透传所有回调字段

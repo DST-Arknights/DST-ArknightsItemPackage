@@ -11,6 +11,7 @@ AddStategraphState("wilson_client", State {
   name = "ark_aoe_select",
 
   onenter = function(inst)
+    inst.components.locomotor:Stop()
     inst:PerformPreviewBufferedAction()
   end,
 })
@@ -56,21 +57,25 @@ local function StopAoeSelect(doer)
   end
 end
 
-local function StartAoeSelect(doer, style, fn, cancel_fn)
-  fn = fn or Noop
-  cancel_fn = cancel_fn or Noop
+-- StartAoeSelect(doer, opts)
+-- opts.onSelect: function(doer, pos) - 选择确认回调（必选）
+-- opts.onCancel: function(doer) - 取消回调（可选）
+-- opts.config: table - 传递给 prefab 的配置（可选，用于覆盖默认 reticule/aoetargeting 配置）
+local function StartAoeSelect(doer, opts)
+  opts = opts or {}
+  local OnSelected = opts.OnSelected or Noop
+  local config = opts.config or {}
 
   StopAoeSelect(doer)
 
-  local spell = SpawnPrefab("ark_skill_spell")
+  local spell = SpawnPrefab("ark_aoe_selector")
   doer._now_ark_aoe_selector = spell
+  spell._ark_aoe_config:set(json.encode(config))
+
   spell.components.aoespell:SetSpellFn(function(inst, doer, pos)
-    fn(doer, pos)
+    OnSelected(doer, pos)
     StopAoeSelect(doer)
   end)
-  spell.onstoptargetingfn = function(inst)
-    cancel_fn(doer)
-  end
   spell.entity:SetParent(doer.entity)
   spell.Network:SetClassifiedTarget(doer)
 end

@@ -88,7 +88,8 @@ local CONFIG_PATCH_FIELD_DEFS = {
   },
   hotkey = {
     normalize = function(value, skillId)
-      assert(type(value) == "number" or type(value) == "string", "Skill " .. skillId .. " config patch field hotkey must be a number or string.")
+      assert(type(value) == "number" or type(value) == "string",
+        "Skill " .. skillId .. " config patch field hotkey must be a number or string.")
       return value
     end,
   },
@@ -255,12 +256,12 @@ local SingleSkill = Class(function(self, manager, id)
     end
   end
   -- 生命周期钩子（不走事件系统）
-  self._cfgOnStep   = cfg.OnStep
+  self._cfgOnStep    = cfg.OnStep
   self._cfgOnInstall = cfg.OnInstall
-  self._cfgOnAdd    = cfg.OnAdd
-  self._cfgOnRemove = cfg.OnRemove
-  self._cfgOnSave   = cfg.OnSave
-  self._cfgOnLoad   = cfg.OnLoad
+  self._cfgOnAdd     = cfg.OnAdd
+  self._cfgOnRemove  = cfg.OnRemove
+  self._cfgOnSave    = cfg.OnSave
+  self._cfgOnLoad    = cfg.OnLoad
 end)
 
 function SingleSkill:GetBaseConfig()
@@ -328,7 +329,8 @@ function SingleSkill:ClearConfigPatch(keys, opts)
     end
     nextPatch = self:GetConfigPatch()
     for _, key in ipairs(keys) do
-      assert(CONFIG_PATCH_FIELD_DEFS[key] ~= nil, "Unsupported config patch field for skill " .. self.id .. ": " .. tostring(key))
+      assert(CONFIG_PATCH_FIELD_DEFS[key] ~= nil,
+        "Unsupported config patch field for skill " .. self.id .. ": " .. tostring(key))
       nextPatch[key] = nil
     end
   end
@@ -432,6 +434,7 @@ end
 function SingleSkill:SetOnLocked(fn)
   self:_AddCallback("ark_skill_locked", fn)
 end
+
 function SingleSkill:UnsetOnLocked(fn)
   self:_RemoveCallback("ark_skill_locked", fn)
 end
@@ -439,6 +442,7 @@ end
 function SingleSkill:SetOnUnlocked(fn)
   self:_AddCallback("ark_skill_unlocked", fn)
 end
+
 function SingleSkill:UnsetOnUnlocked(fn)
   self:_RemoveCallback("ark_skill_unlocked", fn)
 end
@@ -446,6 +450,7 @@ end
 function SingleSkill:SetOnEnergyRecovering(fn)
   self:_AddCallback("ark_skill_energy_recovering", fn)
 end
+
 function SingleSkill:UnsetOnEnergyRecovering(fn)
   self:_RemoveCallback("ark_skill_energy_recovering", fn)
 end
@@ -453,6 +458,7 @@ end
 function SingleSkill:SetOnActivateReady(fn)
   self:_AddCallback("ark_skill_activate_ready", fn)
 end
+
 function SingleSkill:UnsetOnActivateReady(fn)
   self:_RemoveCallback("ark_skill_activate_ready", fn)
 end
@@ -461,6 +467,7 @@ end
 function SingleSkill:SetOnActivateEffect(fn)
   self:_AddCallback("ark_skill_activate_effect", fn)
 end
+
 function SingleSkill:UnsetOnActivateEffect(fn)
   self:_RemoveCallback("ark_skill_activate_effect", fn)
 end
@@ -468,6 +475,7 @@ end
 function SingleSkill:SetOnActivate(fn)
   self:_AddCallback("ark_skill_activate", fn)
 end
+
 function SingleSkill:UnsetOnActivate(fn)
   self:_RemoveCallback("ark_skill_activate", fn)
 end
@@ -475,6 +483,7 @@ end
 function SingleSkill:SetOnDeactivate(fn)
   self:_AddCallback("ark_skill_deactivate", fn)
 end
+
 function SingleSkill:UnsetOnDeactivate(fn)
   self:_RemoveCallback("ark_skill_deactivate", fn)
 end
@@ -482,6 +491,7 @@ end
 function SingleSkill:SetOnBulletCut(fn)
   self:_AddCallback("ark_skill_bullet_cut", fn)
 end
+
 function SingleSkill:UnsetOnBulletCut(fn)
   self:_RemoveCallback("ark_skill_bullet_cut", fn)
 end
@@ -489,6 +499,7 @@ end
 function SingleSkill:SetOnLevelChange(fn)
   self:_AddCallback("ark_skill_level_change", fn)
 end
+
 function SingleSkill:UnsetOnLevelChange(fn)
   self:_RemoveCallback("ark_skill_level_change", fn)
 end
@@ -663,7 +674,8 @@ end
 
 function SingleSkill:SetLevel(level)
   local maxLevel = self:GetMaxLevel()
-  assert(level >= 1 and level <= maxLevel, "Invalid skill level: " .. tostring(level) .. ", max level is: " .. tostring(maxLevel))
+  assert(level >= 1 and level <= maxLevel,
+    "Invalid skill level: " .. tostring(level) .. ", max level is: " .. tostring(maxLevel))
   local oldLevel = self:GetLevel()
   if oldLevel == level then
     return
@@ -718,7 +730,8 @@ function SingleSkill:AddEnergyProgress(value)
     end
   end
   -- 自动充能模式整数帧同步, 其余模式在每次进度变化时同步
-  local skipSync = cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and math.floor(oldEnergyProgress) == math.floor(data.energyProgress)
+  local skipSync = cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and
+  math.floor(oldEnergyProgress) == math.floor(data.energyProgress)
   if not skipSync then
     self.manager:SyncSkillStatus(self.id)
   end
@@ -793,18 +806,40 @@ function SingleSkill:Activate(params)
 end
 
 function SingleSkill:TryActivate(params)
-  if true then
-    StartAoeSelect(self.inst, nil, function(doer, pos)
-      ArkLogger:Debug("Selected target for skill activation", doer, pos)
-    end)
+  if not params then params = {} end
+
+  -- 检查是否需要目标选择器
+  local cfg = self:GetConfig()
+  local targeting = cfg.targeting
+
+  if targeting and targeting.mode == "aoe" then
+    -- 快速失败检查（不传 targetPos）
+    local can, reason = self:CanActivate(params)
+    if not can then
+      if reason then SayAndVoice(self.inst, reason) end
+      return false
+    end
+
+    StartAoeSelect(self.inst, {
+      onSelect = function(doer, pos)
+        params.targetPos = pos
+        -- 最终确认（传 targetPos）
+        local canAgain, reasonAgain = self:CanActivate(params)
+        if not canAgain then
+          if reasonAgain then SayAndVoice(self.inst, reasonAgain) end
+          return
+        end
+        self:Activate(params)
+      end,
+      config = targeting.config or {},
+    })
     return
   end
-  if not params then params = { target = nil, targetPos = nil, force = false } end
+
+  -- 无选择器路径
   local can, reason = self:CanActivate(params)
   if not can then
-    if reason then
-      SayAndVoice(self.inst, reason)
-    end
+    if reason then SayAndVoice(self.inst, reason) end
     return false
   end
   return self:Activate(params)
@@ -837,7 +872,7 @@ function SingleSkill:CutBullet(value)
     bulletCount = data.bulletCount
   })
   if data.bulletCount == 0 then
-       self:SetEnergyRecovering()
+    self:SetEnergyRecovering()
   end
   self.manager:SyncSkillStatus(self.id)
 end
@@ -899,12 +934,12 @@ function SingleSkill:Remove()
     self.refreshTagTask:Cancel()
     self.refreshTagTask = nil
   end
-  self:Cancel()  -- 若在激活中，触发 deactivate → HookFunctionWhileActivating 自动清除
+  self:Cancel() -- 若在激活中，触发 deactivate → HookFunctionWhileActivating 自动清除
   self:Lock()
   if self._cfgOnRemove and not self._removing then
     self._cfgOnRemove(self, {})
   end
-  self:_CleanupOwnedHooks()  -- 兜底：清理所有未释放的 hook
+  self:_CleanupOwnedHooks() -- 兜底：清理所有未释放的 hook
   self._removing = true
   self.manager:RemoveSkill(self.id)
 end
