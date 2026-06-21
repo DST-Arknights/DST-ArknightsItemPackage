@@ -236,7 +236,8 @@ function ArkSkillReplica:RefreshHotkeyRegistration(id, config)
   end
 
   if ShouldRegisterManualHotkey(config) then
-    self:SetHotkey(id, config.hotkey)
+    -- 初始化/读档时只注册 handler，不覆盖用户已保存的按键映射
+    self:RegisterHotkey(id, config.hotkey)
   else
     self:UnregisterHotkey(id)
   end
@@ -411,11 +412,11 @@ function ArkSkillReplica:SetHotkey(id, hotkey)
   if TheNet:IsDedicated() then return end
   local hotkey_mgr = GetHotKeyManager(self.inst)
   local name = getHotkeyName(self.inst, id)
-  -- 检查是否已经有按键了
-  local oldHotkey = hotkey_mgr:GetHotkey(name)
-  if not oldHotkey then
-    self:RegisterHotkey(id, hotkey)
-  end
+  -- 先注册 handler（如果尚未注册）
+  hotkey_mgr:Register(name, function()
+    self:UseSkill(id)
+  end, hotkey)
+  -- 持久化用户设置的新按键值
   hotkey_mgr:SetHotkey(name, hotkey)
 end
 
