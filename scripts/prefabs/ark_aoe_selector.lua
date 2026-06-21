@@ -11,8 +11,9 @@ local DEFAULT_CONFIG = {
     twinstickrange = 8,
   },
   aoetargeting = {
-    allowWater = false,
-    deployRadius = 3,
+    allowwater = false,
+    deployradius = 3,
+    range = 10,
   },
 }
 
@@ -46,11 +47,9 @@ local function ApplyConfig(inst, userConfig)
   -- 应用到 aoetargeting
   local aoe = inst.components.aoetargeting
   if aoe then
-    if aoeCfg.allowWater ~= nil then
-      aoe:SetAllowWater(aoeCfg.allowWater)
-    end
-    if aoeCfg.deployRadius ~= nil then
-      aoe:SetDeployRadius(aoeCfg.deployRadius)
+    -- 直接覆盖 aoetargeting 属性
+    for k, v in pairs(aoeCfg) do
+      aoe[k] = v
     end
 
     -- 应用 reticule 配置到 aoetargeting.reticule 表

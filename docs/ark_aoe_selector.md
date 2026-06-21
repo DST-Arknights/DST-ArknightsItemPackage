@@ -42,12 +42,12 @@
 
 | 配置项 | 类型 | 说明 | 默认值 |
 |--------|------|------|--------|
-| `allowWater` | bool | 允许水面施法 | `false` |
-| `deployRadius` | number | 检测半径 | `3` |
-| `range` | number | 最大施法距离 | `8` (引擎默认) |
-| `alwaysValid` | bool | 永远有效 | `false` |
-| `allowRiding` | bool | 骑行时可用 | `true` |
-| `targetFX` | string | 选中点常驻 FX | 可选 |
+| `allowwater` | bool | 允许水面施法 | `false` |
+| `deployradius` | number | 检测半径 | `3` |
+| `range` | number | 最大施法距离 | `10` |
+| `alwaysvalid` | bool | 永远有效 | `false` |
+| `allowriding` | bool | 骑行时可用 | `true` |
+| `targetprefab` | string | 选中点常驻 FX | 可选 |
 
 ## 使用示例
 
@@ -77,8 +77,8 @@ StartAoeSelect(doer, {
       validcolour = {0, 1, 0, 1},  -- 绿色表示有效
     },
     aoetargeting = {
-      allowWater = true,  -- 允许水面
-      deployRadius = 2,  -- 更大的检测半径
+      allowwater = true,  -- 允许水面
+      deployradius = 2,  -- 更大的检测半径
     },
   },
 })
@@ -100,7 +100,7 @@ StartAoeSelect(doer, {
         twinstickrange = 12,
       },
       aoetargeting = {
-        deployRadius = 3,
+        deployradius = 3,
       },
     },
   },
