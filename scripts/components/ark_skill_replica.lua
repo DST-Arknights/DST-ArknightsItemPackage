@@ -401,12 +401,7 @@ function ArkSkillReplica:RegisterHotkey(id, hotkey)
   local hotkey_mgr = GetHotKeyManager(self.inst)
   local name = getHotkeyName(self.inst, id)
   hotkey_mgr:Register(name, function()
-    -- 弹药模式下再次按会取消
-    if self:GetNetState(id).status == CONSTANTS.SKILL_STATUS.BULLETING then
-      self:CancelSkill(id)
-    else
-      self:TryActivateSkill(id)
-    end
+    self:UseSkill(id)
   end, hotkey)
 end
 
@@ -453,6 +448,69 @@ function ArkSkillReplica:TryActivateSkill(id)
     SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), id, target, serializedPos, force)
   end
   return true
+end
+
+function ArkSkillReplica:RecastSkill(id)
+  local config = self:GetResolvedConfigById(id)
+  if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
+    return false
+  end
+
+  -- recastSkipTargeting 为 true 时，二段跳过指示器直接用鼠标位置
+  local skipTargeting = config.recastSkipTargeting == true
+  local targeting = config.targeting
+  local hasTargeting = (not skipTargeting) and targeting and targeting.mode == "aoe"
+
+  local target = TheInput:GetWorldEntityUnderMouse()
+  local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
+
+  if self.inst.components.ark_skill then
+    -- 主机端：如果有选择器，不传 targetPos
+    local params = {
+      target = target,
+      force = force,
+    }
+    if not hasTargeting then
+      params.targetPos = TheInput:GetWorldPosition()
+    end
+    self.inst.components.ark_skill:GetSkill(id):Recast(params)
+  else
+    -- 客机端：如果有选择器，不传 targetPos
+    local targetPos = hasTargeting and nil or TheInput:GetWorldPosition()
+    local serializedPos = targetPos and string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z) or ""
+    SendModRPCToServer(GetModRPC("arkSkill", "ManualRecastSkill"), id, target, serializedPos, force)
+  end
+  return true
+end
+
+-- 统一技能使用入口：根据当前状态自动路由
+-- 未激活 -> TryActivate
+-- 已激活 + BULLETING -> Cancel
+-- 已激活 + BUFFING -> Recast
+function ArkSkillReplica:UseSkill(id)
+  local state = self:GetNetState(id)
+  if not state then
+    return false
+  end
+
+  local status = state.status
+
+  -- 未激活状态：尝试激活
+  if status ~= CONSTANTS.SKILL_STATUS.BUFFING and status ~= CONSTANTS.SKILL_STATUS.BULLETING then
+    return self:TryActivateSkill(id)
+  end
+
+  -- 弹药模式：取消技能
+  if status == CONSTANTS.SKILL_STATUS.BULLETING then
+    return self:CancelSkill(id)
+  end
+
+  -- Buff 模式：触发二段/多段
+  if status == CONSTANTS.SKILL_STATUS.BUFFING then
+    return self:RecastSkill(id)
+  end
+
+  return false
 end
 
 function ArkSkillReplica:IsActivating(id)

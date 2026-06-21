@@ -538,7 +538,7 @@ function ArkSkill:OnControl(control, down)
   end
   if control == CONTROL_ACCEPT then
     if down and self.config.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and self.owner.replica.ark_skill then
-      self.owner.replica.ark_skill:TryActivateSkill(self.id)
+      self.owner.replica.ark_skill:UseSkill(self.id)
       return true
     end
   end

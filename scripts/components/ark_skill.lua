@@ -28,6 +28,7 @@ local CONFIG_CALLBACK_EVENT_MAP = {
   OnActivateEffect   = "ark_skill_activate_effect",
   OnBulletCut        = "ark_skill_bullet_cut",
   OnLevelChange      = "ark_skill_level_change",
+  OnRecast           = "ark_skill_recast",
 }
 
 local CopySaveData = hooks.CopySaveData
@@ -496,6 +497,14 @@ function SingleSkill:UnsetOnBulletCut(fn)
   self:_RemoveCallback("ark_skill_bullet_cut", fn)
 end
 
+function SingleSkill:SetOnRecast(fn)
+  self:_AddCallback("ark_skill_recast", fn)
+end
+
+function SingleSkill:UnsetOnRecast(fn)
+  self:_RemoveCallback("ark_skill_recast", fn)
+end
+
 function SingleSkill:SetOnLevelChange(fn)
   self:_AddCallback("ark_skill_level_change", fn)
 end
@@ -805,6 +814,16 @@ function SingleSkill:Activate(params)
   return true
 end
 
+function SingleSkill:Recast(params)
+  -- 必须处于激活状态才能重铸
+  if not self:IsActivating() then
+    return false
+  end
+  if not params then params = { target = nil, targetPos = nil, force = false } end
+  self:_Emit("ark_skill_recast", params)
+  return true
+end
+
 function SingleSkill:TryActivate(params)
   if not params then params = {} end
 
@@ -821,7 +840,7 @@ function SingleSkill:TryActivate(params)
     end
 
     StartAoeSelect(self.inst, {
-      onSelect = function(doer, pos)
+      OnSelected = function(doer, pos)
         params.targetPos = pos
         -- 最终确认（传 targetPos）
         local canAgain, reasonAgain = self:CanActivate(params)

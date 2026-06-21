@@ -33,6 +33,30 @@ AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
   skill:Cancel()
 end)
 
+-- 手动重铸技能 RPC 处理（二段/多段技能）
+AddModRPCHandler("arkSkill", "ManualRecastSkill", function(player, id, target, targetPos, force)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(id)
+  if not skill then return end
+  local config = skill:GetConfig()
+  if config.activationMode ~= CONSTANTS.ACTIVATION_MODE.MANUAL then
+    return
+  end
+  -- 解析 targetPos（空字符串表示无 targetPos）
+  local parsedPos = nil
+  if targetPos and targetPos ~= "" then
+    local deserializedPos = string.split(targetPos, ",")
+    parsedPos = Vector3(tonumber(deserializedPos[1]), tonumber(deserializedPos[2]), tonumber(deserializedPos[3]))
+  end
+  skill:Recast(
+    {
+      target = target,
+      targetPos = parsedPos,
+      force = force
+    }
+  )
+end)
+
 -- 卸载临时技能 RPC 处理
 AddModRPCHandler("arkSkill", "UninstallSkill", function(player, id)
   if not player or not player.components.ark_skill then return end
@@ -81,6 +105,7 @@ local function checkAndDefaultSkill(skill)
     activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
     hotkey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
     targeting = skill.targeting or nil,
+    recastSkipTargeting = skill.recastSkipTargeting == true,
     levels = defaultLevelConfigs(skill.levels)
   }
   -- 透传所有回调字段
@@ -88,7 +113,7 @@ local function checkAndDefaultSkill(skill)
     "ActivateTest",
     "OnActivate", "OnDeactivate", "OnLocked", "OnUnlocked",
     "OnEnergyRecovering", "OnActivateReady", "OnActivateEffect",
-    "OnBulletCut", "OnLevelChange",
+    "OnBulletCut", "OnLevelChange", "OnRecast",
     "OnInstall", "OnAdd", "OnRemove", "OnStep", "OnSave", "OnLoad",
   }
   for _, field in ipairs(callbackFields) do

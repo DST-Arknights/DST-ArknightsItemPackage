@@ -58,8 +58,7 @@ local function StopAoeSelect(doer)
 end
 
 -- StartAoeSelect(doer, opts)
--- opts.onSelect: function(doer, pos) - 选择确认回调（必选）
--- opts.onCancel: function(doer) - 取消回调（可选）
+-- opts.OnSelected: function(doer, pos) - 选择确认回调（必选）
 -- opts.config: table - 传递给 prefab 的配置（可选，用于覆盖默认 reticule/aoetargeting 配置）
 local function StartAoeSelect(doer, opts)
   opts = opts or {}
