@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector" }
+  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant" }
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -16,6 +16,7 @@ Assets = {
   Asset("ATLAS", "images/emoticon_btn.xml"),
   Asset("ATLAS", "images/ark_emoticon.xml"),
   Asset("ATLAS", "images/ark_elite.xml"),
+  Asset("ATLAS", "images/inventoryimages/sympathetic_pendants.xml"),
   Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ANIM", "anim/ark_backpack_bg.zip"),
   Asset("ANIM", "anim/ark_fly.zip"),
