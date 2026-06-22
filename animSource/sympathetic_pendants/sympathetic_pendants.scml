@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="r11">
-	<folder id="0" name="gray">
-		<file id="0" name="gray/gray-0.png" width="242" height="104" pivot_x="0.528926" pivot_y="0.08653849" />
-	</folder>
-	<entity id="0" name="sympathetic_pendants">
-		<animation id="0" name="gray" length="33" interval="33">
-			<mainline>
-				<key id="0" time="0">
-					<object_ref id="0" timeline="0" key="0" z_index="0" name="gray" />
-				</key>
-				<key id="1" time="33">
-					<object_ref id="0" timeline="0" key="1" z_index="0" name="gray" />
-				</key>
-			</mainline>
-			<timeline id="0" name="gray">
-				<key id="0" time="0" spin="0" curve_type="instant">
-					<object folder="0" file="0" x="0" y="65" scale_x="1" scale_y="1" angle="0" />
-				</key>
-				<key id="1" time="33" spin="0" curve_type="instant">
-					<object folder="0" file="0" x="0" y="65" scale_x="1" scale_y="1" angle="0" />
-				</key>
-			</timeline>
-		</animation>
-	</entity>
+<spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
+    <folder id="0" name="gray">
+        <file id="0" name="gray/gray-0.png" width="242" height="104" pivot_x="0.528926" pivot_y="0.0865385"/>
+    </folder>
+    <entity id="0" name="sympathetic_pendants">
+        <animation id="0" name="idle" length="33">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="gray" folder="0" file="0" abs_x="0" abs_y="0" abs_pivot_x="0.528926" abs_pivot_y="0.086538" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+                <key id="1" time="33">
+                    <object_ref id="0" timeline="0" key="1" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="gray">
+                <key id="0" curve_type="instant">
+                    <object folder="0" file="0" angle="0"/>
+                </key>
+                <key id="1" time="33" curve_type="instant">
+                    <object folder="0" file="0" y="65" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+    </entity>
 </spriter_data>
