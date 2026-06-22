@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="sympathetic_pendants.tex" />
+	<Elements>
+		<Element name="blue_pendant.tex" u1="0.001" u2="0.21384375" v2="0.999" v1="0.5244375" variant="" />
+		<Element name="gray_pendant.tex" u1="0.21584375" u2="0.4286875" v2="0.999" v1="0.5244375" variant="" />
+		<Element name="green_pendant.tex" u1="0.001" u2="0.21384375" v2="0.5224375" v1="0.047875" variant="" />
+		<Element name="red_pendant.tex" u1="0.21584375" u2="0.4286875" v2="0.5224375" v1="0.047875" variant="" />
+		<Element name="yellow_pendant.tex" u1="0.4306875" u2="0.64353125" v2="0.999" v1="0.5244375" variant="" />
+	</Elements>
+</Atlas>
