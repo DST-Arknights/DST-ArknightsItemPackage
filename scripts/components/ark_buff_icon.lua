@@ -21,6 +21,9 @@ end
 local function ondesc(self, value)
   self.inst.replica.ark_buff_icon.state.desc = value
 end
+local function ongroup(self, value)
+  self.inst.replica.ark_buff_icon.state.group = value
+end
 
 local ArkBuffIcon = Class(function(self, inst)
   self.inst = inst
@@ -30,6 +33,7 @@ local ArkBuffIcon = Class(function(self, inst)
   self.tex = ''
   self.title = ''
   self.desc = ''
+  self.group = ''
 end, nil, {
   totalTime = ontotalTime,
   remainingTime = onremainingTime,
@@ -37,6 +41,7 @@ end, nil, {
   tex = ontex,
   title = ontitle,
   desc = ondesc,
+  group = ongroup,
 })
 
 function ArkBuffIcon:SetTexture(atlas, tex)
@@ -58,6 +63,10 @@ end
 
 function ArkBuffIcon:SetDesc(desc)
   self.desc = desc
+end
+
+function ArkBuffIcon:SetGroup(group)
+  self.group = group
 end
 
 function ArkBuffIcon:AttachTo(target)

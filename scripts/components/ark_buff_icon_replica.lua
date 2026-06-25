@@ -10,7 +10,7 @@ local ArkBuffIconReplica = Class(function(self, inst)
   self.state:OnDetached(function()
     SafeCallBuffIconsUI(ThePlayer):RemoveBuff(self.inst)
   end)
-  self.state:Watch({ "remainingTime", "totalTime", "atlas", "tex", "title", "desc" }, function()
+  self.state:Watch({ "remainingTime", "totalTime", "atlas", "tex", "title", "desc", "group" }, function()
     -- 当服务端同步buff状态时，重新初始化客户端倒计时基准
     SafeCallBuffIconsUI(ThePlayer):UpdateBuff(self.inst)
   end)

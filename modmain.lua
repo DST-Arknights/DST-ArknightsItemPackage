@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant" }
+  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant"}
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -173,6 +173,7 @@ DefineNetState("ark_buff_icon", {
   remainingTime = "float:classified",
   title = "string:classified",
   desc = "string:classified",
+  group = "string:classified",
 })
 -- 声明前置模块已安装
 GLOBAL.ARK_ITEM_PACKAGE_LOADED = true

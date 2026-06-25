@@ -14,6 +14,13 @@ local HOVER_DESC_MAX_LINES = 20
 local BLINK_THRESHOLD = 5  -- 剩余时间少于10秒时开始闪烁
 local BLINK_CYCLE = 2  -- 闪烁周期（秒）
 
+-- group为nil时的sentinel key（Lua中nil不能作为table key）
+local NIL_GROUP_KEY = {}
+
+local function GetGroupKey(state)
+  return state.group or NIL_GROUP_KEY
+end
+
 local ArkBuffDescText = Class(Widget, function(self, text, maxWidth)
   Widget._ctor(self, "ArkBuffDescText")
   self.h = 0
@@ -226,7 +233,7 @@ end
 local ArkBuffIcons = Class(Widget, function(self, owner)
   Widget._ctor(self, "ArkBuffIcons")
   self.owner = owner
-  -- 按 atlas:tex 联合键分组
+  -- 按 state.group 字段分组
   -- buffGroups[key] = { icon = ArkBuffIcon, insts = { buffInst, ... } }
   self.buffGroups = {}
   -- 记录group的顺序，用于布局
@@ -249,9 +256,9 @@ local ArkBuffIcons = Class(Widget, function(self, owner)
 end)
 
 function ArkBuffIcons:AddBuff(buffInst)
-  -- 使用 atlas:tex 联合键分组，相同纹理的buff共用一个icon
+  -- 使用 state.group 字段分组，相同 group 的buff共用一个icon
   local state = buffInst.replica.ark_buff_icon.state
-  local groupKey = state.atlas .. ":" .. state.tex
+  local groupKey = GetGroupKey(state)
   local group = self.buffGroups[groupKey]
   
   ArkLogger:Debug('ark_buff_icons AddBuff', buffInst, groupKey, group)
@@ -364,7 +371,7 @@ end
 
 function ArkBuffIcons:UpdateBuff(buffInst)
   -- 当服务端同步buff状态时，重新初始化客户端倒计时
-  local groupKey = buffInst.replica.ark_buff_icon.state.atlas .. ":" .. buffInst.replica.ark_buff_icon.state.tex
+  local groupKey = GetGroupKey(buffInst.replica.ark_buff_icon.state)
   self:_InitializeBuffTimer(buffInst)
   self:_UpdateGroupDisplay(groupKey)
 end
