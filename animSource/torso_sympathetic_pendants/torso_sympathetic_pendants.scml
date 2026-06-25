@@ -1,79 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
-    <folder id="0" name="blue_pendant">
-        <file id="0" name="blue_pendant/blue_pendant-0.png" width="80" height="101" pivot_x="0.506036" pivot_y="0.18071"/>
-        <file id="1" name="blue_pendant/blue_pendant-1.png" width="79" height="103" pivot_x="0.551858" pivot_y="0.174717"/>
-        <file id="2" name="blue_pendant/blue_pendant-2.png" width="79" height="103" pivot_x="0.420297" pivot_y="0.165174"/>
-        <file id="3" name="blue_pendant/blue_pendant-3.png" width="80" height="110" pivot_x="0.301894" pivot_y="0.177545"/>
-        <file id="4" name="blue_pendant/blue_pendant-4.png" width="64" height="118" pivot_x="0.0498428" pivot_y="0.27246"/>
-        <file id="5" name="blue_pendant/blue_pendant-5.png" width="91" height="96" pivot_x="0.40184" pivot_y="0.0964043"/>
-        <file id="6" name="blue_pendant/blue_pendant-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
-        <file id="7" name="blue_pendant/blue_pendant-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
-        <file id="8" name="blue_pendant/blue_pendant-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
-        <file id="9" name="blue_pendant/blue_pendant-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="10" name="blue_pendant/blue_pendant-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="11" name="blue_pendant/blue_pendant-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="12" name="blue_pendant/blue_pendant-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="13" name="blue_pendant/blue_pendant-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="14" name="blue_pendant/blue_pendant-14.png" width="80" height="70" pivot_x="0.506036" pivot_y="0.595029"/>
-        <file id="15" name="blue_pendant/blue_pendant-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
+    <folder id="0" name="sad">
+        <file id="0" name="sad/sad-0.png" width="80" height="101" pivot_x="0.506036" pivot_y="0.18071"/>
+        <file id="1" name="sad/sad-1.png" width="79" height="103" pivot_x="0.551858" pivot_y="0.174717"/>
+        <file id="2" name="sad/sad-2.png" width="79" height="103" pivot_x="0.420297" pivot_y="0.165174"/>
+        <file id="3" name="sad/sad-3.png" width="80" height="110" pivot_x="0.301894" pivot_y="0.177545"/>
+        <file id="4" name="sad/sad-4.png" width="64" height="118" pivot_x="0.0498428" pivot_y="0.27246"/>
+        <file id="5" name="sad/sad-5.png" width="91" height="96" pivot_x="0.40184" pivot_y="0.0964043"/>
+        <file id="6" name="sad/sad-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
+        <file id="7" name="sad/sad-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
+        <file id="8" name="sad/sad-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
+        <file id="9" name="sad/sad-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="10" name="sad/sad-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="11" name="sad/sad-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="12" name="sad/sad-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="13" name="sad/sad-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="14" name="sad/sad-14.png" width="80" height="70" pivot_x="0.506036" pivot_y="0.595029"/>
+        <file id="15" name="sad/sad-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
     </folder>
-    <folder id="1" name="green_pendant">
-        <file id="0" name="green_pendant/green_pendant-0.png" width="80" height="101" pivot_x="0.499674" pivot_y="0.138526"/>
-        <file id="1" name="green_pendant/green_pendant-1.png" width="79" height="103" pivot_x="0.552077" pivot_y="0.130781"/>
-        <file id="2" name="green_pendant/green_pendant-2.png" width="79" height="103" pivot_x="0.442328" pivot_y="0.144288"/>
-        <file id="3" name="green_pendant/green_pendant-3.png" width="80" height="110" pivot_x="0.300644" pivot_y="0.108809"/>
-        <file id="4" name="green_pendant/green_pendant-4.png" width="64" height="118" pivot_x="0.0507281" pivot_y="0.232004"/>
-        <file id="5" name="green_pendant/green_pendant-5.png" width="91" height="96" pivot_x="0.393108" pivot_y="0.0395095"/>
-        <file id="6" name="green_pendant/green_pendant-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
-        <file id="7" name="green_pendant/green_pendant-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
-        <file id="8" name="green_pendant/green_pendant-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
-        <file id="9" name="green_pendant/green_pendant-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="10" name="green_pendant/green_pendant-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="11" name="green_pendant/green_pendant-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="12" name="green_pendant/green_pendant-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="13" name="green_pendant/green_pendant-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="14" name="green_pendant/green_pendant-14.png" width="80" height="70" pivot_x="0.497372" pivot_y="0.499756"/>
-        <file id="15" name="green_pendant/green_pendant-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
+    <folder id="1" name="confused">
+        <file id="0" name="confused/confused-0.png" width="80" height="101" pivot_x="0.499674" pivot_y="0.138526"/>
+        <file id="1" name="confused/confused-1.png" width="79" height="103" pivot_x="0.552077" pivot_y="0.130781"/>
+        <file id="2" name="confused/confused-2.png" width="79" height="103" pivot_x="0.442328" pivot_y="0.144288"/>
+        <file id="3" name="confused/confused-3.png" width="80" height="110" pivot_x="0.300644" pivot_y="0.108809"/>
+        <file id="4" name="confused/confused-4.png" width="64" height="118" pivot_x="0.0507281" pivot_y="0.232004"/>
+        <file id="5" name="confused/confused-5.png" width="91" height="96" pivot_x="0.393108" pivot_y="0.0395095"/>
+        <file id="6" name="confused/confused-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
+        <file id="7" name="confused/confused-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
+        <file id="8" name="confused/confused-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
+        <file id="9" name="confused/confused-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="10" name="confused/confused-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="11" name="confused/confused-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="12" name="confused/confused-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="13" name="confused/confused-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="14" name="confused/confused-14.png" width="80" height="70" pivot_x="0.497372" pivot_y="0.499756"/>
+        <file id="15" name="confused/confused-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
     </folder>
-    <folder id="2" name="red_pendant">
-        <file id="0" name="red_pendant/red_pendant-0.png" width="80" height="101" pivot_x="0.506036" pivot_y="0.18071"/>
-        <file id="1" name="red_pendant/red_pendant-1.png" width="79" height="103" pivot_x="0.551858" pivot_y="0.174717"/>
-        <file id="2" name="red_pendant/red_pendant-2.png" width="79" height="103" pivot_x="0.420297" pivot_y="0.165174"/>
-        <file id="3" name="red_pendant/red_pendant-3.png" width="80" height="110" pivot_x="0.301894" pivot_y="0.177545"/>
-        <file id="4" name="red_pendant/red_pendant-4.png" width="64" height="118" pivot_x="0.0498428" pivot_y="0.27246"/>
-        <file id="5" name="red_pendant/red_pendant-5.png" width="91" height="96" pivot_x="0.40184" pivot_y="0.0964043"/>
-        <file id="6" name="red_pendant/red_pendant-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
-        <file id="7" name="red_pendant/red_pendant-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
-        <file id="8" name="red_pendant/red_pendant-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
-        <file id="9" name="red_pendant/red_pendant-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="10" name="red_pendant/red_pendant-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="11" name="red_pendant/red_pendant-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="12" name="red_pendant/red_pendant-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="13" name="red_pendant/red_pendant-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="14" name="red_pendant/red_pendant-14.png" width="80" height="70" pivot_x="0.506036" pivot_y="0.595029"/>
-        <file id="15" name="red_pendant/red_pendant-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
+    <folder id="2" name="angry">
+        <file id="0" name="angry/angry-0.png" width="80" height="101" pivot_x="0.506036" pivot_y="0.18071"/>
+        <file id="1" name="angry/angry-1.png" width="79" height="103" pivot_x="0.551858" pivot_y="0.174717"/>
+        <file id="2" name="angry/angry-2.png" width="79" height="103" pivot_x="0.420297" pivot_y="0.165174"/>
+        <file id="3" name="angry/angry-3.png" width="80" height="110" pivot_x="0.301894" pivot_y="0.177545"/>
+        <file id="4" name="angry/angry-4.png" width="64" height="118" pivot_x="0.0498428" pivot_y="0.27246"/>
+        <file id="5" name="angry/angry-5.png" width="91" height="96" pivot_x="0.40184" pivot_y="0.0964043"/>
+        <file id="6" name="angry/angry-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
+        <file id="7" name="angry/angry-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
+        <file id="8" name="angry/angry-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
+        <file id="9" name="angry/angry-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="10" name="angry/angry-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="11" name="angry/angry-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="12" name="angry/angry-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="13" name="angry/angry-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="14" name="angry/angry-14.png" width="80" height="70" pivot_x="0.506036" pivot_y="0.595029"/>
+        <file id="15" name="angry/angry-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
     </folder>
-    <folder id="3" name="yellow_pendant">
-        <file id="0" name="yellow_pendant/yellow_pendant-0.png" width="80" height="101" pivot_x="0.509397" pivot_y="0.167371"/>
-        <file id="1" name="yellow_pendant/yellow_pendant-1.png" width="79" height="103" pivot_x="0.543027" pivot_y="0.158643"/>
-        <file id="2" name="yellow_pendant/yellow_pendant-2.png" width="79" height="103" pivot_x="0.449174" pivot_y="0.147741"/>
-        <file id="3" name="yellow_pendant/yellow_pendant-3.png" width="80" height="110" pivot_x="0.286625" pivot_y="0.143146"/>
-        <file id="4" name="yellow_pendant/yellow_pendant-4.png" width="64" height="118" pivot_x="0.107442" pivot_y="0.239344"/>
-        <file id="5" name="yellow_pendant/yellow_pendant-5.png" width="91" height="96" pivot_x="0.379083" pivot_y="0.0559281"/>
-        <file id="6" name="yellow_pendant/yellow_pendant-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
-        <file id="7" name="yellow_pendant/yellow_pendant-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
-        <file id="8" name="yellow_pendant/yellow_pendant-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
-        <file id="9" name="yellow_pendant/yellow_pendant-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="10" name="yellow_pendant/yellow_pendant-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="11" name="yellow_pendant/yellow_pendant-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="12" name="yellow_pendant/yellow_pendant-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="13" name="yellow_pendant/yellow_pendant-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
-        <file id="14" name="yellow_pendant/yellow_pendant-14.png" width="80" height="70" pivot_x="0.509397" pivot_y="0.505298"/>
-        <file id="15" name="yellow_pendant/yellow_pendant-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
+    <folder id="3" name="happy">
+        <file id="0" name="happy/happy-0.png" width="80" height="101" pivot_x="0.509397" pivot_y="0.167371"/>
+        <file id="1" name="happy/happy-1.png" width="79" height="103" pivot_x="0.543027" pivot_y="0.158643"/>
+        <file id="2" name="happy/happy-2.png" width="79" height="103" pivot_x="0.449174" pivot_y="0.147741"/>
+        <file id="3" name="happy/happy-3.png" width="80" height="110" pivot_x="0.286625" pivot_y="0.143146"/>
+        <file id="4" name="happy/happy-4.png" width="64" height="118" pivot_x="0.107442" pivot_y="0.239344"/>
+        <file id="5" name="happy/happy-5.png" width="91" height="96" pivot_x="0.379083" pivot_y="0.0559281"/>
+        <file id="6" name="happy/happy-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
+        <file id="7" name="happy/happy-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
+        <file id="8" name="happy/happy-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
+        <file id="9" name="happy/happy-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="10" name="happy/happy-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="11" name="happy/happy-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="12" name="happy/happy-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="13" name="happy/happy-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="14" name="happy/happy-14.png" width="80" height="70" pivot_x="0.509397" pivot_y="0.505298"/>
+        <file id="15" name="happy/happy-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
+    </folder>
+    <folder id="4" name="normal">
+        <file id="0" name="normal/normal-0.png" width="80" height="101" pivot_x="0.509397" pivot_y="0.167371"/>
+        <file id="1" name="normal/normal-1.png" width="79" height="103" pivot_x="0.543027" pivot_y="0.158643"/>
+        <file id="2" name="normal/normal-2.png" width="79" height="103" pivot_x="0.449174" pivot_y="0.147741"/>
+        <file id="3" name="normal/normal-3.png" width="80" height="110" pivot_x="0.286625" pivot_y="0.143146"/>
+        <file id="4" name="normal/normal-4.png" width="64" height="118" pivot_x="0.107442" pivot_y="0.239344"/>
+        <file id="5" name="normal/normal-5.png" width="91" height="96" pivot_x="0.379083" pivot_y="0.0559281"/>
+        <file id="6" name="normal/normal-6.png" width="100" height="100" pivot_x="0.489458" pivot_y="-1.50299"/>
+        <file id="7" name="normal/normal-7.png" width="100" height="100" pivot_x="0.677149" pivot_y="-1.22871"/>
+        <file id="8" name="normal/normal-8.png" width="100" height="100" pivot_x="0.299715" pivot_y="-1.01831"/>
+        <file id="9" name="normal/normal-9-0.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="10" name="normal/normal-9-1.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="11" name="normal/normal-9-2.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="12" name="normal/normal-9-3.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="13" name="normal/normal-9-4.png" width="100" height="100" pivot_x="0.5" pivot_y="0.5"/>
+        <file id="14" name="normal/normal-14.png" width="80" height="70" pivot_x="0.509397" pivot_y="0.505298"/>
+        <file id="15" name="normal/normal-15.png" width="29" height="77" pivot_x="0.456948" pivot_y="0.123337"/>
     </folder>
     <entity id="0" name="torso_sympathetic_pendants">
-        <animation id="0" name="blue_pendant" length="33">
+        <animation id="0" name="sad" length="33">
             <mainline>
                 <key id="0">
                     <object_ref id="0" name="layer 1" folder="0" file="0" abs_x="-0.45" abs_y="0.3" abs_pivot_x="0.506036" abs_pivot_y="0.18071" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
@@ -91,7 +109,7 @@
                 </key>
             </timeline>
         </animation>
-        <animation id="1" name="yellow_pendant" length="33">
+        <animation id="1" name="happy" length="33">
             <mainline>
                 <key id="0">
                     <object_ref id="0" name="layer 1" folder="3" file="0" abs_x="-0.45" abs_y="0.3" abs_pivot_x="0.509397" abs_pivot_y="0.167371" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
@@ -109,7 +127,7 @@
                 </key>
             </timeline>
         </animation>
-        <animation id="2" name="red_pendant" length="33">
+        <animation id="2" name="angry" length="33">
             <mainline>
                 <key id="0">
                     <object_ref id="0" name="layer 1" folder="2" file="0" abs_x="-0.45" abs_y="0.3" abs_pivot_x="0.506036" abs_pivot_y="0.18071" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
@@ -127,7 +145,7 @@
                 </key>
             </timeline>
         </animation>
-        <animation id="3" name="green_pendant" length="33">
+        <animation id="3" name="confused" length="33">
             <mainline>
                 <key id="0">
                     <object_ref id="0" name="layer 1" folder="1" file="0" abs_x="-0.45" abs_y="0.3" abs_pivot_x="0.499674" abs_pivot_y="0.138526" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
@@ -142,6 +160,18 @@
                 </key>
                 <key id="1" time="33" curve_type="instant">
                     <object folder="1" file="0" x="-0.45" y="0.3" angle="0"/>
+                </key>
+            </timeline>
+        </animation>
+        <animation id="4" name="normal" length="1000">
+            <mainline>
+                <key id="0">
+                    <object_ref id="0" name="normal-0" folder="4" file="0" abs_x="0" abs_y="0" abs_pivot_x="0" abs_pivot_y="1" abs_angle="360" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                </key>
+            </mainline>
+            <timeline id="0" name="normal-0">
+                <key id="0" spin="0">
+                    <object folder="4" file="0"/>
                 </key>
             </timeline>
         </animation>
