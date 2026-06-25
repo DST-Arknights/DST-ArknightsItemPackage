@@ -145,6 +145,29 @@ local function DoListenForKey(inst, key, fn)
   inst:ListenForEvent(dirty_event, fn)
 end
 
+local function NotifyAttached(inner)
+  if inner._local_attached then
+    return
+  end
+  inner._local_attached = true
+  inner.log("Attach", "local player attached")
+  if inner._on_attached then
+    inner._on_attached(ThePlayer)
+  end
+end
+
+local function NotifyDetached(inner, reason)
+  if not inner._local_attached then
+    inner.log("Detach", "skip detached callback; local player not attached", reason)
+    return
+  end
+  inner._local_attached = false
+  inner.log("Detach", "local player detached", reason)
+  if inner._on_detached then
+    inner._on_detached(ThePlayer)
+  end
+end
+
 local function PushDirtyForNonDefaultClassified(inner)
   if not TheWorld.ismastersim then
     return
@@ -312,6 +335,7 @@ local function NetStateInit(self, inst, name)
   inner._id = stateId
   stateId = stateId + 1
   inner._def_name = name
+  inner._local_attached = false
   inner._force_field = getForceFieldName(name)
   inner._force_dirty_event = getForceDirtyName(name)
   inner._force_dirty_handler = function()
@@ -359,8 +383,8 @@ local function NetStateInit(self, inst, name)
     inner.log("Detach", "owner removed")
     if inner.net_state_classified ~= nil then
       self:DetachClassified()
-    elseif inner._on_detached then
-      inner._on_detached(ThePlayer)
+    else
+      NotifyDetached(inner, "owner_removed")
     end
   end)
 
@@ -410,7 +434,7 @@ setmetatable(NetState, {
 -- Public API
 -------------------------------------------------------------------------------
 
---- 注册 Attach 成功回调（若已 Attach 则立即执行）
+--- 注册 Attach 成功回调
 function NetState:OnAttached(fn)
   local inner = NetStateMap[self]
   inner._on_attached = fn
@@ -476,8 +500,8 @@ function NetState:AttachClassified(net_state_classified, skip_attach)
     inner._classified_cache = nil
   end
   inner.log("AttachClassified", "complete")
-  if inner._on_attached and not skip_attach then
-    inner._on_attached(ThePlayer)
+  if not skip_attach then
+    NotifyAttached(inner)
   end
 end
 
@@ -492,9 +516,7 @@ function NetState:DetachClassified()
   inner._force_var = nil
   inner.net_state_classified = nil
   inner._classified_vars = nil
-  if inner._on_detached then
-    inner._on_detached(ThePlayer)
-  end
+  NotifyDetached(inner, "classified_detached")
 end
 
 --- 强制同步：即使字段值未变化，也让监听端触发一次该 state 的字段更新事件。
@@ -573,14 +595,10 @@ function NetState:Attach(target)
   -- 只有可见性发生变更时才触发事件（与客机逻辑一致）
   if old_visible and not new_visible then
     -- 从可见变为不可见 -> detached
-    if inner._on_detached then
-      inner._on_detached(ThePlayer)
-    end
+    NotifyDetached(inner, "attach_visibility_changed")
   elseif not old_visible and new_visible then
     -- 从不可见变为可见 -> attached
-    if inner._on_attached then
-      inner._on_attached(ThePlayer)
-    end
+    NotifyAttached(inner)
   end
   -- 可见性未变（如 nil -> nil 或 player1 -> player2 其中都不是 ThePlayer）不触发任何事件
 
