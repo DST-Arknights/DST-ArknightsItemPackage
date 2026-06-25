@@ -9,7 +9,7 @@ local function GenTimerKey(cfg)
   return "ark_buff_timer_" .. cfg.name
 end
 
-local function OnUpdateBuffInfo(inst)
+local function UpdateBuffInfo(inst)
   local cfg = inst.buffConfig
   if not cfg or not IsEnableIcon(cfg) or not inst.components.ark_buff_icon then
     return
@@ -31,6 +31,10 @@ local function OnUpdateBuffInfo(inst)
     local remain_time = inst.components.timer:GetTimeLeft(timer_key) or cfg.duration
     inst.components.ark_buff_icon:SetRemainingTime(remain_time)
     inst.components.ark_buff_icon:SetTotalTime(cfg.duration)
+  end
+  local group = inst.components.debuff.name
+  if group then
+    inst.components.ark_buff_icon:SetGroup(group)
   end
 end
 
@@ -63,7 +67,7 @@ local function OnAttached(inst, target, followsymbol, followoffset, data, buffer
   end
 
   if IsEnableIcon(cfg) then
-    inst:PushEvent("update_buff_info")
+    UpdateBuffInfo(inst)
     inst.components.ark_buff_icon:AttachTo(target)
   end
 end
@@ -72,6 +76,9 @@ local function OnDetached(inst, target)
   local cfg = inst.buffConfig
   if cfg and cfg.OnDetached then
     cfg.OnDetached(inst, target)
+  end
+  if IsEnableIcon(cfg) then
+    inst.components.ark_buff_icon:AttachTo(inst)
   end
   inst:Remove()
 end
@@ -108,7 +115,7 @@ local function OnExtended(inst, target, followsymbol, followoffset, data, buffer
   end
 
   if IsEnableIcon(cfg) then
-    inst:PushEvent("update_buff_info")
+    UpdateBuffInfo(inst)
   end
 end
 
@@ -122,7 +129,7 @@ local function OnLoad(inst, data)
   if data and data.buffData then
     inst.buffData = data.buffData
   end
-  inst:PushEvent("update_buff_info")
+  UpdateBuffInfo(inst)
 end
 
 local function ArkMakeBuff(def)
@@ -141,8 +148,6 @@ local function ArkMakeBuff(def)
     inst.buffConfig = def
     inst.entity:SetCanSleep(false)
 
-    inst:ListenForEvent("update_buff_info", OnUpdateBuffInfo)
-
     if def.duration then
       inst:AddComponent("timer")
       inst:ListenForEvent("timerdone", OnTimerDone)
@@ -157,7 +162,6 @@ local function ArkMakeBuff(def)
     end
     if IsEnableIcon(def) then
       inst:AddComponent("ark_buff_icon")
-      -- inst:PushEvent("update_buff_info")
     end
 
     inst.OnSave = OnSave
