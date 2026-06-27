@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Atlas>
-	<Texture filename="ui_sympathetic_pendant.tex" />
+	<Texture filename="ui_sympathetic_pendants.tex" />
 	<Elements>
 		<Element name="angry.tex" u1="0.501" u2="0.749" v2="0.999" v1="0.501" variant="" />
 		<Element name="confused.tex" u1="0.501" u2="0.749" v2="0.499" v1="0.001" variant="" />
