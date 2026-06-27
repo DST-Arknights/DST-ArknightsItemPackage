@@ -12,11 +12,12 @@ function GLOBAL.MergePOFile(fname, langCode, default)
       fname = 'data/' .. fname
     end
   end
-  local loadedLanguages = LanguageTranslator.languages[langCode]
+  -- default=true 时只填充缺失的 key，不覆盖已有翻译
+  local noOverwrite = default and true or false
+  local isNewLanguage = (LanguageTranslator.languages[langCode] == nil)
+  local loadedLanguages = LanguageTranslator.languages[langCode] or {}
   LanguageTranslator:LoadPOFile(fname, langCode)
   local newLoadedLanguages = LanguageTranslator.languages[langCode]
-  utils.mergeTable(loadedLanguages, newLoadedLanguages)
-  LanguageTranslator.languages[langCode] = loadedLanguages
   -- Recursively merge translation keys into STRINGS
   for key, value in pairs(newLoadedLanguages) do
     if type(key) == "string" and string.sub(key, 1, 8) == "STRINGS." then
@@ -35,12 +36,41 @@ function GLOBAL.MergePOFile(fname, langCode, default)
         end
         current = current[parts[i]]
       end
-      
+
       if #parts > 0 then
-        current[parts[#parts]] = value
+        local lastKey = parts[#parts]
+        if noOverwrite then
+          if current[lastKey] == nil then
+            current[lastKey] = value
+          end
+        else
+          current[lastKey] = value
+        end
       end
     end
   end
+  -- 合并到语言字典：default 模式只追加缺失 key，否则新加载覆盖旧值
+  if noOverwrite then
+    for k, v in pairs(newLoadedLanguages) do
+      if loadedLanguages[k] == nil then
+        loadedLanguages[k] = v
+      end
+    end
+  else
+    loadedLanguages = MergeMaps(loadedLanguages, newLoadedLanguages)
+  end
+  -- 新语言首次出现时，合并 default 语言(当前系统语言)的已有翻译作为兜底
+  if isNewLanguage and langCode ~= localeCode then
+    local defaultLangs = LanguageTranslator.languages[localeCode]
+    if defaultLangs then
+      for k, v in pairs(defaultLangs) do
+        if loadedLanguages[k] == nil then
+          loadedLanguages[k] = v
+        end
+      end
+    end
+  end
+  LanguageTranslator.languages[langCode] = loadedLanguages
 end
 
 function GLOBAL.SayAndVoice(inst, key, params)
