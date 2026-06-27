@@ -2,11 +2,11 @@
 <Atlas>
 	<Texture filename="ui_sympathetic_pendant.tex" />
 	<Elements>
-		<Element name="angry.tex" u1="0.251" u2="0.499" v2="0.499" v1="0.001" variant="" />
-		<Element name="confused.tex" u1="0.001" u2="0.249" v2="0.499" v1="0.001" variant="" />
+		<Element name="angry.tex" u1="0.501" u2="0.749" v2="0.999" v1="0.501" variant="" />
+		<Element name="confused.tex" u1="0.501" u2="0.749" v2="0.499" v1="0.001" variant="" />
 		<Element name="friend.tex" u1="0.251" u2="0.499" v2="0.999" v1="0.501" variant="" />
-		<Element name="happy.tex" u1="0.501" u2="0.749" v2="0.999" v1="0.501" variant="" />
-		<Element name="normal.tex" u1="0.501" u2="0.749" v2="0.499" v1="0.001" variant="" />
-		<Element name="sad.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.501" variant="" />
+		<Element name="happy.tex" u1="0.251" u2="0.499" v2="0.499" v1="0.001" variant="" />
+		<Element name="normal.tex" u1="0.001" u2="0.249" v2="0.999" v1="0.501" variant="" />
+		<Element name="sad.tex" u1="0.001" u2="0.249" v2="0.499" v1="0.001" variant="" />
 	</Elements>
 </Atlas>
