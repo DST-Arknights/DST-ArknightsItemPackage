@@ -184,8 +184,9 @@ function ArkBuffIcon:SetRemainingTime(remainingTime)
   -- 每次设置剩余时间时，立刻刷新遮罩显示
   self:UpdateDisplayByRemainingTime()
   
-  -- 判断是否需要闪烁
-  if remainingTime > 0 and remainingTime <= BLINK_THRESHOLD then
+  -- 判断是否需要闪烁（无限时长的buff不闪烁）
+  local isInfinite = not self.totalTime or self.totalTime <= 0
+  if not isInfinite and remainingTime > 0 and remainingTime <= BLINK_THRESHOLD then
     if not self.isBlinking then
       self:StartBlink()
     end
@@ -198,9 +199,12 @@ end
 
 function ArkBuffIcon:UpdateDisplayByRemainingTime()
   -- 根据当前时间计算实际剩余百分比，用于遮罩显示
-  if not self.totalTime then
+  if not self.totalTime or self.totalTime <= 0 then
+    -- 无限时长的buff，隐藏蒙层
+    self.maskImage:Hide()
     return
   end
+  self.maskImage:Show()
   local scaleHeight = math.max(0, self.remainingTime / self.totalTime)
   self.maskImage:SetScale(1, 1 - scaleHeight)
 end
@@ -383,12 +387,14 @@ function ArkBuffIcons:_UpdateGroupDisplay(groupKey)
     return
   end
   
-  -- 过滤出还未过期的buff (remainingTime > 0)
+  -- 过滤出还未过期的buff (remainingTime > 0 或无限时长)
   local validInsts = {}
   for _, inst in ipairs(group.insts) do
     if inst.replica and inst.replica.ark_buff_icon then
+      local state = inst.replica.ark_buff_icon.state
       local clientRemainingTime = self:_GetDisplayRemainingTime(inst)
-      if clientRemainingTime > 0 then
+      -- 无限时长(totalTime为0或nil)或还有剩余时间的buff都有效
+      if (not state.totalTime or state.totalTime <= 0) or clientRemainingTime > 0 then
         table.insert(validInsts, inst)
       end
     end
@@ -397,8 +403,15 @@ function ArkBuffIcons:_UpdateGroupDisplay(groupKey)
   if #validInsts > 0 then
     -- 显示层数 = 还未过期的 buff 实例数量
     group.icon:SetStacks(#validInsts)
-    -- 按剩余时间排序，找出最小的
+    -- 按剩余时间排序，找出最小的（无限时长的优先排在左边）
     table.sort(validInsts, function(a, b)
+      local stateA = a.replica.ark_buff_icon.state
+      local stateB = b.replica.ark_buff_icon.state
+      local isInfA = not stateA.totalTime or stateA.totalTime <= 0
+      local isInfB = not stateB.totalTime or stateB.totalTime <= 0
+      -- 无限时长的优先排在左边
+      if isInfA and not isInfB then return true end
+      if not isInfA and isInfB then return false end
       return self:_GetDisplayRemainingTime(a) < self:_GetDisplayRemainingTime(b)
     end)
     local displayBuff = validInsts[1]

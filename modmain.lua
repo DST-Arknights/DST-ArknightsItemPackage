@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant"}
+  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant", "ark_buff" }
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -124,6 +124,8 @@ modimport('modmain/ark_talent')
 modimport('modmain/ark_skill')
 -- 充能器
 modimport('modmain/ark_portable_supply')
+-- 共感项坠
+modimport('modmain/sympathetic_pendant')
 -- 其他模组兼容
 modimport('modmain/mods_compatibility/amiya')
 
