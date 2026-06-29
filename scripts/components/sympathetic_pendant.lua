@@ -8,18 +8,21 @@ local STATES = {
 local STATE_ORDER = {
   STATES.SAD,
   STATES.ANGRY,
-  STATES.CONFUSED,
   STATES.HAPPY,
+  STATES.CONFUSED,
 }
 
 local CHECK_INTERVAL = 1
-local SAD_MIN_DURATION = 30
-local ANGRY_ENTER_ROUNDS = 8
-local ANGRY_EXIT_ROUNDS = 8
-local CONFUSED_ENTER_ROUNDS = 20
-local CONFUSED_EXIT_ROUNDS = 1
-local HAPPY_ENTER_ROUNDS = 1
-local HAPPY_EXIT_ROUNDS = 1
+local SAD_MIN_DURATION = 5
+local SAD_ENTER_ROUNDS = 1
+local SAD_EXIT_ROUNDS = 2
+local COMBAT_MEMORY_DURATION = 6
+local ANGRY_ENTER_ROUNDS = 3
+local ANGRY_EXIT_ROUNDS = 2
+local HAPPY_ENTER_ROUNDS = 2
+local HAPPY_EXIT_ROUNDS = 2
+local CONFUSED_ENTER_ROUNDS = 2
+local CONFUSED_EXIT_ROUNDS = 2
 local LOW_HEALTH_THRESHOLD = 30
 
 local function GetNow()
@@ -68,13 +71,6 @@ local function BuildNearbyPlayers(self)
   return players
 end
 
-local function GetHealth(player)
-  if player == nil or player.components == nil or player.components.health == nil then
-    return math.huge
-  end
-  return player.components.health.currenthealth or math.huge
-end
-
 local function HasOtherPlayerDead(self)
   for _, player in ipairs(AllPlayers) do
     if player ~= self.inst and IsPlayerDead(player) then
@@ -82,6 +78,13 @@ local function HasOtherPlayerDead(self)
     end
   end
   return false
+end
+
+local function GetHealth(player)
+  if player == nil or player.components == nil or player.components.health == nil then
+    return math.huge
+  end
+  return player.components.health.currenthealth or math.huge
 end
 
 local function HasLowHealthNearbyPlayer(nearbyPlayers)
@@ -93,8 +96,8 @@ local function HasLowHealthNearbyPlayer(nearbyPlayers)
   return false
 end
 
-local function IsSelfLowHealthAndNotInCombat(self)
-  return GetHealth(self.inst) <= LOW_HEALTH_THRESHOLD and not self:IsInCombat()
+local function IsSelfLowHealthAndNotInCombat(self, now)
+  return GetHealth(self.inst) <= LOW_HEALTH_THRESHOLD and not self:IsInCombat(now)
 end
 
 local function BuildContext(self)
@@ -103,7 +106,7 @@ local function BuildContext(self)
   local hasNearbyPlayer = #nearbyPlayers > 0
   local hasOtherPlayerDead = HasOtherPlayerDead(self)
   local hasLowHealthNearbyPlayer = HasLowHealthNearbyPlayer(nearbyPlayers)
-  local isSelfLowHealthAndNotInCombat = IsSelfLowHealthAndNotInCombat(self)
+  local isSelfLowHealthAndNotInCombat = IsSelfLowHealthAndNotInCombat(self, now)
 
   return {
     now = now,
@@ -122,8 +125,8 @@ local function GetStateDefs(self)
     [STATES.SAD] = {
       priority = 100,
       min_duration = SAD_MIN_DURATION,
-      enter_rounds = 1,
-      exit_rounds = 1,
+      enter_rounds = SAD_ENTER_ROUNDS,
+      exit_rounds = SAD_EXIT_ROUNDS,
       can_enter = function(component, context)
         return context.has_other_player_dead
           or context.has_low_health_nearby_player
@@ -147,18 +150,6 @@ local function GetStateDefs(self)
         return not context.is_in_combat
       end,
     },
-    [STATES.CONFUSED] = {
-      priority = 10,
-      min_duration = 0,
-      enter_rounds = CONFUSED_ENTER_ROUNDS,
-      exit_rounds = CONFUSED_EXIT_ROUNDS,
-      can_enter = function(component, context)
-        return not context.has_nearby_player
-      end,
-      can_exit = function(component, context)
-        return context.has_nearby_player
-      end,
-    },
     [STATES.HAPPY] = {
       priority = 20,
       min_duration = 0,
@@ -169,6 +160,18 @@ local function GetStateDefs(self)
       end,
       can_exit = function(component, context)
         return not context.has_nearby_player
+      end,
+    },
+    [STATES.CONFUSED] = {
+      priority = 10,
+      min_duration = 0,
+      enter_rounds = CONFUSED_ENTER_ROUNDS,
+      exit_rounds = CONFUSED_EXIT_ROUNDS,
+      can_enter = function(component, context)
+        return not context.has_nearby_player
+      end,
+      can_exit = function(component, context)
+        return context.has_nearby_player
       end,
     },
   }
@@ -212,16 +215,28 @@ function SympatheticPendant:HasEquippedItem()
   return next(self._equipped_items) ~= nil
 end
 
+function SympatheticPendant:ForEachEquippedItem(fn)
+  if fn == nil then
+    return
+  end
+
+  for item in pairs(self._equipped_items) do
+    if item ~= nil and item:IsValid() then
+      fn(item)
+    end
+  end
+end
+
 function SympatheticPendant:IsInCombat(now)
   now = now or GetNow()
   local lastAttackTime = self.data.private.last_attack_time
   local lastAttackedTime = self.data.private.last_attacked_time
 
-  if lastAttackTime ~= nil and now - lastAttackTime < ANGRY_EXIT_ROUNDS then
+  if lastAttackTime ~= nil and now - lastAttackTime < COMBAT_MEMORY_DURATION then
     return true
   end
 
-  if lastAttackedTime ~= nil and now - lastAttackedTime < ANGRY_EXIT_ROUNDS then
+  if lastAttackedTime ~= nil and now - lastAttackedTime < COMBAT_MEMORY_DURATION then
     return true
   end
 
