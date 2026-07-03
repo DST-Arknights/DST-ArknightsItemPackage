@@ -12,6 +12,18 @@ local function GetSharedBuffName(inst, emotion)
   return GetSharedBuffPrefab(emotion) .. "_" .. inst.GUID
 end
 
+local function OnAttackOther(inst)
+  local pendant = inst.components.sympathetic_pendant
+  if pendant then
+    pendant.last_combat_time = os.time()
+  end
+end
+local function OnAttacked(inst)
+  local pendant = inst.components.sympathetic_pendant
+  if pendant then
+    pendant.last_combat_time = os.time()
+  end
+end
 local SympatheticPendant = Class(function(self, inst)
   self.inst = inst
   self.close_players = {}
@@ -19,6 +31,8 @@ local SympatheticPendant = Class(function(self, inst)
   self.equipped = nil
   self.light = nil
   self.emotion = "normal"
+  self.emotion_start_time = 0
+  self.last_combat_time = 0
 
   self.scan_player_period = 1
   self.player_near_dist = 30
@@ -39,7 +53,144 @@ local SympatheticPendant = Class(function(self, inst)
     name = "normal",
     colour = { 0.85, 0.85, 0.75 }
   } }
+
+  self.emotion_defs = {
+    {
+      name = "sad",
+      priority = 5,
+      min_duration = 8,
+      label = "dead_teammate",
+      enter_condition = function()
+        for _, v in ipairs(AllPlayers) do
+          if v ~= inst and v.components.health:IsDead() then
+            return true
+          end
+        end
+        return false
+      end,
+    },
+    {
+      name = "angry",
+      priority = 4,
+      min_duration = 6,
+      enter_condition = function()
+        return os.time() - self.last_combat_time < 5
+      end,
+      exit_condition = function()
+        return os.time() - self.last_combat_time >= 6
+      end,
+    },
+    {
+      name = "sad",
+      priority = 3,
+      min_duration = 8,
+      label = "low_health_teammate",
+      enter_condition = function()
+        for _, player in ipairs(self.close_players) do
+          if player.components.health.currenthealth < 30 then
+            return true
+          end
+        end
+        return false
+      end,
+    },
+    {
+      name = "happy",
+      priority = 2,
+      min_duration = 10,
+      enter_condition = function()
+        return #self.close_players > 0
+      end,
+    },
+    {
+      name = "confused",
+      priority = 1,
+      min_duration = 5,
+      enter_condition = function()
+        return #self.close_players == 0
+      end,
+    },
+    {
+      name = "normal",
+      priority = 0,
+      min_duration = 0,
+      enter_condition = function()
+        return true
+      end,
+    },
+  }
 end)
+
+function SympatheticPendant:RegisterCombatEvents()
+  self.inst:ListenForEvent("onattackother", OnAttackOther)
+  self.inst:ListenForEvent("onattacked", OnAttacked)
+end
+
+function SympatheticPendant:UnregisterCombatEvents()
+  self.inst:RemoveEventCallback("onattackother", OnAttackOther)
+  self.inst:RemoveEventCallback("onattacked", OnAttacked)
+end
+
+-- Emotion evaluation
+function SympatheticPendant:EvaluateEmotion()
+  local now = os.time()
+  local current = self.emotion
+
+  -- Find current emotion's active definition to get its priority
+  -- Scan in priority order: first def whose name matches AND enter_condition is true = current priority
+  local current_priority = 0
+  for _, def in ipairs(self.emotion_defs) do
+    if def.name == current and def.enter_condition(self) then
+      current_priority = def.priority
+      break
+    end
+  end
+
+  -- Find best matching emotion (top-down priority scan)
+  local best_def = nil
+  for _, def in ipairs(self.emotion_defs) do
+    if def.enter_condition(self) then
+      best_def = def
+      break
+    end
+  end
+
+  if best_def == nil then
+    -- Fallback to normal (last entry in emotion_defs)
+    best_def = self.emotion_defs[#self.emotion_defs]
+  end
+
+  -- Same emotion AND same priority: no change (prevents bouncing between label variants of same emotion)
+  if best_def.name == current and best_def.priority == current_priority then
+    return
+  end
+
+  -- Higher priority: switch immediately
+  if best_def.priority > current_priority then
+    self:SetEmotion(best_def.name)
+    return
+  end
+
+  -- Lower priority: must pass both min_duration and exit_condition gates
+  local current_def = nil
+  for _, def in ipairs(self.emotion_defs) do
+    if def.name == current and def.priority == current_priority then
+      current_def = def
+      break
+    end
+  end
+
+  if current_def then
+    if now - self.emotion_start_time < current_def.min_duration then
+      return
+    end
+    if current_def.exit_condition and not current_def.exit_condition(self) then
+      return
+    end
+  end
+
+  self:SetEmotion(best_def.name)
+end
 
 function SympatheticPendant:RemoveAllOwnerBuffs()
   for _, emotion in ipairs(self.emotions) do
@@ -73,6 +224,7 @@ end
 
 function SympatheticPendant:SetEmotion(emotion)
   self.emotion = emotion
+  self.emotion_start_time = os.time()
   self:UpdateLight(emotion)
   if self.equipped and self.equipped.SetEmotion then
     self.equipped:SetEmotion(self.inst, emotion)
@@ -177,11 +329,8 @@ function SympatheticPendant:StartEvaluateEmotion()
     self.evaluate_task:Cancel()
     self.evaluate_task = nil
   end
-  self.evaluate_task = self.inst:DoPeriodicTask(10, function()
-    -- self:EvaluateEmotion()
-    -- test 随机表情
-    local random_emotion = self.emotions[math.random(1, #self.emotions)].name
-    self:SetEmotion(random_emotion)
+  self.evaluate_task = self.inst:DoPeriodicTask(1, function()
+    self:EvaluateEmotion()
   end)
 end
 
@@ -194,6 +343,7 @@ end
 
 function SympatheticPendant:EquipPendant(item)
   self.equipped = item
+  self:RegisterCombatEvents()
   self:StartNearTask()
   self:StartEvaluateEmotion()
   local emotion = self:GetEmotion()
@@ -205,25 +355,35 @@ end
 function SympatheticPendant:UnequipPendant()
   self:StopEvaluateEmotion()
   self:StopNearTask()
+  self:UnregisterCombatEvents()
   self:RemoveAllOwnerBuffs()
+  for _, player in ipairs(self.close_players) do
+    self:RemoveAllSharedBuffs(player)
+  end
   self:RemoveLight()
   self.equipped = nil
+end
+
+function SympatheticPendant:OnRemoveEntity()
+  for _, player in ipairs(self.close_players) do
+    self:RemoveAllSharedBuffs(player)
+  end
 end
 
 function SympatheticPendant:OnSave()
   local data = {}
   data.emotion = self:GetEmotion()
+  data.emotion_start_time = self.emotion_start_time
+  data.last_combat_time = self.last_combat_time
   return data
 end
 
 function SympatheticPendant:OnLoad(data)
   if data and data.emotion then
+    self.emotion_start_time = data.emotion_start_time or os.time()
+    self.last_combat_time = data.last_combat_time or 0
     self:SetEmotion(data.emotion)
   end
-end
-
-function SympatheticPendant:OnRemoveEntity()
-  self:UnequipPendant()
 end
 
 return SympatheticPendant
