@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <spriter_data scml_version="1.0" generator="BrashMonkey Spriter" generator_version="b5">
     <folder id="0" name="normal">
-        <file id="0" name="normal/normal-0.png" width="242" height="104" pivot_x="0.528926" pivot_y="0.0865385"/>
+        <file id="0" name="normal/normal-0.png" width="242" height="104" pivot_x="0.512295" pivot_y="0.481132"/>
     </folder>
     <entity id="0" name="sympathetic_pendants">
         <animation id="0" name="idle" length="33">
             <mainline>
                 <key id="0">
-                    <object_ref id="0" name="normal" folder="0" file="0" abs_x="0" abs_y="-30" abs_pivot_x="0.528926" abs_pivot_y="0.086538" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
+                    <object_ref id="0" name="normal" folder="0" file="0" abs_x="8.97539" abs_y="7.037736" abs_pivot_x="0.512295" abs_pivot_y="0.481132" abs_angle="0" abs_scale_x="1" abs_scale_y="1" abs_a="1" timeline="0" key="0" z_index="0"/>
                 </key>
                 <key id="1" time="33">
                     <object_ref id="0" timeline="0" key="1" z_index="0"/>
@@ -15,10 +15,10 @@
             </mainline>
             <timeline id="0" name="normal">
                 <key id="0" curve_type="instant">
-                    <object folder="0" file="0" y="-30" angle="0"/>
+                    <object folder="0" file="0" x="8.97539" y="7.037736" angle="0"/>
                 </key>
                 <key id="1" time="33" curve_type="instant">
-                    <object folder="0" file="0" y="65" angle="0"/>
+                    <object folder="0" file="0" x="123.97539" y="11.037736" angle="0"/>
                 </key>
             </timeline>
         </animation>
