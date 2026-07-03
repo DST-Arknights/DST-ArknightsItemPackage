@@ -2,10 +2,11 @@
 <Atlas>
 	<Texture filename="sympathetic_pendants.tex" />
 	<Elements>
-		<Element name="angry.tex" u1="0.21584375" u2="0.4286875" v2="0.5224375" v1="0.047875" variant="" />
-		<Element name="confused.tex" u1="0.001" u2="0.21384375" v2="0.5224375" v1="0.047875" variant="" />
-		<Element name="happy.tex" u1="0.4306875" u2="0.64353125" v2="0.999" v1="0.5244375" variant="" />
-		<Element name="normal.tex" u1="0.21584375" u2="0.4286875" v2="0.999" v1="0.5244375" variant="" />
-		<Element name="sad.tex" u1="0.001" u2="0.21384375" v2="0.999" v1="0.5244375" variant="" />
+		<Element name="angry.tex" u1="0.001" u2="0.21384375" v2="0.999" v1="0.5244375" variant="" />
+		<Element name="confused.tex" u1="0.21584375" u2="0.4286875" v2="0.999" v1="0.5244375" variant="" />
+		<Element name="happy.tex" u1="0.001" u2="0.21384375" v2="0.5224375" v1="0.047875" variant="" />
+		<Element name="normal.tex" u1="0.21584375" u2="0.4286875" v2="0.5224375" v1="0.047875" variant="" />
+		<Element name="sad.tex" u1="0.4306875" u2="0.64353125" v2="0.999" v1="0.5244375" variant="" />
+		<Element name="sympathetic_pendant.tex" u1="0.64553125" u2="0.858375" v2="0.999" v1="0.5244375" variant="" />
 	</Elements>
 </Atlas>
