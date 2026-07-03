@@ -14,6 +14,14 @@ AddTechBranch("ARK_ELITE_TECH")
 AddTechRequirement("ARK_ELITE_ONE", "ARK_ELITE_TECH", 1)
 AddTechRequirement("ARK_ELITE_TWO", "ARK_ELITE_TECH", 2)
 
+AddPrototyperDef('ark_workshop', {
+  icon_atlas = "images/ark_workshop_prototyper.xml",
+  icon_image = "ark_workshop_prototyper.tex",
+  is_crafting_station = true,
+  action_str = 'ARK_WORKSHOP',
+  filter_text = STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
+})
+
 RegisterInventoryItemAtlas("images/ark_workshop.xml", "ark_workshop.tex")
 -- 制造站
 AddRecipe2('ark_workshop', {
