@@ -221,6 +221,37 @@ msgctxt "STRINGS.NAMES.ARK_TRAINING_ROOM"
 msgid "Training Room"
 msgstr "训练室"
 
+#. STRINGS.NAMES.SYMPATHETIC_PENDANT
+msgctxt "STRINGS.NAMES.SYMPATHETIC_PENDANT"
+msgid "Sympathetic Pendant"
+msgstr "情绪徽章"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.GENERIC
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.GENERIC"
+msgid "Seems to be able to disperse people's emotions"
+msgstr "似乎能发散人的情绪"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.SAD
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.SAD"
+msgid "It's really sad"
+msgstr "真是令人悲伤"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.HAPPY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.HAPPY"
+msgid "Hehe"
+msgstr "嘿嘿"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.ANGRY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.ANGRY"
+msgid "I feel angry"
+msgstr "我感到愤怒"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.CONFUSED
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.CONFUSED"
+msgid "What should I do?"
+msgstr "做点什么好呢"
+
+
 #. STRINGS.RECIPE_DESC.ARK_WORKSHOP
 msgctxt "STRINGS.RECIPE_DESC.ARK_WORKSHOP"
 msgid "A facility that processes resources at Rhodes Island."
@@ -1235,3 +1266,93 @@ msgstr "剩余时间: %s"
 msgctxt "STRINGS.CHARACTERS.GENERIC.SKILL_CANNOT_ACTIVATE"
 msgid "Cannot activate this skill"
 msgstr "现在还不行"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.SAD
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.SAD"
+msgid "Sad"
+msgstr "悲伤"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.ANGRY
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.ANGRY"
+msgid "Angry"
+msgstr "愤怒"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.CONFUSED
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.CONFUSED"
+msgid "Confused"
+msgstr "困惑"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.HAPPY
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.HAPPY"
+msgid "Happy"
+msgstr "快乐"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.NORMAL
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.NORMAL"
+msgid "Normal"
+msgstr "平静"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.OWNER.TITLE
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.OWNER.TITLE"
+msgid "Emotion Badge:%s"
+msgstr "情绪徽章:%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.UNKNOWN_BUFFER_NAME
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.UNKNOWN_BUFFER_NAME"
+msgid "Unknown"
+msgstr "未知队友"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.TITLE
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.TITLE"
+msgid "Emotion Badge:%s (from %s)"
+msgstr "情绪勋章:%s (来自 %s)"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.OWNER.DESC"
+msgid "Increase work efficiency by %s and movement speed by %s"
+msgstr "增加%s工作效率, 增加%s移动速度"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.SHARED.DESC"
+msgid "Increase work efficiency by %s and movement speed by %s"
+msgstr "增加%s工作效率, 增加%s移动速度"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.OWNER.DESC"
+msgid "Increase attack damage by %s and movement speed by %s"
+msgstr "增加%s攻击伤害, 增加%s移动速度"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.SHARED.DESC"
+msgid "Increase attack damage by %s and movement speed by %s"
+msgstr "增加%s攻击伤害, 增加%s移动速度"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.OWNER.DESC"
+msgid "Increase work efficiency by %s, movement speed by %s, reduce hunger consumption by %s, recover %s sanity per day, and increase insulation by %s"
+msgstr "增加%s工作效率, 增加%s移动速度, 减少%s饥饿消耗, 每天恢复%s理智, 增加%s点隔热"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.SHARED.DESC"
+msgid "Increase work efficiency by %s, movement speed by %s, reduce hunger consumption by %s, recover %s sanity per day, and increase insulation by %s"
+msgstr "增加%s工作效率, 增加%s移动速度, 减少%s饥饿消耗, 每天恢复%s理智, 增加%s点隔热"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.OWNER.DESC"
+msgid "Increase defense by %s and reduce movement speed by %s"
+msgstr "增加%s防御力, 减少%s移动速度"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.SHARED.DESC"
+msgid "Increase defense by %s and reduce movement speed by %s"
+msgstr "增加%s防御力, 减少%s移动速度"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.OWNER.DESC"
+msgid "No additional effect"
+msgstr "无额外效果"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.SHARED.DESC"
+msgid "No additional effect"
+msgstr "无额外效果"

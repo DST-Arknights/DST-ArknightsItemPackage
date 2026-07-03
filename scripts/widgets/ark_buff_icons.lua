@@ -264,8 +264,6 @@ function ArkBuffIcons:AddBuff(buffInst)
   local state = buffInst.replica.ark_buff_icon.state
   local groupKey = GetGroupKey(state)
   local group = self.buffGroups[groupKey]
-  
-  ArkLogger:Debug('ark_buff_icons AddBuff', buffInst, groupKey, group)
   if not group then
     -- 创建新分组
     local icon = ArkBuffIcon(self.owner)

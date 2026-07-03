@@ -1,75 +1,337 @@
 local assets = {
   Asset("ATLAS", "images/ui_sympathetic_pendants.xml")
 }
--- TODO: 替换i18n
+
+-- 疑惑
+local CONFUSED_WORK_INCREASE_MULT = 2
+local CONFUSED_SPEED_INCREASE_MULT = 0.2
+
+local ANGRY_ATTACK_INCREASE_MULT = 0.4
+local ANGRY_SPEED_INCREASE_MULT = 0.3
+
+local HAPPY_WORK_INCREASE_MULT = 1
+local HAPPY_SPEED_INCREASE_MULT = 0.3
+local HAPPY_HUNGER_DECREASE_MULT = 0.2
+local HAPPY_SANITY_RECOVER = 30 / 480
+local HAPPY_TEMPERATURE_INSULATION = 6 * 30
+
+local SAD_DEFENSE_INCREASE_MULT = 0.5
+local SAD_SPEED_DECREASE_MULT = 0.02
+
+local BUFF_KEY_BY_EMOTION = {
+  sad = "SAD",
+  angry = "ANGRY",
+  confused = "CONFUSED",
+  happy = "HAPPY",
+  normal = "NORMAL",
+}
+
+local function GetEmotionName(emotion)
+  if emotion == "sad" then
+    return STRINGS.SYMPATHETIC_PENDANT.EMOTION.SAD
+  elseif emotion == "angry" then
+    return STRINGS.SYMPATHETIC_PENDANT.EMOTION.ANGRY
+  elseif emotion == "confused" then
+    return STRINGS.SYMPATHETIC_PENDANT.EMOTION.CONFUSED
+  elseif emotion == "happy" then
+    return STRINGS.SYMPATHETIC_PENDANT.EMOTION.HAPPY
+  elseif emotion == "normal" then
+    return STRINGS.SYMPATHETIC_PENDANT.EMOTION.NORMAL
+  end
+
+  return emotion
+end
+
+local function FormatPercent(value)
+  local formatted = string.format("%.1f", value * 100)
+  formatted = formatted:gsub("%.0$", "")
+  return formatted .. "%"
+end
+
+local function FormatNumber(value)
+  local formatted = string.format("%.1f", value)
+  formatted = formatted:gsub("%.0$", "")
+  return formatted
+end
+
+local function GetGenericBuffStrings()
+  return STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC
+end
+
+local function GetSharedBufferName(data)
+  return data and data.buffer_name or GetGenericBuffStrings().SHARED.UNKNOWN_BUFFER_NAME
+end
+
+local function GetSharedBuffMult(data)
+  return data and data.mult or 0
+end
+
+local function GetBuffStrings(emotion)
+  local key = BUFF_KEY_BY_EMOTION[emotion]
+  return key ~= nil and STRINGS.SYMPATHETIC_PENDANT.BUFF[key] or nil
+end
+
+local function GetBuffDescription(emotion, is_shared, mult)
+  local buff_strings = GetBuffStrings(emotion)
+  if buff_strings == nil then
+    return ""
+  end
+
+  local buff_scope = nil
+  if is_shared then
+    buff_scope = buff_strings.SHARED
+  else
+    buff_scope = buff_strings.OWNER
+  end
+
+  if buff_scope == nil then
+    return ""
+  end
+
+  if emotion == "confused" then
+    return string.format(buff_scope.DESC,
+      FormatPercent(CONFUSED_WORK_INCREASE_MULT * mult),
+      FormatPercent(CONFUSED_SPEED_INCREASE_MULT * mult))
+  elseif emotion == "angry" then
+    return string.format(buff_scope.DESC,
+      FormatPercent(ANGRY_ATTACK_INCREASE_MULT * mult),
+      FormatPercent(ANGRY_SPEED_INCREASE_MULT * mult))
+  elseif emotion == "happy" then
+    return string.format(buff_scope.DESC,
+      FormatPercent(HAPPY_WORK_INCREASE_MULT * mult),
+      FormatPercent(HAPPY_SPEED_INCREASE_MULT * mult),
+      FormatPercent(HAPPY_HUNGER_DECREASE_MULT * mult),
+      FormatNumber(HAPPY_SANITY_RECOVER * 480 * mult),
+      FormatNumber(HAPPY_TEMPERATURE_INSULATION * mult))
+  elseif emotion == "sad" then
+    return string.format(buff_scope.DESC,
+      FormatPercent(SAD_DEFENSE_INCREASE_MULT * mult),
+      FormatPercent(SAD_SPEED_DECREASE_MULT * mult))
+  elseif emotion == "normal" then
+    return buff_scope.DESC
+  end
+
+  return ""
+end
+
+local function MakeOwnerBuffTitle(emotion)
+  return function(inst, data, cfg)
+    return string.format(GetGenericBuffStrings().OWNER.TITLE, GetEmotionName(emotion))
+  end
+end
+
+local function MakeSharedBuffTitle(emotion)
+  return function(inst, data, cfg)
+    return string.format(GetGenericBuffStrings().SHARED.TITLE,
+      GetEmotionName(emotion), GetSharedBufferName(data))
+  end
+end
+
+local function MakeOwnerBuffDescription(emotion)
+  return function(inst, data, cfg)
+    return GetBuffDescription(emotion, false, 1)
+  end
+end
+
+local function MakeSharedBuffDescription(emotion)
+  return function(inst, data, cfg)
+    return GetBuffDescription(emotion, true, GetSharedBuffMult(data))
+  end
+end
+
+local function SetTargetSpeedMult(inst, target, mult)
+  if not target.components.playerspeedmult then
+    return
+  end
+  if mult == 1 or mult == nil then
+    target.components.playerspeedmult:RemoveSpeedMult(inst)
+  else
+    target.components.playerspeedmult:SetSpeedMult(inst, mult)
+  end
+end
+
+local function SetTargetWorkMult(inst, target, mult)
+  if not target.components.workmultiplier then
+    return
+  end
+  if mult == 1 or mult == nil then
+    target.components.workmultiplier:RemoveMultiplier(ACTIONS.CHOP, inst)
+    target.components.workmultiplier:RemoveMultiplier(ACTIONS.MINE, inst)
+    target.components.workmultiplier:RemoveMultiplier(ACTIONS.HAMMER, inst)
+  else
+    target.components.workmultiplier:AddMultiplier(ACTIONS.CHOP, mult, inst)
+    target.components.workmultiplier:AddMultiplier(ACTIONS.MINE, mult, inst)
+    target.components.workmultiplier:AddMultiplier(ACTIONS.HAMMER, mult, inst)
+  end
+end
+
+
+local function OnConfusedAttached(inst, target, followsymbol, followoffset, data, buffer)
+  local mult = data and data.mult or 1
+  local work_mult = 1 + CONFUSED_WORK_INCREASE_MULT * mult
+  local speed_mult = 1 + CONFUSED_SPEED_INCREASE_MULT * mult
+  SetTargetWorkMult(inst, target, work_mult)
+  SetTargetSpeedMult(inst, target, speed_mult)
+end
+
+local function OnConfusedDetached(inst, target)
+  SetTargetWorkMult(inst, target, 1)
+  SetTargetSpeedMult(inst, target, 1)
+end
+
+local function OnAngryAttached(inst, target, followsymbol, followoffset, data, buffer)
+  local mult = data and data.mult or 1
+  local attack_mult = 1 + ANGRY_ATTACK_INCREASE_MULT * mult
+  local speed_mult = 1 + ANGRY_SPEED_INCREASE_MULT * mult
+  if target.components.combat then
+    target.components.combat.externaldamagemultipliers:SetModifier(inst, attack_mult)
+  end
+  SetTargetSpeedMult(inst, target, speed_mult)
+end
+
+local function OnAngryDetached(inst, target)
+  if target.components.combat then
+    target.components.combat.externaldamagemultipliers:RemoveModifier(inst)
+  end
+  SetTargetSpeedMult(inst, target, 1)
+end
+
+local function OnHappyAttached(inst, target, followsymbol, followoffset, data, buffer)
+  local mult = data and data.mult or 1
+  local work_mult = 1 + HAPPY_WORK_INCREASE_MULT * mult
+  local speed_mult = 1 + HAPPY_SPEED_INCREASE_MULT * mult
+  local hunger_mult = math.max(0, 1 - HAPPY_HUNGER_DECREASE_MULT * mult)
+  SetTargetWorkMult(inst, target, work_mult)
+  SetTargetSpeedMult(inst, target, speed_mult)
+  if target.components.hunger then
+    target.components.hunger.burnratemodifiers:SetModifier(inst, hunger_mult)
+  end
+  if target.components.sanity then
+    target.components.sanity.externalmodifiers:SetModifier(inst, HAPPY_SANITY_RECOVER * mult)
+  end
+  if target.components.temperature then
+    target._sympathetic_pendants_temperature_insulation_modified = HAPPY_TEMPERATURE_INSULATION * mult
+    target.components.temperature.inherentinsulation = target._sympathetic_pendants_temperature_insulation_modified
+  end
+end
+
+local function OnHappyDetached(inst, target)
+  SetTargetWorkMult(inst, target, 1)
+  SetTargetSpeedMult(inst, target, 1)
+  if target.components.hunger then
+    target.components.hunger.burnratemodifiers:RemoveModifier(inst)
+  end
+  if target.components.sanity then
+    target.components.sanity.externalmodifiers:RemoveModifier(inst)
+  end
+  if target.components.temperature then
+    local mult = target._sympathetic_pendants_temperature_insulation_modified or 0
+    target.components.temperature.inherentinsulation = target.components.temperature.inherentinsulation - mult
+    target._sympathetic_pendants_temperature_insulation_modified = nil
+  end
+end
+
+local function OnSadAttached(inst, target, followsymbol, followoffset, data, buffer)
+  local mult = data and data.mult or 1
+  local defense_mult = 1 + SAD_DEFENSE_INCREASE_MULT * mult
+  local speed_mult = 1 - SAD_SPEED_DECREASE_MULT * mult
+  if target.components.combat then
+    target.components.combat.externaldamagetakenmultipliers:SetModifier(inst, defense_mult)
+  end
+  SetTargetSpeedMult(inst, target, speed_mult)
+end
+local function OnSadDetached(inst, target)
+  if target.components.combat then
+    target.components.combat.externaldamagetakenmultipliers:RemoveModifier(inst)
+  end
+  SetTargetSpeedMult(inst, target, 1)
+end
+
+
 local buffs = { {
   assets = assets,
   name = "sympathetic_pendant_confused_owner_buff",
-  title = "共情项坠:困惑",
-  description = "增加移动速度,减少攻击力",
+  title = MakeOwnerBuffTitle("confused"),
+  description = MakeOwnerBuffDescription("confused"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "confused.tex",
+  OnAttached = OnConfusedAttached,
+  OnDetached = OnConfusedDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_confused_shared_buff",
-  title = "共情项坠:困惑(来自队友)",
-  description = "增加移动速度,减少攻击力",
+  title = MakeSharedBuffTitle("confused"),
+  description = MakeSharedBuffDescription("confused"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "confused.tex",
+  OnAttached = OnConfusedAttached,
+  OnDetached = OnConfusedDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_angry_owner_buff",
-  title = "共情项坠:愤怒",
-  description = "增加攻击力,减少防御力",
+  title = MakeOwnerBuffTitle("angry"),
+  description = MakeOwnerBuffDescription("angry"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "angry.tex",
+  OnAttached = OnAngryAttached,
+  OnDetached = OnAngryDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_angry_shared_buff",
-  title = "共情项坠:愤怒(来自队友)",
-  description = "增加攻击力,减少防御力",
+  title = MakeSharedBuffTitle("angry"),
+  description = MakeSharedBuffDescription("angry"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "angry.tex",
+  OnAttached = OnAngryAttached,
+  OnDetached = OnAngryDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_happy_owner_buff",
-  title = "共情项坠:快乐",
-  description = "增加生命恢复,减少饥饿消耗",
+  title = MakeOwnerBuffTitle("happy"),
+  description = MakeOwnerBuffDescription("happy"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "happy.tex",
+  OnAttached = OnHappyAttached,
+  OnDetached = OnHappyDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_happy_shared_buff",
-  title = "共情项坠:快乐(来自队友)",
-  description = "增加生命恢复,减少饥饿消耗",
+  title = MakeSharedBuffTitle("happy"),
+  description = MakeSharedBuffDescription("happy"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "happy.tex",
+  OnAttached = OnHappyAttached,
+  OnDetached = OnHappyDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_sad_owner_buff",
-  title = "共情项坠:悲伤",
-  description = "减少移动速度,增加防御力",
+  title = MakeOwnerBuffTitle("sad"),
+  description = MakeOwnerBuffDescription("sad"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "sad.tex",
+  OnAttached = OnSadAttached,
+  OnDetached = OnSadDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_sad_shared_buff",
-  title = "共情项坠:悲伤(来自队友)",
-  description = "减少移动速度,增加防御力",
+  title = MakeSharedBuffTitle("sad"),
+  description = MakeSharedBuffDescription("sad"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "sad.tex",
+  OnAttached = OnSadAttached,
+  OnDetached = OnSadDetached,
 }, {
   assets = assets,
   name = "sympathetic_pendant_normal_owner_buff",
-  title = "共情项坠:快乐",
-  description = "增加生命恢复,减少饥饿消耗",
+  title = MakeOwnerBuffTitle("normal"),
+  description = MakeOwnerBuffDescription("normal"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "normal.tex",
 }, {
   assets = assets,
   name = "sympathetic_pendant_normal_shared_buff",
-  title = "共情项坠:快乐(来自队友)",
-  description = "增加生命恢复,减少饥饿消耗",
+  title = MakeSharedBuffTitle("normal"),
+  description = MakeSharedBuffDescription("normal"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "normal.tex",
 }, }

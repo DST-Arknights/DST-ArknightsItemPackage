@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant", "ark_buff" }
+  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff" }
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
