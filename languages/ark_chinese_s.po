@@ -224,7 +224,12 @@ msgstr "训练室"
 #. STRINGS.NAMES.SYMPATHETIC_PENDANT
 msgctxt "STRINGS.NAMES.SYMPATHETIC_PENDANT"
 msgid "Sympathetic Pendant"
-msgstr "情绪徽章"
+msgstr "情绪徽章(部分功能测试体验)"
+
+#. STRINGS.RECIPE_DESC.SYMPATHETIC_PENDANT
+msgctxt "STRINGS.RECIPE_DESC.SYMPATHETIC_PENDANT"
+msgid "A pendant that can disperse people's emotions."
+msgstr "能发散人的情绪的徽章(部分功能测试体验)"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.GENERIC
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.GENERIC"

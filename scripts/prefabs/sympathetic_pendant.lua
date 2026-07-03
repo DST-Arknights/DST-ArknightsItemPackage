@@ -1,5 +1,7 @@
 local EMOTIONS = { "sad", "angry", "confused", "happy", "normal" }
 
+RegisterInventoryItemAtlas("images/inventoryimages/sympathetic_pendants.xml", "sympathetic_pendant.tex")
+
 local assets =
 {
   Asset("ANIM", "anim/sympathetic_pendants.zip"),

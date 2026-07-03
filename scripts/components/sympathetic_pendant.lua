@@ -215,7 +215,7 @@ function SympatheticPendant:SetSharedBuff(player, emotion)
   self:RemoveAllSharedBuffs(player)
   local prefab = GetSharedBuffPrefab(emotion)
   local name = GetSharedBuffName(self.inst, emotion)
-  player:AddDebuff(name, prefab, { mult = 1, buffer_name = self.inst.name })
+  player:AddDebuff(name, prefab, { mult = 0.25, buffer_name = self.inst.name })
 end
 
 function SympatheticPendant:GetEmotion()
