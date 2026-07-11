@@ -20,6 +20,8 @@ local Talker = Class(function(self, inst)
   self._voice_key = nil -- 当前实例选用的 voice key
   self.text_cache_map = {}
   self.voice_lang = 'zh'
+  self.talk_params = {}
+  self.sound_params = {}
 end)
 
 local function ResolveText(inst, string_path)
@@ -67,8 +69,8 @@ function Talker:Play(string_path, params)
   local talk = params.talk ~= false
   if not sound and not talk then return end
   local interrupt = params.interrupt ~= false
-  local talk_params = params.talker_params or {}
-  local sound_params = params.sound_params or {}
+  local talk_params = MergeMaps(params.talk_params or {}, self.talk_params or {})
+  local sound_params = MergeMaps(params.sound_params or {}, self.sound_params or {})
   talk_params.sgparam = talk_params.sgparam or {}
   -- 仅当需要播放声音 或 需要 duration 回退时才查表
   local sound_data = (sound or not talk_params.time) and self:ResolveVoiceData(string_path) or nil
