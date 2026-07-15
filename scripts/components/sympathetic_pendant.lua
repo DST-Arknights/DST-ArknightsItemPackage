@@ -17,8 +17,8 @@ local RESONANCE_DAYS_TO_MAX = 20
 -- Full day-night cycle ≈ 16 * 30s = 480s
 local RESONANCE_PER_TICK = MAX_RESONANCE / (RESONANCE_DAYS_TO_MAX * 480)
 
-local RESONANCE_TIER_THRESHOLDS = { 75, 50, 25 }
-local RESONANCE_TIER_MULTS     = { 0.25, 0.167, 0.083 }
+local RESONANCE_TIER_THRESHOLDS = { 75, 50, 25, 0 }
+local RESONANCE_TIER_MULTS     = { 0.25, 0.167, 0.083, 0.04 }
 
 local function GetResonanceMult(resonance)
   for i, threshold in ipairs(RESONANCE_TIER_THRESHOLDS) do
@@ -26,7 +26,7 @@ local function GetResonanceMult(resonance)
       return RESONANCE_TIER_MULTS[i]
     end
   end
-  return 0
+  return RESONANCE_TIER_MULTS[#RESONANCE_TIER_MULTS]
 end
 
 local function OnAttackOther(inst)
@@ -54,6 +54,8 @@ local SympatheticPendant = Class(function(self, inst)
   self.scan_player_period = 1
   self.player_near_dist = 30
   self.player_far_dist = 35
+  self:StartNearTask()
+
   self.emotions = { {
     name = "sad",
     colour = { 0.15, 0.35, 1.0 }
@@ -103,6 +105,9 @@ local SympatheticPendant = Class(function(self, inst)
       min_duration = 8,
       label = "low_health_teammate",
       enter_condition = function()
+        if inst.components.health and inst.components.health.currenthealth < 30 then
+          return true
+        end
         for _, player in ipairs(self.close_players) do
           if player.components.health.currenthealth < 30 then
             return true
@@ -140,12 +145,12 @@ end)
 
 function SympatheticPendant:RegisterCombatEvents()
   self.inst:ListenForEvent("onattackother", OnAttackOther)
-  self.inst:ListenForEvent("onattacked", OnAttacked)
+  self.inst:ListenForEvent("attacked", OnAttacked)
 end
 
 function SympatheticPendant:UnregisterCombatEvents()
   self.inst:RemoveEventCallback("onattackother", OnAttackOther)
-  self.inst:RemoveEventCallback("onattacked", OnAttacked)
+  self.inst:RemoveEventCallback("attacked", OnAttacked)
 end
 
 -- Emotion evaluation
@@ -258,17 +263,22 @@ function SympatheticPendant:SetEmotion(emotion)
 end
 
 function SympatheticPendant:OnPlayerNear(player)
+  if not self.equipped then
+    return
+  end
   local emotion = self:GetEmotion()
   self:SetSharedBuff(player, emotion)
   self:UpdateLight(emotion)
 end
 
 function SympatheticPendant:OnPlayerFar(player)
-  if player:IsValid() then
-    self:RemoveAllSharedBuffs(player)
+  if self.equipped then
+    if player:IsValid() then
+      self:RemoveAllSharedBuffs(player)
+    end
+    local emotion = self:GetEmotion()
+    self:UpdateLight(emotion)
   end
-  local emotion = self:GetEmotion()
-  self:UpdateLight(emotion)
 end
 
 function SympatheticPendant:OnPlayerKeepNear(player)
@@ -426,7 +436,6 @@ end
 function SympatheticPendant:EquipPendant(item)
   self.equipped = item
   self:RegisterCombatEvents()
-  self:StartNearTask()
   self:StartEvaluateEmotion()
   local emotion = self:GetEmotion()
   self:SetEmotion(emotion)
@@ -436,7 +445,6 @@ end
 
 function SympatheticPendant:UnequipPendant()
   self:StopEvaluateEmotion()
-  self:StopNearTask()
   self:UnregisterCombatEvents()
   self:RemoveAllOwnerBuffs()
   for _, player in ipairs(self.close_players) do
