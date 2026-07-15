@@ -218,6 +218,19 @@ local function MakeSharedBuffDescription(emotion)
   end
 end
 
+local function MakeFriendSharedBuffTitle()
+  return function(inst, data, cfg)
+    local name = data and data.buffer_name or GetGenericBuffStrings().SHARED.UNKNOWN_BUFFER_NAME
+    return string.format(STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.TITLE, name)
+  end
+end
+
+local function MakeFriendSharedBuffDescription()
+  return function(inst, data, cfg)
+    return STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC
+  end
+end
+
 local function OnConfusedAttached(inst, target, followsymbol, followoffset, data, buffer)
   local mult = data and data.mult or 1
   GetBonusList(target, SYM_SPEED):SetModifier(inst, CONFUSED_SPEED_INCREASE_MULT * mult)
@@ -367,6 +380,13 @@ local buffs = { {
   description = MakeSharedBuffDescription("normal"),
   icon_atlas = "images/ui_sympathetic_pendants.xml",
   icon_image = "normal.tex",
+}, {
+  assets = assets,
+  name = "sympathetic_pendant_friend_shared_buff",
+  title = MakeFriendSharedBuffTitle(),
+  description = MakeFriendSharedBuffDescription(),
+  icon_atlas = "images/ui_sympathetic_pendants.xml",
+  icon_image = "friend.tex",
 }, }
 
 local results = {}

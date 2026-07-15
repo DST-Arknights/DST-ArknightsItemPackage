@@ -12,12 +12,18 @@ local function GetSharedBuffName(inst, emotion)
   return GetSharedBuffPrefab(emotion) .. "_" .. inst.GUID
 end
 
+local FRIEND_SHARED_BUFF_PREFAB = "sympathetic_pendant_friend_shared_buff"
+
+local function GetFriendSharedBuffName(inst)
+  return FRIEND_SHARED_BUFF_PREFAB .. "_" .. inst.GUID
+end
+
 local MAX_RESONANCE = 100
 local RESONANCE_DAYS_TO_MAX = 20
 -- Full day-night cycle ≈ 16 * 30s = 480s
 local RESONANCE_PER_TICK = MAX_RESONANCE / (RESONANCE_DAYS_TO_MAX * 480)
 
-local RESONANCE_TIER_THRESHOLDS = { 75, 50, 25, 0 }
+local RESONANCE_TIER_THRESHOLDS = { 100, 66, 33, 0 }
 local RESONANCE_TIER_MULTS     = { 0.25, 0.167, 0.083, 0.04 }
 
 local function GetResonanceMult(resonance)
@@ -276,6 +282,7 @@ function SympatheticPendant:OnPlayerFar(player)
     if player:IsValid() then
       self:RemoveAllSharedBuffs(player)
     end
+    self:RemoveFriendBuff(player)
     local emotion = self:GetEmotion()
     self:UpdateLight(emotion)
   end
@@ -283,6 +290,7 @@ end
 
 function SympatheticPendant:OnPlayerKeepNear(player)
   self:EvaluateAddResonance(player)
+  self:EvaluateFriendBuff(player)
 end
 
 function SympatheticPendant:EvaluateAddResonance(player)
@@ -318,11 +326,46 @@ function SympatheticPendant:OnResonanceChange(player, resonance, old)
   if GetResonanceMult(resonance) ~= GetResonanceMult(old) then
     self:SetSharedBuff(player, self:GetEmotion())
   end
+  self:EvaluateFriendBuff(player)
 end
 
 function SympatheticPendant:IsResonanceMaxed(player)
   local data = self:GetSharedData(player)
   return data and data.resonance >= MAX_RESONANCE or false
+end
+
+function SympatheticPendant:EvaluateFriendBuff(player)
+  local other = player.components.sympathetic_pendant
+
+  local data = self:GetSharedData(player)
+
+  local mutual_max = self.equipped
+                     and other and other.equipped
+                     and data and data.resonance >= MAX_RESONANCE
+
+  local my_buff_name = GetFriendSharedBuffName(self.inst)
+  local other_buff_name = GetFriendSharedBuffName(player)
+
+  if mutual_max then
+    if player:IsValid() then
+      player:AddDebuff(my_buff_name, FRIEND_SHARED_BUFF_PREFAB, { buffer_name = self.inst.name })
+    end
+    self.inst:AddDebuff(other_buff_name, FRIEND_SHARED_BUFF_PREFAB, { buffer_name = player.name })
+  else
+    if player:IsValid() then
+      player:RemoveDebuff(my_buff_name)
+    end
+    self.inst:RemoveDebuff(other_buff_name)
+  end
+end
+
+function SympatheticPendant:RemoveFriendBuff(player)
+  local my_buff_name = GetFriendSharedBuffName(self.inst)
+  local other_buff_name = GetFriendSharedBuffName(player)
+  if player:IsValid() then
+    player:RemoveDebuff(my_buff_name)
+  end
+  self.inst:RemoveDebuff(other_buff_name)
 end
 
 function SympatheticPendant:GetSharedData(player)
@@ -449,6 +492,7 @@ function SympatheticPendant:UnequipPendant()
   self:RemoveAllOwnerBuffs()
   for _, player in ipairs(self.close_players) do
     self:RemoveAllSharedBuffs(player)
+    self:RemoveFriendBuff(player)
   end
   self:RemoveLight()
   self.equipped = nil
@@ -457,6 +501,7 @@ end
 function SympatheticPendant:OnRemoveEntity()
   for _, player in ipairs(self.close_players) do
     self:RemoveAllSharedBuffs(player)
+    self:RemoveFriendBuff(player)
   end
 end
 

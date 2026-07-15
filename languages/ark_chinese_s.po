@@ -1361,3 +1361,13 @@ msgstr "无额外效果"
 msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.SHARED.DESC"
 msgid "No additional effect"
 msgstr "无额外效果"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.TITLE
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.TITLE"
+msgid "Resonance Friend (from %s)"
+msgstr "永远的朋友 (来自 %s)"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC"
+msgid "You have established full resonance with each other"
+msgstr "你们彼此建立了完全共鸣"
