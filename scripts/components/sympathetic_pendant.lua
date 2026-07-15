@@ -250,6 +250,11 @@ end
 function SympatheticPendant:OnPlayerKeepNear(player)
 end
 
+function SympatheticPendant:GetSharedData(player)
+  local world_data = TheWorld.components.sympathetic_pendant_data
+  return world_data and world_data:GetPairData(self.inst.GUID, player.GUID) or nil
+end
+
 function SympatheticPendant:ScanPlayers()
   local inst = self.inst
   local x, y, z = inst.Transform:GetWorldPosition()

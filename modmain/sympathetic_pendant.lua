@@ -1,6 +1,13 @@
 TUNING.SYMPATHETIC_PENDANT = {
   SPEED_MULT = 1.02,
 }
+
+AddPrefabPostInit("world", function(inst)
+  if TheNet:GetIsServer() then
+    inst:AddComponent("sympathetic_pendant_data")
+  end
+end)
+
 AddPlayerPostInit(function(inst)
   if not TheWorld.ismastersim then
     return
