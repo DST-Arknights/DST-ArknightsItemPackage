@@ -12,6 +12,23 @@ local function GetSharedBuffName(inst, emotion)
   return GetSharedBuffPrefab(emotion) .. "_" .. inst.GUID
 end
 
+local MAX_RESONANCE = 100
+local RESONANCE_DAYS_TO_MAX = 20
+-- Full day-night cycle ≈ 16 * 30s = 480s
+local RESONANCE_PER_TICK = MAX_RESONANCE / (RESONANCE_DAYS_TO_MAX * 480)
+
+local RESONANCE_TIER_THRESHOLDS = { 75, 50, 25 }
+local RESONANCE_TIER_MULTS     = { 0.25, 0.167, 0.083 }
+
+local function GetResonanceMult(resonance)
+  for i, threshold in ipairs(RESONANCE_TIER_THRESHOLDS) do
+    if resonance >= threshold then
+      return RESONANCE_TIER_MULTS[i]
+    end
+  end
+  return 0
+end
+
 local function OnAttackOther(inst)
   local pendant = inst.components.sympathetic_pendant
   if pendant then
@@ -215,7 +232,9 @@ function SympatheticPendant:SetSharedBuff(player, emotion)
   self:RemoveAllSharedBuffs(player)
   local prefab = GetSharedBuffPrefab(emotion)
   local name = GetSharedBuffName(self.inst, emotion)
-  player:AddDebuff(name, prefab, { mult = 0.25, buffer_name = self.inst.name })
+  local data = self:GetSharedData(player)
+  local mult = data and GetResonanceMult(data.resonance) or 0
+  player:AddDebuff(name, prefab, { mult = mult, buffer_name = self.inst.name })
 end
 
 function SympatheticPendant:GetEmotion()
@@ -248,6 +267,42 @@ function SympatheticPendant:OnPlayerFar(player)
 end
 
 function SympatheticPendant:OnPlayerKeepNear(player)
+  self:EvaluateAddResonance(player)
+end
+
+function SympatheticPendant:EvaluateAddResonance(player)
+  -- Both must have pendant equipped
+  if not self.equipped then
+    return
+  end
+  local other = player.components.sympathetic_pendant
+  if not (other and other.equipped) then
+    return
+  end
+
+  -- Only the player with smaller GUID accumulates
+  if self.inst.GUID > player.GUID then
+    return
+  end
+
+  local data = self:GetSharedData(player)
+  if not data then
+    return
+  end
+
+  local old = data.resonance
+  data.resonance = math.min(data.resonance + RESONANCE_PER_TICK, MAX_RESONANCE)
+
+  if data.resonance ~= old then
+    self:OnResonanceChange(player, data.resonance, old)
+    other:OnResonanceChange(self.inst, data.resonance, old)
+  end
+end
+
+function SympatheticPendant:OnResonanceChange(player, resonance, old)
+  if GetResonanceMult(resonance) ~= GetResonanceMult(old) then
+    self:SetSharedBuff(player, self:GetEmotion())
+  end
 end
 
 function SympatheticPendant:GetSharedData(player)
