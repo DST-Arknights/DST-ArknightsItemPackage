@@ -223,6 +223,9 @@ function SympatheticPendant:SetOwnerBuff(emotion)
 end
 
 function SympatheticPendant:RemoveAllSharedBuffs(player)
+  if not player:IsValid() then
+    return
+  end
   for _, emotion in ipairs(self.emotions) do
     player:RemoveDebuff(GetSharedBuffName(self.inst, emotion.name))
   end
@@ -261,7 +264,9 @@ function SympatheticPendant:OnPlayerNear(player)
 end
 
 function SympatheticPendant:OnPlayerFar(player)
-  self:RemoveAllSharedBuffs(player)
+  if player:IsValid() then
+    self:RemoveAllSharedBuffs(player)
+  end
   local emotion = self:GetEmotion()
   self:UpdateLight(emotion)
 end
@@ -305,6 +310,11 @@ function SympatheticPendant:OnResonanceChange(player, resonance, old)
   end
 end
 
+function SympatheticPendant:IsResonanceMaxed(player)
+  local data = self:GetSharedData(player)
+  return data and data.resonance >= MAX_RESONANCE or false
+end
+
 function SympatheticPendant:GetSharedData(player)
   local world_data = TheWorld.components.sympathetic_pendant_data
   return world_data and world_data:GetPairData(self.inst.GUID, player.GUID) or nil
@@ -327,12 +337,24 @@ function SympatheticPendant:ScanPlayers()
     end
   end
 
-  -- 检查离开 far 距离的玩家（不在 scanned_players 中说明已离开 far 距离）
+  -- 清理离开范围/离线的玩家；保留满共鸣的在线远方玩家
   for i = #self.close_players, 1, -1 do
     local player = self.close_players[i]
     if not table.contains(scanned_players, player) then
-      table.remove(self.close_players, i)
-      self:OnPlayerFar(player)
+      if table.contains(AllPlayers, player) and self:IsResonanceMaxed(player) then
+        -- 在线且满共鸣：保留，无视距离
+      else
+        table.remove(self.close_players, i)
+        self:OnPlayerFar(player)
+      end
+    end
+  end
+
+  -- 将满共鸣的远方玩家加入 close_players（无视距离）
+  for _, player in ipairs(AllPlayers) do
+    if player ~= inst and not table.contains(self.close_players, player) and self:IsResonanceMaxed(player) then
+      table.insert(self.close_players, player)
+      self:OnPlayerNear(player)
     end
   end
 end
