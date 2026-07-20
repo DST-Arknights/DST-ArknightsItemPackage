@@ -247,16 +247,16 @@ local ArkBuffIcons = Class(Widget, function(self, owner)
   self.buffClientTimers = {}
   self.gap = 10
   self.owner:StartUpdatingComponent(self)
-  if TheWorld.ismastersim then
-    local buffs = owner:GetArkBuffIcons()
-    if next(buffs) then
-      for _, buff in ipairs(buffs) do
-        self:AddBuff(buff)
-      end
-    end
-  else
-    SendModRPCToServer(GetModRPC("arkBuffIcon", "RequestBuffIcons"))
-  end
+  -- if TheWorld.ismastersim then
+  --   local buffs = owner:GetArkBuffIcons()
+  --   if next(buffs) then
+  --     for _, buff in ipairs(buffs) do
+  --       self:AddBuff(buff)
+  --     end
+  --   end
+  -- else
+  --   SendModRPCToServer(GetModRPC("arkBuffIcon", "RequestBuffIcons"))
+  -- end
 end)
 
 function ArkBuffIcons:AddBuff(buffInst)
