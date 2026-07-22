@@ -1,0 +1,1399 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT Version: 2.0"
+
+#. STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP
+msgctxt "STRINGS.UI.CRAFTING_FILTERS.ARK_WORKSHOP"
+msgid "Workshop"
+msgstr "Workshop"
+
+#. STRINGS.UI.CRAFTING_FILTERS.ARK_TRAINING_ROOM
+msgctxt "STRINGS.UI.CRAFTING_FILTERS.ARK_TRAINING_ROOM"
+msgid "Training Room"
+msgstr "Training Room"
+
+#. STRINGS.UI.CRAFTING.NEEDSARK_ELITE_ONE
+msgctxt "STRINGS.UI.CRAFTING.NEEDSARK_ELITE_ONE"
+msgid "Needs Elite Level 1"
+msgstr "Needs Elite Level 1"
+
+#. STRINGS.UI.CRAFTING.NEEDSARK_ELITE_TWO
+msgctxt "STRINGS.UI.CRAFTING.NEEDSARK_ELITE_TWO"
+msgid "Needs Elite Level 2"
+msgstr "Needs Elite Level 2"
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_UPDATE
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_UPDATE"
+msgid "Update"
+msgstr "Update"
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_SPECIALIZATION
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_SPECIALIZATION"
+msgid "Specialization"
+msgstr "Specialization"
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_ELITE_UPDATE
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_ELITE_UPDATE"
+msgid "Elite"
+msgstr "Elite"
+
+#. STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.AUTO
+msgctxt "STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.AUTO"
+msgid "Auto"
+msgstr "Auto"
+
+#. STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.PASSIVE
+msgctxt "STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.PASSIVE"
+msgid "Passive"
+msgstr "Passive"
+
+#. STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.MANUAL
+msgctxt "STRINGS.UI.ARK_SKILL.ACTIVATION_MODE.MANUAL"
+msgid "Manual"
+msgstr "Manual"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.NONE
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.NONE"
+msgid "None"
+msgstr "None"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO"
+msgid "Auto Recovery"
+msgstr "Auto Recovery"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK"
+msgid "Attack Recovery"
+msgstr "Attack Recovery"
+
+#. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE
+msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE"
+msgid "Defensive Recovery"
+msgstr "Defensive Recovery"
+
+#. STRINGS.UI.ARK_SKILL.SECONDS
+msgctxt "STRINGS.UI.ARK_SKILL.SECONDS"
+msgid "Seconds"
+msgstr "Seconds"
+
+#. STRINGS.UI.ARK_SKILL.HOT_KEY
+msgctxt "STRINGS.UI.ARK_SKILL.HOT_KEY"
+msgid "Hot Key"
+msgstr "Hot Key"
+
+#. STRINGS.UI.ARK_SKILL.SETTING
+msgctxt "STRINGS.UI.ARK_SKILL.SETTING"
+msgid "Setting"
+msgstr "Setting"
+
+#. STRINGS.UI.ARK_SKILL.NONE
+msgctxt "STRINGS.UI.ARK_SKILL.NONE"
+msgid "None"
+msgstr "None"
+
+#. STRINGS.UI.ARK_SKILL.LOCKED
+msgctxt "STRINGS.UI.ARK_SKILL.LOCKED"
+msgid "Locked"
+msgstr "Locked"
+
+#. STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY
+msgctxt "STRINGS.UI.ARK_SKILL.PRESS_ANY_KEY"
+msgid "Press any key"
+msgstr "Press any key"
+
+#. STRINGS.UI.ARK_SKILL.CANCEL
+msgctxt "STRINGS.UI.ARK_SKILL.CANCEL"
+msgid "Cancel"
+msgstr "Cancel"
+
+#. STRINGS.UI.ARK_SKILL.RESET
+msgctxt "STRINGS.UI.ARK_SKILL.RESET"
+msgid "Reset"
+msgstr "Reset"
+
+#. STRINGS.UI.ARK_SKILL.HOT_KEY_CONFLICT
+msgctxt "STRINGS.UI.ARK_SKILL.HOT_KEY_CONFLICT"
+msgid "Hot Key Conflict"
+msgstr "Hot Key Conflict"
+
+#. STRINGS.UI.ARK_SKILL.SKILL
+msgctxt "STRINGS.UI.ARK_SKILL.SKILL"
+msgid "Skill"
+msgstr "Skill"
+
+#. STRINGS.UI.ARK_SKILL.CURRENT_LEVEL
+msgctxt "STRINGS.UI.ARK_SKILL.CURRENT_LEVEL"
+msgid "Current Level"
+msgstr "Current Level"
+
+#. STRINGS.UI.ARK_SKILL.NEXT_LEVEL
+msgctxt "STRINGS.UI.ARK_SKILL.NEXT_LEVEL"
+msgid "Next Level"
+msgstr "Next Level"
+
+#. STRINGS.UI.ARK_SKILL.SKILL_MAX_LEVEL
+msgctxt "STRINGS.UI.ARK_SKILL.SKILL_MAX_LEVEL"
+msgid "Skill level maxed"
+msgstr "Skill level maxed"
+
+#. STRINGS.UI.ARK_SKILL.LOCKED_DESC.DEFAULT
+msgctxt "STRINGS.UI.ARK_SKILL.LOCKED_DESC.DEFAULT"
+msgid "Locked skill"
+msgstr "Locked skill"
+
+#. STRINGS.UI.ARK_SKILL.LEVEL.8
+msgctxt "STRINGS.UI.ARK_SKILL.LEVEL.8"
+msgid "Rank I"
+msgstr "Rank I"
+
+#. STRINGS.UI.ARK_SKILL.LEVEL.9
+msgctxt "STRINGS.UI.ARK_SKILL.LEVEL.9"
+msgid "Rank II"
+msgstr "Rank II"
+
+#. STRINGS.UI.ARK_SKILL.LEVEL.10
+msgctxt "STRINGS.UI.ARK_SKILL.LEVEL.10"
+msgid "Rank III"
+msgstr "Rank III"
+
+#. STRINGS.UI.ARK_ELITE.ELITE
+msgctxt "STRINGS.UI.ARK_ELITE.ELITE"
+msgid "Elite"
+msgstr "Elite"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL"
+msgid "Potential: %d"
+msgstr "Potential: %d"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.LEVEL
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.LEVEL"
+msgid "Level: %d"
+msgstr "Level: %d"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.ELITE.1
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.1"
+msgid "Not Elite"
+msgstr "Not Elite"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.ELITE.2
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.2"
+msgid "Elite I"
+msgstr "Elite I"
+
+#. STRINGS.UI.ARK_ELITE.HOVER.ELITE.3
+msgctxt "STRINGS.UI.ARK_ELITE.HOVER.ELITE.3"
+msgid "Elite II"
+msgstr "Elite II"
+
+#. STRINGS.NAMES.ARK_WORKSHOP
+msgctxt "STRINGS.NAMES.ARK_WORKSHOP"
+msgid "Workshop"
+msgstr "Workshop"
+
+#. STRINGS.NAMES.ARK_GOLD
+msgctxt "STRINGS.NAMES.ARK_GOLD"
+msgid "LMD"
+msgstr "LMD"
+
+#. STRINGS.NAMES.ARK_DIAMOND_SHD
+msgctxt "STRINGS.NAMES.ARK_DIAMOND_SHD"
+msgid "Orundum"
+msgstr "Orundum"
+
+#. STRINGS.NAMES.ARK_DIAMOND
+msgctxt "STRINGS.NAMES.ARK_DIAMOND"
+msgid "Originite Prime"
+msgstr "Originite Prime"
+
+#. STRINGS.NAMES.ARK_BACKPACK
+msgctxt "STRINGS.NAMES.ARK_BACKPACK"
+msgid "Backpack"
+msgstr "Backpack"
+
+#. STRINGS.NAMES.ARK_TRAINING_ROOM
+msgctxt "STRINGS.NAMES.ARK_TRAINING_ROOM"
+msgid "Training Room"
+msgstr "Training Room"
+
+#. STRINGS.NAMES.SYMPATHETIC_PENDANT
+msgctxt "STRINGS.NAMES.SYMPATHETIC_PENDANT"
+msgid "Sympathetic Pendant"
+msgstr "Sympathetic Pendant"
+
+#. STRINGS.RECIPE_DESC.SYMPATHETIC_PENDANT
+msgctxt "STRINGS.RECIPE_DESC.SYMPATHETIC_PENDANT"
+msgid "A pendant that can disperse people's emotions."
+msgstr "A pendant that can disperse people's emotions."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.GENERIC
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.GENERIC"
+msgid "Seems to be able to disperse people's emotions"
+msgstr "Seems to be able to disperse people's emotions"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.SAD
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.SAD"
+msgid "It's really sad"
+msgstr "It's really sad"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.HAPPY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.HAPPY"
+msgid "Hehe"
+msgstr "Hehe"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.ANGRY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.ANGRY"
+msgid "I feel angry"
+msgstr "I feel angry"
+
+# STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.CONFUSED
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.SYMPATHETIC_PENDANT.CONFUSED"
+msgid "What should I do?"
+msgstr "What should I do?"
+
+#. STRINGS.RECIPE_DESC.ARK_WORKSHOP
+msgctxt "STRINGS.RECIPE_DESC.ARK_WORKSHOP"
+msgid "A facility that processes resources at Rhodes Island."
+msgstr "A resource processing facility from Rhodes Island."
+
+#. STRINGS.RECIPE_DESC.ARK_BACKPACK
+msgctxt "STRINGS.RECIPE_DESC.ARK_BACKPACK"
+msgid "A backpack that stores items and resources."
+msgstr "Stores Rhodes Island items and resources."
+
+#. STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM
+msgctxt "STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM"
+msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
+msgstr "Train Operators. Promote and upgrade skills!"
+
+#. STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC
+msgctxt "STRINGS.ACTIONS.USE_ARK_CURRENCY.GENERIC"
+msgid "Use"
+msgstr "Use"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK"
+msgid "The backpack is full."
+msgstr "The backpack is full."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP"
+msgid "A facility that processes resources at Rhodes Island."
+msgstr "Processes resources at Rhodes Island."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_TRAINING_ROOM
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_TRAINING_ROOM"
+msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
+msgstr "A training facility for Rhodes Island Operators."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD"
+msgid "A widely used currency issued by Lungmen."
+msgstr "A widely used currency issued by Lungmen."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK"
+msgid "A backpack that stores items and resources."
+msgstr "Stores Rhodes Island items and resources."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1"
+msgid "Foundational unit of Rhodes economy"
+msgstr "Foundational unit of Rhodes economy"
+
+#. STRINGS.NAMES.ARK_ITEM_GOLD1
+msgctxt "STRINGS.NAMES.ARK_ITEM_GOLD1"
+msgid "A piece of LMD."
+msgstr "A piece of LMD."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD1"
+msgid "A widely used currency issued by Lungmen. Using it will give you 1 LMD."
+msgstr "Lungmen currency. Use to gain 1 LMD."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD2"
+msgid "Clinking stack that melts Reunion's hostility"
+msgstr "Clinking stack that melts Reunion's hostility"
+
+#. STRINGS.NAMES.ARK_ITEM_GOLD2
+msgctxt "STRINGS.NAMES.ARK_ITEM_GOLD2"
+msgid "A stack of LMD."
+msgstr "A stack of LMD."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD2"
+msgid "A widely used currency issued by Lungmen. Using it will give you 10,000 LMD."
+msgstr "Lungmen currency. Use to gain 10,000 LMD."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD3"
+msgid "The currency that even Emperor respects"
+msgstr "The currency that even Emperor respects"
+
+#. STRINGS.NAMES.ARK_ITEM_GOLD3
+msgctxt "STRINGS.NAMES.ARK_ITEM_GOLD3"
+msgid "A crate of LMD."
+msgstr "A crate of LMD."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_GOLD3"
+msgid "A widely used currency issued by Lungmen. Using it will give you 100,000 LMD."
+msgstr "Lungmen currency. Use to gain 100,000 LMD."
+
+# ============================================================
+# T5 高级材料
+# ============================================================
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_SHJ
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_SHJ"
+msgid "Nucleic Crystal Sinter"
+msgstr "Nucleic Crystal Sinter"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SHJ
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SHJ"
+msgid ""
+msgstr "A cutting-edge modern tech product. Used in advanced upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SHJ
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SHJ"
+msgid ""
+msgstr "Selectively adsorbs Originium as a reagent, enabling precise processing."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_OEU
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_OEU"
+msgid "Crystalline Electronic Unit"
+msgstr "Crystalline Electronic Unit"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OEU
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OEU"
+msgid ""
+msgstr "Expensive Originium industry product. Used in major upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OEU
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OEU"
+msgid ""
+msgstr "A crystallization of Terra's Originium technology and industry."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_DS
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_DS"
+msgid "D32 Steel"
+msgstr "D32 Steel"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_DS
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_DS"
+msgid ""
+msgstr "An artificial metal not found in nature. Used in high level upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_DS
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_DS"
+msgid ""
+msgstr "Impossibly strong and impenetrable. Delivers Originium Arts smoothly."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BN
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BN"
+msgid "Bipolar Nanoflake"
+msgstr "Bipolar Nanoflake"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BN
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BN"
+msgid ""
+msgstr "A device sensitive to nearby Originium. Used in high level upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BN
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BN"
+msgid ""
+msgstr "Greatly improves weapons' sensitivity to Originium."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PP
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PP"
+msgid "Polymerization Preparation"
+msgstr "Polymerization Preparation"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PP
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PP"
+msgid ""
+msgstr "A complex liquid industrial product. Used in high level upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PP
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PP"
+msgid ""
+msgstr "Common coating for delicate gear. Bonds strongly enough to block Originium."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PLCF
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PLCF"
+msgid "Cutting Fluid Solution"
+msgstr "Cutting Fluid Solution"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PLCF
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PLCF"
+msgid ""
+msgstr "A stock solution from active solvents. Used in high level upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PLCF
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PLCF"
+msgid ""
+msgstr "Biologically stable. Take care to avoid cross-contamination in storage."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RS
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RS"
+msgid "Refined Solvent"
+msgstr "Refined Solvent"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RS
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RS"
+msgid ""
+msgstr "A special coating from a unique process. Used in high level upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RS
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RS"
+msgid ""
+msgstr "Polymer coating with special traits beyond basic protection."
+
+# ============================================================
+# T4 材料
+# ============================================================
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ZYK
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ZYK"
+msgid "Transmuted Salt Agglomerate"
+msgstr "Transmuted Salt Agglomerate"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZYK
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZYK"
+msgid ""
+msgstr "A refined compound crystal mass. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZYK
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZYK"
+msgid ""
+msgstr "A stable crystal blend that grants materials diverse capabilities."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_HTT
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_HTT"
+msgid "Cyclicene Prefab"
+msgstr "Cyclicene Prefab"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HTT
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HTT"
+msgid ""
+msgstr "Prefab from multiple first-rate materials. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HTT
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HTT"
+msgid ""
+msgstr "Industrial blend with high light transmittance. Promising for defense."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_OC4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_OC4"
+msgid "Crystalline Circuit"
+msgstr "Crystalline Circuit"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC4"
+msgid ""
+msgstr "Core Originium electronics product. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC4"
+msgid ""
+msgstr "A symbol of Terra's industrial modernization."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM4"
+msgid "Incandescent Alloy Block"
+msgstr "Incandescent Alloy Block"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM4"
+msgid ""
+msgstr "Rare high-melting-point alloy for electronics. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM4"
+msgid ""
+msgstr "Further processed Incandescent Alloy. Irreplaceable in electronics."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL4"
+msgid "Polymerized Gel"
+msgstr "Polymerized Gel"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL4"
+msgid ""
+msgstr "Extremely high-strength plastic material. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL4"
+msgid ""
+msgstr "Born from extensive testing of Gel. Widely used in high-tech projects."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL2"
+msgid "White Horse Kohl"
+msgstr "White Horse Kohl"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL2"
+msgid ""
+msgstr "A flaky organic compound. Used in upgrades and making Bipolar Nanoflakes."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL2"
+msgid ""
+msgstr "Refined Loxic Kohl, named after the manufacturer who found the method."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE2"
+msgid "Manganese Trihydrate"
+msgstr "Manganese Trihydrate"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE2"
+msgid ""
+msgstr "Metal ore for metallurgy. Used in upgrades and making D32 Steel."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE2"
+msgid ""
+msgstr "A precious metal rarely used for industrial catalysts."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PG2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PG2"
+msgid "Grindstone Pentahydrate"
+msgstr "Grindstone Pentahydrate"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG2"
+msgid ""
+msgstr "Advanced grindstone for weapon finishing. Used in making D32 Steel."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG2"
+msgid ""
+msgstr "More structurally stable than ordinary Grindstones."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G4"
+msgid "Orirock Concentration"
+msgstr "Orirock Concentration"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G4"
+msgid ""
+msgstr "Refined from Orirock Clusters. Used in making Polymerization Preparation."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G4"
+msgid ""
+msgstr "Clean-cut facets you can't help but admire."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS4"
+msgid "Optimized Device"
+msgstr "Optimized Device"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS4"
+msgid ""
+msgstr "Advanced mechanical device from Reunion. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS4"
+msgid ""
+msgstr "The maker's passion and dedication can be felt within..."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH4"
+msgid "Polyester Lump"
+msgstr "Polyester Lump"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH4"
+msgid ""
+msgstr "A lump of polyester for industrial use. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH4"
+msgid ""
+msgstr "Refined and purified. Might be a touchstone for next-gen materials."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG4"
+msgid "Sugar Lump"
+msgstr "Sugar Lump"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG4"
+msgid ""
+msgstr "Mass-produced sugar lump. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG4"
+msgid ""
+msgstr "Not food! Not for sale as food! No sneaking a bite before processing!"
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON4"
+msgid "Oriron Block"
+msgstr "Oriron Block"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON4"
+msgid ""
+msgstr "Expensive industrial material. Used in making Polymerization Preparation."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON4"
+msgid ""
+msgstr "Fused from multiple Oriron Clusters under extreme conditions."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE4
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE4"
+msgid "Keton Colloid"
+msgstr "Keton Colloid"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE4
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE4"
+msgid ""
+msgstr "Large amount of organic compound. Used in making Polymerization Preparation."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE4
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE4"
+msgid ""
+msgstr "Unstable Keton preparation. Closely monitored by Engineer Operators."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_XWB
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_XWB"
+msgid "Solidified Fiber Board"
+msgstr "Solidified Fiber Board"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XWB
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XWB"
+msgid ""
+msgstr "Specialized fiber board. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XWB
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XWB"
+msgid ""
+msgstr "Compound fiber board. Irreplaceable in many industrial workflows."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7024
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7024"
+msgid "RMA70-24"
+msgstr "RMA70-24"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7024
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7024"
+msgid ""
+msgstr "Highly sensitive mineral. Used in upgrades and making D32 Steel."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7024
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7024"
+msgid ""
+msgstr "A complex polyhedral mineral found in 1024. Great industrial value."
+
+# ============================================================
+# T3 材料
+# ============================================================
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ZY
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ZY"
+msgid "Transmuted Salt"
+msgstr "Transmuted Salt"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ZY"
+msgid ""
+msgstr "Low-tolerance refined crystal. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZY
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ZY"
+msgid ""
+msgstr "Industrial salt. Absolutely not to be eaten under any circumstances."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_HT
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_HT"
+msgid "Aggregate Cyclicene"
+msgstr "Aggregate Cyclicene"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HT
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_HT"
+msgid ""
+msgstr "Heat and chemical resistant material. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HT
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_HT"
+msgid ""
+msgstr "Novel transparent lab-born material. Excellent substitute for old materials."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_OC3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_OC3"
+msgid "Crystalline Component"
+msgstr "Crystalline Component"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_OC3"
+msgid ""
+msgstr "Important Originium material. Used for upgrades and advanced synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_OC3"
+msgid ""
+msgstr "Made with Originium crystal shells. A fundamental electronics product."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IAM3"
+msgid "Incandescent Alloy"
+msgstr "Incandescent Alloy"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IAM3"
+msgid ""
+msgstr "Special high-melting-point alloy. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IAM3"
+msgid ""
+msgstr "Smelted from rare Terran metals. Indispensable in electronics."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PGEL3"
+msgid "Coagulating Gel"
+msgstr "Coagulating Gel"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PGEL3"
+msgid ""
+msgstr "High-strength plastic material. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PGEL3"
+msgid ""
+msgstr "Serendipitously born in the lab. Ideal for high-tech projects."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_ALCOHOL1"
+msgid "Loxic Kohl"
+msgstr "Loxic Kohl"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_ALCOHOL1"
+msgid ""
+msgstr "A flaky organic compound. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_ALCOHOL1"
+msgid ""
+msgstr "Excellent chemical intermediate. Converts between forms to store energy."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_MANGANESE1"
+msgid "Manganese Ore"
+msgstr "Manganese Ore"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_MANGANESE1"
+msgid ""
+msgstr "Metal ore used for metallurgy. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_MANGANESE1"
+msgid ""
+msgstr "Produces a widely-used industrial catalyst. Complex to reprocess."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_PG1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_PG1"
+msgid "Grindstone"
+msgstr "Grindstone"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_PG1"
+msgid ""
+msgstr "A grindstone for weapon parts. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_PG1"
+msgid ""
+msgstr "Does not detonate, pulverize, or crack."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G3"
+msgid "Orirock Cluster"
+msgstr "Orirock Cluster"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G3"
+msgid ""
+msgstr "A conglomerate rock from the ground. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G3"
+msgid ""
+msgstr "Compressed and shaped Orirock Cubes. Can form naturally."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS3"
+msgid "Integrated Device"
+msgstr "Integrated Device"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS3"
+msgid ""
+msgstr "Brand new mechanical device from Reunion. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS3"
+msgid ""
+msgstr "A set of freshly assembled devices."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH3"
+msgid "Polyester Pack"
+msgstr "Polyester Pack"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH3"
+msgid ""
+msgstr "A set of polyester for industrial use. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH3"
+msgid ""
+msgstr "Further processed material. Used to make special materials."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG3"
+msgid "Sugar Pack"
+msgstr "Sugar Pack"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG3"
+msgid ""
+msgstr "A decent amount of sugar. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG3"
+msgid ""
+msgstr "Widely popular combo pack. Weight always dwindles before processing."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON3"
+msgid "Oriron Cluster"
+msgstr "Oriron Cluster"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON3"
+msgid ""
+msgstr "A precious industrial material. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON3"
+msgid ""
+msgstr "Multiple Orirons merged by chance. Hardness decreases, purity increases."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE3"
+msgid "Aketon"
+msgstr "Aketon"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE3"
+msgid ""
+msgstr "A modest amount of organic compound. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE3"
+msgid ""
+msgstr "Engineer Operators should handle with precision to avoid waste."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_CCF
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_CCF"
+msgid "Compound Cutting Fluid"
+msgstr "Compound Cutting Fluid"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_CCF
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_CCF"
+msgid ""
+msgstr "Essential agent for metal processing. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_CCF
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_CCF"
+msgid ""
+msgstr "Provides lubrication and heat resistance to improve metal quality."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7012
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RMA7012"
+msgid "RMA70-12"
+msgstr "RMA70-12"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7012
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RMA7012"
+msgid ""
+msgstr "A sensitive mineral with good conductivity. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7012
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RMA7012"
+msgid ""
+msgstr "Complex polyhedral mineral. Valued in Arts long before industry."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_XW
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_XW"
+msgid "Fuscous Fiber"
+msgstr "Fuscous Fiber"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XW
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_XW"
+msgid ""
+msgstr "High-strength fiber bundle. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XW
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_XW"
+msgid ""
+msgstr "Derived from Originium engineering. Widely used in industry."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_SS
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_SS"
+msgid "Semi-Synthetic Solvent"
+msgstr "Semi-Synthetic Solvent"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SS
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_SS"
+msgid ""
+msgstr "Active solvent with excellent physical traits. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SS
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_SS"
+msgid ""
+msgstr "A traditional solvent modernized. Remarkably enhanced properties."
+
+# ============================================================
+# T2 材料
+# ============================================================
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G2"
+msgid "Orirock Cube"
+msgstr "Orirock Cube"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G2"
+msgid ""
+msgstr "A rock cube from the ground. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G2"
+msgid ""
+msgstr "Contains dense micropores. Used as Originium gas adsorbent."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS2"
+msgid "Device"
+msgstr "Device"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS2"
+msgid ""
+msgstr "An ordinary mechanical device from Reunion. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS2"
+msgid ""
+msgstr "A relatively complete set with many usable electronic components."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH2"
+msgid "Polyester"
+msgstr "Polyester"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH2"
+msgid ""
+msgstr "A small amount of polyester. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH2"
+msgid ""
+msgstr "Used to make basic materials. Common in sustained-release drugs."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG2"
+msgid "Sugar"
+msgstr "Sugar"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG2"
+msgid ""
+msgstr "A small amount of sugar. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG2"
+msgid ""
+msgstr "Ahh, this taste... puts one in a great mood. Not for snacking."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON2"
+msgid "Oriron"
+msgstr "Oriron"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON2"
+msgid ""
+msgstr "A rare industrial material. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON2"
+msgid ""
+msgstr "Oriron Shards phase-changed and polymerized. Relatively stable now."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE2"
+msgid "Polyketon"
+msgstr "Polyketon"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE2"
+msgid ""
+msgstr "A small amount of organic compound. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE2"
+msgid ""
+msgstr "Further dehydrocarbon processed. Used to bond stable structures."
+
+# ============================================================
+# T1 材料
+# ============================================================
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_G1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_G1"
+msgid "Orirock"
+msgstr "Orirock"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_G1"
+msgid ""
+msgstr "A rock from the ground. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_G1"
+msgid ""
+msgstr "Rich in organic matter. Found where Originium has volatilized."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_BOSS1"
+msgid "Damaged Device"
+msgstr "Damaged Device"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_BOSS1"
+msgid ""
+msgstr "A damaged device from Reunion. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_BOSS1"
+msgid ""
+msgstr "Damaged in combat, but internal components still hold usable value."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_RUSH1"
+msgid "Ester"
+msgstr "Ester"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_RUSH1"
+msgid ""
+msgstr "Ester for industrial production. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_RUSH1"
+msgid ""
+msgstr "A vital modern industry material. Only a raw material on its own."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_STRG1"
+msgid "Sugar Substitute"
+msgstr "Sugar Substitute"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_STRG1"
+msgid ""
+msgstr "Cheap sugar substitute. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_STRG1"
+msgid ""
+msgstr "Slightly sweet, possibly edible. Also used in chemical manufacturing."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_IRON1"
+msgid "Oriron Shard"
+msgstr "Oriron Shard"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_IRON1"
+msgid ""
+msgstr "A common industrial material. Used in various upgrades and synthesis."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_IRON1"
+msgid ""
+msgstr "Byproduct of large-scale metal processing. Used in smelting."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SL_KETONE1"
+msgid "Diketon"
+msgstr "Diketon"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SL_KETONE1"
+msgid ""
+msgstr "A tiny amount of organic compound. Used in various upgrades."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SL_KETONE1"
+msgid ""
+msgstr "Reprocessed to use solidification for bonding stable structures."
+
+# ============================================================
+# 技能书
+# ============================================================
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SKILL1
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SKILL1"
+msgid "Skill Summary - 1"
+msgstr "Skill Summary - 1"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL1
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL1"
+msgid ""
+msgstr "A book of basic tactics. Used to upgrade Operator skills."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL1
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL1"
+msgid ""
+msgstr "Entry-level skills. Even a dummy could master them quickly."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SKILL2
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SKILL2"
+msgid "Skill Summary - 2"
+msgstr "Skill Summary - 2"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL2
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL2"
+msgid ""
+msgstr "A book of advanced tactics. Used to upgrade Operator skills."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL2
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL2"
+msgid ""
+msgstr "Advanced skills. Requires dedicated study and practice to master."
+
+#. STRINGS.NAMES.ARK_ITEM_MTL_SKILL3
+msgctxt "STRINGS.NAMES.ARK_ITEM_MTL_SKILL3"
+msgid "Skill Summary - 3"
+msgstr "Skill Summary - 3"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL3
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_ITEM_MTL_SKILL3"
+msgid ""
+msgstr "A book of expert tactics. Used to upgrade Operator skills."
+
+#. STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL3
+msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_MTL_SKILL3"
+msgid ""
+msgstr "Expert-level skills. Mastery requires years of field experience."
+
+# ============================================================
+# 便携式补给站 & 技能学习
+# ============================================================
+
+#. STRINGS.NAMES.ARK_PORTABLE_SUPPLY
+msgctxt "STRINGS.NAMES.ARK_PORTABLE_SUPPLY"
+msgid "Portable Supply"
+msgstr "Portable Supply"
+
+#. STRINGS.RECIPE_DESC.ARK_PORTABLE_SUPPLY
+msgctxt "STRINGS.RECIPE_DESC.ARK_PORTABLE_SUPPLY"
+msgid "A supply station that can be carried with you"
+msgstr "Quickly recharges skills for Arknights Operators."
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_PORTABLE_SUPPLY"
+msgid "A supply station that can be carried with you"
+msgstr "Quickly recharges skills."
+
+#. STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_INSTALL
+msgctxt "STRINGS.UI.CRAFTING.RECIPEACTION.ARK_SKILL_INSTALL"
+msgid "Learn"
+msgstr "Learn"
+
+#. STRINGS.UI.ARK_SKILL.UNINSTALL
+msgctxt "STRINGS.UI.ARK_SKILL.UNINSTALL"
+msgid "Uninstall"
+msgstr "Uninstall"
+
+#. STRINGS.UI.ARK_SKILL.DAYS
+msgctxt "STRINGS.UI.ARK_SKILL.DAYS"
+msgid "d"
+msgstr "d"
+
+#. STRINGS.UI.ARK_SKILL.UNLIMITED
+msgctxt "STRINGS.UI.ARK_SKILL.UNLIMITED"
+msgid "Unlimited"
+msgstr "Unlimited"
+
+#. STRINGS.UI.ARK_SKILL.INSTALL_SKILL_DESC
+msgctxt "STRINGS.UI.ARK_SKILL.INSTALL_SKILL_DESC"
+msgid "Temporarily learn this skill"
+msgstr "Temporarily learn this skill"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_ALREADY_LEARNED
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_ALREADY_LEARNED"
+msgid "Already learned this skill"
+msgstr "Already learned this skill"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_MAX_LIMIT
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.SKILL_MAX_LIMIT"
+msgid "Skill slot limit reached"
+msgstr "Skill slot limit reached"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_SKILL_CANNOT_LEARN
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_SKILL_CANNOT_LEARN"
+msgid "Cannot learn this skill"
+msgstr "Cannot learn this skill"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_CANNOT_UPGRADE
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_CANNOT_UPGRADE"
+msgid "Cannot upgrade elite now"
+msgstr "Cannot upgrade elite now"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_ALREADY_REACHED
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_ALREADY_REACHED"
+msgid "Already reached this elite stage"
+msgstr "Already reached this elite stage"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_NEED_PREVIOUS_STAGE
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_NEED_PREVIOUS_STAGE"
+msgid "Complete the previous elite stage first"
+msgstr "Complete the previous elite stage first"
+
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_LEVEL_NOT_ENOUGH
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_LEVEL_NOT_ENOUGH"
+msgid "Reach the current elite level cap first"
+msgstr "Reach the current elite level cap first"
+
+#. STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT
+msgctxt "STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT"
+msgid "Remaining: %s"
+msgstr "Remaining: %s"
+
+#. STRINGS.CHARACTERS.GENERIC.SKILL_CANNOT_ACTIVATE
+msgctxt "STRINGS.CHARACTERS.GENERIC.SKILL_CANNOT_ACTIVATE"
+msgid "Cannot activate this skill"
+msgstr "Not ready yet"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.SAD
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.SAD"
+msgid "Sad"
+msgstr "Sad"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.ANGRY
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.ANGRY"
+msgid "Angry"
+msgstr "Angry"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.CONFUSED
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.CONFUSED"
+msgid "Confused"
+msgstr "Confused"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.HAPPY
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.HAPPY"
+msgid "Happy"
+msgstr "Happy"
+
+#. STRINGS.SYMPATHETIC_PENDANT.EMOTION.NORMAL
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.EMOTION.NORMAL"
+msgid "Normal"
+msgstr "Normal"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.OWNER.TITLE
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.OWNER.TITLE"
+msgid "Emotion Badge:%s"
+msgstr "Emotion Badge: %s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.UNKNOWN_BUFFER_NAME
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.UNKNOWN_BUFFER_NAME"
+msgid "Unknown"
+msgstr "Unknown Teammate"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.TITLE
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.GENERIC.SHARED.TITLE"
+msgid "Emotion Badge:%s (from %s)"
+msgstr "Emotion Badge: %s (from %s)"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.OWNER.DESC"
+msgid "Increase work efficiency by %s and movement speed by %s"
+msgstr "Work efficiency +%s, movement speed +%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.CONFUSED.SHARED.DESC"
+msgid "Increase work efficiency by %s and movement speed by %s"
+msgstr "Work efficiency +%s, movement speed +%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.OWNER.DESC"
+msgid "Increase attack damage by %s and movement speed by %s"
+msgstr "Attack damage +%s, movement speed +%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.ANGRY.SHARED.DESC"
+msgid "Increase attack damage by %s and movement speed by %s"
+msgstr "Attack damage +%s, movement speed +%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.OWNER.DESC"
+msgid "Increase work efficiency by %s, movement speed by %s, reduce hunger consumption by %s, recover %s sanity per day, and increase insulation by %s"
+msgstr "Work eff. +%s, move spd +%s, hunger -%s, sanity +%s/day, insulation +%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.HAPPY.SHARED.DESC"
+msgid "Increase work efficiency by %s, movement speed by %s, reduce hunger consumption by %s, recover %s sanity per day, and increase insulation by %s"
+msgstr "Work eff. +%s, move spd +%s, hunger -%s, sanity +%s/day, insulation +%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.OWNER.DESC"
+msgid "Increase defense by %s and reduce movement speed by %s"
+msgstr "Defense +%s, movement speed -%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.SAD.SHARED.DESC"
+msgid "Increase defense by %s and reduce movement speed by %s"
+msgstr "Defense +%s, movement speed -%s"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.OWNER.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.OWNER.DESC"
+msgid "No additional effect"
+msgstr "No additional effect"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.NORMAL.SHARED.DESC"
+msgid "No additional effect"
+msgstr "No additional effect"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.TITLE
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.TITLE"
+msgid "Resonance Friend (from %s)"
+msgstr "Resonance Friend (from %s)"
+
+#. STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC
+msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC"
+msgid "You have established full resonance with each other"
+msgstr "You have established full resonance with each other."

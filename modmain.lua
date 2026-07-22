@@ -62,8 +62,9 @@ modimport('modmain/safe_call')
 -- 加载语言
 modimport('modmain/ark_i18n')
 
--- 加载中文语言包
-MergePOFile('languages/ark_chinese_s.po', LOC.GetLocaleCode(LANGUAGE.CHINESE_S), true)
+-- 加载语言包（仅当前语言对应文件会被加载）
+MergePOFile('languages/ark_chinese_s.po', 'zh')
+MergePOFile('languages/ark_english.po', 'en')
 -- 加载热键管理器
 modimport('scripts/ark_hotkey')
 -- 加载属性修改器安装器
