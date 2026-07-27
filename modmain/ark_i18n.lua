@@ -1,76 +1,36 @@
-local utils = require('ark_utils')
-
-function GLOBAL.MergePOFile(fname, langCode, default)
-  local localeCode = LOC.GetLocaleCode();
-  if langCode ~= localeCode and not default then
-    return
-  end
+function GLOBAL.MergePOFile(fname, langCode)
   if IsXB1() then
-    -- 检查是不是 data/开头的,如果是就不额外处理了
     if string.sub(fname, 1, 5) ~= 'data/' then
-      -- 如果不是,就加上 data/
       fname = 'data/' .. fname
     end
   end
-  -- default=true 时只填充缺失的 key，不覆盖已有翻译
-  local noOverwrite = default and true or false
-  local isNewLanguage = (LanguageTranslator.languages[langCode] == nil)
-  local loadedLanguages = LanguageTranslator.languages[langCode] or {}
+  local isCurrentLocale = (langCode == LOC.GetLocaleCode())
   LanguageTranslator:LoadPOFile(fname, langCode)
-  local newLoadedLanguages = LanguageTranslator.languages[langCode]
-  -- Recursively merge translation keys into STRINGS
-  for key, value in pairs(newLoadedLanguages) do
+  local strings = LanguageTranslator.languages[langCode]
+  for key, value in pairs(strings) do
     if type(key) == "string" and string.sub(key, 1, 8) == "STRINGS." then
-      local path = string.sub(key, 9) -- Remove "STRINGS." prefix
+      local path = string.sub(key, 9)
       local parts = {}
       for part in string.gmatch(path, "[^.]+") do
         table.insert(parts, tonumber(part) or part)
       end
-
       local current = GLOBAL.STRINGS
       for i = 1, #parts - 1 do
-        if current[parts[i]] == nil then
-          current[parts[i]] = {}
-        elseif type(current[parts[i]]) ~= "table" then
+        if current[parts[i]] == nil or type(current[parts[i]]) ~= "table" then
           current[parts[i]] = {}
         end
         current = current[parts[i]]
       end
-
       if #parts > 0 then
         local lastKey = parts[#parts]
-        if noOverwrite then
-          if current[lastKey] == nil then
-            current[lastKey] = value
-          end
-        else
+        if isCurrentLocale then
+          current[lastKey] = value
+        elseif current[lastKey] == nil then
           current[lastKey] = value
         end
       end
     end
   end
-  -- 合并到语言字典：default 模式只追加缺失 key，否则新加载覆盖旧值
-  if noOverwrite then
-    for k, v in pairs(newLoadedLanguages) do
-      if loadedLanguages[k] == nil then
-        loadedLanguages[k] = v
-      end
-    end
-  else
-    loadedLanguages = MergeMaps(loadedLanguages, newLoadedLanguages)
-  end
-  -- 新语言首次出现时，合并 default 语言(当前系统语言)的已有翻译作为兜底
-  if isNewLanguage and langCode ~= localeCode then
-    local defaultLangs = LanguageTranslator.languages[localeCode]
-    if defaultLangs then
-      for k, v in pairs(defaultLangs) do
-        if loadedLanguages[k] == nil then
-          loadedLanguages[k] = v
-        end
-      end
-    end
-  end
-  LanguageTranslator.languages[langCode] = loadedLanguages
 end
 
 function GLOBAL.SayAndVoice(inst, key, params)
