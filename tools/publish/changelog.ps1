@@ -63,18 +63,20 @@ function Invoke-AIChangelog {
     # --- 构建双语 prompt ---
     $commitList = ($commits | ForEach-Object { "  $_" }) -join "`n"
     $prompt = @"
-You are maintaining the changelog for a DST (Don't Starve Together) mod project.
-Summarize the following git commits into player-facing changelog entries for version v$Version.
+CRITICAL: Output ONLY changelog bullet lines. Do NOT include any preamble, analysis, commentary, or code blocks. Your entire response must be valid changelog entries and nothing else.
 
-Requirements:
-- Merge related commits into single entries. Only include changes players can notice; skip pure internal refactoring.
-- Each line must be BILINGUAL (English first, then Chinese after a " | " separator).
-  Format: "- English description | 中文描述"
-- Output 3-8 entries.
-- Keep proper nouns (component names, file names, technical terms) in English.
-- Output ONLY the entries themselves. No preamble, no explanation, no markdown headers.
+You are writing changelog entries for a DST mod version v$Version.
 
-Git commits since last release:
+FORMAT (strict — every line must follow this):
+- English description | 中文描述
+
+RULES:
+- Merge related commits. Only player-facing changes; skip internal refactoring.
+- If ALL commits are internal/tooling only, output ONE line: "- Internal tooling and pipeline updates | 内部工具链更新"
+- Keep proper nouns in English. Output 1-8 lines.
+- NO preamble. NO "these commits..." analysis. NO code blocks. Just the "- " lines.
+
+Commits:
 $commitList
 "@
 
@@ -324,7 +326,7 @@ function Test-ChangelogReady {
 
     # 定位版本段落（从 ## vX.Y.Z 到下一个 ## 或文件末尾）
     $escapedHeader = "##\s+v$escapedVersion"
-    $sectionPattern = "($escapedHeader[^\n]*\n)(.*?)(?=\n##\s+v|`$)"
+    $sectionPattern = "($escapedHeader[^\n]*\n)([\s\S]*?)(?=\n##\s+v|`$)"
     if ($content -match $sectionPattern) {
         $sectionBody = $matches[2]
         # 从段落中提取所有符合 "- ..." 或 "* ..." 格式的要点行
@@ -357,7 +359,7 @@ function Get-VersionDescriptionBlock {
 
     # 定位版本段落（从 ## vX.Y.Z 到下一个 ## 或文件末尾）
     $escapedHeader = "##\s+v$escapedVersion"
-    $sectionPattern = "($escapedHeader[^\n]*\n)(.*?)(?=\n##\s+v|`$)"
+    $sectionPattern = "($escapedHeader[^\n]*\n)([\s\S]*?)(?=\n##\s+v|`$)"
     if ($content -match $sectionPattern) {
         $headerLine = $matches[1]
         $sectionBody = $matches[2]
@@ -388,7 +390,7 @@ function Get-LatestChangelogEntry {
     $content = Get-Content $ChangelogPath -Raw -Encoding UTF8
 
     # 定位首个版本段落（从 ## vX.Y.Z 到下一个 ## 或文件末尾）
-    if ($content -match '##\s+v(\S+)\s+\((\S+)\)\s*\n(.*?)(?=\n##\s+v|$)') {
+    if ($content -match '##\s+v(\S+)\s+\((\S+)\)\s*\n([\s\S]*?)(?=\n##\s+v|$)') {
         $version = $matches[1]
         $date = $matches[2]
         $sectionBody = $matches[3]
