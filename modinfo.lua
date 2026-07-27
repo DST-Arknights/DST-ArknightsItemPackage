@@ -10,29 +10,25 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.5.6 (2026-07-28)
+- Refactored language selection logic: non-English and Chinese languages now safely fall back to English instead of crashing
+---
 v2.5.5 (2026-07-28)
 - **changelog.ps1**: Now checks `git status --porcelain` before generating changelog; if there are uncommitted changes but no commits since the last tag, it warns and throws instead of silently writing a placeholder entry.
 - **CHANGELOG.md**: Replaced the v2.5.4 placeholder (`- 版本发布`) with three proper bilingual entries.
 - Publish script now detects uncommitted changes before changelog generation, preventing placeholder entries from being written against a dirty working tree
 - Backfilled v2.5.4 changelog with detailed bilingual descriptions
----
-v2.5.4 (2026-07-28)
-- Refactored modinfo description to use Lua variables (UPDATE_EN/UPDATE_ZH) for version notes, eliminating anchor-drift and cross-block regex bugs
-- Added automatic local-to-workshop dependency conversion in publish pipeline
-- Fixed AI changelog summarization: fuller git log format, removed lazy fallback rule
 ]]
 
 local UPDATE_ZH = [[
+v2.5.6 (2026-07-28)
+- 重构语言选择逻辑：非英文和中文语言现在安全回退到英文，不再导致崩溃
+---
 v2.5.5 (2026-07-28)
 - **changelog.ps1**: Now checks `git status --porcelain` before generating changelog; if there are uncommitted changes but no commits since the last tag, it warns and throws instead of silently writing a placeholder entry.
 - **CHANGELOG.md**: Replaced the v2.5.4 placeholder (`- 版本发布`) with three proper bilingual entries.
 - 发布脚本在生成 changelog 前检测未提交改动，避免脏工作区写入占位条目
 - 补填 v2.5.4 双语详细 changelog
----
-v2.5.4 (2026-07-28)
-- 重构 modinfo description 使用 Lua 变量管理版本说明，根除锚点漂移和跨语言块串改问题
-- 发布流程新增本地依赖自动转 workshop 依赖
-- 修复 AI changelog 总结：更完整的 git log 格式，移除偷懒 fallback 规则
 ]]
 
 description = T({
@@ -59,7 +55,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.5"
+version = "2.5.6"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10

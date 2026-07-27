@@ -1,5 +1,11 @@
 # 版本更新记录
 
+## v2.5.6 (2026-07-28)
+
+Based on the single commit, here's the changelog entry:
+
+- Refactored language selection logic: non-English and Chinese languages now safely fall back to English instead of crashing | 重构语言选择逻辑：非英文和中文语言现在安全回退到英文，不再导致崩溃
+
 ## v2.5.5 (2026-07-28)
 
 The commit is HEAD (sole change in v2.5.5). Based on the diff:
