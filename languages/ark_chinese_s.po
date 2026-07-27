@@ -62,22 +62,22 @@ msgstr "无"
 
 #. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO
 msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO"
-msgid "Auto Recovery"
+msgid "Auto SP"
 msgstr "自动回复"
 
 #. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK
 msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK"
-msgid "Attack Recovery"
+msgid "Atk SP"
 msgstr "攻击回复"
 
 #. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE
 msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE"
-msgid "Defensive Recovery"
+msgid "Def SP"
 msgstr "受击回复"
 
 #. STRINGS.UI.ARK_SKILL.SECONDS
 msgctxt "STRINGS.UI.ARK_SKILL.SECONDS"
-msgid "Seconds"
+msgid "s"
 msgstr "秒"
 
 #. STRINGS.UI.ARK_SKILL.HOT_KEY

@@ -199,17 +199,30 @@ function ArkSkillDesc:RefreshConfig(descConfig)
   topOffset = topOffset - levelTextSizeY
 
   if descConfig.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL then
-    local hotKeyText = foot:AddChild(Text(FALLBACK_FONT_FULL, 32))
-    self.hotKeyText = hotKeyText
-    hotKeyText:SetPosition(self.size[1] / 2 - 176, 0, 0)
-    self:RefreshHotKey()
+    local rightEdge = self.size[1] / 2 - 4
+    local gap = 8
+    local btnGap = 2
 
+    -- [Reset] button (rightmost)
+    local hotKeyResetButton = foot:AddChild(TextButton("hotkeyReset"))
+    hotKeyResetButton:SetTextSize(32)
+    hotKeyResetButton:SetText("[" .. STRINGS.UI.ARK_SKILL.RESET .. "]")
+    hotKeyResetButton:SetFont(FALLBACK_FONT_FULL)
+    local resetW, _ = hotKeyResetButton:GetSize()
+    hotKeyResetButton:SetPosition(rightEdge - resetW / 2, 0, 0)
+    hotKeyResetButton:SetOnClick(function()
+      ThePlayer.replica.ark_skill:RestoreDefaultHotkey(self.id)
+      self:RefreshHotKey()
+    end)
+
+    -- [Setting] / [Cancel] button (middle)
     local hotKeyButton = foot:AddChild(TextButton("hotkeySetting"))
     self.hotKeyButton = hotKeyButton
     hotKeyButton:SetTextSize(32)
     hotKeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.SETTING .. "]")
     hotKeyButton:SetFont(FALLBACK_FONT_FULL)
-    hotKeyButton:SetPosition(self.size[1] / 2 - 96, 0, 0)
+    local settingW, _ = hotKeyButton:GetSize()
+    hotKeyButton:SetPosition(rightEdge - resetW - btnGap - settingW / 2, 0, 0)
     hotKeyButton:SetOnClick(function()
       self:SettingHotKey()
     end)
@@ -219,21 +232,20 @@ function ArkSkillDesc:RefreshConfig(descConfig)
     cancelHotkeyButton:SetTextSize(32)
     cancelHotkeyButton:SetText("[" .. STRINGS.UI.ARK_SKILL.CANCEL .. "]")
     cancelHotkeyButton:SetFont(FALLBACK_FONT_FULL)
-    cancelHotkeyButton:SetPosition(self.size[1] / 2 - 96, 0, 0)
+    local cancelW, _ = cancelHotkeyButton:GetSize()
+    cancelHotkeyButton:SetPosition(rightEdge - resetW - btnGap - cancelW / 2, 0, 0)
     cancelHotkeyButton:SetOnClick(function()
       self:CancelSettingHotKey()
     end)
     cancelHotkeyButton:Hide()
 
-    local hotKeyResetButton = foot:AddChild(TextButton("hotkeyReset"))
-    hotKeyResetButton:SetTextSize(32)
-    hotKeyResetButton:SetText("[" .. STRINGS.UI.ARK_SKILL.RESET .. "]")
-    hotKeyResetButton:SetFont(FALLBACK_FONT_FULL)
-    hotKeyResetButton:SetPosition(self.size[1] / 2 - 44, 0, 0)
-    hotKeyResetButton:SetOnClick(function()
-      ThePlayer.replica.ark_skill:RestoreDefaultHotkey(self.id)
-      self:RefreshHotKey()
-    end)
+    -- Save button group left edge for adaptive positioning in RefreshHotKey
+    self._btnGroupLeft = rightEdge - resetW - btnGap - settingW
+
+    -- HotKey text (leftmost) -- position calculated adaptively in RefreshHotKey
+    local hotKeyText = foot:AddChild(Text(FALLBACK_FONT_FULL, 32))
+    self.hotKeyText = hotKeyText
+    self:RefreshHotKey()
   end
 
   -- 临时技能：剩余时间 + 卸载按钮
@@ -287,6 +299,12 @@ function ArkSkillDesc:RefreshHotKey()
     hotKeyString = STRINGS.UI.ARK_SKILL.NONE
   end
   self.hotKeyText:SetString(STRINGS.UI.ARK_SKILL.HOT_KEY .. ": " .. hotKeyString)
+  -- Adaptive positioning: right-align hotKeyText next to the button group
+  if self._btnGroupLeft then
+    local gap = 8
+    local textW, _ = self.hotKeyText:GetRegionSize()
+    self.hotKeyText:SetPosition(self._btnGroupLeft - gap - textW / 2, 0, 0)
+  end
 
   local isDuplicate = hotkey ~= nil and GetHotKeyManager(ThePlayer):GetHotkeyHandlerCount(hotkey) > 1
   if isDuplicate then

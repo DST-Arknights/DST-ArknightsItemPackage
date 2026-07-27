@@ -62,23 +62,23 @@ msgstr "None"
 
 #. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO
 msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.AUTO"
-msgid "Auto Recovery"
-msgstr "Auto Recovery"
+msgid "Auto SP"
+msgstr "Auto SP"
 
 #. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK
 msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.ATTACK"
-msgid "Attack Recovery"
-msgstr "Attack Recovery"
+msgid "Atk SP"
+msgstr "Atk SP"
 
 #. STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE
 msgctxt "STRINGS.UI.ARK_SKILL.ENERGY_RECOVERY_MODE.DEFENSIVE"
-msgid "Defensive Recovery"
-msgstr "Defensive Recovery"
+msgid "Def SP"
+msgstr "Def SP"
 
 #. STRINGS.UI.ARK_SKILL.SECONDS
 msgctxt "STRINGS.UI.ARK_SKILL.SECONDS"
-msgid "Seconds"
-msgstr "Seconds"
+msgid "s"
+msgstr "s"
 
 #. STRINGS.UI.ARK_SKILL.HOT_KEY
 msgctxt "STRINGS.UI.ARK_SKILL.HOT_KEY"
