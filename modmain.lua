@@ -100,7 +100,6 @@ modimport('modmain/widget_extension')
 -- 聊天表情
 modimport('modmain/richchat_emoticons')
 -- 扩展ui
-modimport('modmain/ark_buff_icon')
 modimport('modmain/ark_extend_ui')
 -- 初始化配置
 modimport('modmain/ark_config')
