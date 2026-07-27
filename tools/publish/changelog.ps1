@@ -139,7 +139,8 @@ function Write-ChangelogEntry {
         $escapedVersion = [regex]::Escape($Version)
         if ($existing -match "##\s+v$escapedVersion") {
             Write-Warning "版本 v$Version 在 CHANGELOG.md 中已存在，正在覆盖..."
-            $existing = $existing -replace "##\s+v$escapedVersion[^\n]*\n(\n?([-*]\s+[^\n]*\n?)*)", ''
+            # 删除从 ## vX.Y.Z 到下一个 ## 或文件末尾的整个段落
+            $existing = $existing -replace "##\s+v$escapedVersion[^\n]*\n([\s\S]*?)(?=\n##\s+v|`$)", ''
         }
 
         # 在标题行之后插入新条目
@@ -188,7 +189,9 @@ function Invoke-AITool {
             $OutputEncoding = [System.Text.Encoding]::UTF8
 
             try {
-                $output = & $ToolPath --no-session-persistence -p (Get-Content $tmpFile -Raw) 2>&1
+                # 通过 stdin 管道传入 prompt + --session-id 新 UUID 确保完全无状态
+                $sessionId = [Guid]::NewGuid().ToString()
+                $output = Get-Content $tmpFile -Raw | & $ToolPath --session-id $sessionId -p 2>&1
             }
             finally {
                 [Console]::OutputEncoding = $prevOutputEncoding
@@ -319,12 +322,18 @@ function Test-ChangelogReady {
         throw "[阻断] CHANGELOG.md 中未找到 v$Version 的条目。AI 生成可能失败了。"
     }
 
-    if ($content -match "##\s+v$escapedVersion\s+\(\S+\)\s*\n((?:[-*]\s+.*\n?)*)") {
-        $changes = $matches[1].Trim()
-        if (-not $changes) {
-            throw "[阻断] v$Version 的 changelog 条目为空（无要点内容）。AI 输出格式可能有问题。"
+    # 定位版本段落（从 ## vX.Y.Z 到下一个 ## 或文件末尾）
+    $escapedHeader = "##\s+v$escapedVersion"
+    $sectionPattern = "($escapedHeader[^\n]*\n)(.*?)(?=\n##\s+v|`$)"
+    if ($content -match $sectionPattern) {
+        $sectionBody = $matches[2]
+        # 从段落中提取所有符合 "- ..." 或 "* ..." 格式的要点行
+        $bulletLines = [regex]::Matches($sectionBody, '^[-*]\s+.+', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        if ($bulletLines.Count -eq 0) {
+            throw "[阻断] v$Version 的 changelog 条目中未找到任何 '- ' 格式的更新要点。AI 输出格式可能有问题。请检查 CHANGELOG.md。"
         }
-        Write-Host "[完成]  v$Version 的 changelog 条目就绪（$(($changes -split '\n').Count) 条要点）"
+        $changes = ($bulletLines | ForEach-Object { $_.Value.Trim() }) -join "`n"
+        Write-Host "[完成]  v$Version 的 changelog 条目就绪（$($bulletLines.Count) 条要点）"
         return $true
     }
 
@@ -346,13 +355,21 @@ function Get-VersionDescriptionBlock {
     $content = Get-Content $ChangelogPath -Raw -Encoding UTF8
     $escapedVersion = [regex]::Escape($Version)
 
-    if ($content -match "##\s+v$escapedVersion\s+\((\S+)\)\s*\n((?:[-*]\s+.*\n?)*)") {
-        $date = $matches[1]
-        $changes = $matches[2].Trim()
-        if ($changes) {
+    # 定位版本段落（从 ## vX.Y.Z 到下一个 ## 或文件末尾）
+    $escapedHeader = "##\s+v$escapedVersion"
+    $sectionPattern = "($escapedHeader[^\n]*\n)(.*?)(?=\n##\s+v|`$)"
+    if ($content -match $sectionPattern) {
+        $headerLine = $matches[1]
+        $sectionBody = $matches[2]
+        # 提取日期标签
+        $date = if ($headerLine -match '\((\S+)\)') { $matches[1] } else { 'Unreleased' }
+        # 从段落中提取所有符合 "- ..." 或 "* ..." 格式的要点行
+        $bulletLines = [regex]::Matches($sectionBody, '^[-*]\s+.+', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        if ($bulletLines.Count -gt 0) {
+            $changes = ($bulletLines | ForEach-Object { $_.Value.Trim() }) -join "`n"
             return "v$Version ($date)`n$changes"
         }
-        throw "v$Version 的 changelog 条目无内容。"
+        throw "v$Version 的 changelog 条目中未找到任何更新要点。"
     }
 
     throw "CHANGELOG.md 中未找到 v$Version。"
@@ -370,11 +387,19 @@ function Get-LatestChangelogEntry {
 
     $content = Get-Content $ChangelogPath -Raw -Encoding UTF8
 
-    if ($content -match '##\s+v(\S+)\s+\((\S+)\)\s*\n((?:[-*]\s+.*\n?)*)') {
+    # 定位首个版本段落（从 ## vX.Y.Z 到下一个 ## 或文件末尾）
+    if ($content -match '##\s+v(\S+)\s+\((\S+)\)\s*\n(.*?)(?=\n##\s+v|$)') {
+        $version = $matches[1]
+        $date = $matches[2]
+        $sectionBody = $matches[3]
+        $bulletLines = [regex]::Matches($sectionBody, '^[-*]\s+.+', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        $description = if ($bulletLines.Count -gt 0) {
+            ($bulletLines | ForEach-Object { $_.Value.Trim() }) -join "`n"
+        } else { $sectionBody.Trim() }
         return @{
-            Version     = $matches[1]
-            Date        = $matches[2]
-            Description = $matches[3].Trim()
+            Version     = $version
+            Date        = $date
+            Description = $description
             Raw         = $matches[0].Trim()
         }
     }
