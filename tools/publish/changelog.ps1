@@ -42,7 +42,17 @@ function Invoke-AIChangelog {
     # --- 获取提交记录 ---
     $commits = Get-RawCommits -ProjectRoot $ProjectRoot
     if (-not $commits -or $commits.Count -eq 0) {
-        Write-Warning "[跳过]  自上次 tag 以来无新提交，使用最小 changelog 条目。"
+        # 检查是否有未提交的改动（用户可能忘记 commit）
+        Push-Location $ProjectRoot
+        $status = git status --porcelain 2>$null
+        Pop-Location
+        if ($status) {
+            Write-Host "[警告]  自上次 tag 以来无新提交，但检测到未入库的改动:" -ForegroundColor Yellow
+            ($status -split "`n") | Where-Object { $_ -match '\S' } | ForEach-Object { Write-Host "          $_" }
+            throw "[阻断]  请先 commit 你的改动，再运行发布脚本。Changelog 需要从 git 提交中生成。"
+        }
+
+        Write-Warning "[跳过]  自上次 tag 以来无新提交（工作区干净），使用最小 changelog 条目。"
         $fallback = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n- 版本发布`n"
         Write-ChangelogEntry -ChangelogPath $ChangelogPath -Version $Version -Content $fallback
         return

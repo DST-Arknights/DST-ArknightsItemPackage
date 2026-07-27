@@ -2,7 +2,9 @@
 
 ## v2.5.4 (2026-07-28)
 
-- 版本发布
+- Refactored modinfo description to use Lua variables (UPDATE_EN/UPDATE_ZH) for version notes, eliminating anchor-drift and cross-block regex bugs | 重构 modinfo description 使用 Lua 变量管理版本说明，根除锚点漂移和跨语言块串改问题
+- Added automatic local-to-workshop dependency conversion in publish pipeline | 发布流程新增本地依赖自动转 workshop 依赖
+- Fixed AI changelog summarization: fuller git log format, removed lazy fallback rule | 修复 AI changelog 总结：更完整的 git log 格式，移除偷懒 fallback 规则
 
 ## v2.5.3 (2026-07-28)
 
