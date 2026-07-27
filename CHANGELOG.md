@@ -1,5 +1,9 @@
 # 版本更新记录
 
+## v2.5.3 (2026-07-28)
+
+- Internal tooling and pipeline updates | 内部工具链更新
+
 ## v2.5.2 (2026-07-28)
 
 - 版本发布
