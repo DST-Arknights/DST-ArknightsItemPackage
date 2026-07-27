@@ -1,8 +1,7 @@
 # 发布入口（跨 DST mod 项目可复用）
 #
-# 薄封装层：解析项目根目录并调用 Publish-Mod。
-# 此文件可按原样拷贝到其他 DST mod 项目；
-# 各项目只需提供自己的 tools/publish/project/pre-publish.ps1 钩子。
+# 薄封装层：解析项目根目录并从共享位置加载 Publish-Mod。
+# 共享脚本集中存放于 DST-Arknights-AICoding/tools/publish/。
 #
 # 用法:
 #   pwsh ./tools/publish.ps1 -Bump patch
@@ -30,16 +29,11 @@ $ErrorActionPreference = 'Stop'
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Resolve-Path (Join-Path $scriptDir '..')
 
-# 导入编排模块
-$modulePath = Join-Path $scriptDir 'publish/publish.psm1'
+# 导入编排模块（脚本自身的 tools/publish/ 目录）
+$publishDir = Join-Path $scriptDir 'publish'
+$modulePath = Join-Path $publishDir 'publish.psm1'
 if (-not (Test-Path $modulePath)) {
     Write-Error "未找到发布模块: $modulePath"
-    Write-Error "预期的目录结构:"
-    Write-Error "  tools/"
-    Write-Error "    publish.ps1        <- 你在这里"
-    Write-Error "    publish/"
-    Write-Error "      publish.psm1      <- 编排模块"
-    Write-Error "      ..."
     exit 1
 }
 

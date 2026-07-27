@@ -5,49 +5,21 @@ name = ChooseTranslationTable({
 description = ChooseTranslationTable({
     en = [[An Arknights-themed expansion and shared framework for Don't Starve Together.
 Includes materials, currencies, crafting stations, elite progression, skills, talents, buff icons, and emoticons.
-
-
-
 ---
-
-v2.4.3 (Unreleased)
-- Added English internationalization support (ark_english.po, 273 translations) | 新增英文国际化支持（ark_english.po，273 条翻译）
-- Simplified modmain.lua language loading logic | 简化 modmain.lua 语言加载逻辑
-
----
-
----
-
-v2.5.2 (2026-07-28)
-- Internal tooling and pipeline updates | 内部工具链更新
-
----Feedback and suggestions:
-
+Issues & Suggestions Feedback Channels:
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
 Email: tohsakakuro@outlook.com
 QQ Group: 666511586
-
-Welcome to join us!
 ]],
     zh = [[这是一个饥荒联机版的明日方舟主题扩展与通用前置模组。
 包含材料掉落、货币、加工站与训练站、精英化养成、技能、天赋、Buff图标和表情等内容。
-
-
-
----
-
-v2.4.3 (Unreleased)
-- Added English internationalization support (ark_english.po, 273 translations) | 新增英文国际化支持（ark_english.po，273 条翻译）
-- Simplified modmain.lua language loading logic | 简化 modmain.lua 语言加载逻辑
-
 ---
 
 ---
-
 v2.5.2 (2026-07-28)
-- Internal tooling and pipeline updates | 内部工具链更新
-
----需求与建议反馈渠道:
+- 版本发布
+---
+需求与建议反馈渠道:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
 Email: tohsakakuro@outlook.com

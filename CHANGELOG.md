@@ -2,11 +2,12 @@
 
 ## v2.5.2 (2026-07-28)
 
-- Internal tooling and pipeline updates | 内部工具链更新
+- 版本发布
 
-## v2.5.1 (Unreleased)
+## v2.5.1 (2026-07-28)
 
-- Internal tooling and pipeline updates | 内部工具链更新
+- 版本发布
+
 
 ## v2.4.3 (Unreleased)
 

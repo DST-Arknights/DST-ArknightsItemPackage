@@ -30,11 +30,24 @@ function Publish-Mod {
 
     $ErrorActionPreference = 'Stop'
 
-    # 解析路径
+    # --- 加载项目配置（可选） ---
+    $configPath = Join-Path $ProjectRoot 'tools/publish-config.ps1'
+    $config = @{}
+    if (Test-Path $configPath) {
+        $config = & $configPath
+        Write-Host "[配置]  已加载项目发布配置: $configPath"
+    }
+
+    # 默认值
+    $gitFiles       = if ($config.GitFiles)       { $config.GitFiles }       else { @('modinfo.lua', 'CHANGELOG.md') }
+    $languagesDir   = if ($config.LanguagesDir)   { $config.LanguagesDir }   else { 'languages' }
+    $descAnchors    = if ($config.DescriptionAnchors) { $config.DescriptionAnchors } else { @('Feedback and suggestions:', '需求与建议反馈渠道:') }
+    $prePublishHook = if ($config.PrePublishHook) { Join-Path $ProjectRoot $config.PrePublishHook } else { $null }
+
+    # 解析路径（子模块与 publish.psm1 同目录）
     $modinfoPath    = Join-Path $ProjectRoot 'modinfo.lua'
     $changelogPath  = Join-Path $ProjectRoot 'CHANGELOG.md'
-    $publishDir     = Join-Path $ProjectRoot 'tools/publish'
-    $projectHook    = Join-Path $publishDir 'project/pre-publish.ps1'
+    $publishDir     = $PSScriptRoot
 
     # 加载可复用模块
     . (Join-Path $publishDir 'check-deps.ps1')
@@ -76,7 +89,7 @@ function Publish-Mod {
     # --------------------------------------------------
     Write-Host "`n[2/9] 检查翻译完整性..." -ForegroundColor Yellow
     if (-not $DryRun) {
-        Test-TranslationsComplete -ProjectRoot $ProjectRoot
+        Test-TranslationsComplete -ProjectRoot $ProjectRoot -LanguagesDir $languagesDir
     }
     else {
         Write-Host "[试运行]  将检查所有 PO 文件的 msgctxt 对齐情况"
@@ -116,16 +129,16 @@ function Publish-Mod {
     # 步骤 5: 运行项目特定发布前钩子
     # --------------------------------------------------
     Write-Host "`n[5/9] 运行发布前钩子..." -ForegroundColor Yellow
-    if (Test-Path $projectHook) {
+    if ($prePublishHook -and (Test-Path $prePublishHook)) {
         if (-not $DryRun) {
-            & $projectHook -ProjectRoot $ProjectRoot
+            & $prePublishHook -ProjectRoot $ProjectRoot
         }
         else {
-            Write-Host "[试运行]  将运行: $projectHook"
+            Write-Host "[试运行]  将运行: $prePublishHook"
         }
     }
     else {
-        Write-Host "[跳过]  未找到项目发布前钩子（预期位置: tools/publish/project/pre-publish.ps1）"
+        Write-Host "[跳过]  未配置项目发布前钩子"
     }
 
     # --------------------------------------------------
@@ -150,7 +163,7 @@ function Publish-Mod {
     $versionInfo -split "`n" | ForEach-Object { Write-Host "          $_" }
 
     if (-not $DryRun) {
-        Set-ModinfoDescription -ModinfoPath $modinfoPath -VersionInfo $versionInfo
+        Set-ModinfoDescription -ModinfoPath $modinfoPath -VersionInfo $versionInfo -Anchors $descAnchors
         Write-Host "[完成]  modinfo.lua description 已更新"
     }
     else {
@@ -161,8 +174,6 @@ function Publish-Mod {
     # 步骤 8: Git 提交 + 打 tag
     # --------------------------------------------------
     Write-Host "`n[8/9] Git 提交并打 tag..." -ForegroundColor Yellow
-    $gitFiles = @('modinfo.lua', 'CHANGELOG.md', 'docs/ark_item_enhanced_table.md')
-
     if (-not $DryRun) {
         Publish-GitCommit -ProjectRoot $ProjectRoot -Version $newVersion -Files $gitFiles
         Write-Host "[完成]  已提交并打 tag v$newVersion"
