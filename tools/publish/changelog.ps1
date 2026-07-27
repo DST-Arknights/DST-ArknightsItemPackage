@@ -21,7 +21,7 @@ function Invoke-AIChangelog {
       - AI 调用的失败概率最高
       - 如果失败，尚未对项目做任何修改
 
-    输出直接写入 CHANGELOG.md，格式为 "## vX.Y.Z (Unreleased)"。
+    输出直接写入 CHANGELOG.md，格式为 "## vX.Y.Z ($(Get-Date -Format 'yyyy-MM-dd'))"。
 
     如果 AI CLI 不可用，将 prompt 保存到文件供手动处理，并阻断流水线。
     #>
@@ -43,7 +43,7 @@ function Invoke-AIChangelog {
     $commits = Get-RawCommits -ProjectRoot $ProjectRoot
     if (-not $commits -or $commits.Count -eq 0) {
         Write-Warning "[跳过]  自上次 tag 以来无新提交，使用最小 changelog 条目。"
-        $fallback = "## v$Version (Unreleased)`n`n- 版本发布`n"
+        $fallback = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n- 版本发布`n"
         Write-ChangelogEntry -ChangelogPath $ChangelogPath -Version $Version -Content $fallback
         return
     }
@@ -91,7 +91,7 @@ $commitList
         }
 
         # 构建 changelog 段落
-        $entry = "## v$Version (Unreleased)`n`n$($result.Trim())`n"
+        $entry = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n$($result.Trim())`n"
         Write-ChangelogEntry -ChangelogPath $ChangelogPath -Version $Version -Content $entry
         Write-Host "[完成]  AI 生成的 changelog 已写入 CHANGELOG.md"
     }
@@ -113,7 +113,7 @@ $commitList
      $promptFile
   2. 将此 prompt 提供给 AI 工具（Claude、ChatGPT 等）
   3. 将 AI 输出的条目写入 CHANGELOG.md，格式为:
-     ## v$Version (Unreleased)
+     ## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))
   4. 重新运行 publish.ps1
 
 安装 Claude CLI 后可实现全自动化:

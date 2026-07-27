@@ -10,17 +10,9 @@ Includes materials, currencies, crafting stations, elite progression, skills, ta
 
 ---
 
-v2.5.0 (Unreleased)
-- 鏂板鑻辨枃鍥介檯鍖栫殑鍒濇鏀寔锛坅rk_english.po锛?73 鏉＄炕璇戯級
-- 鍒朵綔鏍忔柊澧為噾甯佹暟閲忔樉绀猴紝鏀寔鍔ㄦ€佸疄鏃舵洿鏂?- 鎶€鑳芥弿杩扮晫闈㈢儹閿缃紭鍖栵紝鏂板閲嶇疆鍜屽彇娑堟寜閽紝鏀瑰杽甯冨眬
-- 绮剧畝鍐呴儴 Buff 鍥炬爣妯″潡锛屽噺灏忔ā缁勪綋绉?
-
----
-
----
-
-v2.5.1 (Unreleased)
-- Internal tooling and pipeline updates | 内部工具链更新
+v2.4.3 (Unreleased)
+- Added English internationalization support (ark_english.po, 273 translations) | 新增英文国际化支持（ark_english.po，273 条翻译）
+- Simplified modmain.lua language loading logic | 简化 modmain.lua 语言加载逻辑
 
 ---Feedback and suggestions:
 
@@ -37,17 +29,9 @@ Welcome to join us!
 
 ---
 
-v2.5.0 (Unreleased)
-- 鏂板鑻辨枃鍥介檯鍖栫殑鍒濇鏀寔锛坅rk_english.po锛?73 鏉＄炕璇戯級
-- 鍒朵綔鏍忔柊澧為噾甯佹暟閲忔樉绀猴紝鏀寔鍔ㄦ€佸疄鏃舵洿鏂?- 鎶€鑳芥弿杩扮晫闈㈢儹閿缃紭鍖栵紝鏂板閲嶇疆鍜屽彇娑堟寜閽紝鏀瑰杽甯冨眬
-- 绮剧畝鍐呴儴 Buff 鍥炬爣妯″潡锛屽噺灏忔ā缁勪綋绉?
-
----
-
----
-
-v2.5.1 (Unreleased)
-- Internal tooling and pipeline updates | 内部工具链更新
+v2.4.3 (Unreleased)
+- Added English internationalization support (ark_english.po, 273 translations) | 新增英文国际化支持（ark_english.po，273 条翻译）
+- Simplified modmain.lua language loading logic | 简化 modmain.lua 语言加载逻辑
 
 ---需求与建议反馈渠道:
 
