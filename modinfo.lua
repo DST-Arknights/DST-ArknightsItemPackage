@@ -6,7 +6,16 @@ description = ChooseTranslationTable({
     en = [[An Arknights-themed expansion and shared framework for Don't Starve Together.
 Includes materials, currencies, crafting stations, elite progression, skills, talents, buff icons, and emoticons.
 
-Feedback and suggestions:
+
+
+---
+
+v2.5.0 (Unreleased)
+- 鏂板鑻辨枃鍥介檯鍖栫殑鍒濇鏀寔锛坅rk_english.po锛?73 鏉＄炕璇戯級
+- 鍒朵綔鏍忔柊澧為噾甯佹暟閲忔樉绀猴紝鏀寔鍔ㄦ€佸疄鏃舵洿鏂?- 鎶€鑳芥弿杩扮晫闈㈢儹閿缃紭鍖栵紝鏂板閲嶇疆鍜屽彇娑堟寜閽紝鏀瑰杽甯冨眬
+- 绮剧畝鍐呴儴 Buff 鍥炬爣妯″潡锛屽噺灏忔ā缁勪綋绉?
+
+---Feedback and suggestions:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
 Email: tohsakakuro@outlook.com
@@ -17,7 +26,16 @@ Welcome to join us!
     zh = [[这是一个饥荒联机版的明日方舟主题扩展与通用前置模组。
 包含材料掉落、货币、加工站与训练站、精英化养成、技能、天赋、Buff图标和表情等内容。
 
-需求与建议反馈渠道:
+
+
+---
+
+v2.5.0 (Unreleased)
+- 鏂板鑻辨枃鍥介檯鍖栫殑鍒濇鏀寔锛坅rk_english.po锛?73 鏉＄炕璇戯級
+- 鍒朵綔鏍忔柊澧為噾甯佹暟閲忔樉绀猴紝鏀寔鍔ㄦ€佸疄鏃舵洿鏂?- 鎶€鑳芥弿杩扮晫闈㈢儹閿缃紭鍖栵紝鏂板閲嶇疆鍜屽彇娑堟寜閽紝鏀瑰杽甯冨眬
+- 绮剧畝鍐呴儴 Buff 鍥炬爣妯″潡锛屽噺灏忔ā缁勪綋绉?
+
+---需求与建议反馈渠道:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
 Email: tohsakakuro@outlook.com
@@ -26,7 +44,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.4.2"
+version = "2.5.0"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
