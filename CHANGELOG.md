@@ -1,5 +1,9 @@
 # 版本更新记录
 
+## v2.5.1 (Unreleased)
+
+- Internal tooling and pipeline updates | 内部工具链更新
+
 ## v2.4.3 (Unreleased)
 
 - 新增英文国际化支持（ark_english.po，273 条翻译）

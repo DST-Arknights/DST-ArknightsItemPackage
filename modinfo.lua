@@ -15,6 +15,13 @@ v2.5.0 (Unreleased)
 - 鍒朵綔鏍忔柊澧為噾甯佹暟閲忔樉绀猴紝鏀寔鍔ㄦ€佸疄鏃舵洿鏂?- 鎶€鑳芥弿杩扮晫闈㈢儹閿缃紭鍖栵紝鏂板閲嶇疆鍜屽彇娑堟寜閽紝鏀瑰杽甯冨眬
 - 绮剧畝鍐呴儴 Buff 鍥炬爣妯″潡锛屽噺灏忔ā缁勪綋绉?
 
+---
+
+---
+
+v2.5.1 (Unreleased)
+- Internal tooling and pipeline updates | 内部工具链更新
+
 ---Feedback and suggestions:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
@@ -35,6 +42,13 @@ v2.5.0 (Unreleased)
 - 鍒朵綔鏍忔柊澧為噾甯佹暟閲忔樉绀猴紝鏀寔鍔ㄦ€佸疄鏃舵洿鏂?- 鎶€鑳芥弿杩扮晫闈㈢儹閿缃紭鍖栵紝鏂板閲嶇疆鍜屽彇娑堟寜閽紝鏀瑰杽甯冨眬
 - 绮剧畝鍐呴儴 Buff 鍥炬爣妯″潡锛屽噺灏忔ā缁勪綋绉?
 
+---
+
+---
+
+v2.5.1 (Unreleased)
+- Internal tooling and pipeline updates | 内部工具链更新
+
 ---需求与建议反馈渠道:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
@@ -44,7 +58,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.0"
+version = "2.5.1"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
