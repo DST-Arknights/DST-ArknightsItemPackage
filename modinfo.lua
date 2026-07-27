@@ -14,6 +14,13 @@ v2.4.3 (Unreleased)
 - Added English internationalization support (ark_english.po, 273 translations) | 新增英文国际化支持（ark_english.po，273 条翻译）
 - Simplified modmain.lua language loading logic | 简化 modmain.lua 语言加载逻辑
 
+---
+
+---
+
+v2.5.2 (2026-07-28)
+- Internal tooling and pipeline updates | 内部工具链更新
+
 ---Feedback and suggestions:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
@@ -33,6 +40,13 @@ v2.4.3 (Unreleased)
 - Added English internationalization support (ark_english.po, 273 translations) | 新增英文国际化支持（ark_english.po，273 条翻译）
 - Simplified modmain.lua language loading logic | 简化 modmain.lua 语言加载逻辑
 
+---
+
+---
+
+v2.5.2 (2026-07-28)
+- Internal tooling and pipeline updates | 内部工具链更新
+
 ---需求与建议反馈渠道:
 
 Issues: https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues
@@ -42,7 +56,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.1"
+version = "2.5.2"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
