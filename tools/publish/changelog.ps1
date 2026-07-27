@@ -179,7 +179,7 @@ function Invoke-AITool {
             $tmpFile = [System.IO.Path]::GetTempFileName() + '.txt'
             $Prompt | Set-Content $tmpFile -Encoding UTF8
 
-            $output = & $ToolPath -p (Get-Content $tmpFile -Raw) --output-format text --no-input 2>&1
+            $output = & $ToolPath -p (Get-Content $tmpFile -Raw) 2>&1
             Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue
 
             if ($LASTEXITCODE -ne 0) {
