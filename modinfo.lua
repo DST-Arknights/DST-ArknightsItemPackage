@@ -1,4 +1,10 @@
-name = ChooseTranslationTable({
+-- 对不支持的语言兜底到英文（DST 原版 ChooseTranslationTable 只回退到 tbl[1]，
+-- 但我们用字典键值而非数字索引，非 en/zh 语言会返回 nil 导致崩溃）
+local function T(tbl)
+    return ChooseTranslationTable(tbl) or tbl["en"]
+end
+
+name = T({
     en = "Arknights Item Package",
     zh = "明日方舟 物品包"
 })
@@ -29,7 +35,7 @@ v2.5.4 (2026-07-28)
 - 修复 AI changelog 总结：更完整的 git log 格式，移除偷懒 fallback 规则
 ]]
 
-description = ChooseTranslationTable({
+description = T({
     en = [[An Arknights-themed expansion and shared framework for Don't Starve Together.
 Includes materials, currencies, crafting stations, elite progression, skills, talents, buff icons, and emoticons.
 
@@ -79,22 +85,22 @@ end
 
 configuration_options = {{
     name = "language",
-    label = ChooseTranslationTable({
+    label = T({
         en = "Choose Language",
         zh = "选择语言"
     }),
-    hover = ChooseTranslationTable({
+    hover = T({
         en = "Choose the language of the mod",
         zh = "选择mod的语言"
     }),
     options = {{
-        description = ChooseTranslationTable({
+        description = T({
             en = "Chinese",
             zh = "中文"
         }),
         data = "zh"
     }, {
-        description = ChooseTranslationTable({
+        description = T({
             en = "Auto",
             zh = "自动"
         }),
@@ -104,22 +110,22 @@ configuration_options = {{
 }, {
     -- 开启全模组材料掉落, 默认关闭
     name = "enable_all_materials_drop",
-    label = ChooseTranslationTable({
+    label = T({
         en = "Enable All Arknights Materials Drop",
         zh = "开启明日方舟材料掉落"
     }),
-    hover = ChooseTranslationTable({
+    hover = T({
         en = "When enabled, all materials from the Arknights mod will drop.",
         zh = "开启后, 明日方舟模组中的所有材料都会掉落"
     }),
     options = {{
-        description = ChooseTranslationTable({
+        description = T({
             en = "Disable",
             zh = "关闭"
         }),
         data = false
     }, {
-        description = ChooseTranslationTable({
+        description = T({
             en = "Enable",
             zh = "开启"
         }),
@@ -128,34 +134,34 @@ configuration_options = {{
     default = false
 }, {
     name = "hand_base_scale",
-    label = ChooseTranslationTable({
+    label = T({
         en = "Skill Bar Size",
         zh = "技能栏大小"
     }),
-    hover = ChooseTranslationTable({
+    hover = T({
         en = "Adjust the overall skill bar UI scale. 1.2 matches the current standard size.",
         zh = "调整 技能栏 整体缩放。1.2 为当前标准大小"
     }),
     options = {{
-        description = ChooseTranslationTable({
+        description = T({
             en = "Small (1.0)",
             zh = "较小 (1.0)"
         }),
         data = 1.0
     }, {
-        description = ChooseTranslationTable({
+        description = T({
             en = "Standard (1.2)",
             zh = "标准 (1.2)"
         }),
         data = 1.2
     }, {
-        description = ChooseTranslationTable({
+        description = T({
             en = "Large (1.4)",
             zh = "较大 (1.4)"
         }),
         data = 1.4
     }, {
-        description = ChooseTranslationTable({
+        description = T({
             en = "Extra Large (1.6)",
             zh = "超大 (1.6)"
         }),
@@ -164,28 +170,28 @@ configuration_options = {{
     default = 1.2
 }, Title({
     name = "mods_compatibility",
-    label = ChooseTranslationTable({
+    label = T({
         en = "Other Mods Compatibility",
         zh = "其他模组选项"
     }),
 }), {
     name = 'amiya_hecheng_collect',
-    label = ChooseTranslationTable({
+    label = T({
         en = "Amiya Diamond Optimization",
         zh = "阿米娅合成玉 优化"
     }),
-    hover = ChooseTranslationTable({
+    hover = T({
         en = "When enabled, the modded Amiya will no longer occupy extra inventory space when she drops the diamond.",
         zh = "开启后, 模组阿米娅掉落的合成玉不再额外占用背包空间"
     }),
     options = {{
-        description = ChooseTranslationTable({
+        description = T({
             en = "Enable",
             zh = "开启"
         }),
         data = true
     }, {
-        description = ChooseTranslationTable({
+        description = T({
             en = "Disable",
             zh = "关闭"
         }),
