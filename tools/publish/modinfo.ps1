@@ -154,3 +154,54 @@ function Bump-SemVer {
 
     return "$($parts[0]).$($parts[1]).$($parts[2])"
 }
+
+function Convert-LocalDepsToWorkshop {
+    <#
+    .SYNOPSIS
+    将 modinfo.lua 中的本地模组依赖转换为 Steam Workshop 依赖。
+    发布前必须执行，否则用户安装后会因找不到本地模组而报错。
+
+    例如: {["DST-ArknightsItemPackage"] = false} → { workshop = "workshop-3677284770" }
+
+    .PARAMETER WorkshopDeps
+    映射表: @{ 'LocalModName' = 'workshop-XXXXXXXXX' }
+    未在映射中的本地依赖将被忽略（并发出警告）。
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ModinfoPath,
+
+        [Parameter(Mandatory = $true)]
+        [hashtable]$WorkshopDeps
+    )
+
+    if ($WorkshopDeps.Count -eq 0) {
+        Write-Host "[跳过]  未配置 WorkshopDeps，不转换本地依赖。"
+        return
+    }
+
+    $content = Get-Content $ModinfoPath -Raw -Encoding UTF8
+    $modified = $false
+
+    foreach ($localName in $WorkshopDeps.Keys) {
+        $workshopId = $WorkshopDeps[$localName]
+
+        # 匹配 {["LocalName"] = false} 或 {["LocalName"] = false},
+        $escapedName = [regex]::Escape($localName)
+        $pattern = '\{\s*\["' + $escapedName + '"]\s*=\s*false\s*\}'
+
+        if ($content -match $pattern) {
+            $replacement = '{ workshop = "' + $workshopId + '" }'
+            $content = $content -replace $pattern, $replacement
+            Write-Host "[完成]  已将 $localName 转换为 workshop 依赖: $workshopId"
+            $modified = $true
+        }
+        else {
+            Write-Warning "[警告]  未找到本地依赖 {[`"$localName`"] = false}，跳过。"
+        }
+    }
+
+    if ($modified) {
+        $content | Set-Content $ModinfoPath -Encoding UTF8 -NoNewline
+    }
+}

@@ -63,20 +63,19 @@ function Invoke-AIChangelog {
     # --- 构建双语 prompt ---
     $commitList = ($commits | ForEach-Object { "  $_" }) -join "`n"
     $prompt = @"
-CRITICAL: Output ONLY changelog bullet lines. Do NOT include any preamble, analysis, commentary, or code blocks. Your entire response must be valid changelog entries and nothing else.
-
-You are writing changelog entries for a DST mod version v$Version.
+You are writing changelog entries for a DST character/mod version v$Version.
 
 FORMAT (strict — every line must follow this):
 - English description | 中文描述
 
 RULES:
-- Merge related commits. Only player-facing changes; skip internal refactoring.
-- If ALL commits are internal/tooling only, output ONE line: "- Internal tooling and pipeline updates | 内部工具链更新"
-- Keep proper nouns in English. Output 1-8 lines.
-- NO preamble. NO "these commits..." analysis. NO code blocks. Just the "- " lines.
+- Describe EVERY meaningful change visible in the commits below. Do NOT skip commits.
+- Merge truly related changes into one line, but err on the side of keeping separate items.
+- Project infrastructure changes (publish scripts, CI, config) are STILL worth mentioning — describe them concretely, e.g. "- Automated release pipeline | 自动化发布流程"
+- Keep proper nouns (character names, item names, technical terms) in English.
+- Output 1-10 lines. NO preamble, NO analysis, NO code blocks — just "- " bullet lines.
 
-Commits:
+Commits to summarize:
 $commitList
 "@
 
@@ -240,18 +239,17 @@ function Get-RawCommits {
     Push-Location $ProjectRoot
     try {
         $lastTag = git describe --tags --abbrev=0 2>$null
-        if (-not $lastTag) {
-            $log = git log --oneline --no-merges 2>$null
-        }
-        else {
-            $log = git log --oneline --no-merges "$lastTag..HEAD" 2>$null
-        }
+        # 使用 fuller 格式（主题 + 正文），给 AI 更多上下文
+        $range = if (-not $lastTag) { "HEAD" } else { "$lastTag..HEAD" }
+        $log = git log --no-merges --pretty=format:"%s%n%b%n---" $range 2>$null
 
         if (-not $log) {
             return @()
         }
 
-        return $log -split "`n" | Where-Object { $_ -ne '' }
+        # 按 "---" 分割每条提交，清理空白
+        $rawCommits = $log -split '---' | Where-Object { $_ -match '\S' } | ForEach-Object { $_.Trim() }
+        return @($rawCommits)
     }
     finally {
         Pop-Location

@@ -41,8 +41,10 @@ function Publish-Mod {
     # 默认值
     $gitFiles       = if ($config.GitFiles)       { $config.GitFiles }       else { @('modinfo.lua', 'CHANGELOG.md') }
     $languagesDir   = if ($config.LanguagesDir)   { $config.LanguagesDir }   else { 'languages' }
-    $enVarName      = if ($config.EnVarName)        { $config.EnVarName }        else { 'UPDATE_EN' }
-    $zhVarName      = if ($config.ZhVarName)        { $config.ZhVarName }        else { 'UPDATE_ZH' }
+    $enVarName      = if ($config.EnVarName)      { $config.EnVarName }      else { 'UPDATE_EN' }
+    $zhVarName      = if ($config.ZhVarName)      { $config.ZhVarName }      else { 'UPDATE_ZH' }
+    $maxVersions    = if ($config.MaxVersions)    { $config.MaxVersions }    else { 2 }
+    $workshopDeps   = if ($config.WorkshopDeps)   { $config.WorkshopDeps }   else { @{} }
     $prePublishHook = if ($config.PrePublishHook) { Join-Path $ProjectRoot $config.PrePublishHook } else { $null }
 
     # 解析路径（子模块与 publish.psm1 同目录）
@@ -70,7 +72,7 @@ function Publish-Mod {
     # --------------------------------------------------
     # 步骤 1: 检查依赖（确定性，快速）
     # --------------------------------------------------
-    Write-Host "`n[1/9] 检查依赖..." -ForegroundColor Yellow
+    Write-Host "`n[1/10] 检查依赖..." -ForegroundColor Yellow
     if (-not $SkipChecks) {
         if (-not $DryRun) {
             Test-RequiredTools -Required @('git')
@@ -88,7 +90,7 @@ function Publish-Mod {
     #    快速、确定性检查。如果翻译条目不对齐，不应浪费 AI 调用。
     #    验证所有 PO 文件的 msgctxt 完全对齐，无遗漏翻译。
     # --------------------------------------------------
-    Write-Host "`n[2/9] 检查翻译完整性..." -ForegroundColor Yellow
+    Write-Host "`n[2/10] 检查翻译完整性..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Test-TranslationsComplete -ProjectRoot $ProjectRoot -LanguagesDir $languagesDir
     }
@@ -101,7 +103,7 @@ function Publish-Mod {
     #    此步骤调用 claude CLI 总结 git 提交。
     #    如果失败，项目文件完全未被改动。
     # --------------------------------------------------
-    Write-Host "`n[3/9] AI: 从 git 历史生成 changelog..." -ForegroundColor Yellow
+    Write-Host "`n[3/10] AI: 从 git 历史生成 changelog..." -ForegroundColor Yellow
 
     # 计算目标版本号（只读，仅供 changelog 标题使用）
     $oldVersion = Get-ModinfoVersion -ModinfoPath $modinfoPath
@@ -118,7 +120,7 @@ function Publish-Mod {
     # --------------------------------------------------
     # 步骤 4: 验证 AI 输出（CHANGELOG.md 就绪?）
     # --------------------------------------------------
-    Write-Host "`n[4/9] 验证 v$newVersion 的 changelog 条目..." -ForegroundColor Yellow
+    Write-Host "`n[4/10] 验证 v$newVersion 的 changelog 条目..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Test-ChangelogReady -ChangelogPath $changelogPath -Version $newVersion
     }
@@ -129,7 +131,7 @@ function Publish-Mod {
     # --------------------------------------------------
     # 步骤 5: 运行项目特定发布前钩子
     # --------------------------------------------------
-    Write-Host "`n[5/9] 运行发布前钩子..." -ForegroundColor Yellow
+    Write-Host "`n[5/10] 运行发布前钩子..." -ForegroundColor Yellow
     if ($prePublishHook -and (Test-Path $prePublishHook)) {
         if (-not $DryRun) {
             & $prePublishHook -ProjectRoot $ProjectRoot
@@ -145,7 +147,7 @@ function Publish-Mod {
     # --------------------------------------------------
     # 步骤 6: 更新 modinfo.lua 版本号
     # --------------------------------------------------
-    Write-Host "`n[6/9] 更新 modinfo.lua 版本号..." -ForegroundColor Yellow
+    Write-Host "`n[6/10] 更新 modinfo.lua 版本号..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Set-ModinfoVersion -ModinfoPath $modinfoPath -NewVersion $newVersion
         Write-Host "[完成]  modinfo.lua 版本号已更新"
@@ -157,10 +159,10 @@ function Publish-Mod {
     # --------------------------------------------------
     # 步骤 7: Changelog → modinfo description
     # --------------------------------------------------
-    Write-Host "`n[7/9] 更新 description 中的版本信息..." -ForegroundColor Yellow
+    Write-Host "`n[7/10] 更新 description 中的版本信息..." -ForegroundColor Yellow
 
     if (-not $DryRun) {
-        Set-ModinfoDescription -ModinfoPath $modinfoPath -ChangelogPath $changelogPath -EnVarName $enVarName -ZhVarName $zhVarName
+        Set-ModinfoDescription -ModinfoPath $modinfoPath -ChangelogPath $changelogPath -EnVarName $enVarName -ZhVarName $zhVarName -MaxVersions $maxVersions
         Write-Host "[完成]  modinfo.lua description 已更新"
     }
     else {
@@ -168,9 +170,27 @@ function Publish-Mod {
     }
 
     # --------------------------------------------------
-    # 步骤 8: Git 提交 + 打 tag
+    # 步骤 8: 转换本地依赖为 workshop 依赖
     # --------------------------------------------------
-    Write-Host "`n[8/9] Git 提交并打 tag..." -ForegroundColor Yellow
+    Write-Host "`n[8/10] 转换本地依赖为 workshop 依赖..." -ForegroundColor Yellow
+    if (-not $DryRun) {
+        Convert-LocalDepsToWorkshop -ModinfoPath $modinfoPath -WorkshopDeps $workshopDeps
+    }
+    else {
+        if ($workshopDeps.Count -gt 0) {
+            foreach ($k in $workshopDeps.Keys) {
+                Write-Host "[试运行]  将转换: {[`"$k`"] = false} → { workshop = `"$($workshopDeps[$k])`" }"
+            }
+        }
+        else {
+            Write-Host "[试运行]  未配置 WorkshopDeps，跳过"
+        }
+    }
+
+    # --------------------------------------------------
+    # 步骤 9: Git 提交 + 打 tag
+    # --------------------------------------------------
+    Write-Host "`n[9/10] Git 提交并打 tag..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Publish-GitCommit -ProjectRoot $ProjectRoot -Version $newVersion -Files $gitFiles
         Write-Host "[完成]  已提交并打 tag v$newVersion"
@@ -182,9 +202,9 @@ function Publish-Mod {
     }
 
     # --------------------------------------------------
-    # 步骤 9: 拷贝到 dist
+    # 步骤 10: 拷贝到 dist
     # --------------------------------------------------
-    Write-Host "`n[9/9] 拷贝发布文件到 dist/..." -ForegroundColor Yellow
+    Write-Host "`n[10/10] 拷贝发布文件到 dist/..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Copy-ToDist -ProjectRoot $ProjectRoot
     }
