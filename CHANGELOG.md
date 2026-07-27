@@ -1,5 +1,17 @@
 # 版本更新记录
 
+## v2.5.5 (2026-07-28)
+
+The commit is HEAD (sole change in v2.5.5). Based on the diff:
+
+- **changelog.ps1**: Now checks `git status --porcelain` before generating changelog; if there are uncommitted changes but no commits since the last tag, it warns and throws instead of silently writing a placeholder entry.
+- **CHANGELOG.md**: Replaced the v2.5.4 placeholder (`- 版本发布`) with three proper bilingual entries.
+
+```
+- Publish script now detects uncommitted changes before changelog generation, preventing placeholder entries from being written against a dirty working tree | 发布脚本在生成 changelog 前检测未提交改动，避免脏工作区写入占位条目
+- Backfilled v2.5.4 changelog with detailed bilingual descriptions | 补填 v2.5.4 双语详细 changelog
+```
+
 ## v2.5.4 (2026-07-28)
 
 - Refactored modinfo description to use Lua variables (UPDATE_EN/UPDATE_ZH) for version notes, eliminating anchor-drift and cross-block regex bugs | 重构 modinfo description 使用 Lua 变量管理版本说明，根除锚点漂移和跨语言块串改问题
