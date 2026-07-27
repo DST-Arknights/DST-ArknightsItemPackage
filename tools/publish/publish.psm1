@@ -41,7 +41,8 @@ function Publish-Mod {
     # 默认值
     $gitFiles       = if ($config.GitFiles)       { $config.GitFiles }       else { @('modinfo.lua', 'CHANGELOG.md') }
     $languagesDir   = if ($config.LanguagesDir)   { $config.LanguagesDir }   else { 'languages' }
-    $descAnchors    = if ($config.DescriptionAnchors) { $config.DescriptionAnchors } else { @('Feedback and suggestions:', '需求与建议反馈渠道:') }
+    $enVarName      = if ($config.EnVarName)        { $config.EnVarName }        else { 'UPDATE_EN' }
+    $zhVarName      = if ($config.ZhVarName)        { $config.ZhVarName }        else { 'UPDATE_ZH' }
     $prePublishHook = if ($config.PrePublishHook) { Join-Path $ProjectRoot $config.PrePublishHook } else { $null }
 
     # 解析路径（子模块与 publish.psm1 同目录）
@@ -158,12 +159,8 @@ function Publish-Mod {
     # --------------------------------------------------
     Write-Host "`n[7/9] 更新 description 中的版本信息..." -ForegroundColor Yellow
 
-    $versionInfo = Get-VersionDescriptionBlock -ChangelogPath $changelogPath -Version $newVersion
-    Write-Host "        版本信息预览:"
-    $versionInfo -split "`n" | ForEach-Object { Write-Host "          $_" }
-
     if (-not $DryRun) {
-        Set-ModinfoDescription -ModinfoPath $modinfoPath -VersionInfo $versionInfo -Anchors $descAnchors
+        Set-ModinfoDescription -ModinfoPath $modinfoPath -ChangelogPath $changelogPath -EnVarName $enVarName -ZhVarName $zhVarName
         Write-Host "[完成]  modinfo.lua description 已更新"
     }
     else {

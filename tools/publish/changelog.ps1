@@ -377,6 +377,55 @@ function Get-VersionDescriptionBlock {
     throw "CHANGELOG.md 中未找到 v$Version。"
 }
 
+function Get-ChangelogVersionEntries {
+    <#
+    .SYNOPSIS
+    从 CHANGELOG.md 读取最近 N 个版本的条目，返回结构化数组。
+    用于 Set-ModinfoDescription 整体重建版本信息块（而非就地编辑）。
+
+    返回: @(@{Version='2.5.2'; Date='2026-07-28'; Items=@('en item | zh item', ...)}, ...)
+    #>
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$ChangelogPath,
+        [int]$MaxCount = 3
+    )
+
+    if (-not (Test-Path $ChangelogPath)) {
+        Write-Warning "未找到 CHANGELOG.md，无版本信息可用。"
+        return @()
+    }
+
+    $content = Get-Content $ChangelogPath -Raw -Encoding UTF8
+
+    # 匹配所有版本段落: ## vX.Y.Z (date) \n\n - bullets...
+    $versionPattern = '##\s+v([\d.]+)\s+\((\S+)\)[\s\S]*?\n([\s\S]*?)(?=\n##\s+v|$)'
+    $allMatches = [regex]::Matches($content, $versionPattern)
+
+    $entries = @()
+    foreach ($m in $allMatches) {
+        if ($entries.Count -ge $MaxCount) { break }
+
+        $version = $m.Groups[1].Value
+        $date    = $m.Groups[2].Value
+        $body    = $m.Groups[3].Value
+
+        # 提取所有 - 或 * 开头的条目行
+        $bulletMatches = [regex]::Matches($body, '^[-*]\s+(.+)', [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        $items = @($bulletMatches | ForEach-Object { $_.Groups[1].Value.Trim() })
+
+        if ($items.Count -gt 0) {
+            $entries += @{
+                Version = $version
+                Date    = $date
+                Items   = $items
+            }
+        }
+    }
+
+    return $entries
+}
+
 function Get-LatestChangelogEntry {
     param(
         [Parameter(Mandatory = $true)]
