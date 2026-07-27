@@ -2,7 +2,6 @@ local ArkEliteUI = require "widgets/ark_elite_ui"
 local ArkSkills = require "widgets/ark_skills"
 local ArkTalents = require "widgets/ark_talents"
 local Widget = require "widgets/widget"
-local UIArkCurrency = require "widgets/ui_ark_currency"
 local ExpBar = require "widgets/ark_exp_bar"
 local ArkBuffIcons = require "widgets/ark_buff_icons"
 local EmoticonBtn = require "widgets/emoticon_btn"
@@ -12,14 +11,10 @@ local ArkExtendUi =Class(Widget, function(self, owner, controls)
   self.owner = owner
   self.controls = controls
   self.handBase = controls.inv.root:AddChild(Widget("arkExtendUiHandBase"))
-  self.toprightBase = controls.topright_root:AddChild(Widget("arkExtendUiToprightBase"))
   self.setup_task = owner:DoTaskInTime(0, function()
     if owner.replica.ark_elite then
       self:SetupElite()
       self:SetupExpBar()
-    end
-    if owner.replica.ark_currency then
-      self:SetupCurrency()
     end
     self.setup_task = nil
   end)
@@ -37,10 +32,6 @@ function ArkExtendUi:Kill()
   if self.handBase then
     self.handBase:Kill()
     self.handBase = nil
-  end
-  if self.toprightBase then
-    self.toprightBase:Kill()
-    self.toprightBase = nil
   end
   ArkExtendUi._base.Kill(self)
 end
@@ -123,43 +114,6 @@ function ArkExtendUi:RemoveElite()
     self.elite = nil
   end
   self:UpdateLayout()
-end
-
-function ArkExtendUi:SetupCurrency()
-  if self.currency then
-    return
-  end
-  local TOP_PADDING = 14;
-  local RIGHT_PADDING = 240;
-  local currency = self.toprightBase:AddChild(UIArkCurrency(self.owner))
-  self.currency = currency
-  local originUiW, originUiH = currency:GetSize()
-  currency:SetPosition(-originUiW / 2 - RIGHT_PADDING, -originUiH / 2 - TOP_PADDING, 0)
-  self._currency_map_task = self.owner:DoTaskInTime(0.1, function()
-    local miniMap = self.controls.minimap_small
-    if not miniMap then
-      return
-    end
-    local nowPosition = miniMap:GetPosition()
-    local _SetPosition = miniMap.SetPosition
-    local offset_y = - TOP_PADDING - originUiH + 15
-    function miniMap:SetPosition(pos, y, z)
-      _SetPosition(miniMap, pos, y + offset_y, z)
-    end
-    miniMap:SetPosition(nowPosition.x, nowPosition.y, nowPosition.z)
-    self._currency_map_task = nil
-  end)
-end
-
-function ArkExtendUi:RemoveCurrency()
-  if self.currency then
-    self.currency:Kill()
-    self.currency = nil
-  end
-  if self._currency_map_task then
-    self._currency_map_task:Cancel()
-    self._currency_map_task = nil
-  end
 end
 
 function ArkExtendUi:SetupExpBar()

@@ -1,22 +1,14 @@
-local SafeCallArkExtendUI = GenSafeCall(function (inst)
-  return inst and inst.HUD and inst.HUD.controls and inst.HUD.controls.arkExtendUi or nil
-end)
-
-local SafeCallArkCurrencyUI = GenSafeCall(function (inst)
-  return SafeCallArkExtendUI(inst).currency
-end)
 local ArkCurrency = Class(function(self, inst)
   self.inst = inst
   self.state = NetState(self.inst, "ark_currency")
   self.state:Attach(self.inst)
   if not TheNet:IsDedicated() then
     self.state:Watch(TUNING.ARK_CURRENCY_TYPES, function()
-      SafeCallArkCurrencyUI(self.inst):Refresh()
       if self.inst.HUD then
+        self.inst:PushEvent("ark_currency_changed")
         self.inst:PushEvent("refreshcrafting")
       end
     end)
-    SafeCallArkExtendUI(self.inst):SetupCurrency()
   end
   if TheWorld.ismastersim then
     self.inst:DoTaskInTime(0, function()

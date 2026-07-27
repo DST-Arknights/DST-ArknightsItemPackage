@@ -136,3 +136,65 @@ AddPrefabPostInitAny(function(inst)
   inst._ark_epic_gold_drop_hooked = true
   inst:ListenForEvent("death", OnEpicDeathDropGold)
 end)
+
+-- ── 制作栏金币显示 ────────────────────────────────────────
+-- 在制作栏 filter 面板右下角注入金币 widget
+
+local UIArkGoldCrafting = require "widgets/ui_ark_gold_crafting"
+local CraftingMenuWidget = require("widgets/redux/craftingmenu_widget")
+
+local GOLD_SLOTS = 2
+
+ArkHookFunction(CraftingMenuWidget, "MakeFilterPanel", function(next, self, width)
+    local panel = next(self, width)
+
+    if self.ark_gold_widget then
+        return panel
+    end
+
+    local gold = panel:AddChild(UIArkGoldCrafting(self.owner))
+    self.ark_gold_widget = gold
+
+    -- 布局计算
+    local btn_space = self.grid_button_space
+    local cols = math.floor(
+        -(self.grid_left - btn_space / 2) * 2 / btn_space + 0.5
+    )
+
+    -- 统计 grid 中的 filter 按钮数量
+    local num_grid_items = 0
+    for _, filter_def in ipairs(CRAFTING_FILTER_DEFS) do
+        if not filter_def.custom_pos
+            and (filter_def ~= CRAFTING_FILTERS.MODS or #filter_def.recipes > 0)
+        then
+            num_grid_items = num_grid_items + 1
+        end
+    end
+
+    local grid = panel.filter_grid
+    local grid_pos = grid:GetPosition()
+    local grid_y = grid_pos.y
+    local num_rows = grid.num_rows or 1
+
+    local last_row_count = num_grid_items % cols
+    if last_row_count == 0 then
+        last_row_count = cols
+    end
+    local empty_in_last_row = cols - last_row_count
+
+    -- X: 右对齐，占据最后 GOLD_SLOTS 列的中心
+    local gold_x = self.grid_left + (cols - GOLD_SLOTS / 2) * btn_space
+
+    -- Y: 空白够就接在末行，不够就换到下一行
+    local gold_y
+    if empty_in_last_row >= GOLD_SLOTS then
+        gold_y = grid_y - (num_rows - 1) * btn_space
+    else
+        gold_y = grid_y - num_rows * btn_space
+        panel.panel_height = panel.panel_height + btn_space
+    end
+
+    gold:SetPosition(gold_x, gold_y, 0)
+
+    return panel
+end)
