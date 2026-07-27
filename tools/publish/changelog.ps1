@@ -60,19 +60,21 @@ function Invoke-AIChangelog {
         $toolCmd = Get-Command $AITool -ErrorAction SilentlyContinue
     }
 
-    # --- 构建中文 prompt ---
+    # --- 构建双语 prompt ---
     $commitList = ($commits | ForEach-Object { "  $_" }) -join "`n"
     $prompt = @"
-你正在为某个 DST mod 项目维护版本更新记录。请将以下 git 提交记录总结为面向玩家的精炼更新条目（版本 v$Version）。
+You are maintaining the changelog for a DST (Don't Starve Together) mod project.
+Summarize the following git commits into player-facing changelog entries for version v$Version.
 
-要求:
-- 将相关的提交合并为一条。只关注玩家能感知到的变化，跳过纯内部重构。
-- 每条以 "- " 开头（减号 + 空格）。
-- 输出 3-8 条。
-- 专有名词（组件名、文件名、技术术语）可保留英文，其余用中文描述。
-- 只输出条目本身。不要前言、不要解释、不要 markdown 标题。
+Requirements:
+- Merge related commits into single entries. Only include changes players can notice; skip pure internal refactoring.
+- Each line must be BILINGUAL (English first, then Chinese after a " | " separator).
+  Format: "- English description | 中文描述"
+- Output 3-8 entries.
+- Keep proper nouns (component names, file names, technical terms) in English.
+- Output ONLY the entries themselves. No preamble, no explanation, no markdown headers.
 
-以下是从上次发布以来的 git 提交:
+Git commits since last release:
 $commitList
 "@
 
@@ -179,7 +181,20 @@ function Invoke-AITool {
             $tmpFile = [System.IO.Path]::GetTempFileName() + '.txt'
             $Prompt | Set-Content $tmpFile -Encoding UTF8
 
-            $output = & $ToolPath --no-session-persistence -p (Get-Content $tmpFile -Raw) 2>&1
+            # 确保 PowerShell 以 UTF-8 解码原生可执行文件的输出（避免中文乱码）
+            $prevOutputEncoding = [Console]::OutputEncoding
+            $prevPSOutputEncoding = $OutputEncoding
+            [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+            $OutputEncoding = [System.Text.Encoding]::UTF8
+
+            try {
+                $output = & $ToolPath --no-session-persistence -p (Get-Content $tmpFile -Raw) 2>&1
+            }
+            finally {
+                [Console]::OutputEncoding = $prevOutputEncoding
+                $OutputEncoding = $prevPSOutputEncoding
+            }
+
             Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue
 
             if ($LASTEXITCODE -ne 0) {
