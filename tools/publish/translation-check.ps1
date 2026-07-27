@@ -42,11 +42,12 @@ function Test-TranslationsComplete {
     Write-Host "`n        --- msgctxt 对齐检查 ---"
 
     $referenceFile = $poFiles[0].Name
-    $referenceKeys = [System.Collections.Generic.HashSet[string]]$allEntries[$referenceFile].Keys
+    # @() 强制展开 KeyCollection，避免 PowerShell 将其当作单一字符串拼接
+    $referenceKeys = [System.Collections.Generic.HashSet[string]]@($allEntries[$referenceFile].Keys)
 
     foreach ($poFile in $poFiles) {
         $name = $poFile.Name
-        $fileKeys = [System.Collections.Generic.HashSet[string]]$allEntries[$name].Keys
+        $fileKeys = [System.Collections.Generic.HashSet[string]]@($allEntries[$name].Keys)
 
         # 参考文件有，此文件缺失的 key
         $missing = $referenceKeys | Where-Object { -not $fileKeys.Contains($_) }
