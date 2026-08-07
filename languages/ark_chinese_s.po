@@ -1371,3 +1371,17 @@ msgstr "永远的朋友 (来自 %s)"
 msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC"
 msgid "You have established full resonance with each other"
 msgstr "你们彼此建立了完全共鸣"
+#. STRINGS.NAMES.CONSTRUCT_ARMOR
+msgctxt "STRINGS.NAMES.CONSTRUCT_ARMOR"
+msgid "M3 Cocoon Armor"
+msgstr "M3茧甲"
+
+#. STRINGS.RECIPE_DESC.CONSTRUCT_ARMOR
+msgctxt "STRINGS.RECIPE_DESC.CONSTRUCT_ARMOR"
+msgid "It seems to be alive."
+msgstr "好像是活的。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.CONSTRUCT_ARMOR
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.CONSTRUCT_ARMOR"
+msgid "It seems to be alive."
+msgstr "好像是活的。"

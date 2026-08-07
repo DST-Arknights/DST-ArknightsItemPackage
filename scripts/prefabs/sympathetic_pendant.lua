@@ -97,6 +97,7 @@ local function fn()
   inst.scrapbook_anim = "idle"
 
   inst:AddTag("sympathetic_pendant")
+  inst:AddTag("HASHEATER")
 
   MakeInventoryFloatable(inst, "med", nil, 0.6)
   inst.entity:SetPristine()
@@ -123,6 +124,12 @@ local function fn()
   inst.components.shadowlevel:SetDefaultLevel(TUNING.AMULET_SHADOW_LEVEL)
 
   inst:AddComponent("temperature")
+  inst.components.temperature:SetTemp(TUNING.SYMPATHETIC_PENDANT.TEMP)
+
+  inst:AddComponent("heater")
+  inst.components.heater.heatfn = function() return TUNING.SYMPATHETIC_PENDANT.TEMP end
+  inst.components.heater.carriedheatfn = function() return TUNING.SYMPATHETIC_PENDANT.TEMP end
+  inst.components.heater.carriedheatmultiplier = TUNING.HEAT_ROCK_CARRIED_BONUS_HEAT_FACTOR
 
   return inst
 end

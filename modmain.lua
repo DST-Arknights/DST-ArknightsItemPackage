@@ -3,7 +3,8 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff" }
+  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
+  "construct_armor" }
 
 Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
@@ -62,9 +63,11 @@ modimport('modmain/safe_call')
 -- 加载语言
 modimport('modmain/ark_i18n')
 
--- 加载语言包（仅当前语言对应文件会被加载）
-MergePOFile('languages/ark_chinese_s.po', 'zh')
-MergePOFile('languages/ark_english.po', 'en')
+-- 加载语言 (auto: 跟随玩家游戏语言, 仅加载对应一份 PO)
+RegisterPOFile('auto', {
+    zh = 'languages/ark_chinese_s.po',
+    en = 'languages/ark_english.po',
+})
 -- 加载热键管理器
 modimport('scripts/ark_hotkey')
 -- 加载属性修改器安装器
@@ -126,6 +129,8 @@ modimport('modmain/ark_skill')
 modimport('modmain/ark_portable_supply')
 -- 共感项坠
 modimport('modmain/sympathetic_pendant')
+-- M3茧甲
+modimport('modmain/construct_armor')
 -- 其他模组兼容
 modimport('modmain/mods_compatibility/amiya')
 

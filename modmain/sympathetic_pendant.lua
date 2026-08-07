@@ -1,5 +1,6 @@
 TUNING.SYMPATHETIC_PENDANT = {
   SPEED_MULT = 1.02,
+  TEMP = 24,
 }
 
 AddPrefabPostInit("world", function(inst)
