@@ -25,11 +25,16 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# 解析项目根目录（脚本所在目录的上级）
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$projectRoot = Resolve-Path (Join-Path $scriptDir '..')
+# 项目根目录 = 当前工作目录（在哪个项目下执行就发布哪个项目）
+$projectRoot = Resolve-Path (Get-Location)
+if (-not (Test-Path (Join-Path $projectRoot 'modinfo.lua'))) {
+    Write-Error "当前目录未找到 modinfo.lua，请在 DST mod 项目根目录执行此脚本。"
+    Write-Error "当前目录: $projectRoot"
+    exit 1
+}
 
-# 导入编排模块（脚本自身的 tools/publish/ 目录）
+# 导入编排模块（始终从脚本自身的 tools/publish/ 目录加载）
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $publishDir = Join-Path $scriptDir 'publish'
 $modulePath = Join-Path $publishDir 'publish.psm1'
 if (-not (Test-Path $modulePath)) {

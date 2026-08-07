@@ -8,8 +8,9 @@
 #   5. 运行项目特定发布前钩子
 #   6. 更新 modinfo.lua 版本号
 #   7. 读取 changelog → 更新 modinfo.lua description
-#   8. Git 提交 + 打 tag
+#   8. Git 提交 + 打 tag（源代码保持本地依赖）
 #   9. 拷贝到 dist/
+#   10. 转换 dist/modinfo.lua 依赖为 workshop（只改编译产物，不改源代码）
 #
 # 用法 (通过 tools/publish.ps1 入口):
 #   pwsh ./tools/publish.ps1 -Bump patch [-SkipChecks] [-DryRun]
@@ -170,27 +171,10 @@ function Publish-Mod {
     }
 
     # --------------------------------------------------
-    # 步骤 8: 转换本地依赖为 workshop 依赖
+    # 步骤 8: Git 提交 + 打 tag
+    #    源代码 modinfo.lua 保持本地依赖格式，直接入库。
     # --------------------------------------------------
-    Write-Host "`n[8/10] 转换本地依赖为 workshop 依赖..." -ForegroundColor Yellow
-    if (-not $DryRun) {
-        Convert-LocalDepsToWorkshop -ModinfoPath $modinfoPath -WorkshopDeps $workshopDeps
-    }
-    else {
-        if ($workshopDeps.Count -gt 0) {
-            foreach ($k in $workshopDeps.Keys) {
-                Write-Host "[试运行]  将转换: {[`"$k`"] = false} → { workshop = `"$($workshopDeps[$k])`" }"
-            }
-        }
-        else {
-            Write-Host "[试运行]  未配置 WorkshopDeps，跳过"
-        }
-    }
-
-    # --------------------------------------------------
-    # 步骤 9: Git 提交 + 打 tag
-    # --------------------------------------------------
-    Write-Host "`n[9/10] Git 提交并打 tag..." -ForegroundColor Yellow
+    Write-Host "`n[8/10] Git 提交并打 tag..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Publish-GitCommit -ProjectRoot $ProjectRoot -Version $newVersion -Files $gitFiles
         Write-Host "[完成]  已提交并打 tag v$newVersion"
@@ -202,14 +186,40 @@ function Publish-Mod {
     }
 
     # --------------------------------------------------
-    # 步骤 10: 拷贝到 dist
+    # 步骤 9: 拷贝到 dist
     # --------------------------------------------------
-    Write-Host "`n[10/10] 拷贝发布文件到 dist/..." -ForegroundColor Yellow
+    Write-Host "`n[9/10] 拷贝发布文件到 dist/..." -ForegroundColor Yellow
     if (-not $DryRun) {
         Copy-ToDist -ProjectRoot $ProjectRoot
     }
     else {
         Write-Host "[试运行]  将清空并重建 dist/ 目录"
+    }
+
+    # --------------------------------------------------
+    # 步骤 10: 转换 dist/modinfo.lua 依赖为 workshop
+    #    只修改编译产物 dist/modinfo.lua，不改源代码 modinfo.lua。
+    #    源代码保持本地依赖（开发时用），发布产物用工坊依赖。
+    # --------------------------------------------------
+    Write-Host "`n[10/10] 转换 dist/modinfo.lua 依赖为 workshop..." -ForegroundColor Yellow
+    if (-not $DryRun) {
+        $distModinfo = Join-Path $ProjectRoot 'dist/modinfo.lua'
+        if (Test-Path $distModinfo) {
+            Convert-LocalDepsToWorkshop -ModinfoPath $distModinfo -WorkshopDeps $workshopDeps
+        }
+        else {
+            Write-Warning "[警告]  未找到 dist/modinfo.lua，跳过依赖转换"
+        }
+    }
+    else {
+        if ($workshopDeps.Count -gt 0) {
+            foreach ($k in $workshopDeps.Keys) {
+                Write-Host "[试运行]  将在 dist/modinfo.lua 中转换: {[`"$k`"] = false} → { workshop = `"$($workshopDeps[$k])`" }"
+            }
+        }
+        else {
+            Write-Host "[试运行]  未配置 WorkshopDeps，跳过"
+        }
     }
 
     # --------------------------------------------------

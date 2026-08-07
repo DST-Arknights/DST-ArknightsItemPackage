@@ -25,7 +25,7 @@ pwsh ./tools/publish.ps1 -Bump patch -DryRun
 pwsh ./tools/publish.ps1 -Bump patch -SkipChecks
 ```
 
-**发布流程（9 步）：**
+**发布流程（10 步）：**
 1. 检查依赖工具（git）                         ← 确定性，快速
 2. 检查翻译完整性（PO 文件 msgctxt 对齐）       ← 硬性要求，放前面
 3. AI：从 git 提交总结生成 changelog            ← 高成本/高失败率，检查通过后才跑
@@ -33,8 +33,11 @@ pwsh ./tools/publish.ps1 -Bump patch -SkipChecks
 5. 运行项目特定的前置钩子（生成物品表等）
 6. 更新 modinfo.lua 版本号
 7. 从 CHANGELOG.md 读取更新内容，写入 description
-8. Git 提交（`release: x.y.z`）并打 tag
+8. Git 提交（`release: x.y.z`）并打 tag        ← 源代码保持本地依赖
 9. 拷贝发布文件到 dist/
+10. 转换 dist/modinfo.lua 依赖为 workshop       ← 只改编译产物，不改源代码
+
+**依赖转换约定：** 源代码 `modinfo.lua` 始终写本地依赖 `{["LocalName"] = false}`（开发时依赖本地仓库），发布时步骤 10 只对 `dist/modinfo.lua` 转换为 workshop 依赖 `{ workshop = "workshop-xxxxx" }`。通过 `tools/publish-config.ps1` 的 `WorkshopDeps` 配置映射表。
 
 **脚本结构：**
 ```
