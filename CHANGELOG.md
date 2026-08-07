@@ -1,4 +1,11 @@
 # 版本更新记录
+## v2.5.7 (2026-08-07)
+
+- Added M3 Cocoon Armor and related item descriptions | 添加 M3 Cocoon Armor 及相关物品说明
+- Updated the player gameplay guide | 更新玩家游玩指南
+- Added construct armor resources | 添加构建护甲相关资源
+- Updated development tools | 更新开发工具
+
 
 ## v2.5.6 (2026-07-28)
 

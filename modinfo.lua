@@ -10,25 +10,25 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.5.7 (2026-08-07)
+- Added M3 Cocoon Armor and related item descriptions
+- Updated the player gameplay guide
+- Added construct armor resources
+- Updated development tools
+---
 v2.5.6 (2026-07-28)
 - Refactored language selection logic: non-English and Chinese languages now safely fall back to English instead of crashing
----
-v2.5.5 (2026-07-28)
-- **changelog.ps1**: Now checks `git status --porcelain` before generating changelog; if there are uncommitted changes but no commits since the last tag, it warns and throws instead of silently writing a placeholder entry.
-- **CHANGELOG.md**: Replaced the v2.5.4 placeholder (`- 版本发布`) with three proper bilingual entries.
-- Publish script now detects uncommitted changes before changelog generation, preventing placeholder entries from being written against a dirty working tree
-- Backfilled v2.5.4 changelog with detailed bilingual descriptions
 ]]
 
 local UPDATE_ZH = [[
+v2.5.7 (2026-08-07)
+- 添加 M3 Cocoon Armor 及相关物品说明
+- 更新玩家游玩指南
+- 添加构建护甲相关资源
+- 更新开发工具
+---
 v2.5.6 (2026-07-28)
 - 重构语言选择逻辑：非英文和中文语言现在安全回退到英文，不再导致崩溃
----
-v2.5.5 (2026-07-28)
-- **changelog.ps1**: Now checks `git status --porcelain` before generating changelog; if there are uncommitted changes but no commits since the last tag, it warns and throws instead of silently writing a placeholder entry.
-- **CHANGELOG.md**: Replaced the v2.5.4 placeholder (`- 版本发布`) with three proper bilingual entries.
-- 发布脚本在生成 changelog 前检测未提交改动，避免脏工作区写入占位条目
-- 补填 v2.5.4 双语详细 changelog
 ]]
 
 description = T({
@@ -55,7 +55,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.6"
+version = "2.5.7"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
