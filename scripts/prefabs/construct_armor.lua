@@ -135,6 +135,7 @@ local function fn()
 
   inst:AddTag("heavyarmor")
   inst:AddTag("hardarmor")
+  inst:AddTag("body")
 
   inst.foleysound = "dontstarve/movement/foley/marblearmour"
 

@@ -98,6 +98,7 @@ local function fn()
 
   inst:AddTag("sympathetic_pendant")
   inst:AddTag("HASHEATER")
+  inst:AddTag("amulet")
 
   MakeInventoryFloatable(inst, "med", nil, 0.6)
   inst.entity:SetPristine()
