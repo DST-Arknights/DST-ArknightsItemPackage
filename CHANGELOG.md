@@ -1,4 +1,9 @@
 # 版本更新记录
+## v2.5.8 (2026-08-11)
+
+- Updated Construct Armor description to note its durability loss ratio | 更新构造盔甲描述，添加耐久损失比例说明
+- Added Construct Armor image resource | 添加构造盔甲图片资源
+
 ## v2.5.7 (2026-08-07)
 
 - Added M3 Cocoon Armor and related item descriptions | 添加 M3 Cocoon Armor 及相关物品说明
