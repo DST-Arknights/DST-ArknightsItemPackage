@@ -153,6 +153,8 @@ local function fn()
 
   inst:AddComponent("armor")
   inst.components.armor:InitCondition(CONSTRUCT_ARMOR.MAX_CONDITION, CONSTRUCT_ARMOR.ABSORB_PERCENT)
+  -- 耐久损失按比例打折: 吸收100伤害只扣 100 * CONDITION_LOSS_PERCENT 耐久
+  inst.components.armor.conditionlossmultipliers:SetModifier(inst, CONSTRUCT_ARMOR.CONDITION_LOSS_PERCENT)
   inst.components.armor:SetKeepOnFinished(true)
   -- 设置免疫受击僵直
   inst.components.armor:SetImmuneStun(true)

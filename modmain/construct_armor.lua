@@ -4,7 +4,10 @@ TUNING.CONSTRUCT_ARMOR = {
   EXCHANGE_RATE_PER_SECOND = 2000 / (12 * 60),
   EXCHANGE_TICK = 1,
   EXCHANGE_PAUSE_AFTER_DAMAGE = 15,
+  -- 吸收率: 100% (完全免伤)
   ABSORB_PERCENT = 1,
+  -- 耐久损失比例: 吸收100伤害实际只扣 100 * 0.2 = 20 耐久
+  CONDITION_LOSS_PERCENT = 0.2,
 }
 
 AddRecipe2('construct_armor', {

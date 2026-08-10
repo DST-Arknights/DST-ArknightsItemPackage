@@ -1405,8 +1405,8 @@ msgstr "M3 Cocoon Armor"
 
 #. STRINGS.RECIPE_DESC.CONSTRUCT_ARMOR
 msgctxt "STRINGS.RECIPE_DESC.CONSTRUCT_ARMOR"
-msgid "It seems to be alive."
-msgstr "It seems to be alive."
+msgid "It seems to be alive.(No Image Now)"
+msgstr "It seems to be alive.(No Image Now)"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.CONSTRUCT_ARMOR
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.CONSTRUCT_ARMOR"
