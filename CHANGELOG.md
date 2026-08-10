@@ -1,4 +1,8 @@
 # 版本更新记录
+## v2.5.9 (2026-08-11)
+
+- Updated the sympathetic pendant atlas element coordinates and texture layout | 更新同情挂件的元素坐标和纹理信息
+
 ## v2.5.8 (2026-08-11)
 
 - Updated Construct Armor description to note its durability loss ratio | 更新构造盔甲描述，添加耐久损失比例说明
