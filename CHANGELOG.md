@@ -1,4 +1,9 @@
 # 版本更新记录
+## v2.5.10 (2026-08-11)
+
+- Added "body" tag to Construct Armor (compatibility with 4/5/6 equipment slots) | 为构造盔甲添加 "body" 标签（兼容四五六格装备槽）
+- Added "amulet" tag to Sympathetic Pendant (compatibility with 4/5/6 equipment slots) | 为同情挂件添加 "amulet" 标签（兼容四五六格装备槽）
+
 ## v2.5.9 (2026-08-11)
 
 - Updated the sympathetic pendant atlas element coordinates and texture layout | 更新同情挂件的元素坐标和纹理信息

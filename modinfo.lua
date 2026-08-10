@@ -10,21 +10,21 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.5.10 (2026-08-11)
+- Added "body" tag to Construct Armor (compatibility with 4/5/6 equipment slots)
+- Added "amulet" tag to Sympathetic Pendant (compatibility with 4/5/6 equipment slots)
+---
 v2.5.9 (2026-08-11)
 - Updated the sympathetic pendant atlas element coordinates and texture layout
----
-v2.5.8 (2026-08-11)
-- Updated Construct Armor description to note its durability loss ratio
-- Added Construct Armor image resource
 ]]
 
 local UPDATE_ZH = [[
+v2.5.10 (2026-08-11)
+- 为构造盔甲添加 "body" 标签（兼容四五六格装备槽）
+- 为同情挂件添加 "amulet" 标签（兼容四五六格装备槽）
+---
 v2.5.9 (2026-08-11)
 - 更新同情挂件的元素坐标和纹理信息
----
-v2.5.8 (2026-08-11)
-- 更新构造盔甲描述，添加耐久损失比例说明
-- 添加构造盔甲图片资源
 ]]
 
 description = T({
@@ -51,7 +51,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.9"
+version = "2.5.10"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
