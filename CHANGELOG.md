@@ -1,4 +1,8 @@
 # 版本更新记录
+## v2.5.11 (2026-08-11)
+
+- Changed the Construct Armor's tag from "body" to "armor" | 将构造盔甲的标签从 "body" 更改为 "armor"
+
 ## v2.5.10 (2026-08-11)
 
 - Added "body" tag to Construct Armor (compatibility with 4/5/6 equipment slots) | 为构造盔甲添加 "body" 标签（兼容四五六格装备槽）
