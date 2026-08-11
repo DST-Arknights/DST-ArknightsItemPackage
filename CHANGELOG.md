@@ -1,4 +1,9 @@
 # 版本更新记录
+## v2.5.12 (2026-08-12)
+
+- Updated M3 Cocoon Armor data and renamed its prefab | 修改M3茧甲数据, 预制体重命名
+- Added armor_construct resource | 新增 armor_construct 资源
+
 ## v2.5.11 (2026-08-11)
 
 - Changed the Construct Armor's tag from "body" to "armor" | 将构造盔甲的标签从 "body" 更改为 "armor"

@@ -10,21 +10,21 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.5.12 (2026-08-12)
+- Updated M3 Cocoon Armor data and renamed its prefab
+- Added armor_construct resource
+---
 v2.5.11 (2026-08-11)
 - Changed the Construct Armor's tag from "body" to "armor"
----
-v2.5.10 (2026-08-11)
-- Added "body" tag to Construct Armor (compatibility with 4/5/6 equipment slots)
-- Added "amulet" tag to Sympathetic Pendant (compatibility with 4/5/6 equipment slots)
 ]]
 
 local UPDATE_ZH = [[
+v2.5.12 (2026-08-12)
+- 修改M3茧甲数据, 预制体重命名
+- 新增 armor_construct 资源
+---
 v2.5.11 (2026-08-11)
 - 将构造盔甲的标签从 "body" 更改为 "armor"
----
-v2.5.10 (2026-08-11)
-- 为构造盔甲添加 "body" 标签（兼容四五六格装备槽）
-- 为同情挂件添加 "amulet" 标签（兼容四五六格装备槽）
 ]]
 
 description = T({
@@ -51,7 +51,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.11"
+version = "2.5.12"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
