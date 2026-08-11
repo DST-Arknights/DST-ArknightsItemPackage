@@ -1,10 +1,10 @@
-local CONSTRUCT_ARMOR = TUNING.CONSTRUCT_ARMOR
+local ARMOR_CONSTRUCT = TUNING.ARMOR_CONSTRUCT
 
-RegisterInventoryItemAtlas("images/inventoryimages/construct_armor.xml", "construct_armor.tex")
+RegisterInventoryItemAtlas("images/inventoryimages/armor_construct.xml", "armor_construct.tex")
 local assets =
 {
-  Asset("ANIM", "anim/construct_armor.zip"),
-  Asset("ATLAS", "images/inventoryimages/construct_armor.xml"),
+  Asset("ANIM", "anim/armor_construct.zip"),
+  Asset("ATLAS", "images/inventoryimages/armor_construct.xml"),
 }
 
 local function OnBlocked(owner)
@@ -18,7 +18,7 @@ local function DoArmorHealthExchange(inst)
   end
 
   -- owner 有标签时不执行该任务
-  if owner:HasTag("no_construct_armor_exchange") then
+  if owner:HasTag("no_armor_construct_exchange") then
     return
   end
 
@@ -40,11 +40,11 @@ local function DoArmorHealthExchange(inst)
       return
     end
     local max_heal = half_health - current_health
-    local heal = math.floor(math.min(CONSTRUCT_ARMOR.EXCHANGE_RATE_PER_SECOND * CONSTRUCT_ARMOR.EXCHANGE_TICK, armor.condition, max_heal))
+    local heal = math.floor(math.min(ARMOR_CONSTRUCT.EXCHANGE_RATE_PER_SECOND * ARMOR_CONSTRUCT.EXCHANGE_TICK, armor.condition, max_heal))
     if heal <= 0 then
       return
     end
-    owner.components.health:DoDelta(heal, nil, "construct_armor_heal", true, inst)
+    owner.components.health:DoDelta(heal, nil, "armor_construct_heal", true, inst)
     armor:SetCondition(armor.condition - heal)
   elseif current_health > half_health then
     local missing = armor.maxcondition - armor.condition
@@ -52,18 +52,18 @@ local function DoArmorHealthExchange(inst)
       return
     end
     local max_drain = current_health - half_health
-    local drain = math.floor(math.min(CONSTRUCT_ARMOR.EXCHANGE_RATE_PER_SECOND * CONSTRUCT_ARMOR.EXCHANGE_TICK, missing, max_drain))
+    local drain = math.floor(math.min(ARMOR_CONSTRUCT.EXCHANGE_RATE_PER_SECOND * ARMOR_CONSTRUCT.EXCHANGE_TICK, missing, max_drain))
     if drain <= 0 then
       return
     end
-    owner.components.health:DoDelta(-drain, nil, "construct_armor_repair", true, inst)
+    owner.components.health:DoDelta(-drain, nil, "armor_construct_repair", true, inst)
     armor:Repair(drain)
   end
 end
 
 local function StartExchangeTask(inst)
   if inst._exchange_task == nil then
-    inst._exchange_task = inst:DoPeriodicTask(CONSTRUCT_ARMOR.EXCHANGE_TICK, DoArmorHealthExchange)
+    inst._exchange_task = inst:DoPeriodicTask(ARMOR_CONSTRUCT.EXCHANGE_TICK, DoArmorHealthExchange)
   end
 end
 
@@ -78,9 +78,9 @@ local function onequip(inst, owner)
   local skin_build = inst:GetSkinBuild()
   if skin_build ~= nil then
     owner:PushEvent("equipskinneditem", inst:GetSkinName())
-    owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "construct_armor")
+    owner.AnimState:OverrideItemSkinSymbol("swap_body", skin_build, "swap_body", inst.GUID, "armor_construct")
   else
-    owner.AnimState:OverrideSymbol("swap_body", "construct_armor", "swap_body")
+    owner.AnimState:OverrideSymbol("swap_body", "armor_construct", "swap_body")
   end
   -- 锁血: 1
   if owner.components.health then
@@ -109,14 +109,14 @@ local function onunequip(inst, owner)
 end
 
 local function OnTakeDamage(inst, damage_amount)
-  inst._exchange_pause_until = GetTime() + CONSTRUCT_ARMOR.EXCHANGE_PAUSE_AFTER_DAMAGE
+  inst._exchange_pause_until = GetTime() + ARMOR_CONSTRUCT.EXCHANGE_PAUSE_AFTER_DAMAGE
 end
 
 local function OnArmorConditionChange(inst, data)
   if data.percent <= 0 then
     inst.components.armor:SetAbsorption(0)
   else
-    inst.components.armor:SetAbsorption(CONSTRUCT_ARMOR.ABSORB_PERCENT)
+    inst.components.armor:SetAbsorption(ARMOR_CONSTRUCT.ABSORB_PERCENT)
   end
 end
 
@@ -129,8 +129,8 @@ local function fn()
 
   MakeInventoryPhysics(inst)
 
-  inst.AnimState:SetBank("armor_marble")
-  inst.AnimState:SetBuild("armor_marble")
+  inst.AnimState:SetBank("armor_construct")
+  inst.AnimState:SetBuild("armor_construct")
   inst.AnimState:PlayAnimation("anim")
 
   inst:AddTag("heavyarmor")
@@ -139,7 +139,7 @@ local function fn()
 
   inst.foleysound = "dontstarve/movement/foley/marblearmour"
 
-  local swap_data = { bank = "armor_marble", anim = "anim" }
+  local swap_data = { bank = "armor_construct", anim = "anim" }
   MakeInventoryFloatable(inst, "small", 0.2, 0.80, nil, nil, swap_data)
 
   inst.entity:SetPristine()
@@ -153,9 +153,9 @@ local function fn()
   inst:AddComponent("inventoryitem")
 
   inst:AddComponent("armor")
-  inst.components.armor:InitCondition(CONSTRUCT_ARMOR.MAX_CONDITION, CONSTRUCT_ARMOR.ABSORB_PERCENT)
+  inst.components.armor:InitCondition(ARMOR_CONSTRUCT.MAX_CONDITION, ARMOR_CONSTRUCT.ABSORB_PERCENT)
   -- 耐久损失按比例打折: 吸收100伤害只扣 100 * CONDITION_LOSS_PERCENT 耐久
-  inst.components.armor.conditionlossmultipliers:SetModifier(inst, CONSTRUCT_ARMOR.CONDITION_LOSS_PERCENT)
+  inst.components.armor.conditionlossmultipliers:SetModifier(inst, ARMOR_CONSTRUCT.CONDITION_LOSS_PERCENT)
   inst.components.armor:SetKeepOnFinished(true)
   -- 设置免疫受击僵直
   inst.components.armor:SetImmuneStun(true)
@@ -170,7 +170,7 @@ local function fn()
   inst.components.equippable.equipslot = EQUIPSLOTS.BODY
 
   inst._OnOwnerAttacked = function(owner, data)
-    inst._exchange_pause_until = GetTime() + CONSTRUCT_ARMOR.EXCHANGE_PAUSE_AFTER_DAMAGE
+    inst._exchange_pause_until = GetTime() + ARMOR_CONSTRUCT.EXCHANGE_PAUSE_AFTER_DAMAGE
   end
   inst._OnMinHealth = PriorityEventCallback(function(owner)
     -- 宿主血量回满, 自身销毁
@@ -185,4 +185,4 @@ local function fn()
   return inst
 end
 
-return Prefab("construct_armor", fn, assets)
+return Prefab("armor_construct", fn, assets)

@@ -1398,17 +1398,17 @@ msgctxt "STRINGS.SYMPATHETIC_PENDANT.BUFF.FRIEND_SHARED.DESC"
 msgid "You have established full resonance with each other"
 msgstr "You have established full resonance with each other."
 
-#. STRINGS.NAMES.CONSTRUCT_ARMOR
-msgctxt "STRINGS.NAMES.CONSTRUCT_ARMOR"
+#. STRINGS.NAMES.ARMOR_CONSTRUCT
+msgctxt "STRINGS.NAMES.ARMOR_CONSTRUCT"
 msgid "M3 Cocoon Armor"
 msgstr "M3 Cocoon Armor"
 
-#. STRINGS.RECIPE_DESC.CONSTRUCT_ARMOR
-msgctxt "STRINGS.RECIPE_DESC.CONSTRUCT_ARMOR"
+#. STRINGS.RECIPE_DESC.ARMOR_CONSTRUCT
+msgctxt "STRINGS.RECIPE_DESC.ARMOR_CONSTRUCT"
 msgid "It seems to be alive.(No Image Now)"
 msgstr "It seems to be alive.(No Image Now)"
 
-#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.CONSTRUCT_ARMOR
-msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.CONSTRUCT_ARMOR"
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARMOR_CONSTRUCT
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARMOR_CONSTRUCT"
 msgid "It seems to be alive."
 msgstr "It seems to be alive."
