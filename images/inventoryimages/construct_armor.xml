@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Atlas>
-	<Texture filename="construct_armor.tex" />
-	<Elements>
-		<Element name="construct_armor.tex" u1="0.001" u2="0.999" v2="0.999" v1="0.001" variant="" />
-	</Elements>
-</Atlas>
