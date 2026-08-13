@@ -1,289 +1,191 @@
-local _OldListenForEvent = EntityScript.ListenForEvent
-local _OldRemoveEventCallback = EntityScript.RemoveEventCallback
+-- priority_event_callback.lua
+-- 竞争事件监听：同一 (source, event, group) 内，按 priority 选最高者执行，fn 返回 false 则顺延。
+--
+-- API（EntityScript 方法，成对使用，不做原版 monkeypatch）：
+--   inst:PriorityListenForEvent(event, fn, source, options)
+--   inst:PriorityRemoveEventCallback(event, fn, source)
+--
+-- options = { priority = 0, group = "default" }
+--
+-- 契约：
+--   * fn(inst, data) 返回 false  → 放弃本次事件，顺延给优先级次高者
+--   * fn(inst, data) 返回其他值  → 认领，停止遍历（返回 nil 也算认领）
+--   * 同 priority 时先注册者优先
+--   * 开发者应成对使用注册/移除；移除时传注册时的原始 fn 与 source 即可（内部按注册时的 group 精确匹配）
+--
+-- 内存注意：
+--   * 注册路径完全复用 vanilla EntityScript:ListenForEvent 的监听挂接，event_listeners / event_listening
+--     两表由 vanilla 维护，RemoveEventCallback / RemoveAllEventCallbacks 天然对称清理 boundfn
+--   * 仲裁索引表 _event_listeners 以 source 为弱键，source 生命周期结束即被回收
+--   * 若 source 是长生命周期对象（如 TheWorld / _G），开发者在不再需要时必须成对调用 Remove
 
-local _priority_meta = setmetatable({}, { __mode = "k" })
-local _priority_bindings = setmetatable({}, { __mode = "k" })
-local _priority_competitors = setmetatable({}, { __mode = "k" })
+local _event_listeners = setmetatable({}, { __mode = "k" }) -- [source][event][group][fn] = binding
 
-local _priority_order = 0
+local _source_order = 0
 
-local function _GetSourceBindings(source)
-    local source_bindings = _priority_bindings[source]
-    if source_bindings == nil then
-        source_bindings = {}
-        _priority_bindings[source] = source_bindings
+local function _GetGroupListeners(source, event, group)
+    local source_listeners = _event_listeners[source]
+    if source_listeners == nil then
+        source_listeners = {}
+        _event_listeners[source] = source_listeners
     end
-    return source_bindings
+
+    local event_listeners = source_listeners[event]
+    if event_listeners == nil then
+        event_listeners = {}
+        source_listeners[event] = event_listeners
+    end
+
+    local group_listeners = event_listeners[group]
+    if group_listeners == nil then
+        group_listeners = {}
+        event_listeners[group] = group_listeners
+    end
+
+    return group_listeners
 end
 
-local function _GetEventBindings(source, event)
-    local source_bindings = _GetSourceBindings(source)
-    local event_bindings = source_bindings[event]
-    if event_bindings == nil then
-        event_bindings = {}
-        source_bindings[event] = event_bindings
-    end
-    return event_bindings
-end
-
-local function _GetSourceCompetitors(source)
-    local source_competitors = _priority_competitors[source]
-    if source_competitors == nil then
-        source_competitors = {}
-        _priority_competitors[source] = source_competitors
-    end
-    return source_competitors
-end
-
-local function _GetGroupCompetitors(source, event, group)
-    local source_competitors = _GetSourceCompetitors(source)
-
-    local event_competitors = source_competitors[event]
-    if event_competitors == nil then
-        event_competitors = {}
-        source_competitors[event] = event_competitors
-    end
-
-    local group_competitors = event_competitors[group]
-    if group_competitors == nil then
-        group_competitors = {}
-        event_competitors[group] = group_competitors
-    end
-
-    return group_competitors
-end
-
-local function _ArrayRemoveValue(array, value)
-    for i = #array, 1, -1 do
-        if array[i] == value then
-            table.remove(array, i)
-            return true
-        end
-    end
-    return false
-end
-
-local function _IsBoundWrapperStillRegistered(binding)
-    local source = binding.source
-    local listener = binding.listener
-
-    if source == nil or listener == nil then
-        return false
-    end
-
-    local listeners = source.event_listeners
-    if listeners == nil then
-        return false
-    end
-
-    listeners = listeners[binding.event]
-    if listeners == nil then
-        return false
-    end
-
-    local fns = listeners[listener]
-    if fns == nil then
-        return false
-    end
-
-    for i = 1, #fns do
-        if fns[i] == binding.boundfn then
-            return true
-        end
-    end
-
-    return false
-end
-
-local function _PruneCompetitors(group_competitors)
-    for i = #group_competitors, 1, -1 do
-        if not _IsBoundWrapperStillRegistered(group_competitors[i]) then
-            table.remove(group_competitors, i)
-        end
-    end
-end
-
-local function _GetBestBinding(source, event, group)
-    local source_competitors = _priority_competitors[source]
-    if source_competitors == nil then
-        return nil
-    end
-
-    local event_competitors = source_competitors[event]
-    if event_competitors == nil then
-        return nil
-    end
-
-    local group_competitors = event_competitors[group]
-    if group_competitors == nil then
-        return nil
-    end
-
-    _PruneCompetitors(group_competitors)
-
-    local best = nil
-    for i = 1, #group_competitors do
-        local binding = group_competitors[i]
-        if best == nil
-            or binding.priority > best.priority
-            or (binding.priority == best.priority and binding.order < best.order) then
-            best = binding
-        end
-    end
-
-    return best
-end
-
-local function _RegisterPriorityBinding(binding)
-    local event_bindings = _GetEventBindings(binding.source, binding.event)
-
-    local listener_bindings = event_bindings[binding.listener]
-    if listener_bindings == nil then
-        listener_bindings = setmetatable({}, { __mode = "k" })
-        event_bindings[binding.listener] = listener_bindings
-    end
-
-    listener_bindings[binding.markerfn] = binding
-
-    local group_competitors = _GetGroupCompetitors(binding.source, binding.event, binding.group)
-    group_competitors[#group_competitors + 1] = binding
-end
-
-local function _UnregisterPriorityBinding(binding)
-    local source_bindings = _priority_bindings[binding.source]
-    if source_bindings ~= nil then
-        local event_bindings = source_bindings[binding.event]
-        if event_bindings ~= nil then
-            local listener_bindings = event_bindings[binding.listener]
-            if listener_bindings ~= nil then
-                listener_bindings[binding.markerfn] = nil
-                if next(listener_bindings) == nil then
-                    event_bindings[binding.listener] = nil
-                end
-            end
-
-            if next(event_bindings) == nil then
-                source_bindings[binding.event] = nil
-            end
-        end
-
-        if next(source_bindings) == nil then
-            _priority_bindings[binding.source] = nil
-        end
-    end
-
-    local source_competitors = _priority_competitors[binding.source]
-    if source_competitors ~= nil then
-        local event_competitors = source_competitors[binding.event]
-        if event_competitors ~= nil then
-            local group_competitors = event_competitors[binding.group]
-            if group_competitors ~= nil then
-                _ArrayRemoveValue(group_competitors, binding)
-                if #group_competitors == 0 then
-                    event_competitors[binding.group] = nil
-                end
-            end
-
-            if next(event_competitors) == nil then
-                source_competitors[binding.event] = nil
-            end
-        end
-
-        if next(source_competitors) == nil then
-            _priority_competitors[binding.source] = nil
-        end
-    end
-end
-
-local function _FindPriorityBinding(listener, source, event, markerfn)
-    local source_bindings = _priority_bindings[source]
-    if source_bindings == nil then
-        return nil
-    end
-
-    local event_bindings = source_bindings[event]
-    if event_bindings == nil then
-        return nil
-    end
-
-    local listener_bindings = event_bindings[listener]
-    if listener_bindings == nil then
-        return nil
-    end
-
-    return listener_bindings[markerfn]
-end
-
-function GLOBAL.PriorityEventCallback(fn, options)
-    assert(type(fn) == "function", "PriorityEventCallback expects a function")
-
-    local markerfn = function(...)
-        return fn(...)
-    end
-
-    options = options or {}
-
-    _priority_meta[markerfn] =
-    {
-        rawfn = fn,
-        priority = options.priority or 0,
-        group = options.group or "default",
-    }
-
-    return markerfn
-end
-
-function EntityScript:ListenForEvent(event, fn, source)
-    local meta = _priority_meta[fn]
-    if meta == nil then
-        return _OldListenForEvent(self, event, fn, source)
-    end
-
-    source = source or self
-
-    local existing = _FindPriorityBinding(self, source, event, fn)
-    if existing ~= nil then
+local function _RemoveGroupListener(source, event, group, fn)
+    local source_listeners = _event_listeners[source]
+    if source_listeners == nil then
         return
     end
 
-    _priority_order = _priority_order + 1
+    local event_listeners = source_listeners[event]
+    if event_listeners == nil then
+        return
+    end
+
+    local group_listeners = event_listeners[group]
+    if group_listeners == nil then
+        return
+    end
+
+    group_listeners[fn] = nil
+
+    if next(group_listeners) == nil then
+        event_listeners[group] = nil
+    end
+    if next(event_listeners) == nil then
+        source_listeners[event] = nil
+    end
+    if next(source_listeners) == nil then
+        _event_listeners[source] = nil
+    end
+end
+
+local function _IsBoundStillRegistered(source, event, group, binding)
+    local source_listeners = _event_listeners[source]
+    if source_listeners == nil then
+        return false
+    end
+    local event_listeners = source_listeners[event]
+    if event_listeners == nil then
+        return false
+    end
+    local group_listeners = event_listeners[group]
+    if group_listeners == nil then
+        return false
+    end
+    return group_listeners[binding.fn] == binding
+end
+
+-- 组内仲裁：按 priority 降序（同 priority 先注册优先）调用，fn 返回 false 顺延，其他值认领并停止。
+-- group_listeners._active 防止同组多个 boundfn 触发时重复仲裁（第二次调用直接返回）。
+local function _Dispatch(source, event, group, inst, data)
+    local source_listeners = _event_listeners[source]
+    if source_listeners == nil then
+        return
+    end
+    local event_listeners = source_listeners[event]
+    if event_listeners == nil then
+        return
+    end
+    local group_listeners = event_listeners[group]
+    if group_listeners == nil then
+        return
+    end
+
+    if group_listeners._active then
+        return
+    end
+    group_listeners._active = true
+
+    local ordered = {}
+    for fn, binding in pairs(group_listeners) do
+        if fn ~= "_active" and _IsBoundStillRegistered(source, event, group, binding) then
+            ordered[#ordered + 1] = binding
+        end
+    end
+
+    table.sort(ordered, function(a, b)
+        if a.priority ~= b.priority then
+            return a.priority > b.priority
+        end
+        return a.order < b.order
+    end)
+
+    for i = 1, #ordered do
+        local binding = ordered[i]
+        local result = binding.fn(inst, data)
+        if result ~= false then
+            break
+        end
+    end
+
+    group_listeners._active = nil
+end
+
+function EntityScript:PriorityListenForEvent(event, fn, source, options)
+    source = source or self
+
+    options = options or {}
+    local priority = options.priority or 0
+    local group = options.group or "default"
+
+    local group_listeners = _GetGroupListeners(source, event, group)
+    if group_listeners[fn] ~= nil then
+        return -- 已注册，不重复挂接
+    end
+
+    _source_order = _source_order + 1
 
     local binding =
     {
-        listener = self,
-        source = source,
-        event = event,
-        markerfn = fn,
-        priority = meta.priority,
-        group = meta.group,
-        order = _priority_order,
+        fn = fn,
+        priority = priority,
+        order = _source_order,
     }
 
+    -- 复用 vanilla 监听注册：boundfn 挂在 source 上，listener 是 self。
+    -- event_listeners / event_listening 两表都由 vanilla 维护，RemoveEventCallback 时对称清理。
     binding.boundfn = function(inst, data)
-        local best = _GetBestBinding(binding.source, binding.event, binding.group)
-        if best ~= binding then
-            return
-        end
-        return meta.rawfn(inst, data)
+        _Dispatch(source, event, group, inst, data)
     end
-    _RegisterPriorityBinding(binding)
 
-    return _OldListenForEvent(self, event, binding.boundfn, source)
+    group_listeners[fn] = binding
+    self:ListenForEvent(event, binding.boundfn, source)
 end
 
-function EntityScript:RemoveEventCallback(event, fn, source)
-    local meta = _priority_meta[fn]
-    if meta == nil then
-        return _OldRemoveEventCallback(self, event, fn, source)
-    end
-
+function EntityScript:PriorityRemoveEventCallback(event, fn, source)
     source = source or self
 
-    local binding = _FindPriorityBinding(self, source, event, fn)
-    if binding == nil then
+    local source_listeners = _event_listeners[source]
+    if source_listeners == nil then
+        return
+    end
+    local event_listeners = source_listeners[event]
+    if event_listeners == nil then
         return
     end
 
-    _UnregisterPriorityBinding(binding)
-    return _OldRemoveEventCallback(self, event, binding.boundfn, source)
+    -- 跨 group 精确匹配：fn 是原始函数，binding 记录其注册时的 group，取出 boundfn 后从 vanilla 移除
+    for group, group_listeners in pairs(event_listeners) do
+        local binding = group_listeners[fn]
+        if binding ~= nil then
+            self:RemoveEventCallback(event, binding.boundfn, source)
+            _RemoveGroupListener(source, event, group, fn)
+            return
+        end
+    end
 end

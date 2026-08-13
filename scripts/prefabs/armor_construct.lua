@@ -87,7 +87,7 @@ local function onequip(inst, owner)
     owner.components.health.minhealthmodifiers:SetModifier(inst, 1)
   end
   inst:ListenForEvent("blocked", OnBlocked, owner)
-  inst:ListenForEvent("minhealth", inst._OnMinHealth, owner)
+  inst:PriorityListenForEvent("minhealth", inst._OnMinHealth, owner, { priority = 2 })
   inst:ListenForEvent("attacked", inst._OnOwnerAttacked, owner)
   StartExchangeTask(inst)
 end
@@ -98,7 +98,7 @@ local function onunequip(inst, owner)
     owner.components.health.minhealthmodifiers:RemoveModifier(inst)
   end
   inst:RemoveEventCallback("blocked", OnBlocked, owner)
-  inst:RemoveEventCallback("minhealth", inst._OnMinHealth, owner)
+  inst:PriorityRemoveEventCallback("minhealth", inst._OnMinHealth, owner)
   inst:RemoveEventCallback("attacked", inst._OnOwnerAttacked, owner)
   StopExchangeTask(inst)
 
@@ -172,11 +172,12 @@ local function fn()
   inst._OnOwnerAttacked = function(owner, data)
     inst._exchange_pause_until = GetTime() + ARMOR_CONSTRUCT.EXCHANGE_PAUSE_AFTER_DAMAGE
   end
-  inst._OnMinHealth = PriorityEventCallback(function(owner)
+  inst._OnMinHealth = function(owner)
     -- 宿主血量回满, 自身销毁
     owner.components.health:SetPercent(1)
     inst:Remove()
-  end, { priority = 2 })
+    return true
+  end
   inst.components.equippable:SetOnEquip(onequip)
   inst.components.equippable:SetOnUnequip(onunequip)
 
