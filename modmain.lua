@@ -88,6 +88,8 @@ modimport('modmain/armor_extension')
 modimport('modmain/control_definition')
 -- 飞行组件
 modimport('modmain/ark_flyer')
+-- 强化组件
+modimport('modmain/enhanceable')
 -- 活fx
 modimport('modmain/ark_alive_fx')
 -- 特效生成器
