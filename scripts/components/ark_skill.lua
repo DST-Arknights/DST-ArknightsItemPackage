@@ -33,41 +33,53 @@ local CONFIG_CALLBACK_EVENT_MAP = {
 
 local CopySaveData = hooks.CopySaveData
 
--- 序列化/反序列化 state 中的 entity 引用（两阶段加载）
--- SerializeState 返回两个值：清理后的 state（不含 entity 引用）和 entity refs 映射
--- 这样 OnLoad 到 LoadPostPass 之间，state 中的 entity 字段为 nil，而不是占位符
+-- state 中的实体以 GetSaveRecord 内联嵌套存档（参考 player_common.lua 的 wormlight）：
+-- 玩家存档不适用 save references（SerializeUserSession 丢弃 refs），实体数据须自包含。
+-- 序列化：实体 → { _ark_entity_save = record }；读档：SpawnSaveRecord 还原。
 local function SerializeState(state, refs)
-  if type(state) ~= "table" then return state, nil end
+  if type(state) ~= "table" then return state end
   local copy = {}
-  local entityRefs = nil
   for k, v in pairs(state) do
     if EntityScript.is_instance(v) then
-      entityRefs = entityRefs or {}
-      entityRefs[k] = { _ark_entity_ref = v.GUID }
-      table.insert(refs, v.GUID)
-      -- 不在 copy 中保留，让 OnLoad 到 LoadPostPass 之间读到 nil
-    elseif type(v) == "table" then
-      local subCopy, subRefs = SerializeState(v, refs)
-      copy[k] = subCopy
-      if subRefs then
-        entityRefs = entityRefs or {}
-        entityRefs[k] = subRefs
+      if v:IsValid() then
+        local record, innerRefs = v:GetSaveRecord()
+        copy[k] = { _ark_entity_save = record }
+        -- 嵌套实体自身的 references 一并上抛（对世界实体存档可用于解析）
+        if innerRefs then
+          for _, guid in ipairs(innerRefs) do
+            table.insert(refs, guid)
+          end
+        end
       end
+      -- 无效实体不保留（skill 侧应在实体销毁时自行清理 state）
+    elseif type(v) == "table" then
+      copy[k] = SerializeState(v, refs)
     else
       copy[k] = v
     end
   end
-  return copy, entityRefs
+  return copy
 end
 
-local function DeserializeState(state, entityRefs, newents)
-  if type(state) ~= "table" or type(entityRefs) ~= "table" then return end
-  for k, ref in pairs(entityRefs) do
-    if ref._ark_entity_ref then
-      local entry = newents[ref._ark_entity_ref]
-      state[k] = EntityScript.is_instance(entry) and entry or nil
-    elseif type(ref) == "table" and type(state[k]) == "table" then
-      DeserializeState(state[k], ref, newents)
+-- 读档：把 state 中的 { _ark_entity_save = record } 还原为实体。
+-- 恢复的实体记录到 skill._restoredEntities，供 skill 移除时兜底清理（防重复/残留）。
+local function DeserializeState(state, skill)
+  if type(state) ~= "table" then return end
+  for k, v in pairs(state) do
+    if type(v) == "table" and v._ark_entity_save then
+      local ent = SpawnSaveRecord(v._ark_entity_save)
+      if ent ~= nil then
+        ent.persists = false -- 继续由技能接管，不回到世界存档
+        state[k] = ent
+        if skill then
+          skill._restoredEntities = skill._restoredEntities or {}
+          table.insert(skill._restoredEntities, ent)
+        end
+      else
+        state[k] = nil
+      end
+    elseif type(v) == "table" then
+      DeserializeState(v, skill)
     end
   end
 end
@@ -373,6 +385,11 @@ end
 -- 被动技能没有 Activate/Deactivate 边界，state 一直保留直到技能被移除。
 
 function SingleSkill:SetState(key, value)
+  -- 实体被技能接管：不再由世界系统存档（persists=false），
+  -- 由 ArkSkill:OnSave 通过 GetSaveRecord 嵌套保存，读档 SpawnSaveRecord 恢复
+  if EntityScript.is_instance(value) then
+    value.persists = false
+  end
   self.data.state[key] = value
 end
 
@@ -665,6 +682,10 @@ function SingleSkill:RefreshTag()
   end
   self.refreshTagTask = self.inst:DoTaskInTime(0, function()
     self.refreshTagTask = nil
+    -- 实体可能已移除（如玩家下线/快照迁移临时玩家被 Remove 时 skill 清理触发），跳过
+    if not self.inst:IsValid() then
+      return
+    end
     local levels = self:GetConfigLevels()
     for level in pairs(levels) do
       local builder_tag = common.genArkSkillLevelUpPrefabNameById(self.id, level)
@@ -953,7 +974,7 @@ function SingleSkill:Remove()
     self.refreshTagTask:Cancel()
     self.refreshTagTask = nil
   end
-  self:Cancel() -- 若在激活中，触发 deactivate → HookFunctionWhileActivating 自动清除
+  self:Cancel() -- 若在激活中，触发 deactivate → OnSkill3Deactivate 等清理 state 实体
   self:Lock()
   if self._cfgOnRemove and not self._removing then
     self._cfgOnRemove(self, {})
@@ -961,6 +982,17 @@ function SingleSkill:Remove()
   self:_CleanupOwnedHooks() -- 兜底：清理所有未释放的 hook
   self._removing = true
   self.manager:RemoveSkill(self.id)
+  -- 兜底：清理读档恢复的实体。
+  -- 读档会经历"快照恢复 → SerializeUserSession → Remove"流程，临时玩家 v 恢复的
+  -- 实体（如锚点A）若未被 deactivate 移除，此处统一清除，避免与新玩家的实体重复。
+  if self._restoredEntities then
+    for _, ent in ipairs(self._restoredEntities) do
+      if ent and ent:IsValid() then
+        ent:Remove()
+      end
+    end
+    self._restoredEntities = nil
+  end
 end
 
 function ArkSkill:_GetCurrentElite()
@@ -1168,10 +1200,10 @@ function ArkSkill:OnSave()
         configPatch = skill:GetConfigPatchString() ~= "" and skill:GetConfigPatchString() or nil,
         cfg = nil,
       }
-      -- 将 state 中的 entity 引用剥离到单独的 stateEntityRefs 表
-      -- 这样 OnLoad 到 LoadPostPass 之间，state 中的 entity 字段为 nil
+      -- state 中的实体内联为 { _ark_entity_save = record }（GetSaveRecord 嵌套存档），
+      -- state 本身自包含、可序列化；实体在 OnLoad 时同步 SpawnSaveRecord 恢复
       if savedSkill.data.state then
-        savedSkill.data.state, savedSkill.stateEntityRefs = SerializeState(savedSkill.data.state, refs)
+        savedSkill.data.state = SerializeState(savedSkill.data.state, refs)
       end
       if skill._cfgOnSave then
         local cfgData = {}
@@ -1201,6 +1233,14 @@ function ArkSkill:OnLoad(data)
       local s = self.skillsById[id]
       if s then
         s:OnLoad(skillData)
+        -- 同步恢复 state 中的实体（SpawnSaveRecord）。
+        -- 不能延后到 LoadPostPass：读档期间快照恢复流程会同步触发 SerializeUserSession，
+        -- 若此时实体未恢复，OnSave 会把剥离后的 state 重存成空档覆盖存档。
+        DeserializeState(s.data.state, s)
+        -- cfg 通道（技能开发者 OnLoad）同样同步调用，避免 LoadPostPass 异步被重存覆盖
+        if s._cfgOnLoad then
+          s._cfgOnLoad(s, skillData.cfg or {})
+        end
       end
     end
   end
@@ -1213,35 +1253,35 @@ function ArkSkill:OnLoad(data)
 end
 
 function ArkSkill:LoadPostPass(newents, data)
-  ArkLogger:Info("ArkSkill LoadPostPass", newents, data)
   if not data or not data.skills then
     return
   end
   for id, _ in pairs(data.skills) do
     local s = self.skillsById[id]
-    if s then
-      -- 恢复 state 中的 entity 引用（从单独的 stateEntityRefs 表恢复）
-      if s.data.state and data.skills[id].stateEntityRefs then
-        DeserializeState(s.data.state, data.skills[id].stateEntityRefs, newents)
-      end
-      if s._cfgOnLoad then
-        s._cfgOnLoad(s, data.skills[id].cfg or {})
-      end
-      -- 若读档前处于激活状态，在 entity 恢复后再触发 activate_effect
-      ArkLogger:Info("ArkSkill LoadPostPass", id, "IsActivating:", s:IsActivating())
-      if s:IsActivating() then
-        s:_EmitActivateEffect({ source = "load" })
-      end
+    -- 实体与 cfg 已在 OnLoad 同步恢复，这里只在读档后补触发激活效果（缓冲一轮，等实体/世界稳定）
+    if s and s:IsActivating() then
+      s:_EmitActivateEffect({ source = "load" })
     end
   end
 end
 
--- OnPreRemoveFromEntity
-function ArkSkill:OnPreRemoveFromEntity()
+-- 清理所有技能（含读档恢复的实体）。
+-- OnPreRemoveFromEntity（组件被 RemoveComponent 移除，ItemPackage entityscript_extension 调用）
+-- 与 OnRemoveEntity（实体被 Remove 移除，EntityScript:Remove 调用，如玩家下线/快照迁移临时玩家）
+-- 共用本清理，保证任何路径都释放技能及被接管的实体。
+function ArkSkill:_CleanupSkills()
   self.inst:RemoveEventCallback("ark_elite_changed", self._onBuiltinEliteChanged)
   for _, s in pairs(self.skillsById) do
     s:Remove()
   end
+end
+
+function ArkSkill:OnPreRemoveFromEntity()
+  self:_CleanupSkills()
+end
+
+function ArkSkill:OnRemoveEntity()
+  self:_CleanupSkills()
 end
 
 -- ── Hook 系统（ArkSkill manager 层） ─────────────────────────────────────────
