@@ -517,7 +517,13 @@ function SympatheticPendant:OnLoad(data)
   if data and data.emotion then
     self.emotion_start_time = data.emotion_start_time or os.time()
     self.last_combat_time = data.last_combat_time or 0
-    self:SetEmotion(data.emotion)
+    self.emotion = data.emotion
+    -- 只有徽章仍装备在身上时才应用 buff：该组件挂在玩家身上且常驻保存，
+    -- 若脱装后读档也调用 SetEmotion，会错误地把最后一次的情绪 buff 重新加上。
+    -- 脱装时只恢复情绪状态，供下次装备时衔接。
+    if self.equipped then
+      self:SetEmotion(data.emotion)
+    end
   end
 end
 
