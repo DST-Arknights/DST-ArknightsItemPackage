@@ -31,6 +31,8 @@ AddAction("ENHANCE", STRINGS.ACTIONS.ENHANCE.GENERIC, function(act)
   return false
 end)
 
+ACTIONS.ENHANCE.priority = 10
+
 AddComponentAction("USEITEM", "inventoryitem", function(inst, doer, target, actions, right)
   if not target or not target:HasTag("enhanceable") then
     return

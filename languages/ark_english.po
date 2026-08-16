@@ -285,6 +285,11 @@ msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.ENHANCE.GENERIC"
 msgid "I can't enhance it."
 msgstr "I can't enhance it."
 
+#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.ENHANCE.MATERIAL_AT_MAX
+msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.ENHANCE.MATERIAL_AT_MAX"
+msgid "This material has already reached its enhancement limit."
+msgstr "This material has already reached its enhancement limit."
+
 #. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK
 msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK"
 msgid "The backpack is full."
