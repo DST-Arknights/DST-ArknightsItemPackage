@@ -1274,8 +1274,8 @@ msgstr "请先完成上一阶段精英化"
 
 #. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_LEVEL_NOT_ENOUGH
 msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.BUILD.ARK_ELITE_LEVEL_NOT_ENOUGH"
-msgid "Reach the current elite level cap first"
-msgstr "请先将当前精英阶段升到满级"
+msgid "Please first upgrade the level of the current elite stage to full level"
+msgstr "请先将当前精英阶段的等级升到满级"
 
 #. STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT
 msgctxt "STRINGS.UI.ARK_SKILL.REMAINING_TIME_FMT"

@@ -183,7 +183,7 @@ function GLOBAL.RegisterArkSkill(skill)
   local installRep = AddCharacterRecipe(installPrefabName, {
     Ingredient("ark_gold", 180000),
     Ingredient(CHARACTER_INGREDIENT.SANITY, 50),
-  }, TECH.NONE, {
+  }, TECH.ARK_TRAINING_ONE, {
     nounlock = true,
     atlas = skill.recipe_atlas or skill.atlas,
     image = skill.recipe_image or skill.image,

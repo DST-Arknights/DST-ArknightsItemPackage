@@ -43,21 +43,22 @@ function GLOBAL.AddEliteLevelUpRecipes(characterPrefab,elites)
   for currentElite, eliteConfig in ipairs(elites) do
     local nextElite = currentElite + 1
     local prefabName = 'ark_elite_level_up_' .. characterPrefab .. '_' .. nextElite
-    local rep = AddCharacterRecipe(prefabName, eliteConfig.ingredients, TECH.ARK_TRAINING_ONE, {
+    local rep = AddCharacterRecipe(prefabName, eliteConfig.ingredients, TECH.NONE, {
       -- force_hint = true,
       nounlock = true,
       atlas = eliteConfig.atlas,
       image = eliteConfig.image,
       actionstr = "ARK_ELITE_UPDATE",
       builder_tag = characterPrefab,
-      manufactured = true,
+      product = "ark_craft_callback",
+      dropitem = true,
       canbuild = CanBuild
-    }, { "CRAFTING_STATION" })
+    })
     rep._targetElite = nextElite
-    -- 机器制造回调
-    rep.manufacturedfn = function(inst, doer)
-      if doer and doer.components.ark_elite and CanBuild(rep, doer) then
-        doer.components.ark_elite:SetElite(nextElite)
+    -- 制造回调：由隐形回调预制体 ark_craft_callback 在 OnBuiltFn 阶段触发（无科技/无建筑直接制作）
+    rep.OnBuiltFn = function(ghost, builder)
+      if builder and builder.components.ark_elite and CanBuild(rep, builder) then
+        builder.components.ark_elite:SetElite(rep._targetElite)
       end
     end
     local upperName = string.upper(prefabName)
