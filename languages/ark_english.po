@@ -165,6 +165,56 @@ msgctxt "STRINGS.UI.ARK_ELITE.ELITE"
 msgid "Elite"
 msgstr "Elite"
 
+#. STRINGS.UI.NUMBERS.1
+msgctxt "STRINGS.UI.NUMBERS.1"
+msgid "1"
+msgstr "one"
+
+#. STRINGS.UI.NUMBERS.2
+msgctxt "STRINGS.UI.NUMBERS.2"
+msgid "2"
+msgstr "two"
+
+#. STRINGS.UI.NUMBERS.3
+msgctxt "STRINGS.UI.NUMBERS.3"
+msgid "3"
+msgstr "three"
+
+#. STRINGS.UI.NUMBERS.4
+msgctxt "STRINGS.UI.NUMBERS.4"
+msgid "4"
+msgstr "four"
+
+#. STRINGS.UI.NUMBERS.5
+msgctxt "STRINGS.UI.NUMBERS.5"
+msgid "5"
+msgstr "five"
+
+#. STRINGS.UI.NUMBERS.6
+msgctxt "STRINGS.UI.NUMBERS.6"
+msgid "6"
+msgstr "six"
+
+#. STRINGS.UI.NUMBERS.7
+msgctxt "STRINGS.UI.NUMBERS.7"
+msgid "7"
+msgstr "seven"
+
+#. STRINGS.UI.NUMBERS.8
+msgctxt "STRINGS.UI.NUMBERS.8"
+msgid "8"
+msgstr "eight"
+
+#. STRINGS.UI.NUMBERS.9
+msgctxt "STRINGS.UI.NUMBERS.9"
+msgid "9"
+msgstr "nine"
+
+#. STRINGS.UI.NUMBERS.10
+msgctxt "STRINGS.UI.NUMBERS.10"
+msgid "10"
+msgstr "ten"
+
 #. STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL
 msgctxt "STRINGS.UI.ARK_ELITE.HOVER.POTENTIAL"
 msgid "Potential: %d"

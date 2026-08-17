@@ -39,12 +39,26 @@ local function CanBuild(recipe, inst, pt, rotation, prototyper, skin)
   return true
 end
 
+-- 精英阶段显示名：1-10 用数字词（中文"一"…英文"one"…），超出退化阿拉伯数字
+local function GetEliteStageName(stage)
+  local word = STRINGS.UI.NUMBERS and STRINGS.UI.NUMBERS[stage] or nil
+  if word ~= nil then
+    -- 中文无空格拼接（精英化一），其他语言空格拼接（Elite one）
+    local isZh = LOC.GetLocaleCode() ~= nil and LOC.GetLocaleCode():match("^zh") ~= nil
+    return STRINGS.UI.ARK_ELITE.ELITE .. (isZh and "" or " ") .. word
+  end
+  return STRINGS.UI.ARK_ELITE.ELITE .. " " .. stage
+end
+
 function GLOBAL.AddEliteLevelUpRecipes(characterPrefab,elites)
   for currentElite, eliteConfig in ipairs(elites) do
     local nextElite = currentElite + 1
     local prefabName = 'ark_elite_level_up_' .. characterPrefab .. '_' .. nextElite
     local rep = AddCharacterRecipe(prefabName, eliteConfig.ingredients, TECH.NONE, {
       -- force_hint = true,
+      -- nameoverride/description 是 STRINGS.NAMES/RECIPE_DESC 的索引 key，非直接文本；
+      -- 描述设为本配方名，避免 UI 落到共享 product 上
+      description = prefabName,
       nounlock = true,
       atlas = eliteConfig.atlas,
       image = eliteConfig.image,
@@ -61,8 +75,9 @@ function GLOBAL.AddEliteLevelUpRecipes(characterPrefab,elites)
         builder.components.ark_elite:SetElite(rep._targetElite)
       end
     end
+    -- 配方显示名/描述：UI 以 recipe.name 为 key 查 STRINGS.NAMES / STRINGS.RECIPE_DESC
     local upperName = string.upper(prefabName)
-    STRINGS.NAMES[upperName] = eliteConfig.name or (STRINGS.UI.ARK_ELITE.ELITE .. " " .. (nextElite - 1))
-    STRINGS.RECIPE_DESC[upperName] = eliteConfig.desc or (STRINGS.UI.ARK_ELITE.ELITE .. " " .. (nextElite - 1))
+    STRINGS.NAMES[upperName] = eliteConfig.name or GetEliteStageName(nextElite - 1)
+    STRINGS.RECIPE_DESC[upperName] = eliteConfig.desc or GetEliteStageName(nextElite - 1)
   end
 end
