@@ -103,22 +103,9 @@ function Set-ModinfoDescription {
     $enBlocks = @()
     $zhBlocks = @()
     foreach ($v in $versionEntries) {
-        $enBullets = @()
-        $zhBullets = @()
-        foreach ($item in $v.Items) {
-            $parts = $item -split '\s*\|\s*', 2
-            if ($parts.Count -eq 2) {
-                $enBullets += $parts[0]
-                $zhBullets += $parts[1]
-            }
-            else {
-                $enBullets += $item
-                $zhBullets += $item
-            }
-        }
         $header = "v$($v.Version) ($($v.Date))"
-        $enBlocks += "$header`n" + (($enBullets | ForEach-Object { "- $_" }) -join "`n")
-        $zhBlocks += "$header`n" + (($zhBullets | ForEach-Object { "- $_" }) -join "`n")
+        $enBlocks += "$header`n" + (($v.EnItems | ForEach-Object { "- $_" }) -join "`n")
+        $zhBlocks += "$header`n" + (($v.ZhItems | ForEach-Object { "- $_" }) -join "`n")
     }
     $enVersionText = ($enBlocks -join "`n---`n")
     $zhVersionText = ($zhBlocks -join "`n---`n")

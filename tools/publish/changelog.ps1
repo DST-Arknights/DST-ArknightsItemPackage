@@ -53,7 +53,7 @@ function Invoke-AIChangelog {
         }
 
         Write-Warning "[跳过]  自上次 tag 以来无新提交（工作区干净），使用最小 changelog 条目。"
-        $fallback = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n- 版本发布`n"
+        $fallback = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n- 版本发布`n`n---`n`n- Version release`n"
         Write-ChangelogEntry -ChangelogPath $ChangelogPath -Version $Version -Content $fallback
         return
     }
@@ -75,15 +75,18 @@ function Invoke-AIChangelog {
     $prompt = @"
 You are writing changelog entries for a DST character/mod version v$Version.
 
-FORMAT (strict — every line must follow this):
-- English description | 中文描述
+FORMAT (strict):
+1. Output ALL Chinese bullet lines first (each starting with "- ").
+2. Then a single separator line containing exactly "---".
+3. Then ALL English bullet lines (each starting with "- ").
 
 RULES:
+- Each Chinese bullet must have a corresponding English bullet (same content, different language), in the same order.
 - Describe EVERY meaningful change visible in the commits below. Do NOT skip commits.
 - Merge truly related changes into one line, but err on the side of keeping separate items.
-- Project infrastructure changes (publish scripts, CI, config) are STILL worth mentioning — describe them concretely, e.g. "- Automated release pipeline | 自动化发布流程"
+- Project infrastructure changes (publish scripts, CI, config) are STILL worth mentioning — describe them concretely.
 - Keep proper nouns (character names, item names, technical terms) in English.
-- Output 1-10 lines. NO preamble, NO analysis, NO code blocks — just "- " bullet lines.
+- NO blank lines between bullets within a group. NO preamble, NO analysis, NO code blocks.
 
 Commits to summarize:
 $commitList
@@ -393,7 +396,7 @@ function Get-ChangelogVersionEntries {
     从 CHANGELOG.md 读取最近 N 个版本的条目，返回结构化数组。
     用于 Set-ModinfoDescription 整体重建版本信息块（而非就地编辑）。
 
-    返回: @(@{Version='2.5.2'; Date='2026-07-28'; Items=@('en item | zh item', ...)}, ...)
+    返回: @(@{Version='2.5.2'; Date='2026-07-28'; ZhItems=@('中文条目', ...); EnItems=@('English item', ...)}, ...)
     #>
     param(
         [Parameter(Mandatory = $true)]
@@ -420,15 +423,38 @@ function Get-ChangelogVersionEntries {
         $date    = $m.Groups[2].Value
         $body    = $m.Groups[3].Value
 
-        # 提取所有 - 或 * 开头的条目行
-        $bulletMatches = [regex]::Matches($body, '^[-*]\s+(.+)', [System.Text.RegularExpressions.RegexOptions]::Multiline)
-        $items = @($bulletMatches | ForEach-Object { $_.Groups[1].Value.Trim() })
+        # 中英文分组: 以独立一行的 --- 为界, 之前为中文, 之后为英文
+        $zhItems = @()
+        $enItems = @()
+        $sepMatch = [regex]::Match($body, '(?m)^\s*---\s*$')
+        if ($sepMatch.Success) {
+            $zhPart = $body.Substring(0, $sepMatch.Index)
+            $enPart = $body.Substring($sepMatch.Index + $sepMatch.Length)
+            $zhItems = @([regex]::Matches($zhPart, '(?m)^[-*]\s+(.+)') | ForEach-Object { $_.Groups[1].Value.Trim() })
+            $enItems = @([regex]::Matches($enPart, '(?m)^[-*]\s+(.+)') | ForEach-Object { $_.Groups[1].Value.Trim() })
+        }
+        else {
+            # 旧格式兼容: en | zh 逐行拆分
+            $allItems = @([regex]::Matches($body, '(?m)^[-*]\s+(.+)') | ForEach-Object { $_.Groups[1].Value.Trim() })
+            foreach ($item in $allItems) {
+                $parts = $item -split '\s*\|\s*', 2
+                if ($parts.Count -eq 2) {
+                    $enItems += $parts[0]
+                    $zhItems += $parts[1]
+                }
+                else {
+                    $enItems += $item
+                    $zhItems += $item
+                }
+            }
+        }
 
-        if ($items.Count -gt 0) {
+        if ($zhItems.Count -gt 0 -or $enItems.Count -gt 0) {
             $entries += @{
                 Version = $version
                 Date    = $date
-                Items   = $items
+                ZhItems = $zhItems
+                EnItems = $enItems
             }
         }
     }
