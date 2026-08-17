@@ -1,11 +1,36 @@
 -------------------------------------------------------------------
--- ark_flyer 飞行动画 stategraph 钩子
--- 启用飞行后角色常态浮空，起飞/降落分别播放过渡动画
+-- ark_flyer 飞行辅助
+--  - 飞行动画 stategraph 钩子
+--  - locomotor.RunForward 后维持飞行高度（移动会覆盖垂直马达速度）
 -------------------------------------------------------------------
 
+-- 有网络变量（replica：net_flying/net_percent）的组件必须在实体创建时就装好，
+-- 否则引擎的副本同步会出问题（客户端 replica 依据服务端同步的 tag 建立）。
+-- 故所有玩家在 postInit 后即内置 ark_flyer 组件。
+AddPlayerPostInit(function(inst)
+    if TheWorld.ismastersim and not inst.components.ark_flyer then
+        inst:AddComponent("ark_flyer")
+    end
+end)
+
+-- 移动会重新设置 SetMotorVel，垂直分量被覆盖导致高度掉落。
+-- 飞行中的角色在 RunForward 后再次调用 DriveHeight 维持高度（参考伊蕾娜模组）。
+AddComponentPostInit("locomotor", function(cmp)
+    local RunForward = cmp.RunForward
+    cmp.RunForward = function(self, ...)
+        RunForward(self, ...)
+        local flyer = self.inst.components and self.inst.components.ark_flyer
+        if flyer and flyer:IsFlying() then
+            flyer:DriveHeight()
+        end
+    end
+end)
+
 local function IsFlying(inst)
-    return inst.components.ark_flyer ~= nil
-        and inst.components.ark_flyer:IsFlying()
+    -- 从 replica 判断：启用预测补偿后客户端读不到服务端组件。
+    -- 副本先于组件加载，但普通角色没有该组件，故保留 nil 保护。
+    local replica = inst.replica and inst.replica.ark_flyer
+    return replica ~= nil and replica:IsFlying()
 end
 
 local function IsActiveFlyer(inst)

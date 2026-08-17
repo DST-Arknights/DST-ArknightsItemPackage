@@ -30,6 +30,7 @@ AddReplicableComponent("ark_currency")
 AddReplicableComponent("ark_elite")
 AddReplicableComponent("ark_buff_icon")
 AddReplicableComponent("ark_talent")
+AddReplicableComponent("ark_flyer")
 
 TUNING.ARK_CONFIG = {}
 
