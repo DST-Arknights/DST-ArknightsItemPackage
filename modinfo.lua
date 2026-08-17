@@ -10,21 +10,39 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.6.0 (2026-08-18)
+- Optimized elite stage name display, using Chinese number words instead of Arabic numerals for stages 1-10
+- Introduced the invisible prefab ark_craft_callback for recipes that only trigger callbacks without producing items
+- Refactored elite upgrade and skill install craft callback logic and adjusted related recipe tech requirements
+- Fixed Chinese/English prompt text shown when elite level is insufficient
+- Reworked the flying component to control altitude with a physical motor instead of directly modifying the y coordinate, re-driving height when moving, and adjusted flight/landing collision
+- Completed flyer network sync by mounting state to the replica for prediction compensation and auto-adding the component on player init
+- Optimized emotion buff application while a badge is equipped to avoid wrongly restoring emotion state after unequipping
+- Optimized entity serialization/deserialization to support skill state management
+- Added item enhancement component and feature, including CN/EN translations for enhancement limit prompts
+- Optimized armor structure event listening with a priority mechanism for min-HP events and cleaned up redundant description text
+---
 v2.5.12 (2026-08-12)
 - Updated M3 Cocoon Armor data and renamed its prefab
 - Added armor_construct resource
----
-v2.5.11 (2026-08-11)
-- Changed the Construct Armor's tag from "body" to "armor"
 ]]
 
 local UPDATE_ZH = [[
+v2.6.0 (2026-08-18)
+- 优化精英阶段名称显示，1至10阶段使用数字词替代阿拉伯数字
+- 引入隐形预制体 ark_craft_callback，用于仅触发回调无需实际产物的配方
+- 重构精英升级与技能安装的制造回调逻辑，调整相关配方的科技需求
+- 修复精英等级不足时的中英文提示文本
+- 重构飞行组件，改用物理马达控制垂直高度而非直接修改 y 坐标，移动时重新驱动高度，并调整飞行与降落碰撞
+- 完善飞行组件网络同步，将状态挂载到 replica 支持预测补偿，并在玩家初始化时自动添加组件
+- 优化徽章装备状态下的情绪 buff 应用逻辑，避免脱装后错误恢复情绪状态
+- 优化实体序列化与反序列化逻辑，支持技能状态管理
+- 新增物品强化组件与功能，更新强化上限提示的中英文翻译
+- 优化盔甲构造的事件监听，使用优先级机制处理最小生命值事件，并移除多余的描述文本
+---
 v2.5.12 (2026-08-12)
 - 修改M3茧甲数据, 预制体重命名
 - 新增 armor_construct 资源
----
-v2.5.11 (2026-08-11)
-- 将构造盔甲的标签从 "body" 更改为 "armor"
 ]]
 
 description = T({
@@ -51,7 +69,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.5.12"
+version = "2.6.0"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
