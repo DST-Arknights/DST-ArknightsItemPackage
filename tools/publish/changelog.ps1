@@ -203,6 +203,8 @@ function Invoke-AITool {
                 # 通过 stdin 管道传入 prompt + --session-id 新 UUID 确保完全无状态
                 $sessionId = [Guid]::NewGuid().ToString()
                 $output = Get-Content $tmpFile -Raw | & $ToolPath --session-id $sessionId -p 2>&1
+                # 过滤 AI CLI 的诊断日志行(如 [claude-code:unrecognized_model] ...), 避免混入 changelog
+                $output = @($output) | Where-Object { $_ -notmatch '^\s*\[claude-code:' }
             }
             finally {
                 [Console]::OutputEncoding = $prevOutputEncoding
