@@ -845,35 +845,42 @@ function SingleSkill:Recast(params)
   return true
 end
 
+-- 选择确认后：设 targetPos 并激活
+local function ActivateWithTargetPos(self, params, doer, pos)
+  params.targetPos = pos
+  local canAgain, reasonAgain = self:CanActivate(params)
+  if not canAgain then
+    if reasonAgain then SayAndVoice(self.inst, reasonAgain) end
+    return
+  end
+  self:Activate(params)
+end
+
 function SingleSkill:TryActivate(params)
   if not params then params = {} end
 
-  -- 检查是否需要目标选择器
+  -- 检查是否需要目标选择器（顶层 targetSelector = 注册表 id）
   local cfg = self:GetConfig()
-  local targeting = cfg.targeting
+  local selectorId = cfg.targetSelector
 
-  if targeting and targeting.mode == "aoe" then
-    -- 快速失败检查（不传 targetPos）
-    local can, reason = self:CanActivate(params)
-    if not can then
-      if reason then SayAndVoice(self.inst, reason) end
-      return false
-    end
+  if selectorId then
+    local selector = GetTargetSelector(selectorId)
+    if selector then
+      -- 快速失败检查（不传 targetPos）
+      local can, reason = self:CanActivate(params)
+      if not can then
+        if reason then SayAndVoice(self.inst, reason) end
+        return false
+      end
 
-    StartAoeSelect(self.inst, {
-      OnSelected = function(doer, pos)
-        params.targetPos = pos
-        -- 最终确认（传 targetPos）
-        local canAgain, reasonAgain = self:CanActivate(params)
-        if not canAgain then
-          if reasonAgain then SayAndVoice(self.inst, reasonAgain) end
-          return
+      -- 取消回调缺省：技能未激活无需回滚
+      selector:BeginSelecting(self.inst,
+        function(doer, pos)
+          ActivateWithTargetPos(self, params, doer, pos)
         end
-        self:Activate(params)
-      end,
-      config = targeting.config or {},
-    })
-    return
+      )
+      return
+    end
   end
 
   -- 无选择器路径

@@ -426,8 +426,7 @@ function ArkSkillReplica:TryActivateSkill(id)
     return false
   end
 
-  local targeting = config.targeting
-  local hasTargeting = targeting and targeting.mode == "aoe"
+  local hasTargeting = config.targetSelector ~= nil
 
   local target = TheInput:GetWorldEntityUnderMouse()
   local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
@@ -459,8 +458,7 @@ function ArkSkillReplica:RecastSkill(id)
 
   -- recastSkipTargeting 为 true 时，二段跳过指示器直接用鼠标位置
   local skipTargeting = config.recastSkipTargeting == true
-  local targeting = config.targeting
-  local hasTargeting = (not skipTargeting) and targeting and targeting.mode == "aoe"
+  local hasTargeting = (not skipTargeting) and config.targetSelector ~= nil
 
   local target = TheInput:GetWorldEntityUnderMouse()
   local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)

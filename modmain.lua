@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "ark_aoe_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
+  'ark_portable_supply', 'ark_portable_supply_range', "area_target_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
   "armor_construct", 'ark_craft_callback' }
 
 Assets = {
@@ -79,8 +79,8 @@ modimport('modmain/modifier_implement')
 modimport('modmain/entityscript_extension')
 -- 事件回调优先级
 modimport('modmain/priority_event_callback')
--- AOE 选择器
-modimport('modmain/ark_aoe_selector')
+-- 目标选择器框架（类 + 注册表 + 装配）
+modimport('scripts/target_selector')
 -- 武器扩展
 modimport('modmain/combat_extension')
 -- 护甲扩展

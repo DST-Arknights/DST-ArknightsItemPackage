@@ -44,6 +44,10 @@ local function OnKilled(inst, data)
   if not inst.components.ark_elite then
     return
   end
+  -- 关闭击杀经验时直接跳过
+  if not inst.components.ark_elite.killExpEnabled then
+    return
+  end
   -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的经验
   if not target.components.health then
     return
@@ -69,6 +73,10 @@ local function OnHitOther(inst, data)
   if not inst.components.ark_elite then
     return
   end
+  -- 关闭击杀经验时不追踪巨兽（避免巨兽死亡时仍通过 epic 加成发放经验）
+  if not inst.components.ark_elite.killExpEnabled then
+    return
+  end
   inst.components.ark_elite:_TrackEpic(target)
 end
 
@@ -84,6 +92,7 @@ local ArkElite = Class(function(self, inst)
   self._trackedEpics = {} -- { [target] = { deathfn, time } }
   self.externalexpmultipliers = SourceModifierList(inst)
   self.externalexpmultipliers:SetModifier("base", 5)
+  self.killExpEnabled = true -- 击杀获得经验开关（角色可关闭，改用自定义经验来源）
   self._apply_elite_task = self.inst:DoTaskInTime(0, function()
     self._apply_elite_task = nil
     self:ApplyElite()
@@ -210,11 +219,28 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
   end
   local oldLevel = self.level
   local pool = amount
+  local levelUps = 0
   while pool > 0 do
     local levelCap = self:_GetLevelCap()
     if self.level >= levelCap then
       -- 当前精英化阶段已满级：多余经验全部进入 overflow，等待精英化后释放
-      self.overflowExp = _clampOverflowExp((self.overflowExp or 0) + pool)
+      -- 若已是最终精英阶段：按"最后一级所需经验"折算伪升级，仍触发升级事件（供满级后继续解锁）
+      if self.elite >= _getMaxEliteByRarity(self.rarity) then
+        local lastNeed = self.inst.replica.ark_elite:GetLevelUpExp(levelCap - 1)
+        if lastNeed and lastNeed > 0 then
+          local overflow = (self.overflowExp or 0) + pool
+          local pseudo = math.floor(overflow / lastNeed)
+          if pseudo > 0 then
+            levelUps = levelUps + pseudo
+            overflow = overflow - pseudo * lastNeed
+          end
+          self.overflowExp = _clampOverflowExp(overflow)
+        else
+          self.overflowExp = _clampOverflowExp((self.overflowExp or 0) + pool)
+        end
+      else
+        self.overflowExp = _clampOverflowExp((self.overflowExp or 0) + pool)
+      end
       break
     end
 
@@ -230,6 +256,7 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
       -- 数据异常：强制升一级，重置当前经验
       self.currentExp = 0
       self.level = self.level + 1
+      levelUps = levelUps + 1
     else
       if pool >= remainToNext then
         -- 够升一级
@@ -238,6 +265,7 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
         -- 升级后当前等级 +1，经验清零
         self.currentExp = 0
         self.level = self.level + 1
+        levelUps = levelUps + 1
       else
         -- 还不够升级，只增加当前等级内经验
         self.currentExp = self.currentExp + pool
@@ -251,6 +279,10 @@ function ArkElite:_ApplyExpPool(amount, countToTotal)
   end
   if self.level ~= oldLevel then
     self:ApplyElite()
+  end
+  -- 升级事件（含满级伪升级），供外部系统（如自动掌握配方）监听
+  if levelUps > 0 then
+    self.inst:PushEvent("ark_elite_levelup", { elite = self.elite, level = self.level, count = levelUps })
   end
 end
 ----------------------------------------------------------
@@ -359,6 +391,11 @@ function ArkElite:SetMaxDefenseBonus(value)
   self.maxDefenseBonus = value or 0
 end
 
+-- 设置击杀经验开关（默认开启；关闭后角色仅通过自定义来源获得经验）
+function ArkElite:SetKillExpEnabled(enabled)
+  self.killExpEnabled = enabled ~= false
+end
+
 -- 根据累计等级 / 总等级比例，应用属性奖励
 -- Strip：把旧的奖励从属性上扣掉，回到干净的基础值
 function ArkElite:_StripBonuses()
@@ -386,10 +423,11 @@ function ArkElite:_ApplyBonuses()
   local health = self.inst.components.health
   local combat = self.inst.components.combat
 
-  -- 生命上限奖励
+  -- 生命上限奖励（支持负值：生命随成长降低的角色，负值向零舍入避免多扣）
   if health then
-    local bonus = self.maxHealthBonus and self.maxHealthBonus > 0 and math.floor(self.maxHealthBonus * ratio) or 0
-    if bonus > 0 then
+    local v = self.maxHealthBonus and (self.maxHealthBonus * ratio) or 0
+    local bonus = v >= 0 and math.floor(v) or math.ceil(v)
+    if bonus ~= 0 then
       ArkLogger:Debug("Applying health bonus", bonus, "ratio", ratio, "cumulativeLevel", cumulativeLevel, "totalLevels", totalLevels)
       health.maxhealthaddmodifiers:SetModifier(HEALTH_BONUS_MODIFIER_KEY, bonus)
     else

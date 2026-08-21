@@ -104,7 +104,7 @@ local function checkAndDefaultSkill(skill)
     energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
     activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
     hotkey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
-    targeting = skill.targeting or nil,
+    targetSelector = skill.targetSelector or nil,
     recastSkipTargeting = skill.recastSkipTargeting == true,
     levels = defaultLevelConfigs(skill.levels)
   }

@@ -18,6 +18,9 @@ end
 
 
 AddPrefabPostInitAny(function(inst)
+  if not TheWorld.ismastersim then
+    return
+  end
   inst[aliveFxSymbol] = {}
   inst:ListenForEvent("sgstatechange", OnSgStateChange)
 end)
