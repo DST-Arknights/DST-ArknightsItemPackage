@@ -432,20 +432,22 @@ function ArkSkillReplica:TryActivateSkill(id)
   local force = TheInput:IsKeyDown(KEY_CTRL) or TheInput:IsKeyDown(KEY_RCTRL)
 
   if self.inst.components.ark_skill then
-    -- 主机端：如果有选择器，不传 targetPos（由 TryActivate 内部处理）
-    local params = {
-      target = target,
-      force = force,
-    }
-    if not hasTargeting then
-      params.targetPos = TheInput:GetWorldPosition()
+    -- 主机端：有选择器走 TrySelect（启动选择器），无选择器走 TryActivate（直接激活）
+    local skill = self.inst.components.ark_skill:GetSkill(id)
+    if hasTargeting then
+      skill:TrySelect({ target = target, force = force })
+    else
+      skill:TryActivate({ target = target, targetPos = TheInput:GetWorldPosition(), force = force })
     end
-    self.inst.components.ark_skill:GetSkill(id):TryActivate(params)
   else
-    -- 客机端：如果有选择器，不传 targetPos（由服务端 TryActivate 处理）
-    local targetPos = hasTargeting and nil or TheInput:GetWorldPosition()
-    local serializedPos = targetPos and string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z) or ""
-    SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), id, target, serializedPos, force)
+    -- 客机端：有选择器走选择器 RPC，无选择器走直接激活 RPC
+    if hasTargeting then
+      SendModRPCToServer(GetModRPC("arkSkill", "ManualSelectSkill"), id, target, force)
+    else
+      local targetPos = TheInput:GetWorldPosition()
+      local serializedPos = string.format("%.2f,%.2f,%.2f", targetPos.x, targetPos.y, targetPos.z)
+      SendModRPCToServer(GetModRPC("arkSkill", "ManualActivateSkill"), id, target, serializedPos, force)
+    end
   end
   return true
 end

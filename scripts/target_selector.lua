@@ -162,7 +162,7 @@ local function HookWilsonSg(sg)
   local actionhandlers = sg.actionhandlers
   ArkHookFunction(actionhandlers[ACTIONS.CASTAOE], "deststate", function(next, inst, action, ...)
     if inst._now_target_selector then
-      return "ark_aoe_select"
+      return "target_selector_select"
     end
     return next(inst, action, ...)
   end)

@@ -252,6 +252,7 @@ local SingleSkill = Class(function(self, manager, id)
   -- 注册事件回调（按事件名索引）
   self:_InitItemBase()
   self._activateTest = nil
+  self._activateSelectorTest = nil
   -- 从配置中自动注册事件回调
   local cfg = GetArkSkillConfigById(id)
   for cfgKey, eventName in pairs(CONFIG_CALLBACK_EVENT_MAP) do
@@ -265,6 +266,12 @@ local SingleSkill = Class(function(self, manager, id)
   if cfg.ActivateTest then
     local fn = cfg.ActivateTest
     self._activateTest = function(inst, params)
+      return fn(self, params)
+    end
+  end
+  if cfg.ActivateSelectorTest then
+    local fn = cfg.ActivateSelectorTest
+    self._activateSelectorTest = function(inst, params)
       return fn(self, params)
     end
   end
@@ -785,14 +792,24 @@ function SingleSkill:AddBuffProgress(value)
   return leftBuff
 end
 
-function SingleSkill:CanActivate(params)
-  if not params then params = {} end
+-- 基础可用性检查：锁定状态 + 充能次数（不涉及目标位置）
+function SingleSkill:CanActivateBase(params)
   local data = self.data
   if data.status == CONSTANTS.SKILL_STATUS.LOCKED then
     return false
   end
   if data.activationStacks <= 0 then
     return false
+  end
+  return true
+end
+
+-- 完整激活检查：基础 + ActivateTest（有目标位置，可做实体/范围检查）
+function SingleSkill:CanActivate(params)
+  if not params then params = {} end
+  local can, reason = self:CanActivateBase(params)
+  if not can then
+    return can, reason
   end
   if self._activateTest then
     return self._activateTest(self.inst, {
@@ -845,51 +862,62 @@ function SingleSkill:Recast(params)
   return true
 end
 
--- 选择确认后：设 targetPos 并激活
-local function ActivateWithTargetPos(self, params, doer, pos)
-  params.targetPos = pos
-  local canAgain, reasonAgain = self:CanActivate(params)
-  if not canAgain then
-    if reasonAgain then SayAndVoice(self.inst, reasonAgain) end
-    return
+-- 启动选择器前的检查：基础可用性 + ActivateSelectorTest（此时无目标位置）
+function SingleSkill:CanSelect(params)
+  if not params then params = {} end
+  local can, reason = self:CanActivateBase(params)
+  if not can then
+    return can, reason
   end
-  self:Activate(params)
+  if self._activateSelectorTest then
+    return self._activateSelectorTest(self.inst, {
+      target = params.target,
+      force = params.force
+    })
+  end
+  return true
 end
 
+-- 直接激活入口（无选择器技能）：基础 + ActivateTest → 激活
 function SingleSkill:TryActivate(params)
   if not params then params = {} end
-
-  -- 检查是否需要目标选择器（顶层 targetSelector = 注册表 id）
-  local cfg = self:GetConfig()
-  local selectorId = cfg.targetSelector
-
-  if selectorId then
-    local selector = GetTargetSelector(selectorId)
-    if selector then
-      -- 快速失败检查（不传 targetPos）
-      local can, reason = self:CanActivate(params)
-      if not can then
-        if reason then SayAndVoice(self.inst, reason) end
-        return false
-      end
-
-      -- 取消回调缺省：技能未激活无需回滚
-      selector:BeginSelecting(self.inst,
-        function(doer, pos)
-          ActivateWithTargetPos(self, params, doer, pos)
-        end
-      )
-      return
-    end
-  end
-
-  -- 无选择器路径
   local can, reason = self:CanActivate(params)
   if not can then
     if reason then SayAndVoice(self.inst, reason) end
     return false
   end
   return self:Activate(params)
+end
+
+-- 启动目标选择器（有选择器技能）：ActivateSelectorTest → BeginSelecting → 确认后 ActivateTest → 激活
+function SingleSkill:TrySelect(params)
+  if not params then params = {} end
+  local cfg = self:GetConfig()
+  local selectorId = cfg.targetSelector
+  if selectorId == nil then
+    return false
+  end
+  local selector = GetTargetSelector(selectorId)
+  if selector == nil then
+    return false
+  end
+
+  local can, reason = self:CanSelect(params)
+  if not can then
+    if reason then SayAndVoice(self.inst, reason) end
+    return false
+  end
+
+  selector:BeginSelecting(self.inst, function(doer, pos)
+    params.targetPos = pos
+    local canAgain, reasonAgain = self:CanActivate(params)
+    if not canAgain then
+      if reasonAgain then SayAndVoice(self.inst, reasonAgain) end
+      return
+    end
+    self:Activate(params)
+  end)
+  return true
 end
 
 function SingleSkill:Cancel()

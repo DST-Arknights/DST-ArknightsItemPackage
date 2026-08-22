@@ -25,6 +25,19 @@ AddModRPCHandler("arkSkill", "ManualActivateSkill", function(player, id, target,
   )
 end)
 
+-- 启动目标选择器 RPC 处理（有选择器的技能：启动选择器前检查 + 弹选择器）
+AddModRPCHandler("arkSkill", "ManualSelectSkill", function(player, id, target, force)
+  if not player or not player.components.ark_skill then return end
+  local skill = player.components.ark_skill:GetSkill(id)
+  if not skill then return end
+  skill:TrySelect(
+    {
+      target = target,
+      force = force
+    }
+  )
+end)
+
 -- 手动取消技能 RPC 处理
 AddModRPCHandler("arkSkill", "ManualCancelSkill", function(player, id)
   if not player or not player.components.ark_skill then return end
@@ -112,7 +125,7 @@ local function checkAndDefaultSkill(skill)
   }
   -- 透传所有回调字段
   local callbackFields = {
-    "ActivateTest",
+    "ActivateTest", "ActivateSelectorTest",
     "OnActivate", "OnDeactivate", "OnLocked", "OnUnlocked",
     "OnEnergyRecovering", "OnActivateReady", "OnActivateEffect",
     "OnBulletCut", "OnLevelChange", "OnRecast",
