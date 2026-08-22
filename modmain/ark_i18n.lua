@@ -76,20 +76,40 @@ local VOICE_PROFILES = {}                             -- 档案注册表: key ->
 local VOICE_BIND = setmetatable({}, { __mode = "k" }) -- 弱表: inst -> 档案 key, 实体销毁自动释放
 
 --[[
+ArkLoadLuaFile(filepath)
+
+从"当前加载 mod"的根目录加载一个 lua 文件并返回其 return 值。
+路径相对 mod 根目录 (例: "languages/ling_voice", 自动补 .lua)。
+加载方式同 modimport (resolvefilepath + kleiloadlua), 但返回文件返回值。
+]]
+function GLOBAL.ArkLoadLuaFile(filepath)
+  if string.sub(filepath, -4) ~= ".lua" then
+    filepath = filepath .. ".lua"
+  end
+  local resolved = resolvefilepath(filepath) -- 经 package.assetpath 解析到当前 mod 根
+  local chunk = kleiloadlua(resolved)
+  if type(chunk) ~= "function" then
+    error("ArkLoadLuaFile: 加载失败 " .. filepath .. " (" .. tostring(chunk) .. ")")
+  end
+  setfenv(chunk, GLOBAL)
+  return chunk()
+end
+
+--[[
 RegisterVoice(key, filepath, opts)
 
-注册一个配音档案。filepath 在调用方 mod 的上下文 require, 数据文件返回 key 为中心的表:
+注册一个配音档案。filepath 从调用方 mod 根目录加载, 数据文件返回 key 为中心的表:
   { [STRINGS_KEY] = { [voice_lang] = { path=..., duration=..., name=?... }, ... }, ... }
 
 @param key      string  档案名 (BindVoice 用)
-@param filepath string  语音数据文件路径, 相对调用方 mod 的 scripts/ (例: "languages/ling_voice")
+@param filepath string  语音数据文件路径, 相对调用方 mod 根目录 (例: "languages/ling_voice", 自动补 .lua)
 @param opts     table   可选
   voice_lang  string  默认配音变体; 缺省取数据文件里第一个变体
   volume      number  默认音量
 ]]
 function GLOBAL.RegisterVoice(key, filepath, opts)
   opts = opts or {}
-  local data = require(resolvefilepath(filepath))
+  local data = ArkLoadLuaFile(filepath)
   local voice_lang = opts.voice_lang
   if voice_lang == nil then
     local _, entry = next(data)
