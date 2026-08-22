@@ -223,7 +223,9 @@ function ArkSkill:GetSkillDescConfig()
     buffDuration = self.levelConfig.buffDuration,
     hotkey = self.config.hotkey,
     level = self.level or 1,
-    desc = self.levelConfig.desc,
+    -- level desc 可为空，为空时 skill_desc 组件回退到 config 层 desc（FunctionOrValue）
+    desc = self.config.desc,
+    levelDesc = self.levelConfig.desc,
     isTemporary = self.isTemporary,
     limitTimeInitial = self.limitTimeInitial,
     limitRemaining = self.limitRemaining,

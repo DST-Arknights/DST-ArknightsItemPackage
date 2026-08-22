@@ -180,7 +180,12 @@ function ArkSkillDesc:RefreshConfig(descConfig)
 
   topOffset = topOffset - PADDING
 
-  local desc = descConfig.locked and descConfig.lockedDesc or descConfig.desc
+  -- level desc 为空时回退到 config 层 desc（多个 level 可共用同一 desc/函数）
+  local levelDesc = descConfig.levelDesc
+  if levelDesc == nil or levelDesc == '' then
+    levelDesc = descConfig.desc
+  end
+  local desc = descConfig.locked and descConfig.lockedDesc or levelDesc
   if desc then
     desc = FunctionOrValue(desc, self.owner.replica.ark_skill:GetSkill(self.id))
     local descText = self:AddChild(ArkSkillDescText(desc, self.size[1] - PADDING * 2))

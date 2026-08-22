@@ -100,6 +100,8 @@ local function checkAndDefaultSkill(skill)
     name = skill.name or skill.id,
     recipe_atlas = skill.recipe_atlas,
     recipe_image = skill.recipe_image,
+    -- 顶层 desc（FunctionOrValue）：供 skill_desc 在 level desc 为空时兜底，多个 level 可共用
+    desc = skill.desc or nil,
     lockedDesc = skill.lockedDesc or '',
     energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
     activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
@@ -167,7 +169,8 @@ function GLOBAL.RegisterArkSkill(skill)
       end
       local upperName = string.upper(prefabName)
       STRINGS.NAMES[upperName] = skill.name or (STRINGS.UI.ARK_SKILL.SKILL .. " " .. skill.name)
-      if skill.desc then
+      -- 顶层 desc 可能是 FunctionOrValue（函数），配方描述只能使用字符串
+      if type(skill.desc) == "string" then
         STRINGS.RECIPE_DESC[upperName] = skill.desc
       else
         local currentLevelStr = STRINGS.UI.ARK_SKILL.LEVEL[previousLevel] or tostring(previousLevel)
