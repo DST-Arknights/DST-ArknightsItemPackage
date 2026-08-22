@@ -134,7 +134,7 @@
 用作便捷开发. 详情待补充, 可见源码
 面向其他 AI 的协作指南见 AGENTS.md
 * 国际化PO文件合并 ark_i18n
-* 国际化语音定义 component/i18n_talker
+* 国际化语音注册/绑定/播放 RegisterVoice + BindVoice + SayAndVoice (ark_i18n)
 * 日志系统 ark_logger
 * 属性无冲修改器 modifier_installer
 * 防具, 武器, 生命值扩展 armor_extension, combat_extension, health_extension
