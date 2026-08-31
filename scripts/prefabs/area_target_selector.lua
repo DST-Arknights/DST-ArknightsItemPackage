@@ -1,5 +1,5 @@
 -- ════════════════════════════════════════════════════════
--- AOE 选择器运行实体（由 scripts/target_selector.lua 管理）
+-- AOE 选择器运行实体（由 modmain/target_selector.lua 管理）
 -- 网络同步：只传 selector id（net_string），客户端查注册表装配 reticule/aoetargeting
 -- 取消检测：玩家取消瞄准时 aoetargeting:StopTargeting 触发，延迟帧确认后发取消 RPC
 -- ════════════════════════════════════════════════════════

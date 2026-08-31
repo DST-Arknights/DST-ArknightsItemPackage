@@ -70,7 +70,7 @@ RegisterPOFile('auto', {
     en = 'languages/ark_english.po',
 })
 -- 加载热键管理器
-modimport('scripts/ark_hotkey')
+modimport('modmain/ark_hotkey')
 -- 加载属性修改器安装器
 modimport('modmain/modifier_installer')
 -- 加载属性修改器实现
@@ -80,7 +80,7 @@ modimport('modmain/entityscript_extension')
 -- 事件回调优先级
 modimport('modmain/priority_event_callback')
 -- 目标选择器框架（类 + 注册表 + 装配）
-modimport('scripts/target_selector')
+modimport('modmain/target_selector')
 -- 武器扩展
 modimport('modmain/combat_extension')
 -- 护甲扩展
