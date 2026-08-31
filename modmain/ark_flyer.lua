@@ -84,7 +84,7 @@ local function ApplyHooks(sg)
             inst.sg:GoToState(cur)
             return
         end
-        inst.AnimState:PlayAnimation("idle_loop", true)
+        inst.AnimState:PlayAnimation("ark_fly_loop", true)
     end))
 
     -- 全局事件：降落，播放退出动画；若正在 run 则重置状态以立即落地
@@ -94,15 +94,15 @@ local function ApplyHooks(sg)
             inst.sg:GoToState(cur)
             return
         end
-        inst.AnimState:PlayAnimation("idle_loop", true)
+        inst.AnimState:PlayAnimation("ark_fly_loop", true)
     end))
 
     -- run_start：飞行时保持浮空循环
     HookState(sg, "run_start",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
-                inst.AnimState:PlayAnimation("idle_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
+                inst.AnimState:PlayAnimation("ark_fly_loop", true)
             end
         end,
         nil
@@ -112,8 +112,8 @@ local function ApplyHooks(sg)
     HookState(sg, "run",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
-                inst.AnimState:PlayAnimation("idle_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
+                inst.AnimState:PlayAnimation("ark_fly_loop", true)
             end
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
@@ -124,8 +124,8 @@ local function ApplyHooks(sg)
     HookState(sg, "run_stop",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
-                inst.AnimState:PlayAnimation("idle_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
+                inst.AnimState:PlayAnimation("ark_fly_loop", true)
             end
         end,
         nil
@@ -135,8 +135,8 @@ local function ApplyHooks(sg)
     HookState(sg, "idle",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
-                inst.AnimState:PlayAnimation("idle_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
+                inst.AnimState:PlayAnimation("ark_fly_loop", true)
             end
         end,
         nil

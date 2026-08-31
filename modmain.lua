@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "area_target_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
+  'ark_portable_supply', 'ark_portable_supply_range', "area_target_selector", "map_target_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
   "armor_construct", 'ark_craft_callback' }
 
 Assets = {

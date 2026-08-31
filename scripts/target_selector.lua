@@ -1,11 +1,12 @@
 -- ════════════════════════════════════════════════════════
--- 目标选择器框架（替代 ark_aoe_selector）
--- 类体系：TargetSelector(父，纯类型基类) → AreaTargetSelector(子，aoe 实现)
--- 注册：RegisterTargetSelector(id, AreaTargetSelector {...}) —— 声明式，主客机共享段执行
+-- 目标选择器框架
+-- 类体系：TargetSelector(父，纯类型基类) → AreaTargetSelector / MapTargetSelector
+-- 注册：RegisterTargetSelector(id, XxxTargetSelector {...}) —— 声明式，主客机共享段执行
 -- 使用：GetTargetSelector(id):BeginSelecting(doer, okfn, cancelfn)
 -- 同步：只同步 selector id（net_string），两端各自查注册表拿到实例（含函数字段）
--- 父类不实现任何行为：开始/停止/装配由各子类单独实现（本例为 aoe）
--- GLOBAL 导出：TargetSelector / AreaTargetSelector / RegisterTargetSelector / GetTargetSelector / StopTargetSelecting
+-- 父类不实现任何行为：开始/停止/装配由各子类单独实现
+-- GLOBAL 导出：TargetSelector / AreaTargetSelector / MapTargetSelector /
+--              RegisterTargetSelector / GetTargetSelector
 -- ════════════════════════════════════════════════════════
 
 local SELECTORS = {}
@@ -22,7 +23,7 @@ end)
 local AreaTargetSelector = Class(TargetSelector, function(self, config)
   TargetSelector._ctor(self, config)
   config = config or {}
-  -- 公共视觉（默认值对齐原 ark_aoe_selector）
+  -- 公共视觉（沿用旧 AOE 选择器默认值）
   self.reticuleprefab = config.reticuleprefab or "reticule"     -- 瞄准圈外观
   self.pingprefab     = config.pingprefab     or "reticuleping" -- 落点确认特效
   self.validcolour    = config.validcolour    or { 1, 0.75, 0, 1 }  -- 合法时颜色
@@ -37,10 +38,86 @@ local AreaTargetSelector = Class(TargetSelector, function(self, config)
   self.validfn      = config.validfn             -- 范围有效性判定（返回 false 显示非法）
 end)
 
+-- ────────────────────────────────────────────────────────
+-- 地图子类：打开原版地图，通过 map_only action 选择世界坐标
+-- validfn(doer, pos, runtime) 在客户端用于地图反馈，服务端再次权威校验。
+-- ────────────────────────────────────────────────────────
+local MapTargetSelector = Class(TargetSelector, function(self, config)
+  TargetSelector._ctor(self, config)
+  config = config or {}
+  self.validfn = config.validfn
+  self.actionstring = config.actionstring
+end)
+
+function MapTargetSelector:IsValidPosition(doer, pos, runtime)
+  if self.validfn ~= nil then
+    return self.validfn(doer, pos, runtime)
+  end
+  return true
+end
+
+function MapTargetSelector:GetActionString(act)
+  if type(self.actionstring) == "function" then
+    return self.actionstring(act)
+  end
+  return self.actionstring
+end
+
+function MapTargetSelector:BeginSelecting(doer, okfn, cancelfn)
+  local current = doer._now_target_selector_obj
+  if current ~= nil then
+    current:StopSelecting(doer)
+  end
+
+  local runtime = SpawnPrefab("map_target_selector")
+  if runtime == nil then
+    return false
+  end
+
+  runtime._owner = doer
+  runtime._okfn = okfn
+  runtime._cancelfn = cancelfn
+  runtime._selector_obj = self
+  runtime._selector_id:set(self.id)
+  runtime.entity:SetParent(doer.entity)
+  runtime.Network:SetClassifiedTarget(doer)
+
+  runtime.CancelSelection = function(inst, player)
+    if inst._owner ~= player or inst._confirmed:value() then
+      return
+    end
+    if inst._cancelfn ~= nil then
+      inst._cancelfn(player)
+    end
+    self:StopSelecting(player)
+  end
+
+  doer._now_target_selector = runtime
+  doer._now_target_selector_obj = self
+
+  -- 单机/主机没有客户端副本的 dirty 事件，直接打开本地地图。
+  if doer.HUD ~= nil and runtime.OpenMapForLocalPlayer ~= nil then
+    runtime:OpenMapForLocalPlayer()
+  end
+  return true
+end
+
+function MapTargetSelector:StopSelecting(doer)
+  local runtime = doer._now_target_selector
+  if runtime ~= nil and runtime:IsValid() then
+    runtime:Remove()
+  end
+  doer._now_target_selector = nil
+  doer._now_target_selector_obj = nil
+end
+
 -- 开始选择（aoe 专属）：创建运行实体，同步 id，装配确认/取消回调
 -- okfn(doer, pos) / cancelfn(doer) 均可缺省（nil 时不回调）
 function AreaTargetSelector:BeginSelecting(doer, okfn, cancelfn)
-  self:StopSelecting(doer) -- 清理上次残留
+  local current = doer._now_target_selector_obj
+  if current ~= nil then
+    current:StopSelecting(doer)
+  end
 
   local selector = SpawnPrefab("area_target_selector")
   if selector == nil then
@@ -115,11 +192,81 @@ function GLOBAL.GetTargetSelector(id)
   return SELECTORS[id]
 end
 
--- 全局便捷：结束当前选择（aoe 通过 doer 上存的实例转发；其他选择器实现各自接入）
-function GLOBAL.StopTargetSelecting(doer)
-  local obj = doer._now_target_selector_obj
-  if obj and obj.StopSelecting then
-    obj:StopSelecting(doer)
+local function GetMapSelectorFromAction(act)
+  local runtime = act ~= nil and act.target or nil
+  if runtime == nil or not runtime:IsValid() or runtime.prefab ~= "map_target_selector" then
+    return nil, nil
+  end
+  local doer = act.doer
+  if doer == nil or (runtime._owner ~= doer and runtime.entity:GetParent() ~= doer) then
+    return nil, nil
+  end
+  local id = runtime._selector_id:value()
+  local selector = id ~= "" and GetTargetSelector(id) or nil
+  if selector == nil or not MapTargetSelector.is_instance(selector) then
+    return nil, nil
+  end
+  return selector, runtime
+end
+
+local function ValidateMapSelection(act)
+  local selector, runtime = GetMapSelectorFromAction(act)
+  if selector == nil then
+    return false
+  end
+  local pos = act:GetActionPoint()
+  if pos == nil then
+    return false
+  end
+  local valid, reason, x, z = selector:IsValidPosition(act.doer, pos, runtime)
+  if not valid then
+    return false, reason
+  end
+  return true, reason, x or pos.x, z or pos.z
+end
+
+local MAP_SELECT_ACTION = AddAction("ARK_TARGET_SELECT_MAP", "Select", function(act)
+  local valid, reason, x, z = ValidateMapSelection(act)
+  if not valid then
+    return false, reason
+  end
+
+  local selector, runtime = GetMapSelectorFromAction(act)
+  runtime._confirmed:set(true)
+  if runtime._okfn ~= nil then
+    runtime._okfn(act.doer, Vector3(x, 0, z))
+  end
+  selector:StopSelecting(act.doer)
+  return true
+end)
+MAP_SELECT_ACTION.priority = 10
+MAP_SELECT_ACTION.instant = true
+MAP_SELECT_ACTION.mount_valid = true
+MAP_SELECT_ACTION.map_only = true
+
+MAP_SELECT_ACTION.maponly_checkvalidpos_fn = ValidateMapSelection
+MAP_SELECT_ACTION.stroverridefn = function(act)
+  local selector = GetMapSelectorFromAction(act)
+  return selector ~= nil and selector:GetActionString(act) or nil
+end
+
+-- closes_map 不能直接启用：MapScreen 会先对 maptarget 发 cancelmaptarget，
+-- 再发送地图动作 RPC。这里先摘除 maptarget 后主动关闭，避免成功选择被当成取消。
+MAP_SELECT_ACTION.pre_action_cb = function(act)
+  local doer = act.doer
+  if doer == nil or doer.HUD == nil or not doer.HUD:IsMapScreenOpen() then
+    return
+  end
+  local mapscreen = TheFrontEnd:GetActiveScreen()
+  if mapscreen ~= nil and mapscreen.maptarget == act.target then
+    mapscreen.maptarget = nil
+    mapscreen.forced_actiondef = nil
+    mapscreen:SetHandleLmbUp(false)
+  end
+  TheFrontEnd:PopScreen()
+  if doer.components.playercontroller ~= nil then
+    doer.components.playercontroller._hack_ignore_held_controls = 0.1
+    doer.components.playercontroller._hack_ignore_ups_for = {}
   end
 end
 
@@ -131,10 +278,17 @@ AddModRPCHandler("arkTargetSelector", "Cancel", function(player, guid)
   end
   -- 已确认（玩家选定后）则忽略；否则视为放弃
   if not inst._confirmed:value() then
-    if inst._cancelfn then
-      inst._cancelfn(player)
+    if inst.CancelSelection ~= nil then
+      inst:CancelSelection(player)
+    else
+      if inst._cancelfn ~= nil then
+        inst._cancelfn(player)
+      end
+      local selector = player._now_target_selector_obj
+      if selector ~= nil then
+        selector:StopSelecting(player)
+      end
     end
-    StopTargetSelecting(player)
   end
 end)
 
@@ -192,3 +346,4 @@ end)
 
 GLOBAL.TargetSelector = TargetSelector
 GLOBAL.AreaTargetSelector = AreaTargetSelector
+GLOBAL.MapTargetSelector = MapTargetSelector
