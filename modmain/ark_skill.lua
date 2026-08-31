@@ -106,6 +106,7 @@ local function checkAndDefaultSkill(skill)
     assert(table.contains(CONSTANTS.ACTIVATION_MODE, skill.activationMode), "Invalid activationMode for skill " .. skill.id)
   end
   assert(type(skill.levels) == "table" and #skill.levels > 0, "Skill " .. skill.id .. " must have at least one level config.")
+  local activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL
   local copySkill = {
     id = skill.id,
     atlas = skill.atlas or '',
@@ -117,8 +118,8 @@ local function checkAndDefaultSkill(skill)
     desc = skill.desc or nil,
     lockedDesc = skill.lockedDesc or '',
     energyRecoveryMode = skill.energyRecoveryMode or CONSTANTS.ENERGY_RECOVERY_MODE.AUTO,
-    activationMode = skill.activationMode or CONSTANTS.ACTIVATION_MODE.MANUAL,
-    hotkey = skill.activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
+    activationMode = activationMode,
+    hotkey = activationMode == CONSTANTS.ACTIVATION_MODE.MANUAL and skill.hotkey or nil,
     targetSelector = skill.targetSelector or nil,
     recastSkipTargeting = skill.recastSkipTargeting == true,
     levels = defaultLevelConfigs(skill.levels)

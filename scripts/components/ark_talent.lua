@@ -8,8 +8,6 @@ local CopySaveData = hooks.CopySaveData
 
 -- 配置回调字段与事件名映射
 local CONFIG_CALLBACK_EVENT_MAP = {
-  OnActivate    = "ark_talent_unlocked",
-  OnDeactivate  = "ark_talent_locked",
   OnLocked      = "ark_talent_locked",
   OnUnlocked    = "ark_talent_unlocked",
   OnLevelChange = "ark_talent_level_change",
@@ -95,21 +93,34 @@ function SingleTalent:_Emit(eventName, payload)
 end
 
 -- 事件注册/反注册接口。
--- talent 只有 LOCKED / ACTIVE 两态，因此 Activate/Deactivate 语义等同于 Unlock/Lock。
-function SingleTalent:SetOnActivate(fn)
+-- 天赋以 Locked/Unlocked 为规范语义，Activate/Deactivate 仅作为兼容别名。
+function SingleTalent:SetOnUnlocked(fn)
   self:_AddCallback("ark_talent_unlocked", fn)
+end
+function SingleTalent:UnsetOnUnlocked(fn)
+  self:_RemoveCallback("ark_talent_unlocked", fn)
+end
+function SingleTalent:SetOnLocked(fn)
+  self:_AddCallback("ark_talent_locked", fn)
+end
+function SingleTalent:UnsetOnLocked(fn)
+  self:_RemoveCallback("ark_talent_locked", fn)
+end
+-- 旧 API：talent 只有 LOCKED / ACTIVE 两态，因此 Activate/Deactivate 等同于 Unlock/Lock。
+function SingleTalent:SetOnActivate(fn)
+  self:SetOnUnlocked(fn)
 end
 
 function SingleTalent:UnsetOnActivate(fn)
-  self:_RemoveCallback("ark_talent_unlocked", fn)
+  self:UnsetOnUnlocked(fn)
 end
 
 function SingleTalent:SetOnDeactivate(fn)
-  self:_AddCallback("ark_talent_locked", fn)
+  self:SetOnLocked(fn)
 end
 
 function SingleTalent:UnsetOnDeactivate(fn)
-  self:_RemoveCallback("ark_talent_locked", fn)
+  self:UnsetOnLocked(fn)
 end
 
 -- ── 仅在激活期间（ACTIVE）生效的 hook ─────────────────────────────────────

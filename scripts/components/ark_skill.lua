@@ -645,6 +645,7 @@ end
 function SingleSkill:Lock()
   local data = self.data
   local prevStatus = data.status
+  local wasActivating = prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING
   data.status = CONSTANTS.SKILL_STATUS.LOCKED
   data.tickEnergy = false
   data.tickBuff = false
@@ -653,16 +654,17 @@ function SingleSkill:Lock()
   data.bulletCount = 0
   data.activationStacks = 0
   data.force = false
-  data.state = {}
   self.manager:SyncSkillStatus(self.id)
 
-  if prevStatus == CONSTANTS.SKILL_STATUS.BUFFING or prevStatus == CONSTANTS.SKILL_STATUS.BULLETING then
+  -- 保留 state 到 deactivate 回调完成，供回调清理锚点、特效等运行时实体。
+  if wasActivating then
     self._lastDeactivateTime = GetTime()
     self:_Emit("ark_skill_deactivate", {
       fromStatus = prevStatus,
       force = false
     })
   end
+  data.state = {}
   self:_Emit("ark_skill_locked", {
     fromStatus = prevStatus
   })
@@ -920,8 +922,8 @@ function SingleSkill:TrySelect(params)
   return true
 end
 
-function SingleSkill:Cancel()
-  if self._lastActivateTime ~= nil and GetTime() - self._lastActivateTime < self.cancelDebounceTime then
+function SingleSkill:Cancel(skipDebounce)
+  if not skipDebounce and self._lastActivateTime ~= nil and GetTime() - self._lastActivateTime < self.cancelDebounceTime then
     return false
   end
   if not self:IsActivating() then
@@ -959,7 +961,7 @@ function SingleSkill:Step(dt)
     local leftBuff = self:AddBuffProgress(dt)
     -- 如果状态流转到了 自动充能，且有剩余时间，则将剩余时间加到能量上
     if leftBuff > 0 and data.tickEnergy then
-      self:AddEnergyProgress(dt + leftBuff)
+      self:AddEnergyProgress(leftBuff)
     end
   elseif data.tickEnergy then
     self:AddEnergyProgress(dt)
@@ -1005,17 +1007,20 @@ function SingleSkill:OnLoad(saved)
 end
 
 function SingleSkill:Remove()
+  if self._removing then
+    return
+  end
+  self._removing = true
   if self.refreshTagTask then
     self.refreshTagTask:Cancel()
     self.refreshTagTask = nil
   end
-  self:Cancel() -- 若在激活中，触发 deactivate → OnSkill3Deactivate 等清理 state 实体
+  self:Cancel(true) -- 清理路径绕过防抖，确保 deactivate 能拿到 state 并清理实体
   self:Lock()
-  if self._cfgOnRemove and not self._removing then
+  if self._cfgOnRemove then
     self._cfgOnRemove(self, {})
   end
   self:_CleanupOwnedHooks() -- 兜底：清理所有未释放的 hook
-  self._removing = true
   self.manager:RemoveSkill(self.id)
   -- 兜底：清理读档恢复的实体。
   -- 读档会经历"快照恢复 → SerializeUserSession → Remove"流程，临时玩家 v 恢复的
@@ -1142,7 +1147,12 @@ function ArkSkill:AddSkill(id, limitTime)
   assert(GetArkSkillConfigById(id), "Config not found for skill id: " .. tostring(id))
   if self.skillsById[id] then
     ArkLogger:Warn("Ark skill already exists for id: " .. tostring(id))
-    return
+    return nil, "SKILL_ALREADY_LEARNED"
+  end
+  local maxSkillCount = self.inst.replica.ark_skill.maxSkillCount
+  if #self.installedSkills >= maxSkillCount then
+    ArkLogger:Warn("Ark skill limit reached: " .. tostring(maxSkillCount))
+    return nil, "SKILL_MAX_LIMIT"
   end
   local skill = self:_InstallSkill(id)
   if limitTime ~= nil then
@@ -1156,16 +1166,25 @@ function ArkSkill:AddSkill(id, limitTime)
   end
   self:_SyncBuiltinSkillState(id)
   self.inst:PushEvent("ark_skill_added", { id = id })
+  return skill
 end
 
 function ArkSkill:RemoveSkill(id)
   local skill = self.skillsById[id]
-  if skill and not skill._removing then
+  if not skill then return end
+  if not skill._removing then
     skill:Remove()
-    self.inst:RemoveTag(common.genArkSkillInstalledTagById(id))
-    self.inst.replica.ark_skill:RemoveSkill(id)
-    self.skillsById[id] = nil
-    table.removearrayvalue(self.installedSkills, id)
+    -- Remove 内部会回调本方法完成卸载；外层调用检测到已卸载后直接返回。
+    if self.skillsById[id] ~= skill then
+      return
+    end
+  end
+  self.inst:RemoveTag(common.genArkSkillInstalledTagById(id))
+  self.inst.replica.ark_skill:RemoveSkill(id)
+  self.skillsById[id] = nil
+  table.removearrayvalue(self.installedSkills, id)
+  if #self.installedSkills == 0 then
+    self.inst:StopUpdatingComponent(self)
   end
 end
 
@@ -1306,8 +1325,15 @@ end
 -- 共用本清理，保证任何路径都释放技能及被接管的实体。
 function ArkSkill:_CleanupSkills()
   self.inst:RemoveEventCallback("ark_elite_changed", self._onBuiltinEliteChanged)
+  -- RemoveSkill 会修改 skillsById/installedSkills，先复制快照避免 pairs 遍历跳项。
+  local skills = {}
   for _, s in pairs(self.skillsById) do
-    s:Remove()
+    table.insert(skills, s)
+  end
+  for _, s in ipairs(skills) do
+    if s then
+      s:Remove()
+    end
   end
 end
 

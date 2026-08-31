@@ -134,9 +134,10 @@ function ArkFlyer:TakeOff()
         end
     end
 
-    if inst.DynamicShadow then
-        inst.DynamicShadow:Enable(false)
-    end
+    -- 暂时保留飞行时的地面阴影
+    -- if inst.DynamicShadow then
+    --     inst.DynamicShadow:Enable(false)
+    -- end
 
     -- 先同步飞行状态再播事件，客户端 hook 立即判定飞行
     self:SetNetFlying(true)
@@ -162,9 +163,10 @@ function ArkFlyer:Land()
         inst.components.drownable.enabled = true
     end
 
-    if inst.DynamicShadow then
-        inst.DynamicShadow:Enable(true)
-    end
+    -- 起飞时未关闭地面阴影，这里不需要恢复
+    -- if inst.DynamicShadow then
+    --     inst.DynamicShadow:Enable(true)
+    -- end
 end
 
 function ArkFlyer:FinishLand()

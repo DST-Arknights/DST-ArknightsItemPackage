@@ -101,7 +101,7 @@ function Publish-Mod {
 
     # --------------------------------------------------
     # 步骤 3: AI 生成 Changelog（高失败风险/高成本 - 硬性检查通过后才跑）
-    #    此步骤调用 claude CLI 总结 git 提交。
+    #    此步骤调用 codex exec 总结 git 提交。
     #    如果失败，项目文件完全未被改动。
     # --------------------------------------------------
     Write-Host "`n[3/10] AI: 从 git 历史生成 changelog..." -ForegroundColor Yellow

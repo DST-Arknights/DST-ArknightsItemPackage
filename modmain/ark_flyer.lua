@@ -4,12 +4,31 @@
 --  - locomotor.RunForward 后维持飞行高度（移动会覆盖垂直马达速度）
 -------------------------------------------------------------------
 
+local function IsFlying(inst)
+    -- 从 replica 判断：启用预测补偿后客户端读不到服务端组件。
+    -- 副本先于组件加载，但普通角色没有该组件，故保留 nil 保护。
+    local replica = inst.replica and inst.replica.ark_flyer
+    return replica ~= nil and replica:IsFlying()
+end
+
 -- 有网络变量（replica：net_flying/net_percent）的组件必须在实体创建时就装好，
 -- 否则引擎的副本同步会出问题（客户端 replica 依据服务端同步的 tag 建立）。
 -- 故所有玩家在 postInit 后即内置 ark_flyer 组件。
 AddPlayerPostInit(function(inst)
     if TheWorld.ismastersim and not inst.components.ark_flyer then
         inst:AddComponent("ark_flyer")
+    end
+
+    -- 原生 run_start/run 状态的时间线会调用 PlayFootstep。
+    -- 飞行时直接拦截默认脚步音，结束飞行后仍恢复原处理逻辑。
+    local old_footstepoverridefn = inst.footstepoverridefn
+    if old_footstepoverridefn ~= nil then
+        inst.footstepoverridefn = function(volume, ispredicted)
+            if IsFlying(inst) then
+                return true
+            end
+            return old_footstepoverridefn(volume, ispredicted)
+        end
     end
 end)
 
@@ -25,13 +44,6 @@ AddComponentPostInit("locomotor", function(cmp)
         end
     end
 end)
-
-local function IsFlying(inst)
-    -- 从 replica 判断：启用预测补偿后客户端读不到服务端组件。
-    -- 副本先于组件加载，但普通角色没有该组件，故保留 nil 保护。
-    local replica = inst.replica and inst.replica.ark_flyer
-    return replica ~= nil and replica:IsFlying()
-end
 
 local function IsActiveFlyer(inst)
     return IsFlying(inst)
@@ -72,8 +84,7 @@ local function ApplyHooks(sg)
             inst.sg:GoToState(cur)
             return
         end
-        inst.AnimState:PlayAnimation("ark_fly_pre")
-        inst.AnimState:PushAnimation("ark_fly_loop", true)
+        inst.AnimState:PlayAnimation("idle_loop", true)
     end))
 
     -- 全局事件：降落，播放退出动画；若正在 run 则重置状态以立即落地
@@ -83,15 +94,15 @@ local function ApplyHooks(sg)
             inst.sg:GoToState(cur)
             return
         end
-        inst.AnimState:PlayAnimation("ark_fly_pst")
+        inst.AnimState:PlayAnimation("idle_loop", true)
     end))
 
     -- run_start：飞行时保持浮空循环
     HookState(sg, "run_start",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
-                inst.AnimState:PlayAnimation("ark_fly_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
+                inst.AnimState:PlayAnimation("idle_loop", true)
             end
         end,
         nil
@@ -101,8 +112,8 @@ local function ApplyHooks(sg)
     HookState(sg, "run",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
-                inst.AnimState:PlayAnimation("ark_fly_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
+                inst.AnimState:PlayAnimation("idle_loop", true)
             end
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
         end,
@@ -113,8 +124,8 @@ local function ApplyHooks(sg)
     HookState(sg, "run_stop",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
-                inst.AnimState:PlayAnimation("ark_fly_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
+                inst.AnimState:PlayAnimation("idle_loop", true)
             end
         end,
         nil
@@ -124,8 +135,8 @@ local function ApplyHooks(sg)
     HookState(sg, "idle",
         function(inst)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
-                inst.AnimState:PlayAnimation("ark_fly_loop", true)
+            if not inst.AnimState:IsCurrentAnimation("idle_loop") then
+                inst.AnimState:PlayAnimation("idle_loop", true)
             end
         end,
         nil

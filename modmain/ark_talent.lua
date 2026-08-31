@@ -21,10 +21,13 @@ local function checkAndDefaultTalent(talent)
     name    = talent.name   or talent.id,
     levels  = copyLevels,
   }
+  -- 天赋只有锁定/解锁两态，规范回调名使用 OnLocked/OnUnlocked。
+  -- OnActivate/OnDeactivate 保留为兼容别名；两者同时提供时规范名称优先。
+  copy.OnUnlocked = talent.OnUnlocked or talent.OnActivate
+  copy.OnLocked = talent.OnLocked or talent.OnDeactivate
 
   -- 透传所有回调字段
   local callbackFields = {
-    "OnActivate", "OnDeactivate",
     "OnLocked", "OnUnlocked", "OnLevelChange",
     "OnInstall", "OnAdd", "OnRemove", "OnSave", "OnLoad",
   }

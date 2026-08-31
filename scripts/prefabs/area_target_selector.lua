@@ -4,12 +4,13 @@
 -- 取消检测：玩家取消瞄准时 aoetargeting:StopTargeting 触发，延迟帧确认后发取消 RPC
 -- ════════════════════════════════════════════════════════
 
-local function ReticuleTargetFn()
+local function ReticuleTargetFn(inst)
   local player = ThePlayer
   local ground = TheWorld.Map
   local pos = Vector3()
-  -- 朝向前方找可通行的瞄准点（手柄/自动瞄准）
-  for r = 7, 0, -0.25 do
+  -- 朝向前方找可通行的瞄准点（手柄/自动瞄准），范围与当前选择器配置一致。
+  local range = inst.components.aoetargeting:GetRange()
+  for r = range, 0, -0.25 do
     pos.x, pos.y, pos.z = player.entity:LocalToWorldSpace(r, 0, 0)
     if ground:IsPassableAtPoint(pos.x, 0, pos.z, true) and not ground:IsGroundTargetBlocked(pos) then
       return pos

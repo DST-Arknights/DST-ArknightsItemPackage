@@ -3,8 +3,8 @@
 # AI 辅助工作流:
 #   [AI 步骤 - 放在最前面，失败率最高]
 #   1. Get-CommitsSinceLastTag     → 提取原始 git 记录
-#   2. Invoke-AIChangelog           → 调用 claude CLI 总结 → 写入 CHANGELOG.md
-#      - 如果 claude CLI 不可用，输出 prompt 供手动处理并阻断
+#   2. Invoke-AIChangelog           → 调用 codex exec 总结 → 写入 CHANGELOG.md
+#      - 如果 Codex CLI 不可用，输出 prompt 供手动处理并阻断
 #   [确定性步骤 - 仅 AI 成功后才执行]
 #   3. Test-ChangelogReady          → 验证条目存在且有内容
 #   4. Get-VersionDescriptionBlock  → 读取条目用于 modinfo description 插入
@@ -16,7 +16,7 @@
 function Invoke-AIChangelog {
     <#
     .SYNOPSIS
-    调用 AI CLI 工具 (claude) 将 git 提交总结为 changelog 条目。
+    调用 Codex CLI 将 git 提交总结为 changelog 条目。
     此步骤放在发布流水线的最前面，因为：
       - AI 调用的失败概率最高
       - 如果失败，尚未对项目做任何修改
@@ -35,8 +35,8 @@ function Invoke-AIChangelog {
         [Parameter(Mandatory = $true)]
         [string]$ChangelogPath,
 
-        # AI CLI 工具。默认: 自动检测（先尝试 "claude"）
-        [string]$AITool = "auto"
+        # Codex CLI 命令。保留参数以便测试或使用自定义安装名。
+        [string]$AITool = "codex"
     )
 
     # --- 获取提交记录 ---
@@ -58,17 +58,8 @@ function Invoke-AIChangelog {
         return
     }
 
-    # --- 检测或解析 AI 工具 ---
-    $toolCmd = $null
-    if ($AITool -eq "auto") {
-        $toolCmd = Get-Command claude -ErrorAction SilentlyContinue
-        if (-not $toolCmd) {
-            $toolCmd = Get-Command claude-code -ErrorAction SilentlyContinue
-        }
-    }
-    else {
-        $toolCmd = Get-Command $AITool -ErrorAction SilentlyContinue
-    }
+    # --- 解析 Codex CLI ---
+    $toolCmd = Get-Command $AITool -ErrorAction SilentlyContinue
 
     # --- 构建双语 prompt ---
     $commitList = ($commits | ForEach-Object { "  $_" }) -join "`n"
@@ -81,6 +72,7 @@ FORMAT (strict):
 3. Then ALL English bullet lines (each starting with "- ").
 
 RULES:
+- Use only the commit text below as source. Do not inspect the repository or run commands.
 - Each Chinese bullet must have a corresponding English bullet (same content, different language), in the same order.
 - Describe EVERY meaningful change visible in the commits below. Do NOT skip commits.
 - Merge truly related changes into one line, but err on the side of keeping separate items.
@@ -97,7 +89,7 @@ $commitList
         Write-Host "[运行]  调用 $($toolCmd.Name) 总结 $($commits.Count) 条提交..."
         Write-Host "        （AI 步骤 - 可能需要一些时间，失败时会自动重试）"
 
-        $result = Invoke-AITool -ToolPath $toolCmd.Source -Prompt $prompt
+        $result = Invoke-AITool -ToolPath $toolCmd.Source -Prompt $prompt -WorkingDirectory $ProjectRoot
         if (-not $result -or $result.Trim() -eq '') {
             throw "[失败] AI 工具返回了空结果。请重试或手动更新 CHANGELOG.md。"
         }
@@ -118,18 +110,18 @@ $commitList
 
         throw @"
 
-[阻断] 未找到 AI CLI 工具（已尝试: claude, claude-code）。
+[阻断] 未找到 Codex CLI（已尝试: $AITool）。
 
 手动生成 changelog 的步骤:
   1. 总结 prompt 已保存到:
      $promptFile
-  2. 将此 prompt 提供给 AI 工具（Claude、ChatGPT 等）
+  2. 将此 prompt 提供给 AI 工具
   3. 将 AI 输出的条目写入 CHANGELOG.md，格式为:
      ## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))
   4. 重新运行 publish.ps1
 
-安装 Claude CLI 后可实现全自动化:
-  https://docs.anthropic.com/en/docs/claude-code/overview
+安装并登录 Codex CLI 后可实现全自动化:
+  https://developers.openai.com/codex/cli
 "@
     }
 }
@@ -178,12 +170,13 @@ function Write-ChangelogEntry {
 function Invoke-AITool {
     <#
     .SYNOPSIS
-    调用 AI CLI 工具，传入 prompt 并返回输出。
+    调用 codex exec，通过 stdin 传入 prompt 并返回最终输出。
     支持失败重试。
     #>
     param(
         [string]$ToolPath,
         [string]$Prompt,
+        [string]$WorkingDirectory,
         [int]$MaxRetries = 2
     )
 
@@ -192,10 +185,6 @@ function Invoke-AITool {
 
     while ($attempt -le $MaxRetries) {
         try {
-            # 用临时文件传递 prompt，避免 shell 转义问题
-            $tmpFile = [System.IO.Path]::GetTempFileName() + '.txt'
-            $Prompt | Set-Content $tmpFile -Encoding UTF8
-
             # 确保 PowerShell 以 UTF-8 解码原生可执行文件的输出（避免中文乱码）
             $prevOutputEncoding = [Console]::OutputEncoding
             $prevPSOutputEncoding = $OutputEncoding
@@ -203,21 +192,17 @@ function Invoke-AITool {
             $OutputEncoding = [System.Text.Encoding]::UTF8
 
             try {
-                # 通过 stdin 管道传入 prompt + --session-id 新 UUID 确保完全无状态
-                $sessionId = [Guid]::NewGuid().ToString()
-                $output = Get-Content $tmpFile -Raw | & $ToolPath --session-id $sessionId -p 2>&1
-                # 过滤 AI CLI 的诊断日志行(如 [claude-code:unrecognized_model] ...), 避免混入 changelog
-                $output = @($output) | Where-Object { $_ -notmatch '^\s*\[claude-code:' }
+                # Codex 将进度写入 stderr，最终回复写入 stdout；只捕获 stdout 作为 changelog。
+                $output = $Prompt | & $ToolPath exec --ephemeral --sandbox read-only --color never -C $WorkingDirectory -
+                $exitCode = $LASTEXITCODE
             }
             finally {
                 [Console]::OutputEncoding = $prevOutputEncoding
                 $OutputEncoding = $prevPSOutputEncoding
             }
 
-            Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue
-
-            if ($LASTEXITCODE -ne 0) {
-                throw "AI 工具退出码 $LASTEXITCODE : $output"
+            if ($exitCode -ne 0) {
+                throw "Codex CLI 退出码 $exitCode"
             }
 
             return ($output | Out-String).Trim()

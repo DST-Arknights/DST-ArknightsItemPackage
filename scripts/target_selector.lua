@@ -30,7 +30,7 @@ local AreaTargetSelector = Class(TargetSelector, function(self, config)
   self.mouseenabled   = config.mouseenabled ~= false -- 默认 true：RefreshReticule 依此创建瞄准圈
   self.ease           = config.ease ~= false          -- 默认 true
   self.twinstickmode  = config.twinstickmode or 1
-  self.twinstickrange = config.twinstickrange or 8
+  self.twinstickrange = config.twinstickrange or config.range or 8
   -- aoe 专属
   self.range        = config.range        or 8   -- 范围半径
   self.deployradius = config.deployradius or 1   -- 部署间距
@@ -96,8 +96,8 @@ function AreaTargetSelector:ApplyToEntity(selector)
   aoe.reticule.twinstickmode  = self.twinstickmode
   aoe.reticule.twinstickrange = self.twinstickrange
   aoe.reticule.validfn        = self.validfn
-  aoe.range        = self.range
-  aoe.deployradius = self.deployradius
+  aoe:SetRange(self.range)
+  aoe:SetDeployRadius(self.deployradius)
 end
 
 -- ────────────────────────────────────────────────────────
