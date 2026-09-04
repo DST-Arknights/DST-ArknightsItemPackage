@@ -50,6 +50,10 @@ end
 | --- | --- | --- | --- |
 | `validfn` | function | 地图落点校验，客户端用于操作反馈，服务端会再次权威校验 | `nil` |
 | `actionstring` | string/function | 地图动作显示文本；函数时签名为 `function(act)` | `nil` |
+| `targetprefab` / `targettags` | string/table | 服务端候选实体的 prefab 和标签过滤 | `nil` |
+| `targetrange` | number | 点击位置与候选实体的最大距离 | `1.5` |
+| `mapiconprefab` / `mapicontag` | string | 客户端地图代理的 prefab 和标签过滤 | `nil` |
+| `mapfocus` | table | 可选的候选实体焦点动画配置 | `nil` |
 
 `validfn` 签名如下：
 
@@ -71,6 +75,18 @@ RegisterTargetSelector("my_skill_map", MapTargetSelector {
   end,
 })
 ```
+
+`mapfocus` 配置示例：
+
+```lua
+mapfocus = {
+  bank = "roseglasses_minimap_indicator",
+  build = "roseglasses_minimap_indicator",
+  scale = 0.5, -- 焦点动画整体缩放倍率，默认 1
+}
+```
+
+`mapfocus` 的 `anim`、`gainfocus`、`losefocus`、`zoomradius`、`scale` 均有默认值；其中 `scale` 只调整焦点动画整体大小，不影响选择距离。
 
 ## 直接使用
 

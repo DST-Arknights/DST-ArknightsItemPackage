@@ -910,7 +910,8 @@ function SingleSkill:TrySelect(params)
     return false
   end
 
-  selector:BeginSelecting(self.inst, function(doer, pos)
+  selector:BeginSelecting(self.inst, function(doer, pos, target)
+    params.target = target
     params.targetPos = pos
     local canAgain, reasonAgain = self:CanActivate(params)
     if not canAgain then
