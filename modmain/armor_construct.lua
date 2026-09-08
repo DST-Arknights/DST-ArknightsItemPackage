@@ -11,10 +11,10 @@ TUNING.ARMOR_CONSTRUCT = {
 }
 
 AddRecipe2('armor_construct', {
-  Ingredient("marble", 6),
-  Ingredient("rope", 2),
-  Ingredient("nightmarefuel", 4),
-  Ingredient("purplegem", 2),
+  Ingredient("marble", 12),
+  Ingredient("rope", 4),
+  Ingredient("nightmarefuel", 8),
+  Ingredient("purplegem", 4),
 }, TECH.MAGIC_THREE, {
   force_hint = true,
 }, {

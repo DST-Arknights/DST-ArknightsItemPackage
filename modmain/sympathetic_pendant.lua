@@ -21,11 +21,11 @@ end)
 
 
 AddRecipe2('sympathetic_pendant', {
-  Ingredient("yellowamulet", 1),
-  Ingredient("redgem", 2),
-  Ingredient("bluegem", 2),
-  Ingredient("yellowgem", 2),
-  Ingredient("greengem", 2),
+  Ingredient("yellowamulet", 6),
+  Ingredient("redgem", 6),
+  Ingredient("bluegem", 6),
+  Ingredient("yellowgem", 6),
+  Ingredient("greengem", 6),
 }, TECH.MAGIC_THREE, {
   force_hint = true,
 }, {
