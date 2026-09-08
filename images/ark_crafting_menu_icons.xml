@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Atlas>
+	<Texture filename="ark_crafting_menu_icons.tex" />
+	<Elements>
+		<Element name="filter_ark_technology.tex" u1="0.001" u2="0.999" v2="0.999" v1="0.001" variant="" />
+	</Elements>
+</Atlas>

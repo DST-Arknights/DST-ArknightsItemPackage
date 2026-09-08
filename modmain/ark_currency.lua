@@ -183,7 +183,7 @@ ArkHookFunction(CraftingMenuWidget, "MakeFilterPanel", function(next, self, widt
     local empty_in_last_row = cols - last_row_count
 
     -- X: 右对齐，占据最后 CURRENCY_SLOTS 列的中心
-    local currency_x = self.grid_left + (cols - CURRENCY_SLOTS / 2) * btn_space
+    local currency_x = self.grid_left + (cols - (CURRENCY_SLOTS + 1) / 2) * btn_space
 
     -- Y: 空白够就接在末行，不够就换到下一行
     local currency_y

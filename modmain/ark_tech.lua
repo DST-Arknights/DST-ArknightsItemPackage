@@ -1,7 +1,7 @@
 AddRecipeFilter({
   name = "ARK_TECHNOLOGY",
-  atlas = "images/ark_item_prototyper.xml",
-  image = "ark_item_prototyper.tex",
+  atlas = "images/ark_crafting_menu_icons.xml",
+  image = "filter_ark_technology.tex",
 })
 
 AddTechBranch("ARK_ITEM_TECH")
