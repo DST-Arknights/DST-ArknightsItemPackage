@@ -20,6 +20,6 @@ AddRecipe2('armor_construct', {
 }, {
   "ARMOUR",
   "MAGIC",
-  "CHARACTER",
+  "ARK_TECHNOLOGY",
   "MODS",
 })

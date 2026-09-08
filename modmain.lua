@@ -10,6 +10,7 @@ Assets = {
   Asset("SHADER", "shaders/border_radius.ksh"),
   Asset("ATLAS", "images/ark_workshop.xml"),
   Asset("ATLAS", "images/ark_workshop_prototyper.xml"),
+  Asset("ATLAS", "images/ark_item_prototyper.xml"),
   Asset("ATLAS", "images/ark_skill.xml"),
   Asset("ATLAS", "images/ark_training_room.xml"),
   Asset("ATLAS", "images/ark_training_room_prototyper.xml"),

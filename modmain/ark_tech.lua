@@ -1,3 +1,9 @@
+AddRecipeFilter({
+  name = "ARK_TECHNOLOGY",
+  atlas = "images/ark_item_prototyper.xml",
+  image = "ark_item_prototyper.tex",
+})
+
 AddTechBranch("ARK_ITEM_TECH")
 AddTechRequirement("ARK_ITEM_ONE", "ARK_ITEM_TECH", 1)
 AddPrototyperTree('ARK_WORKSHOP_ONE', {

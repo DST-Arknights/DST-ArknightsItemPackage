@@ -15,6 +15,11 @@ msgctxt "STRINGS.UI.CRAFTING_FILTERS.ARK_TRAINING_ROOM"
 msgid "Training Room"
 msgstr "Training Room"
 
+#. STRINGS.UI.CRAFTING_FILTERS.ARK_TECHNOLOGY
+msgctxt "STRINGS.UI.CRAFTING_FILTERS.ARK_TECHNOLOGY"
+msgid "Rhodes Island Technology"
+msgstr "Rhodes Island Technology"
+
 #. STRINGS.UI.CRAFTING.NEEDSARK_ELITE_ONE
 msgctxt "STRINGS.UI.CRAFTING.NEEDSARK_ELITE_ONE"
 msgid "Needs Elite Level 1"

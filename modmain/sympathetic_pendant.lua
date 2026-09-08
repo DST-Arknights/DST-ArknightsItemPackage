@@ -31,6 +31,6 @@ AddRecipe2('sympathetic_pendant', {
 }, {
   "MAGIC",
   "LIGHT",
-  "CHARACTER",
+  "ARK_TECHNOLOGY",
   "MODS",
 })
