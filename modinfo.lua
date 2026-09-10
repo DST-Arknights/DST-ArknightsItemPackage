@@ -10,6 +10,26 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.7.0 (2026-09-11)
+- Comment out the ark_backpack recipe
+- Update the recipe material amounts for 盔甲构造 and 同情挂坠
+- Update crafting menu icons and related configuration files
+- Add crafting menu icons XML configuration: create a new XML file defining the texture and elements for the crafting menu
+- Add technology recipe filter and diamond currency display
+- Add target filtering and focus animation configuration supported by the map selector to the target selector
+- Add the fly anim flight animation resource
+- Refactor the target selector and hotkey manager, and update file paths to improve module imports
+- Refactor the target selector, add map coordinate selector support, and update the docs
+- Update the fly anim animation resource again
+- Update the README and docs, adding explanations of the target selector and skill callback semantics
+- Add the ArkLoadLuaFile function to load Lua files and return their value
+- Refactor the voice system, adding voice registration, binding, and playback features
+- Add skill selector support and optimize skill activation logic
+- Optimize skill description handling to support a shared description across multiple levels
+- Introduce the target selector framework, replacing the AOE selector and optimizing skill activation logic
+- Change changelog to a Chinese/English grouped format (all Chinese first, English after): AI prompt outputs a Chinese bullet group + --- + an English bullet group; Get-ChangelogVersionEntries returns ZhItems/EnItems and stays compatible with the old en|zh format; modinfo.ps1 uses ZhItems/EnItems directly to generate UPDATE_ZH/UPDATE_EN
+- Filter AI CLI diagnostic log lines so they don't leak into the changelog: diagnostic lines such as [claude-code:unrecognized_model] that claude CLI writes to stderr were merged via 2>&1 and written into CHANGELOG.md; lines starting with [claude-code: are now filtered out
+---
 v2.6.0 (2026-08-18)
 - Optimized elite stage name display, using Chinese number words instead of Arabic numerals for stages 1-10
 - Introduced the invisible prefab ark_craft_callback for recipes that only trigger callbacks without producing items
@@ -21,13 +41,29 @@ v2.6.0 (2026-08-18)
 - Optimized entity serialization/deserialization to support skill state management
 - Added item enhancement component and feature, including CN/EN translations for enhancement limit prompts
 - Optimized armor structure event listening with a priority mechanism for min-HP events and cleaned up redundant description text
----
-v2.5.12 (2026-08-12)
-- Updated M3 Cocoon Armor data and renamed its prefab
-- Added armor_construct resource
 ]]
 
 local UPDATE_ZH = [[
+v2.7.0 (2026-09-11)
+- 注释掉 ark_backpack 配方
+- 更新盔甲构造与同情挂坠的配方材料数量
+- 更新制作菜单图标及相关配置文件
+- 新增 crafting menu icons XML 配置：创建新的 XML 文件，定义 crafting menu 纹理与元素
+- 添加 technology recipe filter 与 diamond currency display
+- 为 target selector 添加地图选择器支持的目标过滤与焦点动画配置
+- 添加 fly anim 飞行动画资源
+- 重构目标选择器与热键管理器，调整文件路径以优化模块导入
+- 重构目标选择器，新增地图坐标选择器支持并更新文档
+- 再次更新 fly anim 动画资源
+- 更新 README 与文档，补充目标选择器与技能回调语义说明
+- 新增 ArkLoadLuaFile 函数，用于加载 Lua 文件并返回其值
+- 重构配音系统，新增语音注册、绑定与播放功能
+- 新增技能选择器支持，优化技能激活逻辑
+- 优化技能描述处理，支持多个级别共用描述
+- 引入目标选择器框架，替代 AOE 选择器并优化技能激活逻辑
+- changelog 改为中英分组格式（中文在前、英文在后）：AI prompt 输出中文 bullet 组 + --- + 英文 bullet 组，Get-ChangelogVersionEntries 返回 ZhItems/EnItems 并兼容旧 en|zh 格式，modinfo.ps1 直接用 ZhItems/EnItems 生成 UPDATE_ZH/UPDATE_EN
+- 过滤 AI CLI 诊断日志行，避免混入 changelog：claude CLI 向 stderr 输出的 [claude-code:unrecognized_model] 等诊断行被 2>&1 合并后写入 CHANGELOG.md，现过滤以 [claude-code: 开头的日志行
+---
 v2.6.0 (2026-08-18)
 - 优化精英阶段名称显示，1至10阶段使用数字词替代阿拉伯数字
 - 引入隐形预制体 ark_craft_callback，用于仅触发回调无需实际产物的配方
@@ -39,10 +75,6 @@ v2.6.0 (2026-08-18)
 - 优化实体序列化与反序列化逻辑，支持技能状态管理
 - 新增物品强化组件与功能，更新强化上限提示的中英文翻译
 - 优化盔甲构造的事件监听，使用优先级机制处理最小生命值事件，并移除多余的描述文本
----
-v2.5.12 (2026-08-12)
-- 修改M3茧甲数据, 预制体重命名
-- 新增 armor_construct 资源
 ]]
 
 description = T({
@@ -69,7 +101,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.6.0"
+version = "2.7.0"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
