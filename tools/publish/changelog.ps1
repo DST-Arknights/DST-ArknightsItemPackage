@@ -106,7 +106,8 @@ $commitList
         if (-not (Test-Path $parentDir)) {
             New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
         }
-        $prompt | Set-Content $promptFile -Encoding UTF8
+        # 带 BOM 的 UTF-8：Windows PowerShell 5.1 的 Get-Content / 记事本据此正确识别中文
+        [System.IO.File]::WriteAllText($promptFile, $prompt, (New-Object System.Text.UTF8Encoding($true)))
 
         throw @"
 
@@ -238,10 +239,19 @@ function Get-RawCommits {
 
     Push-Location $ProjectRoot
     try {
-        $lastTag = git describe --tags --abbrev=0 2>$null
-        # 使用 fuller 格式（主题 + 正文），给 AI 更多上下文
-        $range = if (-not $lastTag) { "HEAD" } else { "$lastTag..HEAD" }
-        $log = git log --no-merges --pretty=format:"%s%n%b%n---" $range 2>$null
+        # git 输出为 UTF-8；Windows PowerShell 5.1 按 ANSI 代码页（936）解码原生命令输出，
+        # 会让中文提交信息在这里就变成乱码，并顺着 prompt 传给 AI。显式按 UTF-8 解码。
+        $prevOutputEncoding = [Console]::OutputEncoding
+        [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+        try {
+            $lastTag = git describe --tags --abbrev=0 2>$null
+            # 使用 fuller 格式（主题 + 正文），给 AI 更多上下文
+            $range = if (-not $lastTag) { "HEAD" } else { "$lastTag..HEAD" }
+            $log = git log --no-merges --pretty=format:"%s%n%b%n---" $range 2>$null
+        }
+        finally {
+            [Console]::OutputEncoding = $prevOutputEncoding
+        }
 
         if (-not $log) {
             return @()

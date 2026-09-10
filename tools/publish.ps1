@@ -25,6 +25,14 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+# 统一控制台与原生命令的编码为 UTF-8。
+# Windows PowerShell 5.1 默认按系统 ANSI 代码页（中文系统为 936）解码原生命令输出，
+# 会把 git 的 UTF-8 中文提交信息解码成乱码（例: 注释掉 -> 娉ㄩ噴鎺?）。
+# 显式切到 UTF-8 后，脚本捕获与打印的中文都保持正常。
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+try { [Console]::InputEncoding = [System.Text.Encoding]::UTF8 } catch { }
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 # 项目根目录 = 当前工作目录（在哪个项目下执行就发布哪个项目）
 $projectRoot = Resolve-Path (Get-Location)
 if (-not (Test-Path (Join-Path $projectRoot 'modinfo.lua'))) {
