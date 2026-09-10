@@ -669,11 +669,11 @@ AddClassPostConstruct("widgets/truescrolllist", function(self)
   end
 end)
 
-AddRecipe2("ark_backpack", {Ingredient("ark_gold", 10000)}, TECH.NONE, {
-}, {
-  "CLOTHING",
-  "CONTAINERS"
-})
+-- AddRecipe2("ark_backpack", {Ingredient("ark_gold", 10000)}, TECH.NONE, {
+-- }, {
+--   "CLOTHING",
+--   "CONTAINERS"
+-- })
 
 -- 重新计算最大值
 for k, v in pairs(containers.params) do
