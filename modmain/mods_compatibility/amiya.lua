@@ -9,7 +9,6 @@ CHARACTER_INGREDIENT[string.upper(AmiyaHeCheng)] = AmiyaHeCheng
 
 local _IsCharacterIngredient = IsCharacterIngredient
 function GLOBAL.IsCharacterIngredient(ingredient)
-  ArkLogger:Debug('IsCharacterIngredient', ingredient)
   if ingredient == AmiyaHeCheng then
     return true
   end

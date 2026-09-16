@@ -32,6 +32,13 @@ AddPlayerPostInit(function(inst)
     end
 end)
 
+local function RefreshClientFlyer(inst)
+    local replica = inst.replica and inst.replica.ark_flyer
+    if replica ~= nil then
+        replica:RefreshClientUpdate()
+    end
+end
+
 -- 移动会重新设置 SetMotorVel，垂直分量被覆盖导致高度掉落。
 -- 飞行中的角色在 RunForward 后再次调用 DriveHeight 维持高度（参考伊蕾娜模组）。
 AddComponentPostInit("locomotor", function(cmp)
@@ -41,7 +48,17 @@ AddComponentPostInit("locomotor", function(cmp)
         local flyer = self.inst.components and self.inst.components.ark_flyer
         if flyer and flyer:IsFlying() then
             flyer:DriveHeight()
+        else
+            local replica = self.inst.replica and self.inst.replica.ark_flyer
+            if replica and replica:IsFlying() then
+                replica:DriveHeight()
+            end
         end
+    end
+
+    if not TheWorld.ismastersim then
+        -- 预测开启时 locomotor 是动态创建的；此时服务端可能已经在飞行。
+        cmp.inst:DoTaskInTime(0, RefreshClientFlyer)
     end
 end)
 
