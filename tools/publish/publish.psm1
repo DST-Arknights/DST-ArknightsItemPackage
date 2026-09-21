@@ -14,15 +14,20 @@
 #
 # 用法 (通过 tools/publish.ps1 入口):
 #   pwsh ./tools/publish.ps1 -Bump patch [-SkipChecks] [-DryRun]
+#   pwsh ./tools/publish.ps1 -ProjectRoot <mod目录> -Bump patch
+#   pwsh ./tools/publish.ps1 -ProjectRoot <mod目录> -DistOnly
 
 function Publish-Mod {
     param(
         [Parameter(Mandatory = $true)]
         [string]$ProjectRoot,
 
-        [Parameter(Mandatory = $true)]
+        [hashtable]$ProjectConfig = @{},
+
         [ValidateSet('patch', 'minor', 'major')]
         [string]$Bump,
+
+        [switch]$DistOnly,
 
         [switch]$SkipChecks,
 
@@ -31,12 +36,10 @@ function Publish-Mod {
 
     $ErrorActionPreference = 'Stop'
 
-    # --- 加载项目配置（可选） ---
-    $configPath = Join-Path $ProjectRoot 'tools/publish-config.ps1'
-    $config = @{}
-    if (Test-Path $configPath) {
-        $config = & $configPath
-        Write-Host "[配置]  已加载项目发布配置: $configPath"
+    # --- 使用项目入口传入的差异化配置 ---
+    $config = $ProjectConfig
+    if ($config.Count -gt 0) {
+        Write-Host "[配置]  已加载项目内嵌发布配置"
     }
 
     # 默认值
@@ -61,6 +64,10 @@ function Publish-Mod {
     . (Join-Path $publishDir 'git-ops.ps1')
     . (Join-Path $publishDir 'dist.ps1')
 
+    if (-not $DistOnly -and [string]::IsNullOrWhiteSpace($Bump)) {
+        throw "完整发布需要指定 -Bump patch、minor 或 major；仅生成本地 dist 请使用 -DistOnly。"
+    }
+
     # --------------------------------------------------
     # 步骤 0: 试运行横幅
     # --------------------------------------------------
@@ -68,6 +75,18 @@ function Publish-Mod {
         Write-Host "========================================" -ForegroundColor Cyan
         Write-Host "  试运行 (DRY RUN) - 不会做任何实际修改" -ForegroundColor Cyan
         Write-Host "========================================" -ForegroundColor Cyan
+    }
+
+    if ($DistOnly) {
+        Write-Host "`n[本地内测] 仅拷贝项目文件到 dist/，跳过版本、changelog、Git 和 Workshop 步骤..." -ForegroundColor Yellow
+        if (-not $DryRun) {
+            Copy-ToDist -ProjectRoot $ProjectRoot
+            Write-Host "[完成]  本地内测包已生成: $(Join-Path $ProjectRoot 'dist')" -ForegroundColor Green
+        }
+        else {
+            Write-Host "[试运行]  将清空并重建 dist/ 目录"
+        }
+        return
     }
 
     # --------------------------------------------------

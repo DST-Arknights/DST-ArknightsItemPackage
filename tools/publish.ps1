@@ -1,7 +1,6 @@
-# 发布入口（跨 DST mod 项目可复用）
+# 统一发布入口（所有 DST-Arknights mod 项目共用）
 #
-# 薄封装层：解析项目根目录并从共享位置加载 Publish-Mod。
-# 共享脚本集中存放于 DST-Arknights-AICoding/tools/publish/。
+# 物品包项目可直接运行；其他 mod 通过各自的薄代理调用本入口。
 #
 # 用法:
 #   pwsh ./tools/publish.ps1 -Bump patch
@@ -9,14 +8,23 @@
 #   pwsh ./tools/publish.ps1 -Bump major -SkipChecks
 #
 # 参数:
+#   -ProjectRoot 目标项目根目录（由其他 mod 的薄代理传入）
+#   -ProjectConfig 目标项目内嵌的差异化配置（由薄代理传入）
 #   -Bump       版本升级类型: patch（补丁）, minor（次版本）, major（主版本）
 #   -SkipChecks 跳过依赖检查
 #   -DryRun     试运行：仅显示将执行的操作，不做实际修改
 
 param(
-    [Parameter(Mandatory = $true)]
+    [string]$ProjectRoot,
+
+    [hashtable]$ProjectConfig = @{},
+
+    [Parameter(ParameterSetName = 'Publish', Mandatory = $true)]
     [ValidateSet('patch', 'minor', 'major')]
     [string]$Bump,
+
+    [Parameter(ParameterSetName = 'DistOnly', Mandatory = $true)]
+    [switch]$DistOnly,
 
     [switch]$SkipChecks,
 
@@ -33,15 +41,7 @@ $ErrorActionPreference = 'Stop'
 try { [Console]::InputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-# 项目根目录 = 当前工作目录（在哪个项目下执行就发布哪个项目）
-$projectRoot = Resolve-Path (Get-Location)
-if (-not (Test-Path (Join-Path $projectRoot 'modinfo.lua'))) {
-    Write-Error "当前目录未找到 modinfo.lua，请在 DST mod 项目根目录执行此脚本。"
-    Write-Error "当前目录: $projectRoot"
-    exit 1
-}
-
-# 导入编排模块（始终从脚本自身的 tools/publish/ 目录加载）
+# 导入编排模块（始终从物品包自身的 tools/publish/ 目录加载）
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $publishDir = Join-Path $scriptDir 'publish'
 $modulePath = Join-Path $publishDir 'publish.psm1'
@@ -50,7 +50,32 @@ if (-not (Test-Path $modulePath)) {
     exit 1
 }
 
+# 目标项目根目录
+if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
+    $ProjectRoot = Join-Path $scriptDir '..'
+}
+$projectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
+if (-not (Test-Path (Join-Path $projectRoot 'modinfo.lua'))) {
+    Write-Error "目标目录未找到 modinfo.lua，请指定 DST mod 项目根目录。"
+    Write-Error "目标目录: $projectRoot"
+    exit 1
+}
+
 Import-Module $modulePath -Force
 
+# 物品包自身的差异化配置也直接放在唯一入口中。
+$packageRoot = (Resolve-Path (Join-Path $scriptDir '..')).Path
+if ($ProjectConfig.Count -eq 0 -and $projectRoot -eq $packageRoot) {
+    $ProjectConfig = @{
+        GitFiles       = @('modinfo.lua', 'CHANGELOG.md', 'docs/ark_item_enhanced_table.md')
+        PrePublishHook = 'tools/publish-hook.ps1'
+    }
+}
+
 # 执行
-Publish-Mod -ProjectRoot $projectRoot -Bump $Bump -SkipChecks:$SkipChecks -DryRun:$DryRun
+if ($DistOnly) {
+    Publish-Mod -ProjectRoot $projectRoot -ProjectConfig $ProjectConfig -DistOnly -DryRun:$DryRun
+}
+else {
+    Publish-Mod -ProjectRoot $projectRoot -ProjectConfig $ProjectConfig -Bump $Bump -SkipChecks:$SkipChecks -DryRun:$DryRun
+}

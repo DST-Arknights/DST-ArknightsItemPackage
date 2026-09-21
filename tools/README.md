@@ -4,13 +4,18 @@
 
 ## 发布工具
 
-### publish.ps1 — 发布入口
+### publish.ps1 — 统一发布入口
 
-一键发布新版本，包含版本号管理、changelog 更新、Git 提交/打 tag、dist 生成等功能。
+所有 DST-Arknights mod 共用这一份发布实现。其他 mod 的 `tools/publish.ps1` 只保留项目配置和转发逻辑。
 
 ```powershell
 # 发布补丁版本 (2.4.2 → 2.4.3)
 pwsh ./tools/publish.ps1 -Bump patch
+
+# 在其他 mod 根目录执行该项目唯一的发布脚本
+Push-Location C:\path\to\mod
+pwsh ./tools/publish.ps1 -Bump patch
+Pop-Location
 
 # 发布次版本 (2.4.2 → 2.5.0)
 pwsh ./tools/publish.ps1 -Bump minor
@@ -23,7 +28,12 @@ pwsh ./tools/publish.ps1 -Bump patch -DryRun
 
 # 跳过依赖检查
 pwsh ./tools/publish.ps1 -Bump patch -SkipChecks
+
+# 只生成当前项目的本地内测 dist，不改版本、changelog、Git 或 Workshop 依赖
+pwsh ./tools/publish.ps1 -DistOnly
 ```
+
+其他 mod 目录中的 `tools/publish.ps1` 只是转发代理，并在脚本内嵌入该项目的差异化配置。新增公共参数时只需修改本项目的统一入口。
 
 **发布流程（10 步）：**
 1. 检查依赖工具（git）                         ← 确定性，快速
@@ -37,7 +47,7 @@ pwsh ./tools/publish.ps1 -Bump patch -SkipChecks
 9. 拷贝发布文件到 dist/
 10. 转换 dist/modinfo.lua 依赖为 workshop       ← 只改编译产物，不改源代码
 
-**依赖转换约定：** 源代码 `modinfo.lua` 始终写本地依赖 `{["LocalName"] = false}`（开发时依赖本地仓库），发布时步骤 10 只对 `dist/modinfo.lua` 转换为 workshop 依赖 `{ workshop = "workshop-xxxxx" }`。通过 `tools/publish-config.ps1` 的 `WorkshopDeps` 配置映射表。
+**依赖转换约定：** 源代码 `modinfo.lua` 始终写本地依赖 `{["LocalName"] = false}`（开发时依赖本地仓库），发布时步骤 10 只对 `dist/modinfo.lua` 转换为 workshop 依赖 `{ workshop = "workshop-xxxxx" }`。各模组在自己的 `tools/publish.ps1` 中提供 `WorkshopDeps` 配置。
 
 **脚本结构：**
 ```
@@ -55,7 +65,7 @@ tools/
         └── pre-publish.ps1     ← 本项目的发布前任务
 ```
 
-其他 DST mod 项目复用：复制 `tools/publish.ps1` + `tools/publish/` 文件夹，替换 `project/pre-publish.ps1` 为自己的前置任务即可。
+其他 DST mod 不再复制 `tools/publish/` 公共脚本，也不再维护单独的 config 文件；每个项目尽可能只保留一个 `tools/publish.ps1`。公共流程、检查、changelog、dist 拷贝和 Workshop 转换均由本项目维护。
 
 ---
 
