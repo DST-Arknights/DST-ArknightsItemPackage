@@ -50,6 +50,18 @@ local function RestoreGroundPhysics(inst)
     end
 end
 
+local function OnNewState(inst)
+    local flyer = inst.components.ark_flyer
+    local laststate = inst.sg and inst.sg.laststate
+    if flyer ~= nil and flyer.flying and flyer._target > 0
+        and laststate ~= nil and laststate.name == "jumpout"
+        and not inst:HasTag("playerghost")
+        and not (inst.components.health and inst.components.health:IsDead()) then
+        -- 虫洞出口会恢复地面碰撞；newstate 在旧状态 onexit 后触发。
+        RemovePhysicsColliders(inst)
+    end
+end
+
 ------------------------------------------------------------------------
 
 local ArkFlyer = Class(function(self, inst)
@@ -59,6 +71,7 @@ local ArkFlyer = Class(function(self, inst)
     self.height  = 0
     self._target = 0
 
+    inst:ListenForEvent("newstate", OnNewState)
     inst:ListenForEvent("ms_respawnedfromghost", function()
         self:Land()
     end)
@@ -204,6 +217,10 @@ function ArkFlyer:OnLoad(data)
         self:SetPercent(1)
         self:DriveHeight()
     end
+end
+
+function ArkFlyer:OnRemoveFromEntity()
+    self.inst:RemoveEventCallback("newstate", OnNewState)
 end
 
 ------------------------------------------------------------------------

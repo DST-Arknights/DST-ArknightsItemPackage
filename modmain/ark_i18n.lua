@@ -149,6 +149,7 @@ key 同时是 STRINGS 文案键与语音表键, 文案走原版 GetString (角�
   voice     true  播语音;     false = 只文字
   time      nil   气泡时长; 缺省跟随语音表的 duration
   volume    nil   音量; 缺省用 RegisterVoice 的默认
+  voice_channel nil 语音播放通道; 设置后先结束该通道上的旧语音
   noanim / force / nobroadcast / colour   透传 talker:Say
   sgparam   nil   附加给 ontalk 事件的数据; 播了语音时内部并入 skip_default_talk
 ]]
@@ -165,7 +166,11 @@ function GLOBAL.SayAndVoice(inst, key, opts)
     local voice = entry and entry[profile.voice_lang]
     if voice and voice.path and inst.SoundEmitter then
       local volume = opts.volume ~= nil and opts.volume or profile.volume
-      inst.SoundEmitter:PlaySound(voice.path, voice.name or key, volume)
+      local voice_channel = opts.voice_channel
+      if voice_channel ~= nil then
+        inst.SoundEmitter:KillSound(voice_channel)
+      end
+      inst.SoundEmitter:PlaySound(voice.path, voice_channel or voice.name or key, volume)
       sgparam.skip_default_talk = true -- 有语音 → 拦截默认说话动画
       time = time or voice.duration
     end
