@@ -10,6 +10,7 @@
 # 参数:
 #   -ProjectRoot 目标项目根目录（由其他 mod 的薄代理传入）
 #   -ProjectConfig 目标项目内嵌的差异化配置（由薄代理传入）
+#     SteamDescriptionMarkdown / SteamDescriptionOutput 可配置 Steam 介绍的 Markdown 源文件和 BBCode 输出文件（均为相对路径）
 #   -Bump       版本升级类型: patch（补丁）, minor（次版本）, major（主版本）
 #   -SkipChecks 跳过依赖检查
 #   -DryRun     试运行：仅显示将执行的操作，不做实际修改

@@ -6,6 +6,7 @@
 #   3. AI: 从 git 提交生成 changelog               ← 高失败风险/高成本，翻译检查通过后才跑
 #   4. 验证 changelog 条目存在且有内容
 #   5. 运行项目特定发布前钩子
+#   5.5 将项目 Steam 介绍 Markdown 转换为可粘贴的 BBCode 文本
 #   6. 更新 modinfo.lua 版本号
 #   7. 读取 changelog → 更新 modinfo.lua description
 #   8. Git 提交 + 打 tag（源代码保持本地依赖）
@@ -50,6 +51,8 @@ function Publish-Mod {
     $maxVersions    = if ($config.MaxVersions)    { $config.MaxVersions }    else { 2 }
     $workshopDeps   = if ($config.WorkshopDeps)   { $config.WorkshopDeps }   else { @{} }
     $prePublishHook = if ($config.PrePublishHook) { Join-Path $ProjectRoot $config.PrePublishHook } else { $null }
+    $steamMarkdownPath = if ($config.SteamDescriptionMarkdown) { Join-Path $ProjectRoot $config.SteamDescriptionMarkdown } else { $null }
+    $steamOutputPath = if ($config.SteamDescriptionOutput) { Join-Path $ProjectRoot $config.SteamDescriptionOutput } else { $null }
 
     # 解析路径（子模块与 publish.psm1 同目录）
     $modinfoPath    = Join-Path $ProjectRoot 'modinfo.lua'
@@ -63,6 +66,7 @@ function Publish-Mod {
     . (Join-Path $publishDir 'changelog.ps1')
     . (Join-Path $publishDir 'git-ops.ps1')
     . (Join-Path $publishDir 'dist.ps1')
+    . (Join-Path $publishDir 'steam-markdown.ps1')
 
     if (-not $DistOnly -and [string]::IsNullOrWhiteSpace($Bump)) {
         throw "完整发布需要指定 -Bump patch、minor 或 major；仅生成本地 dist 请使用 -DistOnly。"
@@ -78,7 +82,8 @@ function Publish-Mod {
     }
 
     if ($DistOnly) {
-        Write-Host "`n[本地内测] 仅拷贝项目文件到 dist/，跳过版本、changelog、Git 和 Workshop 步骤..." -ForegroundColor Yellow
+        Write-Host "`n[本地内测] 生成 Steam 介绍并拷贝项目文件到 dist/，跳过版本、changelog、Git 和 Workshop 步骤..." -ForegroundColor Yellow
+        Invoke-SteamDescriptionConversion -MarkdownPath $steamMarkdownPath -OutputPath $steamOutputPath -DryRun:$DryRun
         if (-not $DryRun) {
             Copy-ToDist -ProjectRoot $ProjectRoot
             Write-Host "[完成]  本地内测包已生成: $(Join-Path $ProjectRoot 'dist')" -ForegroundColor Green
@@ -163,6 +168,13 @@ function Publish-Mod {
     else {
         Write-Host "[跳过]  未配置项目发布前钩子"
     }
+
+    # --------------------------------------------------
+    # 步骤 5.5: Markdown → Steam BBCode
+    #    生成的 .txt 位于 docs/，不进入 dist 模组包，可直接粘贴到 Steam 页面。
+    # --------------------------------------------------
+    Write-Host "`n[5.5] 转换 Steam 介绍文档..." -ForegroundColor Yellow
+    Invoke-SteamDescriptionConversion -MarkdownPath $steamMarkdownPath -OutputPath $steamOutputPath -DryRun:$DryRun
 
     # --------------------------------------------------
     # 步骤 6: 更新 modinfo.lua 版本号
