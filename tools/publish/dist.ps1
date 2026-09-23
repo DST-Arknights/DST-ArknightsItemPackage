@@ -8,23 +8,16 @@ function Copy-ToDist {
         [string]$DistPath = 'dist',
         [string[]]$Blacklist = @(
             'dist',
+            '.*',
             'tools',
             'temp',
-            '.git',
-            '.gitignore',
-            '.gitattributes',
-            '.vscode',
-            '.vs',
-            '.idea',
             'docs',
             'animSource',
             'imageSource',
             'shaderSource',
             'soundSource',
             'out',
-            '.VSCodeCounter',
             'ITEM_DESIGN.md',
-            'CHANGELOG.md',
             '*.code-workspace'
         )
     )

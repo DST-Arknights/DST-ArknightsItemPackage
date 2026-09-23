@@ -4,7 +4,9 @@
 #
 # 用法:
 #   pwsh ./tools/publish.ps1 -Bump patch
+#   pwsh ./tools/publish.ps1 patch
 #   pwsh ./tools/publish.ps1 -Bump patch -New
+#   pwsh ./tools/publish.ps1 major -New
 #   pwsh ./tools/publish.ps1 -Bump minor -DryRun
 #   pwsh ./tools/publish.ps1 -Bump major -SkipChecks
 #
@@ -22,7 +24,7 @@ param(
 
     [hashtable]$ProjectConfig = @{},
 
-    [Parameter(ParameterSetName = 'Publish', Mandatory = $true)]
+    [Parameter(ParameterSetName = 'Publish', Mandatory = $true, Position = 0)]
     [ValidateSet('patch', 'minor', 'major')]
     [string]$Bump,
 
