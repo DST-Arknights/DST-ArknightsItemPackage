@@ -4,6 +4,7 @@
 #
 # 用法:
 #   pwsh ./tools/publish.ps1 -Bump patch
+#   pwsh ./tools/publish.ps1 -Bump patch -New
 #   pwsh ./tools/publish.ps1 -Bump minor -DryRun
 #   pwsh ./tools/publish.ps1 -Bump major -SkipChecks
 #
@@ -12,6 +13,7 @@
 #   -ProjectConfig 目标项目内嵌的差异化配置（由薄代理传入）
 #     SteamDescriptionMarkdown / SteamDescriptionOutput 可配置 Steam 介绍的 Markdown 源文件和 BBCode 输出文件（均为相对路径）
 #   -Bump       版本升级类型: patch（补丁）, minor（次版本）, major（主版本）
+#   -New        首次发布：跳过 AI 更新记录、记录校验和 description 更新，仍执行版本递增
 #   -SkipChecks 跳过依赖检查
 #   -DryRun     试运行：仅显示将执行的操作，不做实际修改
 
@@ -23,6 +25,9 @@ param(
     [Parameter(ParameterSetName = 'Publish', Mandatory = $true)]
     [ValidateSet('patch', 'minor', 'major')]
     [string]$Bump,
+
+    [Parameter(ParameterSetName = 'Publish')]
+    [switch]$New,
 
     [Parameter(ParameterSetName = 'DistOnly', Mandatory = $true)]
     [switch]$DistOnly,
@@ -78,5 +83,5 @@ if ($DistOnly) {
     Publish-Mod -ProjectRoot $projectRoot -ProjectConfig $ProjectConfig -DistOnly -DryRun:$DryRun
 }
 else {
-    Publish-Mod -ProjectRoot $projectRoot -ProjectConfig $ProjectConfig -Bump $Bump -SkipChecks:$SkipChecks -DryRun:$DryRun
+    Publish-Mod -ProjectRoot $projectRoot -ProjectConfig $ProjectConfig -Bump $Bump -New:$New -SkipChecks:$SkipChecks -DryRun:$DryRun
 }

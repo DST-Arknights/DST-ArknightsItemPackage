@@ -14,7 +14,7 @@
 #   10. 转换 dist/modinfo.lua 依赖为 workshop（只改编译产物，不改源代码）
 #
 # 用法 (通过 tools/publish.ps1 入口):
-#   pwsh ./tools/publish.ps1 -Bump patch [-SkipChecks] [-DryRun]
+#   pwsh ./tools/publish.ps1 -Bump patch [-New] [-SkipChecks] [-DryRun]
 #   pwsh ./tools/publish.ps1 -ProjectRoot <mod目录> -Bump patch
 #   pwsh ./tools/publish.ps1 -ProjectRoot <mod目录> -DistOnly
 
@@ -27,6 +27,8 @@ function Publish-Mod {
 
         [ValidateSet('patch', 'minor', 'major')]
         [string]$Bump,
+
+        [switch]$New,
 
         [switch]$DistOnly,
 
@@ -70,6 +72,9 @@ function Publish-Mod {
 
     if (-not $DistOnly -and [string]::IsNullOrWhiteSpace($Bump)) {
         throw "完整发布需要指定 -Bump patch、minor 或 major；仅生成本地 dist 请使用 -DistOnly。"
+    }
+    if ($DistOnly -and $New) {
+        throw "-New 仅用于完整首次发布，不能与 -DistOnly 同时使用。"
     }
 
     # --------------------------------------------------
@@ -128,25 +133,32 @@ function Publish-Mod {
     #    此步骤调用 codex exec 总结 git 提交。
     #    如果失败，项目文件完全未被改动。
     # --------------------------------------------------
-    Write-Host "`n[3/10] AI: 从 git 历史生成 changelog..." -ForegroundColor Yellow
-
     # 计算目标版本号（只读，仅供 changelog 标题使用）
     $oldVersion = Get-ModinfoVersion -ModinfoPath $modinfoPath
     $newVersion = Bump-SemVer -Version $oldVersion -BumpType $Bump
     Write-Host "        $oldVersion -> $newVersion (升级类型: $Bump)"
 
-    if (-not $DryRun) {
-        Invoke-AIChangelog -ProjectRoot $ProjectRoot -Version $newVersion -ChangelogPath $changelogPath
+    Write-Host "`n[3/10] AI 生成 Changelog..." -ForegroundColor Yellow
+    if ($New) {
+        Write-Host "[跳过]  首次发布模式 (-New)，不生成或更新 CHANGELOG.md"
     }
     else {
-        Write-Host "[试运行]  将调用 AI 工具总结 v$newVersion 的 git 提交"
+        if (-not $DryRun) {
+            Invoke-AIChangelog -ProjectRoot $ProjectRoot -Version $newVersion -ChangelogPath $changelogPath
+        }
+        else {
+            Write-Host "[试运行]  将调用 AI 工具总结 v$newVersion 的 git 提交"
+        }
     }
 
     # --------------------------------------------------
     # 步骤 4: 验证 AI 输出（CHANGELOG.md 就绪?）
     # --------------------------------------------------
     Write-Host "`n[4/10] 验证 v$newVersion 的 changelog 条目..." -ForegroundColor Yellow
-    if (-not $DryRun) {
+    if ($New) {
+        Write-Host "[跳过]  首次发布模式 (-New)，无更新记录需要校验"
+    }
+    elseif (-not $DryRun) {
         Test-ChangelogReady -ChangelogPath $changelogPath -Version $newVersion
     }
     else {
@@ -193,7 +205,10 @@ function Publish-Mod {
     # --------------------------------------------------
     Write-Host "`n[7/10] 更新 description 中的版本信息..." -ForegroundColor Yellow
 
-    if (-not $DryRun) {
+    if ($New) {
+        Write-Host "[跳过]  首次发布模式 (-New)，保留 modinfo.lua 中现有 description"
+    }
+    elseif (-not $DryRun) {
         Set-ModinfoDescription -ModinfoPath $modinfoPath -ChangelogPath $changelogPath -EnVarName $enVarName -ZhVarName $zhVarName -MaxVersions $maxVersions
         Write-Host "[完成]  modinfo.lua description 已更新"
     }
