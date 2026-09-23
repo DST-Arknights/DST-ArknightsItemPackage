@@ -1,4 +1,24 @@
 # 版本更新记录
+## v2.7.1 (2026-09-24)
+
+- 调整发布脚本参数位置并优化黑名单机制。
+- 添加首次发布模式，优化发布流程中的 changelog 生成与校验。
+- 添加将 Steam 介绍 Markdown 转换为 BBCode 的功能。
+- 更新可携带物品配方，调整所需材料与科技分类。
+- 简化发布脚本的项目配置管理，并支持生成本地内测版本。
+- 添加语音播放通道选项，优化语音播放管理。
+- 修复启用延时补偿时飞行高度异常的问题。
+- 更新 PowerShell 脚本以支持 UTF-8 编码，确保中文输出正常。
+---
+- Reposition publish script parameters and improve the blacklist mechanism.
+- Add first-release mode and improve changelog generation and validation in the publishing workflow.
+- Add support for converting Steam description Markdown to BBCode.
+- Update carryable item recipes, adjusting required materials and technology categories.
+- Simplify project configuration in the publish scripts and support generating local test builds.
+- Add voice playback channel options and improve voice playback management.
+- Fix abnormal flight height when lag compensation is enabled.
+- Update PowerShell scripts to support UTF-8 encoding and ensure Chinese output displays correctly.
+
 ## v2.7.0 (2026-09-11)
 
 - 注释掉 ark_backpack 配方
