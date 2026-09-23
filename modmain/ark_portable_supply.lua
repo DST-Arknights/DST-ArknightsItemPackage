@@ -1,4 +1,4 @@
-AddCharacterRecipe("ark_portable_supply", {
+AddRecipe2("ark_portable_supply", {
   Ingredient("gears", 20),
   Ingredient("trinket_6", 10),
   Ingredient("torch", 1),
@@ -9,7 +9,7 @@ AddCharacterRecipe("ark_portable_supply", {
   actionstr = "DEPLOY",
   force_hint = true,
   builder_tag = "ark_character",
-}, { "MODS", "STRUCTURES" })
+}, { "ARK_TECHNOLOGY" })
 
 local DEFAULT_RECHARGE_GROUP = "default_skill_charge"
 
