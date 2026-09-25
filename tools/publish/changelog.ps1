@@ -3,8 +3,8 @@
 # AI 辅助工作流:
 #   [AI 步骤 - 放在最前面，失败率最高]
 #   1. Get-CommitsSinceLastTag     → 提取原始 git 记录
-#   2. Invoke-AIChangelog           → 调用 codex exec 总结 → 写入 CHANGELOG.md
-#      - 如果 Codex CLI 不可用，输出 prompt 供手动处理并阻断
+#   2. Invoke-AIChangelog           → 调用 OpenAI 兼容 HTTP API 总结 → 写入 CHANGELOG.md
+#      - 如果 AI 配置不可用，输出 prompt 供手动处理并阻断
 #   [确定性步骤 - 仅 AI 成功后才执行]
 #   3. Test-ChangelogReady          → 验证条目存在且有内容
 #   4. Get-VersionDescriptionBlock  → 读取条目用于 modinfo description 插入
@@ -16,7 +16,7 @@
 function Invoke-AIChangelog {
     <#
     .SYNOPSIS
-    调用 Codex CLI 将 git 提交总结为 changelog 条目。
+    调用 OpenAI Chat Completions 兼容接口，将 git 提交总结为 changelog 条目。
     此步骤放在发布流水线的最前面，因为：
       - AI 调用的失败概率最高
       - 如果失败，尚未对项目做任何修改
@@ -33,10 +33,8 @@ function Invoke-AIChangelog {
         [string]$Version,
 
         [Parameter(Mandatory = $true)]
-        [string]$ChangelogPath,
+        [string]$ChangelogPath
 
-        # Codex CLI 命令。保留参数以便测试或使用自定义安装名。
-        [string]$AITool = "codex"
     )
 
     # --- 获取提交记录 ---
@@ -58,9 +56,6 @@ function Invoke-AIChangelog {
         return
     }
 
-    # --- 解析 Codex CLI ---
-    $toolCmd = Get-Command $AITool -ErrorAction SilentlyContinue
-
     # --- 构建双语 prompt ---
     $commitList = ($commits | ForEach-Object { "  $_" }) -join "`n"
     $prompt = @"
@@ -74,9 +69,10 @@ FORMAT (strict):
 RULES:
 - Use only the commit text below as source. Do not inspect the repository or run commands.
 - Each Chinese bullet must have a corresponding English bullet (same content, different language), in the same order.
-- Describe EVERY meaningful change visible in the commits below. Do NOT skip commits.
-- Merge truly related changes into one line, but err on the side of keeping separate items.
-- Project infrastructure changes (publish scripts, CI, config) are STILL worth mentioning — describe them concretely.
+- Summarize only user-visible changes: new features, content changes, fixes, and notable behavior changes.
+- Omit implementation details, refactors, scripts, configuration, documentation, encoding, and other internal work unless users will notice a direct effect.
+- Keep the summary as short as possible. Merge related commits aggressively and normally produce no more than 3–5 bullets per language group.
+- Each bullet should be a short, plain-language description for players/users, not a technical commit explanation.
 - Keep proper nouns (character names, item names, technical terms) in English.
 - NO blank lines between bullets within a group. NO preamble, NO analysis, NO code blocks.
 
@@ -84,47 +80,36 @@ Commits to summarize:
 $commitList
 "@
 
-    # --- 调用 AI 工具 ---
-    if ($toolCmd) {
-        Write-Host "[运行]  调用 $($toolCmd.Name) 总结 $($commits.Count) 条提交..."
-        Write-Host "        （AI 步骤 - 可能需要一些时间，失败时会自动重试）"
-
-        $result = Invoke-AITool -ToolPath $toolCmd.Source -Prompt $prompt -WorkingDirectory $ProjectRoot
-        if (-not $result -or $result.Trim() -eq '') {
-            throw "[失败] AI 工具返回了空结果。请重试或手动更新 CHANGELOG.md。"
-        }
-
-        # 构建 changelog 段落
-        $entry = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n$($result.Trim())`n"
-        Write-ChangelogEntry -ChangelogPath $ChangelogPath -Version $Version -Content $entry
-        Write-Host "[完成]  AI 生成的 changelog 已写入 CHANGELOG.md"
+    # --- 检查配置并调用 AI 快速请求脚本 ---
+    $aiRequestPath = Join-Path $PSScriptRoot 'ai-quick-request.ps1'
+    if (-not (Test-Path -LiteralPath $aiRequestPath)) {
+        throw "[阻断] 未找到 AI 快速请求脚本: $aiRequestPath"
     }
-    else {
-        # --- AI 工具不可用：保存 prompt 供手动处理 ---
-        $promptFile = Join-Path $ProjectRoot 'temp' 'changelog_prompt.txt'
+
+    $promptFile = Join-Path $ProjectRoot 'temp' 'changelog_prompt.txt'
+    try {
+        & $aiRequestPath -ValidateOnly
+        Write-Host "[运行]  通过 HTTP API 总结 $($commits.Count) 条提交..."
+        $result = (& $aiRequestPath -Prompt $prompt | Out-String).Trim()
+    }
+    catch {
         $parentDir = Split-Path $promptFile -Parent
         if (-not (Test-Path $parentDir)) {
             New-Item -ItemType Directory -Path $parentDir -Force | Out-Null
         }
         # 带 BOM 的 UTF-8：Windows PowerShell 5.1 的 Get-Content / 记事本据此正确识别中文
         [System.IO.File]::WriteAllText($promptFile, $prompt, (New-Object System.Text.UTF8Encoding($true)))
-
-        throw @"
-
-[阻断] 未找到 Codex CLI（已尝试: $AITool）。
-
-手动生成 changelog 的步骤:
-  1. 总结 prompt 已保存到:
-     $promptFile
-  2. 将此 prompt 提供给 AI 工具
-  3. 将 AI 输出的条目写入 CHANGELOG.md，格式为:
-     ## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))
-  4. 重新运行 publish.ps1
-
-安装并登录 Codex CLI 后可实现全自动化:
-  https://developers.openai.com/codex/cli
-"@
+        throw "[阻断] AI 快速请求不可用。$($_.Exception.Message)`n手动总结 prompt 已保存到: $promptFile"
     }
+
+    if (-not $result) {
+        throw '[失败] AI 返回了空结果。请重试或手动更新 CHANGELOG.md。'
+    }
+
+    # 构建 changelog 段落
+    $entry = "## v$Version ($(Get-Date -Format 'yyyy-MM-dd'))`n`n$result`n"
+    Write-ChangelogEntry -ChangelogPath $ChangelogPath -Version $Version -Content $entry
+    Write-Host "[完成]  AI 生成的 changelog 已写入 CHANGELOG.md"
 }
 
 function Write-ChangelogEntry {
@@ -166,59 +151,6 @@ function Write-ChangelogEntry {
         $title = "# 版本更新记录`n`n本项目的所有重要变更。`n`n"
         $title + $Content | Set-Content $ChangelogPath -Encoding UTF8 -NoNewline
     }
-}
-
-function Invoke-AITool {
-    <#
-    .SYNOPSIS
-    调用 codex exec，通过 stdin 传入 prompt 并返回最终输出。
-    支持失败重试。
-    #>
-    param(
-        [string]$ToolPath,
-        [string]$Prompt,
-        [string]$WorkingDirectory,
-        [int]$MaxRetries = 2
-    )
-
-    $attempt = 0
-    $lastError = $null
-
-    while ($attempt -le $MaxRetries) {
-        try {
-            # 确保 PowerShell 以 UTF-8 解码原生可执行文件的输出（避免中文乱码）
-            $prevOutputEncoding = [Console]::OutputEncoding
-            $prevPSOutputEncoding = $OutputEncoding
-            [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-            $OutputEncoding = [System.Text.Encoding]::UTF8
-
-            try {
-                # Codex 将进度写入 stderr，最终回复写入 stdout；只捕获 stdout 作为 changelog。
-                $output = $Prompt | & $ToolPath exec --ephemeral --sandbox read-only --color never -C $WorkingDirectory -
-                $exitCode = $LASTEXITCODE
-            }
-            finally {
-                [Console]::OutputEncoding = $prevOutputEncoding
-                $OutputEncoding = $prevPSOutputEncoding
-            }
-
-            if ($exitCode -ne 0) {
-                throw "Codex CLI 退出码 $exitCode"
-            }
-
-            return ($output | Out-String).Trim()
-        }
-        catch {
-            $lastError = $_
-            $attempt++
-            if ($attempt -le $MaxRetries) {
-                Write-Warning "[重试]  AI 工具调用失败（第 $attempt/$MaxRetries 次）: $lastError"
-                Start-Sleep -Seconds 2
-            }
-        }
-    }
-
-    throw "AI 工具在 $MaxRetries 次重试后仍然失败。最后错误: $lastError"
 }
 
 # --------------------------------------------------

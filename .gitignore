@@ -8,3 +8,4 @@
 /soundSource/**/*.fev
 /soundSource/**/*.fsb
 /temp
+/.ai.env

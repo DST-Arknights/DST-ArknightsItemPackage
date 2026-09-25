@@ -38,7 +38,7 @@ pwsh ./tools/publish.ps1 -DistOnly
 **发布流程（10 步）：**
 1. 检查依赖工具（git）                         ← 确定性，快速
 2. 检查翻译完整性（PO 文件 msgctxt 对齐）       ← 硬性要求，放前面
-3. AI：从 git 提交总结生成 changelog            ← 高成本/高失败率，检查通过后才跑
+3. AI：通过 OpenAI 兼容 HTTP API 总结 git 提交   ← 配置检查通过后才请求
 4. 验证 changelog 条目存在且有内容
 5. 运行项目特定的前置钩子（生成物品表等）
 6. 更新 modinfo.lua 版本号
@@ -58,7 +58,8 @@ tools/
     ├── check-deps.ps1          ← 依赖检查
     ├── translation-check.ps1   ← 翻译完整性检查
     ├── modinfo.ps1             ← modinfo.lua 操作（版本 + description）
-    ├── changelog.ps1           ← CHANGELOG.md 读写 + AI 总结调用
+    ├── changelog.ps1           ← CHANGELOG.md 读写 + AI 总结编排
+    ├── ai-quick-request.ps1    ← OpenAI 兼容非流式请求
     ├── git-ops.ps1             ← Git 提交 + 打 tag
     ├── dist.ps1                ← 拷贝到 dist（黑名单机制）
     └── project/                ← 项目特定钩子
@@ -66,6 +67,18 @@ tools/
 ```
 
 其他 DST mod 不再复制 `tools/publish/` 公共脚本，也不再维护单独的 config 文件；每个项目尽可能只保留一个 `tools/publish.ps1`。公共流程、检查、changelog、dist 拷贝和 Workshop 转换均由本项目维护。
+
+### AI changelog 请求配置
+
+发布时需要生成 changelog 的情况下，脚本优先读取被 `.gitignore` 忽略的项目根目录文件 `.ai.env`，缺少的字段再读取同名环境变量。API Key 不应写入仓库。
+
+```text
+OPENAI_API_KEY=你的 API Key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=模型名称
+```
+
+也可以设置 `OPENAI_API_KEY`、`OPENAI_BASE_URL` 和 `OPENAI_MODEL` 环境变量。`OPENAI_BASE_URL` 未配置时默认使用 `https://api.openai.com/v1`。请求使用非流式 `chat/completions` 接口。
 
 ---
 
