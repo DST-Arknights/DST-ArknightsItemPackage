@@ -383,6 +383,12 @@ function ArkElite:SetMaxHealthBonus(value)
   self.maxHealthBonus = value or 0
 end
 
+function ArkElite:GetHealthBonus()
+  local ratio = self:_GetCumulativeLevel() / self:_GetTotalLevels()
+  local value = self.maxHealthBonus and (self.maxHealthBonus * ratio) or 0
+  return value >= 0 and math.floor(value) or math.ceil(value)
+end
+
 function ArkElite:SetMaxDamageBonus(value)
   self.maxDamageBonus = value or 0
 end
@@ -425,8 +431,7 @@ function ArkElite:_ApplyBonuses()
 
   -- 生命上限奖励（支持负值：生命随成长降低的角色，负值向零舍入避免多扣）
   if health then
-    local v = self.maxHealthBonus and (self.maxHealthBonus * ratio) or 0
-    local bonus = v >= 0 and math.floor(v) or math.ceil(v)
+    local bonus = self:GetHealthBonus()
     if bonus ~= 0 then
       ArkLogger:Debug("Applying health bonus", bonus, "ratio", ratio, "cumulativeLevel", cumulativeLevel, "totalLevels", totalLevels)
       health.maxhealthaddmodifiers:SetModifier(HEALTH_BONUS_MODIFIER_KEY, bonus)
