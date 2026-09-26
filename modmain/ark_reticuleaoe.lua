@@ -127,10 +127,11 @@ local function OnRemoveReticule(inst)
 end]]
 
 local function MakeReticule(name, anim, fixedorientation, postinit)
-  local bank, build, overrideassets
+  local bank, build, overrideassets, scale
   if type(anim) == "table" then
     bank = anim.bank
     build = anim.build
+    scale = anim.scale
     anim = anim.anim
     if build then
       overrideassets = { Asset("ANIM", "anim/" .. build .. ".zip") }
@@ -155,7 +156,8 @@ local function MakeReticule(name, anim, fixedorientation, postinit)
     inst.AnimState:SetOrientation(fixedorientation and ANIM_ORIENTATION.OnGroundFixed or ANIM_ORIENTATION.OnGround)
     inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
     inst.AnimState:SetSortOrder(3)
-    inst.AnimState:SetScale(SCALE, SCALE)
+    local reticuleScale = scale or SCALE
+    inst.AnimState:SetScale(reticuleScale, reticuleScale)
 
     --[[if ThePlayer ~= nil and not TheInput:ControllerAttached() then
             inst.base = CreateBase()

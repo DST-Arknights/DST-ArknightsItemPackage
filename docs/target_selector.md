@@ -35,6 +35,8 @@ RegisterTargetSelector("my_skill_aoe", AreaTargetSelector {
 | `twinstickmode` | number | 手柄双摇杆模式 | `1` |
 | `twinstickrange` | number | 手柄瞄准最大偏移；未设置时跟随 `range` | `range` |
 | `validfn` | function | 额外落点校验函数 | `nil` |
+| `targetposfn` | function | 将鼠标/手柄候选坐标规范到实际施法坐标（如网格吸附）；服务端确认时会再次应用 | `nil` |
+| `reticulescale` | number | 仅缩放持续瞄准指示器，不影响确认 ping 和实际落点 | `nil` |
 
 `validfn` 使用原版 reticule 签名：
 
@@ -43,6 +45,21 @@ function(selector_inst, reticule_inst, pos, alwayspassable, allowwater, deployra
   return true
 end
 ```
+
+`targetposfn` 在合法性检测和实际施法前规范候选坐标，适合固定网格、格中心吸附等需求：
+
+```lua
+function(selector_inst, pos)
+  local grid = 2
+  return Vector3(
+    (math.floor(pos.x / grid) + 0.5) * grid,
+    0,
+    (math.floor(pos.z / grid) + 0.5) * grid
+  )
+end
+```
+
+网格类选择器通常同时设置 `ease = false`，避免视觉在两个离散格点之间做平滑插值。需要复用同一动画表示不同网格半径时，可用 `reticulescale` 单独调整持续指示器大小。
 
 ## MapTargetSelector 配置
 

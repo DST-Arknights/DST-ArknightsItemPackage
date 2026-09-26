@@ -3,7 +3,7 @@ GLOBAL.setmetatable(env, {
 })
 
 PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
-  'ark_portable_supply', 'ark_portable_supply_range', "area_target_selector", "map_target_selector", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
+  'ark_portable_supply', 'ark_portable_supply_range', "area_target_selector", "map_target_selector", "ark_reticules", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
   "armor_construct", 'ark_craft_callback' }
 
 Assets = {
@@ -22,6 +22,7 @@ Assets = {
   Asset("ANIM", "anim/ark_backpack_slot.zip"),
   Asset("ANIM", "anim/ark_backpack_bg.zip"),
   Asset("ANIM", "anim/ark_fly.zip"),
+  Asset("ANIM", "anim/ark_reticules.zip"),
   Asset("SOUNDPACKAGE", "sound/ark_item.fev"),
   Asset("FILE", "sound/ark_item.fsb"),
 }

@@ -35,8 +35,17 @@ local AreaTargetSelector = Class(TargetSelector, function(self, config)
   -- aoe 专属
   self.range        = config.range        or 8   -- 范围半径
   self.deployradius = config.deployradius or 1   -- 部署间距
-  self.validfn      = config.validfn             -- 范围有效性判定（返回 false 显示非法）
+  self.validfn       = config.validfn             -- 范围有效性判定（返回 false 显示非法）
+  self.targetposfn   = config.targetposfn         -- 候选坐标规范化（网格吸附等），主客机都应用
+  self.reticulescale = config.reticulescale       -- 指示器视觉缩放倍率；不影响 ping 与实际落点
 end)
+
+function AreaTargetSelector:TransformTargetPos(runtime, pos)
+  if pos == nil or self.targetposfn == nil then
+    return pos
+  end
+  return self.targetposfn(runtime, pos) or pos
+end
 
 -- ────────────────────────────────────────────────────────
 -- 地图子类：打开原版地图，通过 map_only action 选择世界坐标
@@ -241,6 +250,19 @@ function AreaTargetSelector:ApplyToEntity(selector)
   aoe.reticule.twinstickmode  = self.twinstickmode
   aoe.reticule.twinstickrange = self.twinstickrange
   aoe.reticule.validfn        = self.validfn
+  aoe.reticule.mousetargetfn  = self.targetposfn ~= nil and function(runtime, pos)
+    return self:TransformTargetPos(runtime, pos)
+  end or nil
+  if self.reticulescale ~= nil then
+    local scale = self.reticulescale
+    aoe.reticule.updatepositionfn = function(_, pos, fx, ease)
+      fx.Transform:SetPosition(pos.x, 0, pos.z)
+      -- Reticule:UpdatePosition 会传 ease；PingReticuleAt 只传前三个参数，故不缩放 ping。
+      if ease ~= nil then
+        fx.Transform:SetScale(scale, scale, scale)
+      end
+    end
+  end
   aoe:SetRange(self.range)
   aoe:SetDeployRadius(self.deployradius)
 end
@@ -579,10 +601,24 @@ end)
 
 ArkHookFunction(ACTIONS.CASTAOE, "fn", function(next, act, ...)
   if act.doer._now_target_selector then
+    local runtime = act.doer._now_target_selector
+    local selector = act.doer._now_target_selector_obj
     local act_post = act:GetActionPoint()
-    local selector = act.doer._now_target_selector
-    if selector.components.aoespell:CanCast(act.doer, act_post) then
-      return selector.components.aoespell:CastSpell(act.doer, act_post)
+    if selector ~= nil and AreaTargetSelector.is_instance(selector) then
+      act_post = selector:TransformTargetPos(runtime, act_post)
+    end
+    if runtime.components.aoespell:CanCast(act.doer, act_post) then
+      return runtime.components.aoespell:CastSpell(act.doer, act_post)
+    end
+    -- 客户端确认时不会再发送 Cancel RPC；若权威端判定落点无效，在这里主动结束选择，避免残留运行实体。
+    if selector ~= nil and AreaTargetSelector.is_instance(selector) then
+      selector:StopSelecting(act.doer)
+    else
+      if runtime:IsValid() then
+        runtime:Remove()
+      end
+      act.doer._now_target_selector = nil
+      act.doer._now_target_selector_obj = nil
     end
     return false
   end

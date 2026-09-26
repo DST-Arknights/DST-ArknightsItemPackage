@@ -1,22 +1,31 @@
 -- ════════════════════════════════════════════════════════
 -- AOE 选择器运行实体（由 modmain/target_selector.lua 管理）
 -- 网络同步：只传 selector id（net_string），客户端查注册表装配 reticule/aoetargeting
--- 取消检测：玩家取消瞄准时 aoetargeting:StopTargeting 触发，延迟帧确认后发取消 RPC
+-- 取消检测：确认 CASTAOE 由 reticule ping 标记；只有真正取消瞄准才向服务端发送取消 RPC
 -- ════════════════════════════════════════════════════════
+
+local function TransformTargetPos(inst, pos)
+  local id = inst._selector_id:value()
+  local selector = id ~= "" and GetTargetSelector(id) or nil
+  return selector ~= nil and selector.TransformTargetPos ~= nil
+    and selector:TransformTargetPos(inst, pos) or pos
+end
 
 local function ReticuleTargetFn(inst)
   local player = ThePlayer
   local ground = TheWorld.Map
   local pos = Vector3()
   -- 朝向前方找可通行的瞄准点（手柄/自动瞄准），范围与当前选择器配置一致。
+  -- 先做 selector 的坐标规范化，再验证最终落点，保证视觉与实际 CASTAOE 使用同一位置。
   local range = inst.components.aoetargeting:GetRange()
   for r = range, 0, -0.25 do
     pos.x, pos.y, pos.z = player.entity:LocalToWorldSpace(r, 0, 0)
-    if ground:IsPassableAtPoint(pos.x, 0, pos.z, true) and not ground:IsGroundTargetBlocked(pos) then
-      return pos
+    local target = TransformTargetPos(inst, pos)
+    if ground:IsPassableAtPoint(target.x, 0, target.z, true) and not ground:IsGroundTargetBlocked(target) then
+      return target
     end
   end
-  return pos
+  return TransformTargetPos(inst, pos)
 end
 
 -- 客户端：收到 selector id 后装配 + 开始瞄准
@@ -81,6 +90,12 @@ local function fn()
       for k, v in pairs(self.reticule) do
         self.inst.components.reticule[k] = v
       end
+      -- 原版确认 CASTAOE 时会先 PingReticuleAt，再立刻 StopTargeting。
+      -- 用 ping 区分“确认”与 ESC/右键等真正取消，避免取消 RPC 抢在确认动作前到服务端。
+      ArkHookFunction(self.inst.components.reticule, "PingReticuleAt", function(next, reticule, ...)
+        inst._ark_target_confirming = true
+        return next(reticule, ...)
+      end)
       if ThePlayer and ThePlayer.components.playercontroller then
         ThePlayer.components.playercontroller:RefreshReticule(self.inst)
       end
@@ -110,16 +125,18 @@ local function fn()
     end)
     inst.OnEntityReplicated = OnSelectorIdReady
 
-    -- 取消检测：玩家取消/确认瞄准都会触发 StopTargeting（playercontroller:CancelAOETargeting）
-    -- 区分：确认后服务端 StopSelecting 会移除本实体（强同步），取消则实体仍在。
-    -- 延迟帧检查实体是否仍有效——仍有效说明是取消（非确认），通知服务端；已移除说明已确认，不发。
+    -- 确认 CASTAOE 已由 PingReticuleAt 标记；真正取消才发 Cancel RPC。
     ArkHookFunction(inst.components.aoetargeting, "StopTargeting", function(next, self, ...)
+      local confirming = inst._ark_target_confirming == true
+      inst._ark_target_confirming = nil
       local res = next(self, ...)
-      inst:DoTaskInTime(2 * FRAMES, function()
-        if inst:IsValid() then
-          SendModRPCToServer(GetModRPC("arkTargetSelector", "Cancel"), inst.GUID)
-        end
-      end)
+      if not confirming then
+        inst:DoTaskInTime(2 * FRAMES, function()
+          if inst:IsValid() then
+            SendModRPCToServer(GetModRPC("arkTargetSelector", "Cancel"), inst.GUID)
+          end
+        end)
+      end
       return res
     end)
 
