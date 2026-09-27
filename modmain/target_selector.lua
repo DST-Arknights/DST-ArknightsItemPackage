@@ -333,6 +333,11 @@ MAP_SELECT_ACTION.priority = 10
 MAP_SELECT_ACTION.instant = true
 MAP_SELECT_ACTION.mount_valid = true
 MAP_SELECT_ACTION.map_only = true
+-- MapTargetSelector 自己已经通过 maponly_checkvalidpos_fn 做目标权威校验。
+-- 允许点击战争迷雾/未探索区域里的全局地图代理；同时聚合代理可能固定在不可通行的网格中心，
+-- 不应再被 PlayerController:RemapMapAction 的通用地图地形检查二次拦截。
+MAP_SELECT_ACTION.map_works_on_unexplored = true
+MAP_SELECT_ACTION.map_works_on_impassable = true
 
 MAP_SELECT_ACTION.maponly_checkvalidpos_fn = ValidateMapSelection
 MAP_SELECT_ACTION.stroverridefn = function(act)
