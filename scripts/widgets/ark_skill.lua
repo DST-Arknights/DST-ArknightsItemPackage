@@ -361,7 +361,8 @@ function ArkSkill:UpdateModeIndicators(status, autoActivationMode)
 end
 
 function ArkSkill:UpdateChargeShadow(status)
-  if status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
+  local fullStacks = (self.activationStacks or 0) >= self.levelConfig.maxActivationStacks
+  if status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING and not fullStacks then
     self.chargeShadow:Show()
   else
     self.chargeShadow:Hide()

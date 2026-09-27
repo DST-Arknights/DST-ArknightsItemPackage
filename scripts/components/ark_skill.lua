@@ -719,10 +719,22 @@ function SingleSkill:SetLevel(level)
   if oldLevel == level then
     return
   end
+  local oldLvl = self:GetLevelConfig()
+  local oldEnergyProgress = self.data.energyProgress or 0
   self.data.level = level
   local cfg = self:GetConfig()
   local lvl = self:GetLevelConfig()
   self.data.activationStacks = math.min(self.data.activationStacks, lvl.maxActivationStacks)
+
+  -- energyProgress 是“当前等级 activationEnergy 单位下的进度”，等级变化时不能直接沿用原始数值。
+  -- 例如 5 SP/层 → 1 SP/层若保留 4.x，会在下一帧被结算成多层充能。按完成比例换算到新等级。
+  if oldLvl ~= nil and oldLvl.activationEnergy ~= nil and oldLvl.activationEnergy > 0
+      and lvl.activationEnergy ~= nil and lvl.activationEnergy > 0 then
+    local progressRatio = math.max(0, math.min(1, oldEnergyProgress / oldLvl.activationEnergy))
+    self.data.energyProgress = progressRatio * lvl.activationEnergy
+  else
+    self.data.energyProgress = 0
+  end
 
   if self.data.status == CONSTANTS.SKILL_STATUS.ENERGY_RECOVERING then
     if cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO then
@@ -754,6 +766,7 @@ function SingleSkill:AddEnergyProgress(value)
     return 0
   end
   local oldEnergyProgress = data.energyProgress
+  local oldActivationStacks = data.activationStacks
   data.energyProgress = data.energyProgress + value
   while data.energyProgress >= lvl.activationEnergy do
     data.energyProgress = data.energyProgress - lvl.activationEnergy
@@ -768,9 +781,12 @@ function SingleSkill:AddEnergyProgress(value)
       break
     end
   end
-  -- 自动充能模式整数帧同步, 其余模式在每次进度变化时同步
-  local skipSync = cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO and
-  math.floor(oldEnergyProgress) == math.floor(data.energyProgress)
+  -- 自动充能模式仅在“整数进度未变化且充能层数也未变化”时跳过同步。
+  -- 层数跨阈值（尤其 activationEnergy = 1）时 energyProgress 可能回到同一整数区间，
+  -- 若只比较进度会漏掉 activationStacks 的变化，导致客户端永远停在旧层数。
+  local skipSync = cfg.energyRecoveryMode == CONSTANTS.ENERGY_RECOVERY_MODE.AUTO
+      and oldActivationStacks == data.activationStacks
+      and math.floor(oldEnergyProgress) == math.floor(data.energyProgress)
   if not skipSync then
     self.manager:SyncSkillStatus(self.id)
   end
