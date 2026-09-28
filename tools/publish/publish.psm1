@@ -117,9 +117,9 @@ function Publish-Mod {
     }
 
     # --------------------------------------------------
-    # 步骤 1: 检查依赖（确定性，快速）
+    # 步骤 1: 检查依赖与 Git 仓库状态（确定性，快速）
     # --------------------------------------------------
-    Write-Host "`n[1/10] 检查依赖..." -ForegroundColor Yellow
+    Write-Host "`n[1/10] 检查依赖与 Git 状态..." -ForegroundColor Yellow
     if (-not $SkipChecks) {
         if (-not $DryRun) {
             Test-RequiredTools -Required @('git')
@@ -130,6 +130,14 @@ function Publish-Mod {
     }
     else {
         Write-Host "[跳过]  依赖检查已跳过（--SkipChecks）"
+    }
+
+    # Git 锁文件等问题必须在 changelog/modinfo 被修改前发现，避免发布到一半才失败。
+    if (-not $DryRun) {
+        Test-GitRepositoryReady -ProjectRoot $ProjectRoot
+    }
+    else {
+        Write-Host "[试运行]  将检查 Git 仓库是否可写及 index.lock"
     }
 
     # --------------------------------------------------
