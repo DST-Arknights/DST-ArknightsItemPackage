@@ -1,4 +1,18 @@
 # 版本更新记录
+## v2.8.0 (2026-09-29)
+
+- 支持动态天赋描述。
+- 修复升级后技能充能状态不同步的问题。
+- 修复护甲最低生命值保护，生命值不会低于 0.9。
+- 支持远程地图目标选择，并扩展区域选择器的网格吸附。
+- 显示当前精英生命加成，并优化音频优先级与播放效果。
+---
+- Added dynamic talent descriptions.
+- Fixed skill charge state not syncing across level changes.
+- Fixed armor minimum health protection so health does not fall below 0.9.
+- Added remote map target selection and expanded grid snapping for the area selector.
+- Exposed the current elite health bonus and tuned audio priority and playback for better sound.
+
 ## v2.7.1 (2026-09-24)
 
 - 调整发布脚本参数位置并优化黑名单机制。
