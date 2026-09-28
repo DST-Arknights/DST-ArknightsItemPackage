@@ -82,9 +82,9 @@ local function onequip(inst, owner)
   else
     owner.AnimState:OverrideSymbol("swap_body", "armor_construct", "swap_body")
   end
-  -- 锁血: 1
+  -- 最低生命值保护
   if owner.components.health then
-    owner.components.health.minhealthmodifiers:SetModifier(inst, 1)
+    owner.components.health.minhealthmodifiers:SetModifier(inst, ARMOR_CONSTRUCT.MIN_HEALTH)
   end
   inst:ListenForEvent("blocked", OnBlocked, owner)
   inst:PriorityListenForEvent("minhealth", inst._OnMinHealth, owner, { priority = 2 })
@@ -161,6 +161,8 @@ local function fn()
   inst.components.armor:SetImmuneStun(true)
   -- 初始0耐久
   inst.components.armor.condition = 0
+  -- InitCondition 设置了满额吸收率；直接改 condition 不会触发耐久变化事件。
+  inst.components.armor:SetAbsorption(0)
   -- 被击一段时间内暂停任务
   inst.components.armor.ontakedamage = OnTakeDamage
   -- 耐久为0时不吸收伤害
@@ -173,8 +175,13 @@ local function fn()
     inst._exchange_pause_until = GetTime() + ARMOR_CONSTRUCT.EXCHANGE_PAUSE_AFTER_DAMAGE
   end
   inst._OnMinHealth = function(owner)
+    local health = owner.components.health
+    if health.currenthealth ~= ARMOR_CONSTRUCT.MIN_HEALTH then
+      return false
+    end
+
     -- 宿主血量回满, 自身销毁
-    owner.components.health:SetPercent(1)
+    health:SetPercent(1)
     inst:Remove()
     return true
   end
