@@ -585,7 +585,38 @@ function SingleSkill:ListenForEventWhileActivating(event, fn, source)
   end
 end
 
-function SingleSkill:SetEnergyRecovering(force)
+-- 仅在技能已解锁期间生效；充能、BUFF、弹药态都属于 Unlocked，只有 LOCKED 会卸载。
+function SingleSkill:HookFunctionWhileUnlocked(obj, funcName, fn)
+  self:_AddCallback("ark_skill_unlocked", function()
+    self:HookFunction(obj, funcName, fn)
+  end)
+  self:_AddCallback("ark_skill_locked", function()
+    self:UnhookFunction(obj, funcName, fn)
+  end)
+  if self:IsUnlocked() then
+    self:HookFunction(obj, funcName, fn)
+  end
+end
+
+function SingleSkill:ListenForEventWhileUnlocked(event, fn, source)
+  local activeToken = nil
+  self:_AddCallback("ark_skill_unlocked", function()
+    if not activeToken then
+      activeToken = self:ListenForEvent(event, fn, source)
+    end
+  end)
+  self:_AddCallback("ark_skill_locked", function()
+    if activeToken then
+      self:RemoveEventCallback(activeToken)
+      activeToken = nil
+    end
+  end)
+  if self:IsUnlocked() then
+    activeToken = self:ListenForEvent(event, fn, source)
+  end
+end
+
+function SingleSkill:SetEnergyRecovering(force, suppressEvent)
   local data = self.data
   local cfg = self:GetConfig()
   local lvl = self:GetLevelConfig()
@@ -615,11 +646,13 @@ function SingleSkill:SetEnergyRecovering(force)
     })
   end
 
-  -- 进入充能状态事件
-  self:_Emit("ark_skill_energy_recovering", {
-    fromStatus = prevStatus,
-    force = force
-  })
+  -- 进入充能状态事件。Unlock 会延后到 unlocked 生命周期挂载完成后再发。
+  if not suppressEvent then
+    self:_Emit("ark_skill_energy_recovering", {
+      fromStatus = prevStatus,
+      force = force
+    })
+  end
 end
 
 function SingleSkill:SetBuffing()
@@ -640,6 +673,10 @@ end
 
 function SingleSkill:IsActivating()
   return self.data.status == CONSTANTS.SKILL_STATUS.BUFFING or self.data.status == CONSTANTS.SKILL_STATUS.BULLETING
+end
+
+function SingleSkill:IsUnlocked()
+  return self.data.status ~= CONSTANTS.SKILL_STATUS.LOCKED
 end
 
 function SingleSkill:Lock()
@@ -677,10 +714,14 @@ function SingleSkill:Unlock()
     return
   end
   local prevStatus = data.status
+  self:SetEnergyRecovering(false, true)
   self:_Emit("ark_skill_unlocked", {
     fromStatus = prevStatus
   })
-  self:SetEnergyRecovering()
+  self:_Emit("ark_skill_energy_recovering", {
+    fromStatus = prevStatus,
+    force = false
+  })
   self:RefreshTag()
 end
 
@@ -1021,6 +1062,10 @@ function SingleSkill:OnLoad(saved)
   self:RefreshTag()
   self._lastActivateTime = nil
   self._lastDeactivateTime = nil
+  -- 读档恢复：重新发出 unlocked 生命周期事件，让 WhileUnlocked hook/listener 自动恢复。
+  if self:IsUnlocked() then
+    self:_Emit("ark_skill_unlocked", { fromStatus = CONSTANTS.SKILL_STATUS.LOCKED, source = "load" })
+  end
 end
 
 function SingleSkill:Remove()

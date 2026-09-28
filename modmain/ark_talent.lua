@@ -3,6 +3,8 @@ local CONSTANTS = require "ark_constants"
 local function checkAndDefaultTalent(talent)
   assert(talent, "Talent config is nil.")
   assert(talent.id, "Talent config missing id.")
+  assert(talent.OnActivate == nil, "Talent " .. talent.id .. " uses removed OnActivate; use OnUnlocked.")
+  assert(talent.OnDeactivate == nil, "Talent " .. talent.id .. " uses removed OnDeactivate; use OnLocked.")
   assert(type(talent.levels) == "table" and #talent.levels > 0,
     "Talent " .. talent.id .. " must have at least one level config.")
 
@@ -21,11 +23,6 @@ local function checkAndDefaultTalent(talent)
     name    = talent.name   or talent.id,
     levels  = copyLevels,
   }
-  -- 天赋只有锁定/解锁两态，规范回调名使用 OnLocked/OnUnlocked。
-  -- OnActivate/OnDeactivate 保留为兼容别名；两者同时提供时规范名称优先。
-  copy.OnUnlocked = talent.OnUnlocked or talent.OnActivate
-  copy.OnLocked = talent.OnLocked or talent.OnDeactivate
-
   -- 透传所有回调字段
   local callbackFields = {
     "OnLocked", "OnUnlocked", "OnLevelChange",

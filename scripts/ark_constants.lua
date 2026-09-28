@@ -248,7 +248,7 @@ return {
 
   TALENT_STATUS = {
     LOCKED = 1,
-    ACTIVE = 2,
+    UNLOCKED = 2,
   },
 
   ENERGY_RECOVERY_MODE = {

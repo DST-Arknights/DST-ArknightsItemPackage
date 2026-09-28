@@ -123,6 +123,11 @@ function ReplicaSingleSkill:IsActivating()
   return state ~= nil and (state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING)
 end
 
+function ReplicaSingleSkill:IsUnlocked()
+  local state = self:GetNetState()
+  return state ~= nil and state.status ~= CONSTANTS.SKILL_STATUS.LOCKED
+end
+
 function ReplicaSingleSkill:GetConfig()
   return self.manager:GetResolvedConfigById(self.id)
 end
@@ -517,6 +522,11 @@ end
 function ArkSkillReplica:IsActivating(id)
   local state = self:GetNetState(id)
   return state ~= nil and (state.status == CONSTANTS.SKILL_STATUS.BUFFING or state.status == CONSTANTS.SKILL_STATUS.BULLETING)
+end
+
+function ArkSkillReplica:IsUnlocked(id)
+  local state = self:GetNetState(id)
+  return state ~= nil and state.status ~= CONSTANTS.SKILL_STATUS.LOCKED
 end
 
 function ArkSkillReplica:CancelSkill(id)

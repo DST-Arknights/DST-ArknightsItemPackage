@@ -14,7 +14,7 @@ local CONFIG_CALLBACK_EVENT_MAP = {
 }
 
 -- ── SingleTalent ─────────────────────────────────────────────────────────────
--- 封装单个天赋的运行态与行为。天赋无激活状态机，仅有 LOCKED / ACTIVE 两态。
+-- 封装单个天赋的运行态与行为。天赋无主动激活状态机，仅有 LOCKED / UNLOCKED两态。
 
 local SingleTalent = Class(function(self, manager, id)
   self.manager = manager
@@ -93,7 +93,6 @@ function SingleTalent:_Emit(eventName, payload)
 end
 
 -- 事件注册/反注册接口。
--- 天赋以 Locked/Unlocked 为规范语义，Activate/Deactivate 仅作为兼容别名。
 function SingleTalent:SetOnUnlocked(fn)
   self:_AddCallback("ark_talent_unlocked", fn)
 end
@@ -106,40 +105,23 @@ end
 function SingleTalent:UnsetOnLocked(fn)
   self:_RemoveCallback("ark_talent_locked", fn)
 end
--- 旧 API：talent 只有 LOCKED / ACTIVE 两态，因此 Activate/Deactivate 等同于 Unlock/Lock。
-function SingleTalent:SetOnActivate(fn)
-  self:SetOnUnlocked(fn)
-end
-
-function SingleTalent:UnsetOnActivate(fn)
-  self:UnsetOnUnlocked(fn)
-end
-
-function SingleTalent:SetOnDeactivate(fn)
-  self:SetOnLocked(fn)
-end
-
-function SingleTalent:UnsetOnDeactivate(fn)
-  self:UnsetOnLocked(fn)
-end
-
--- ── 仅在激活期间（ACTIVE）生效的 hook ─────────────────────────────────────
+-- ── 仅在解锁期间（UNLOCKED）生效的 hook ─────────────────────────────────────
 
 -- 天赋解锁时自动挂载，锁定时自动清除，读档恢复时也会正确挂载。
-function SingleTalent:HookFunctionWhileActivating(obj, funcName, fn)
+function SingleTalent:HookFunctionWhileUnlocked(obj, funcName, fn)
   self:_AddCallback("ark_talent_unlocked", function()
     self:HookFunction(obj, funcName, fn)
   end)
   self:_AddCallback("ark_talent_locked", function()
     self:UnhookFunction(obj, funcName, fn)
   end)
-  if self:IsActivating() then
+  if self:IsUnlocked() then
     self:HookFunction(obj, funcName, fn)
   end
 end
 
--- 仅在激活期间（ACTIVE）生效的事件监听。
-function SingleTalent:ListenForEventWhileActivating(event, fn, source)
+-- 仅在解锁期间（UNLOCKED）生效的事件监听。
+function SingleTalent:ListenForEventWhileUnlocked(event, fn, source)
   local activeToken = nil
   self:_AddCallback("ark_talent_unlocked", function()
     if not activeToken then
@@ -152,15 +134,15 @@ function SingleTalent:ListenForEventWhileActivating(event, fn, source)
       activeToken = nil
     end
   end)
-  if self:IsActivating() then
+  if self:IsUnlocked() then
     activeToken = self:ListenForEvent(event, fn, source)
   end
 end
 
 -- ── 状态查询 ─────────────────────────────────────────────────────────────────
 
-function SingleTalent:IsActivating()
-  return self.data.status == CONSTANTS.TALENT_STATUS.ACTIVE
+function SingleTalent:IsUnlocked()
+  return self.data.status == CONSTANTS.TALENT_STATUS.UNLOCKED
 end
 
 -- ── 状态变更 ─────────────────────────────────────────────────────────────────
@@ -187,25 +169,17 @@ function SingleTalent:Lock()
   local prevStatus = self.data.status
   self.data.status = CONSTANTS.TALENT_STATUS.LOCKED
   self.manager:SyncTalentStatus(self.id)
-  if prevStatus == CONSTANTS.TALENT_STATUS.ACTIVE then
+  if prevStatus == CONSTANTS.TALENT_STATUS.UNLOCKED then
     self:_Emit("ark_talent_locked", { fromStatus = prevStatus })
   end
 end
 
-function SingleTalent:Deactivate()
-  self:Lock()
-end
-
 function SingleTalent:Unlock()
-  if self.data.status == CONSTANTS.TALENT_STATUS.ACTIVE then return end
+  if self.data.status == CONSTANTS.TALENT_STATUS.UNLOCKED then return end
   local prevStatus = self.data.status
-  self.data.status = CONSTANTS.TALENT_STATUS.ACTIVE
+  self.data.status = CONSTANTS.TALENT_STATUS.UNLOCKED
   self.manager:SyncTalentStatus(self.id)
   self:_Emit("ark_talent_unlocked", { fromStatus = prevStatus })
-end
-
-function SingleTalent:Activate()
-  self:Unlock()
 end
 
 function SingleTalent:OnLoad(saved)
@@ -216,8 +190,8 @@ function SingleTalent:OnLoad(saved)
   self.data = MergeMaps(self.data, stateData)
   self.data.level = math.min(self.data.level or 1, self:GetMaxLevel())
   self.manager:SyncTalentStatus(self.id)
-  -- 读档恢复：若处于激活状态则重新触发 unlock 事件（让 HookFunctionWhileActivating 正确挂载）
-  if self:IsActivating() then
+  -- 读档恢复：若处于已解锁状态则重新触发 unlock 事件（让 WhileUnlocked 生命周期正确挂载）
+  if self:IsUnlocked() then
     self:_Emit("ark_talent_unlocked", { fromStatus = CONSTANTS.TALENT_STATUS.LOCKED, source = "load" })
   end
   if self._cfgOnLoad then
@@ -226,8 +200,8 @@ function SingleTalent:OnLoad(saved)
 end
 
 function SingleTalent:Remove()
-  if self:IsActivating() then
-    self:Lock()  -- 触发 ark_talent_locked → HookFunctionWhileActivating 自动清除
+  if self:IsUnlocked() then
+    self:Lock()  -- 触发 ark_talent_locked → HookFunctionWhileUnlocked 自动清除
   end
   if self._cfgOnRemove and not self._removing then
     self._cfgOnRemove(self, {})

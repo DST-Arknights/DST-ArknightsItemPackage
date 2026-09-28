@@ -151,8 +151,8 @@ end
 
 -- 由 replica 或本地同步调用，根据 status/level 更新显示
 function ArkTalentIcon:SyncTalentStatus(status, level)
-  local isActive = status == CONSTANTS.TALENT_STATUS.ACTIVE
-  if isActive then
+  local isUnlocked = status == CONSTANTS.TALENT_STATUS.UNLOCKED
+  if isUnlocked then
     self:Show()
     self:SetLevel(level)
     -- 刷新悬浮描述，读取天赋当前等级的 desc
