@@ -157,10 +157,12 @@ function ArkTalentIcon:SyncTalentStatus(status, level)
     self:SetLevel(level)
     -- 刷新悬浮描述，读取天赋当前等级的 desc
     if self.talentId then
-      local ok, cfg = pcall(GetArkTalentConfigById, self.talentId)
-      if ok and cfg then
-        local lvlCfg = cfg.levels[level] or cfg.levels[1]
-        local desc = lvlCfg and FunctionOrValue(lvlCfg.desc, lvlCfg.params or {}, lvlCfg, cfg) or ""
+      local cfg = GetArkTalentConfigById(self.talentId)
+      local replica = self.owner.replica.ark_talent
+      local talent = replica ~= nil and replica:GetTalent(self.talentId) or nil
+      if talent then
+        local lvlCfg = talent:GetLevelConfig()
+        local desc = lvlCfg and FunctionOrValue(lvlCfg.desc, talent) or ""
         self:SetHoverContent(cfg.name, desc)
       end
     end

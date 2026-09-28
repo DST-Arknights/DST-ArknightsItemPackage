@@ -10,11 +10,31 @@ end)
 
 local MAX_TALENT_COUNT = 6
 
+-- Replica 端单天赋对象：尽量与服务端 SingleTalent 保持配置访问接口一致。
+local ReplicaSingleTalent = Class(function(self, manager, id)
+  self.manager = manager
+  self.inst = manager.inst
+  self.id = id
+end)
+
+function ReplicaSingleTalent:GetLevelConfig()
+  local state = self.manager:GetNetState(self.id)
+  if state == nil then return nil end
+  local config = GetArkTalentConfigById(self.id)
+  return config ~= nil and config.levels[state.level] or nil
+end
+
+function ReplicaSingleTalent:GetLevelParams()
+  local levelConfig = self:GetLevelConfig()
+  return levelConfig and levelConfig.params or {}
+end
+
 local ArkTalentReplica = Class(function(self, inst)
   self.inst = inst
   self.states    = {}          -- 索引 -> state
   self.talentIds = {}          -- 索引 -> 天赋id
   self.talentIdToIndex = {}    -- 天赋id -> 索引
+  self.replicaTalents = {}     -- 天赋id -> ReplicaSingleTalent 缓存
   -- 预制 MAX_TALENT_COUNT 个 state，用于同步状态数据
   for i = 1, MAX_TALENT_COUNT do
     local state = NetState(self.inst, "ark_talent")
@@ -61,6 +81,7 @@ function ArkTalentReplica:DoUninstallTalent(id)
   if not id or id == "" then return end
   SafeGetTalentsUI(self.inst):RemoveTalent(id)
   self.talentIdToIndex[id] = nil
+  self.replicaTalents[id] = nil
 end
 
 function ArkTalentReplica:DoInstallTalent(id, index)
@@ -107,6 +128,22 @@ function ArkTalentReplica:TalentDataDirty(index)
   if hasNew then
     self:TrySyncTalentData(newId, state)
   end
+end
+
+function ArkTalentReplica:GetNetState(id)
+  local index = self.talentIdToIndex[id]
+  return index and self.states[index] or nil
+end
+
+function ArkTalentReplica:GetTalent(id)
+  if not id or id == "" then return nil end
+  local cached = self.replicaTalents[id]
+  if not cached then
+    if not self.talentIdToIndex[id] then return nil end
+    cached = ReplicaSingleTalent(self, id)
+    self.replicaTalents[id] = cached
+  end
+  return cached
 end
 
 -- 主机端同步状态到客机
