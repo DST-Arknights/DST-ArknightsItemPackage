@@ -160,7 +160,8 @@ function ArkTalentIcon:SyncTalentStatus(status, level)
       local ok, cfg = pcall(GetArkTalentConfigById, self.talentId)
       if ok and cfg then
         local lvlCfg = cfg.levels[level] or cfg.levels[1]
-        self:SetHoverContent(cfg.name, lvlCfg and lvlCfg.desc or "")
+        local desc = lvlCfg and FunctionOrValue(lvlCfg.desc, lvlCfg.params or {}, lvlCfg, cfg) or ""
+        self:SetHoverContent(cfg.name, desc)
       end
     end
   else
