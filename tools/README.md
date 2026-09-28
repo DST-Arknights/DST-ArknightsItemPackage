@@ -35,12 +35,26 @@ pwsh ./tools/publish.ps1 -DistOnly
 
 其他 mod 目录中的 `tools/publish.ps1` 只是转发代理，并在脚本内嵌入该项目的差异化配置。新增公共参数时只需修改本项目的统一入口。
 
-**发布流程（10 步）：**
+**Steam 介绍文档：**项目代理可为 `SteamDescriptionMarkdown` 和 `SteamDescriptionOutput` 分别配置路径数组。两组按顺序一一对应，发布时会逐份将 Markdown 转为 Steam BBCode；源文件和输出文件都应列入项目的 `GitFiles`。
+
+```powershell
+SteamDescriptionMarkdown = @(
+    'docs/workshop_description_zh.md'
+    'docs/workshop_description_en.md'
+)
+SteamDescriptionOutput = @(
+    'docs/workshop_description_zh-steam.txt'
+    'docs/workshop_description_en-steam.txt'
+)
+```
+
+**发布流程：**
 1. 检查依赖工具（git）                         ← 确定性，快速
 2. 检查翻译完整性（PO 文件 msgctxt 对齐）       ← 硬性要求，放前面
 3. AI：通过 OpenAI 兼容 HTTP API 总结 git 提交   ← 配置检查通过后才请求
 4. 验证 changelog 条目存在且有内容
 5. 运行项目特定的前置钩子（生成物品表等）
+5.5 将配置的项目 Markdown 介绍逐份转换为 Steam BBCode 文本
 6. 更新 modinfo.lua 版本号
 7. 从 CHANGELOG.md 读取更新内容，写入 description
 8. Git 提交（`release: x.y.z`）并打 tag        ← 源代码保持本地依赖

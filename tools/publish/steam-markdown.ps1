@@ -145,30 +145,46 @@ function Convert-MarkdownToSteamFile {
 
 function Invoke-SteamDescriptionConversion {
     param(
-        [string]$MarkdownPath,
-        [string]$OutputPath,
+        [string[]]$MarkdownPath,
+        [string[]]$OutputPath,
         [switch]$DryRun
     )
 
-    if ([string]::IsNullOrWhiteSpace($MarkdownPath)) {
+    $markdownPaths = @()
+    if ($null -ne $MarkdownPath) {
+        $markdownPaths = @($MarkdownPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    }
+    if ($markdownPaths.Count -eq 0) {
         Write-Host '[跳过] 未配置 Steam 介绍 Markdown'
         return
     }
 
-    if (-not (Test-Path -LiteralPath $MarkdownPath -PathType Leaf)) {
-        throw "已配置 Steam 介绍 Markdown，但文件不存在: $MarkdownPath"
+    $outputPaths = @()
+    if ($null -ne $OutputPath) {
+        $outputPaths = @($OutputPath | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    }
+    if ($outputPaths.Count -gt 0 -and $outputPaths.Count -ne $markdownPaths.Count) {
+        throw 'SteamDescriptionOutput 数量必须与 SteamDescriptionMarkdown 数量一致。'
     }
 
-    if ([string]::IsNullOrWhiteSpace($OutputPath)) {
-        $directory = Split-Path -Parent $MarkdownPath
-        $stem = [System.IO.Path]::GetFileNameWithoutExtension($MarkdownPath)
-        $OutputPath = Join-Path $directory "$stem-steam.txt"
-    }
+    for ($i = 0; $i -lt $markdownPaths.Count; $i++) {
+        $currentMarkdownPath = $markdownPaths[$i]
+        if (-not (Test-Path -LiteralPath $currentMarkdownPath -PathType Leaf)) {
+            throw "已配置 Steam 介绍 Markdown，但文件不存在: $currentMarkdownPath"
+        }
 
-    if ($DryRun) {
-        Write-Host "[试运行] 将把 Markdown 转为 Steam BBCode: $OutputPath"
-        return
-    }
+        $currentOutputPath = if ($outputPaths.Count -gt 0) { $outputPaths[$i] } else { $null }
+        if ([string]::IsNullOrWhiteSpace($currentOutputPath)) {
+            $directory = Split-Path -Parent $currentMarkdownPath
+            $stem = [System.IO.Path]::GetFileNameWithoutExtension($currentMarkdownPath)
+            $currentOutputPath = Join-Path $directory "$stem-steam.txt"
+        }
 
-    Convert-MarkdownToSteamFile -MarkdownPath $MarkdownPath -OutputPath $OutputPath
+        if ($DryRun) {
+            Write-Host "[试运行] 将把 Markdown 转为 Steam BBCode: $currentOutputPath"
+            continue
+        }
+
+        Convert-MarkdownToSteamFile -MarkdownPath $currentMarkdownPath -OutputPath $currentOutputPath
+    }
 }

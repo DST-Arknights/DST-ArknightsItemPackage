@@ -53,8 +53,25 @@ function Publish-Mod {
     $maxVersions    = if ($config.MaxVersions)    { $config.MaxVersions }    else { 2 }
     $workshopDeps   = if ($config.WorkshopDeps)   { $config.WorkshopDeps }   else { @{} }
     $prePublishHook = if ($config.PrePublishHook) { Join-Path $ProjectRoot $config.PrePublishHook } else { $null }
-    $steamMarkdownPath = if ($config.SteamDescriptionMarkdown) { Join-Path $ProjectRoot $config.SteamDescriptionMarkdown } else { $null }
-    $steamOutputPath = if ($config.SteamDescriptionOutput) { Join-Path $ProjectRoot $config.SteamDescriptionOutput } else { $null }
+    $steamMarkdownPaths = @()
+    if ($config.SteamDescriptionMarkdown) {
+        $steamMarkdownPaths = @(
+            foreach ($path in @($config.SteamDescriptionMarkdown)) {
+                Join-Path $ProjectRoot $path
+            }
+        )
+    }
+    $steamOutputPaths = @()
+    if ($config.SteamDescriptionOutput) {
+        $steamOutputPaths = @(
+            foreach ($path in @($config.SteamDescriptionOutput)) {
+                Join-Path $ProjectRoot $path
+            }
+        )
+        if ($steamOutputPaths.Count -ne $steamMarkdownPaths.Count) {
+            throw 'SteamDescriptionOutput 数量必须与 SteamDescriptionMarkdown 数量一致。'
+        }
+    }
 
     # 解析路径（子模块与 publish.psm1 同目录）
     $modinfoPath    = Join-Path $ProjectRoot 'modinfo.lua'
@@ -88,7 +105,7 @@ function Publish-Mod {
 
     if ($DistOnly) {
         Write-Host "`n[本地内测] 生成 Steam 介绍并拷贝项目文件到 dist/，跳过版本、changelog、Git 和 Workshop 步骤..." -ForegroundColor Yellow
-        Invoke-SteamDescriptionConversion -MarkdownPath $steamMarkdownPath -OutputPath $steamOutputPath -DryRun:$DryRun
+        Invoke-SteamDescriptionConversion -MarkdownPath $steamMarkdownPaths -OutputPath $steamOutputPaths -DryRun:$DryRun
         if (-not $DryRun) {
             Copy-ToDist -ProjectRoot $ProjectRoot
             Write-Host "[完成]  本地内测包已生成: $(Join-Path $ProjectRoot 'dist')" -ForegroundColor Green
@@ -186,7 +203,7 @@ function Publish-Mod {
     #    生成的 .txt 位于 docs/，不进入 dist 模组包，可直接粘贴到 Steam 页面。
     # --------------------------------------------------
     Write-Host "`n[5.5] 转换 Steam 介绍文档..." -ForegroundColor Yellow
-    Invoke-SteamDescriptionConversion -MarkdownPath $steamMarkdownPath -OutputPath $steamOutputPath -DryRun:$DryRun
+    Invoke-SteamDescriptionConversion -MarkdownPath $steamMarkdownPaths -OutputPath $steamOutputPaths -DryRun:$DryRun
 
     # --------------------------------------------------
     # 步骤 6: 更新 modinfo.lua 版本号
