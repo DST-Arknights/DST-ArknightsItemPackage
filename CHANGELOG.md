@@ -1,4 +1,10 @@
 # 版本更新记录
+## v2.8.1 (2026-10-01)
+
+- 修正选择器法术编号返回逻辑，避免 Myth 将其误识别为角色技能。
+---
+- Fixed selector spell number return logic so Myth no longer mistakes it for a character skill.
+
 ## v2.8.0 (2026-09-29)
 
 - 支持动态天赋描述。

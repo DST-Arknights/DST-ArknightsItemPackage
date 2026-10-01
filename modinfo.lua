@@ -10,41 +10,27 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.8.1 (2026-10-01)
+- Fixed selector spell number return logic so Myth no longer mistakes it for a character skill.
+---
 v2.8.0 (2026-09-29)
 - Added dynamic talent descriptions.
 - Fixed skill charge state not syncing across level changes.
 - Fixed armor minimum health protection so health does not fall below 0.9.
 - Added remote map target selection and expanded grid snapping for the area selector.
 - Exposed the current elite health bonus and tuned audio priority and playback for better sound.
----
-v2.7.1 (2026-09-24)
-- Reposition publish script parameters and improve the blacklist mechanism.
-- Add first-release mode and improve changelog generation and validation in the publishing workflow.
-- Add support for converting Steam description Markdown to BBCode.
-- Update carryable item recipes, adjusting required materials and technology categories.
-- Simplify project configuration in the publish scripts and support generating local test builds.
-- Add voice playback channel options and improve voice playback management.
-- Fix abnormal flight height when lag compensation is enabled.
-- Update PowerShell scripts to support UTF-8 encoding and ensure Chinese output displays correctly.
 ]]
 
 local UPDATE_ZH = [[
+v2.8.1 (2026-10-01)
+- 修正选择器法术编号返回逻辑，避免 Myth 将其误识别为角色技能。
+---
 v2.8.0 (2026-09-29)
 - 支持动态天赋描述。
 - 修复升级后技能充能状态不同步的问题。
 - 修复护甲最低生命值保护，生命值不会低于 0.9。
 - 支持远程地图目标选择，并扩展区域选择器的网格吸附。
 - 显示当前精英生命加成，并优化音频优先级与播放效果。
----
-v2.7.1 (2026-09-24)
-- 调整发布脚本参数位置并优化黑名单机制。
-- 添加首次发布模式，优化发布流程中的 changelog 生成与校验。
-- 添加将 Steam 介绍 Markdown 转换为 BBCode 的功能。
-- 更新可携带物品配方，调整所需材料与科技分类。
-- 简化发布脚本的项目配置管理，并支持生成本地内测版本。
-- 添加语音播放通道选项，优化语音播放管理。
-- 修复启用延时补偿时飞行高度异常的问题。
-- 更新 PowerShell 脚本以支持 UTF-8 编码，确保中文输出正常。
 ]]
 
 description = T({
@@ -71,7 +57,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.8.0"
+version = "2.8.1"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
