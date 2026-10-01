@@ -104,7 +104,7 @@ local SafeGetSkillsUI = GenSafeCall(function(inst)
   return SafeGetArkExtendUi(inst).skills
 end)
 
-local MAX_SKILL_COUNT = 4
+local MAX_SKILL_COUNT = 5
 
 -- Replica 端单技能对象：与 server 端 SingleSkill 保持接口一致，数据源来自 ArkSkillReplica 的 NetState 与 configPatch 缓存。
 local ReplicaSingleSkill = Class(function(self, manager, id)
