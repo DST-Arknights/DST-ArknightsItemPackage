@@ -67,12 +67,10 @@ local function fn()
   inst:AddComponent("spellbook")
   -- 欺骗系统：让选择器实体被 DST 识别为"可用法术书"
   -- （AOE 确认时 playercontroller:GetActiveSpellBook 取它，经 spellbook 路径生成 CASTAOE 动作）
-  -- SelectSpell/GetSelectedSpell 固定返回值仅为了让动作系统通过
+  -- 选择器没有实际法术编号；保留原版 GetSelectedSpell 返回 nil，避免被神话识别为角色技能。
+  -- SelectSpell 忽略编号，仅为了让动作系统通过。
   inst.components.spellbook.SelectSpell = function(self, id)
     return true
-  end
-  inst.components.spellbook.GetSelectedSpell = function(self)
-    return 1
   end
   function inst.components.spellbook:CanBeUsedBy(doer)
     return self.inst.entity:GetParent() == doer
