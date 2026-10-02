@@ -2,10 +2,61 @@ local function PlaySound(inst, sound)
     inst.SoundEmitter:PlaySound(sound)
 end
 
+local PAD_DURATION = .1
+local FLASH_TIME = .3
+
+local function StartPing(inst, duration, scaleup, update_while_paused)
+    if not inst:IsValid() then
+        return
+    end
+
+    -- Cache after all visual initialization. Only the local Transform changes;
+    -- changing the network proxy scale here would apply its scale twice.
+    local scalex, scaley, scalez = inst.Transform:GetScale()
+    local multcolour = { inst.AnimState:GetMultColour() }
+    local addcolour = { inst.AnimState:GetAddColour() }
+    local gettime = update_while_paused and GetStaticTime or GetTime
+    local t0 = gettime()
+
+    local function UpdatePing()
+        local elapsed = gettime() - t0
+        local progress = elapsed >= duration and 1
+            or math.min(1, math.max(0, (elapsed - PAD_DURATION) / math.max(.001, duration - PAD_DURATION)))
+        local k = 1 - (1 - progress) * (1 - progress)
+        local scale = Lerp(1, scaleup, k)
+        inst.Transform:SetScale(scalex * scale, scaley * scale, scalez * scale)
+        inst.AnimState:SetMultColour(multcolour[1], multcolour[2], multcolour[3], (1 - k) * multcolour[4])
+
+        local flash = math.min(1, elapsed / FLASH_TIME)
+        local colour = math.max(0, 1 - flash * flash)
+        inst.AnimState:SetAddColour(colour * addcolour[1], colour * addcolour[2], colour * addcolour[3], colour * addcolour[4])
+    end
+
+    local function FinishPing()
+        UpdatePing()
+        inst:Remove()
+    end
+
+    UpdatePing()
+    if update_while_paused then
+        inst:DoStaticPeriodicTask(0, UpdatePing)
+        inst:DoStaticTaskInTime(duration, FinishPing)
+    else
+        inst:DoPeriodicTask(0, UpdatePing)
+        inst:DoTaskInTime(duration, FinishPing)
+    end
+end
 
 -- t.loop: 是否循环播放动画，循环时不会自动消失
 -- t.scale_with_parent_size: 是否按父实体的 combat fx 尺寸自适应缩放
+-- t.ping: true 或 { duration = .5, scaleup = 1.036 }，总寿命内扩散并淡出
 local function MakeFx(t)
+    local ping = t.ping == true and {} or t.ping
+    local pingduration = ping and (ping.duration or .5)
+    local pingscaleup = ping and (ping.scaleup or 1.036)
+    if ping then
+        assert(pingduration > 0, "ArkMakeFx ping duration must be positive")
+    end
     local assets
     if t.build_is_skin then
         assets = {
@@ -99,15 +150,20 @@ local function MakeFx(t)
             inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
         end
 
-        -- loop 特效需要跟随 proxy 生命周期，但不能直接传 inst.Remove，
+        -- loop/ping 特效需要跟随 proxy 生命周期，但不能直接传 inst.Remove，
         -- 否则 onremove 回调会对 proxy 自身再次调用 Remove 导致递归。
-        if t.loop then
+        if t.loop or ping then
             inst:ListenForEvent("onremove", function()
                 if inst:IsValid() then
                     inst:Remove()
                     proxy.fx_ent = nil
                 end
             end, proxy)
+            if ping then
+                inst:ListenForEvent("onremove", function()
+                    proxy.fx_ent = nil
+                end)
+            end
         else
             if t.animqueue then
                 inst:ListenForEvent("animqueueover", inst.Remove)
@@ -118,10 +174,17 @@ local function MakeFx(t)
 
         if t.fn ~= nil then
             if t.fntime ~= nil then
+                local callback = t.fn
+                if ping then
+                    callback = function(fx, fxproxy)
+                        t.fn(fx, fxproxy)
+                        StartPing(fx, pingduration, pingscaleup, t.update_while_paused)
+                    end
+                end
                 if t.update_while_paused then
-                    inst:DoStaticTaskInTime(t.fntime, t.fn, proxy)
+                    inst:DoStaticTaskInTime(t.fntime, callback, proxy)
                 else
-                    inst:DoTaskInTime(t.fntime, t.fn, proxy)
+                    inst:DoTaskInTime(t.fntime, callback, proxy)
                 end
             else
                 t.fn(inst, proxy)
@@ -133,6 +196,10 @@ local function MakeFx(t)
             local scalex, scaley, scalez = parent.Transform:GetScale()
             local selfscalex, selfscaley, selfscalez = inst.Transform:GetScale()
             inst.Transform:SetScale(r / scalex * selfscalex, r / scaley * selfscaley, r / scalez * selfscalez)
+        end
+
+        if ping and (t.fn == nil or t.fntime == nil) then
+            StartPing(inst, pingduration, pingscaleup, t.update_while_paused)
         end
 
         if TheWorld then
@@ -176,7 +243,15 @@ local function MakeFx(t)
         end
 
         inst.persists = false
-        if not t.loop then
+        if ping then
+            local delay = t.fn ~= nil and math.max(0, t.fntime or 0) or 0
+            local lifetime = delay + pingduration + FRAMES
+            if t.update_while_paused then
+                inst:DoStaticTaskInTime(lifetime, inst.Remove)
+            else
+                inst:DoTaskInTime(lifetime, inst.Remove)
+            end
+        elseif not t.loop then
             inst:DoTaskInTime(1, inst.Remove)
         end
 

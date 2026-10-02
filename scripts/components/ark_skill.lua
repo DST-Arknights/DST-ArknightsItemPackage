@@ -1195,7 +1195,13 @@ end
 -- OnLoad 读档恢复路径专用：会触发 OnInstall，但不触发 OnAdd 回调和 ark_skill_added 事件
 -- 用 pcall 防御存档中记录的技能 id 已被 mod 移除的情况
 function ArkSkill:_RestoreSkill(id)
-  if self.skillsById[id] then return end
+  if self.skillsById[id] then
+    -- prefab 已预装的技能也要恢复安装目录，供下一次 OnSave 使用。
+    if not table.contains(self.installedSkills, id) then
+      table.insert(self.installedSkills, id)
+    end
+    return
+  end
   local ok = pcall(GetArkSkillConfigById, id)
   if not ok then
     ArkLogger:Warn("Ark skill config not found, skip restore: " .. tostring(id))
@@ -1248,6 +1254,7 @@ function ArkSkill:RemoveSkill(id)
   if #self.installedSkills == 0 then
     self.inst:StopUpdatingComponent(self)
   end
+  self.inst:PushEvent("ark_skill_status_changed", { skillId = id, removed = true })
 end
 
 -- 便捷的几个方法（by-id）
@@ -1279,7 +1286,9 @@ function ArkSkill:SyncSkillStatus(id)
   if not s then
     return
   end
-  self.inst.replica.ark_skill:SyncSkillStatus(id, {
+  local data = {
+    skillId = id,
+    id = id,
     status = s.data.status,
     level = s.data.level,
     energyProgress = s.data.energyProgress,
@@ -1290,7 +1299,10 @@ function ArkSkill:SyncSkillStatus(id)
     isTemporary = s.data.isTemporary and 1 or 0,
     limitTimeInitial = s.data.limitTimeInitial or 0,
     limitRemaining = s.data.limitRemaining or 0,
-  })
+  }
+  self.inst.replica.ark_skill:SyncSkillStatus(id, data)
+  -- 对外统一提供已同步的运行态，生命周期事件仍保留原有语义。
+  self.inst:PushEvent("ark_skill_status_changed", data)
 end
 
 function ArkSkill:OnUpdate(dt)
