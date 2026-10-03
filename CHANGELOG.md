@@ -1,4 +1,14 @@
 # 版本更新记录
+## v2.8.2 (2026-10-03)
+
+- 调整飞行时滑倒行为，并优化技能图标阴影透明度。
+- 多人游戏中同步技能状态，并新增网络 FX ping。
+- 最大技能数量提升至 5。
+---
+- Adjusted slipping behavior while flying and tweaked skill icon shadow transparency.
+- Synced skill states in multiplayer and added networked FX ping.
+- Increased the maximum number of skills to 5.
+
 ## v2.8.1 (2026-10-01)
 
 - 修正选择器法术编号返回逻辑，避免 Myth 将其误识别为角色技能。

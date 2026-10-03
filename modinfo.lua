@@ -10,27 +10,23 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.8.2 (2026-10-03)
+- Adjusted slipping behavior while flying and tweaked skill icon shadow transparency.
+- Synced skill states in multiplayer and added networked FX ping.
+- Increased the maximum number of skills to 5.
+---
 v2.8.1 (2026-10-01)
 - Fixed selector spell number return logic so Myth no longer mistakes it for a character skill.
----
-v2.8.0 (2026-09-29)
-- Added dynamic talent descriptions.
-- Fixed skill charge state not syncing across level changes.
-- Fixed armor minimum health protection so health does not fall below 0.9.
-- Added remote map target selection and expanded grid snapping for the area selector.
-- Exposed the current elite health bonus and tuned audio priority and playback for better sound.
 ]]
 
 local UPDATE_ZH = [[
+v2.8.2 (2026-10-03)
+- 调整飞行时滑倒行为，并优化技能图标阴影透明度。
+- 多人游戏中同步技能状态，并新增网络 FX ping。
+- 最大技能数量提升至 5。
+---
 v2.8.1 (2026-10-01)
 - 修正选择器法术编号返回逻辑，避免 Myth 将其误识别为角色技能。
----
-v2.8.0 (2026-09-29)
-- 支持动态天赋描述。
-- 修复升级后技能充能状态不同步的问题。
-- 修复护甲最低生命值保护，生命值不会低于 0.9。
-- 支持远程地图目标选择，并扩展区域选择器的网格吸附。
-- 显示当前精英生命加成，并优化音频优先级与播放效果。
 ]]
 
 description = T({
@@ -57,7 +53,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.8.1"
+version = "2.8.2"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
