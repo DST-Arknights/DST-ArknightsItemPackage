@@ -11,6 +11,17 @@ local function IsFlying(inst)
     return replica ~= nil and replica:IsFlying()
 end
 
+-- 冰面滑倒由 slipperyfeet 累积滑倒值触发，与物理碰撞无关。
+-- 飞行时通过原接口清零，避免触发 feetslipped 或把累积值带到落地后。
+AddComponentPostInit("slipperyfeet", function(cmp)
+    ArkHookFunction(cmp, "SetCurrent", function(next, self, value)
+        if IsFlying(self.inst) then
+            value = 0
+        end
+        return next(self, value)
+    end)
+end)
+
 -- 有网络变量（replica：net_flying/net_percent）的组件必须在实体创建时就装好，
 -- 否则引擎的副本同步会出问题（客户端 replica 依据服务端同步的 tag 建立）。
 -- 故所有玩家在 postInit 后即内置 ark_flyer 组件。

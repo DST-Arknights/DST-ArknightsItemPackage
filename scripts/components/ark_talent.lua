@@ -215,7 +215,6 @@ end
 
 local ArkTalent = Class(function(self, inst)
   self.inst = inst
-  self.inst:AddTag("ark_talent")
   self.talentsById         = {}
   self.installedTalents    = {}  -- 有序数组，记录安装顺序
   self.builtinTalentProfilesById = {}
