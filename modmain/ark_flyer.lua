@@ -86,19 +86,20 @@ local function HookState(sg, state_name, onenter_fn, onexit_fn)
     if not state then return end
 
     if onenter_fn then
-        local orig = state.onenter
-        state.onenter = function(inst, ...)
-            if orig then orig(inst, ...) end
-            onenter_fn(inst, ...)
-        end
+        ArkHookFunction(state, "onenter", function(next, inst, ...)
+            next(inst, ...)
+            -- 原状态可能在 onenter 内跳转，不能再覆盖新状态的动画。
+            if inst.sg.currentstate == state then
+                onenter_fn(inst, ...)
+            end
+        end)
     end
 
     if onexit_fn then
-        local orig = state.onexit
-        state.onexit = function(inst, ...)
+        ArkHookFunction(state, "onexit", function(next, inst, ...)
             onexit_fn(inst, ...)
-            if orig then orig(inst, ...) end
-        end
+            return next(inst, ...)
+        end)
     end
 end
 
@@ -159,11 +160,21 @@ local function ApplyHooks(sg)
         nil
     )
 
-    -- idle：飞行时始终浮空（读档恢复时也保证 fly_loop）
+    -- idle：只替换真正的待机动画，保留预测动作交接和动作收尾。
     HookState(sg, "idle",
-        function(inst)
+        function(inst, pushanim)
             if not IsActiveFlyer(inst) then return end
-            if not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
+            -- 客户端 noanim 表示预览已被服务端确认；cancel/nopredict/pausepredict
+            -- 表示预测被服务端打断。这些分支必须继续由服务端接管动画。
+            if not TheWorld.ismastersim and
+                (pushanim == "noanim" or pushanim == "cancel"
+                    or inst:HasTag("nopredict") or inst:HasTag("pausepredict")) then
+                return
+            end
+            if pushanim then
+                -- idle(true) 要把循环接在 pickup_pst 等收尾动画之后。
+                inst.AnimState:PushAnimation("ark_fly_loop", true)
+            elseif not inst.AnimState:IsCurrentAnimation("ark_fly_loop") then
                 inst.AnimState:PlayAnimation("ark_fly_loop", true)
             end
         end,
