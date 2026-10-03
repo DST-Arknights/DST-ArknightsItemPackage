@@ -55,6 +55,12 @@ local ArkSkill = Class(Widget, function(self, owner, config)
   -- 设置黑色半透明
   manualActivationShadow:SetTint(1, 1, 1, 0.3)
 
+  local lockedShadow = skillIcon:AddChild(Image("images/ui.xml", "black.tex"))
+  self.lockedShadow = lockedShadow
+  lockedShadow:SetSize(self.iconSize)
+  lockedShadow:SetTint(1, 1, 1, 0.6)
+  lockedShadow:SetClickable(false)
+
   local chargeShadow = skillIcon:AddChild(Image("images/ui.xml", "white.tex"))
   self.chargeShadow = chargeShadow
   chargeShadow:SetPosition(0, -self.iconSize[2] / 2, 0)
@@ -354,8 +360,10 @@ function ArkSkill:UpdateModeIndicators(status, autoActivationMode)
   end
 
   if status == CONSTANTS.SKILL_STATUS.LOCKED then
+    self.lockedShadow:Show()
     self.lock:Show()
   else
+    self.lockedShadow:Hide()
     self.lock:Hide()
   end
 end
@@ -371,7 +379,8 @@ end
 
 function ArkSkill:UpdateManualActivationShadow(status, activationMode, autoActivationMode, readyStacks)
   -- 自动触发类型始终保留灰色蒙层，避免与旋转环视觉冲突
-  local hideManualShadow = activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE
+  local hideManualShadow = status == CONSTANTS.SKILL_STATUS.LOCKED
+    or activationMode == CONSTANTS.ACTIVATION_MODE.PASSIVE
     or (not autoActivationMode
       and self.activationStacks >= readyStacks
       and status ~= CONSTANTS.SKILL_STATUS.BUFFING

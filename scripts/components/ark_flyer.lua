@@ -50,15 +50,20 @@ local function RestoreGroundPhysics(inst)
     end
 end
 
-local function OnNewState(inst)
+local function RestoreFlyingColliders(inst)
     local flyer = inst.components.ark_flyer
-    local laststate = inst.sg and inst.sg.laststate
     if flyer ~= nil and flyer.flying and flyer._target > 0
-        and laststate ~= nil and laststate.name == "jumpout"
         and not inst:HasTag("playerghost")
         and not (inst.components.health and inst.components.health:IsDead()) then
-        -- 虫洞出口会恢复地面碰撞；newstate 在旧状态 onexit 后触发。
         RemovePhysicsColliders(inst)
+    end
+end
+
+local function OnNewState(inst)
+    local laststate = inst.sg and inst.sg.laststate
+    if laststate ~= nil and laststate.name == "jumpout" then
+        -- 虫洞出口会恢复地面碰撞；newstate 在旧状态 onexit 后触发。
+        RestoreFlyingColliders(inst)
     end
 end
 
@@ -217,9 +222,23 @@ function ArkFlyer:OnLoad(data)
         self:SetPercent(1)
         self:DriveHeight()
     end
+
+    -- inventory 读档装备也会起飞，组件加载顺序不固定。
+    -- 等本轮读档结束后按当前飞行状态补一次碰撞，不能只依赖 data.flying。
+    if self._loadtask ~= nil then
+        self._loadtask:Cancel()
+    end
+    self._loadtask = self.inst:DoTaskInTime(0, function(inst)
+        self._loadtask = nil
+        RestoreFlyingColliders(inst)
+    end)
 end
 
 function ArkFlyer:OnRemoveFromEntity()
+    if self._loadtask ~= nil then
+        self._loadtask:Cancel()
+        self._loadtask = nil
+    end
     self.inst:RemoveEventCallback("newstate", OnNewState)
 end
 
