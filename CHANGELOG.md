@@ -1,4 +1,10 @@
 # 版本更新记录
+## v2.8.3 (2026-10-03)
+
+- 添加技能锁定状态阴影效果，优化技能图标显示。
+---
+- Added a shadow effect for locked skills and improved skill icon display.
+
 ## v2.8.2 (2026-10-03)
 
 - 调整飞行时滑倒行为，并优化技能图标阴影透明度。

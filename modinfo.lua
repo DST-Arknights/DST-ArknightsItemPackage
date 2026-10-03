@@ -10,23 +10,23 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.8.3 (2026-10-03)
+- Added a shadow effect for locked skills and improved skill icon display.
+---
 v2.8.2 (2026-10-03)
 - Adjusted slipping behavior while flying and tweaked skill icon shadow transparency.
 - Synced skill states in multiplayer and added networked FX ping.
 - Increased the maximum number of skills to 5.
----
-v2.8.1 (2026-10-01)
-- Fixed selector spell number return logic so Myth no longer mistakes it for a character skill.
 ]]
 
 local UPDATE_ZH = [[
+v2.8.3 (2026-10-03)
+- 添加技能锁定状态阴影效果，优化技能图标显示。
+---
 v2.8.2 (2026-10-03)
 - 调整飞行时滑倒行为，并优化技能图标阴影透明度。
 - 多人游戏中同步技能状态，并新增网络 FX ping。
 - 最大技能数量提升至 5。
----
-v2.8.1 (2026-10-01)
-- 修正选择器法术编号返回逻辑，避免 Myth 将其误识别为角色技能。
 ]]
 
 description = T({
@@ -53,7 +53,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.8.2"
+version = "2.8.3"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
