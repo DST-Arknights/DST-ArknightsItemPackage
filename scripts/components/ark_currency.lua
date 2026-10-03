@@ -1,9 +1,17 @@
-local function CalcKillGoldReward(target)
-  local maxhealth = target.components.health.maxhealth or 0
+-- 默认击杀金币只奖励玩家的最终击杀，参与战斗本身不发金币。
+local function DefaultKillGoldFn(inst, victim, is_kill, is_participated)
+  if not is_kill or not inst:HasTag("player") then
+    return 0
+  end
+  local health = victim.components and victim.components.health
+  if health == nil then
+    return 0
+  end
+  local maxhealth = health.maxhealth or 0
   if maxhealth <= 0 then
     return 0
   end
-  local ratio = target:HasTag("epic") and 0.4 or 0.3
+  local ratio = victim:HasTag("epic") and 0.4 or 0.3
   local gold = math.floor((maxhealth ^ 1.1) * ratio)
   if gold < 1 then
     gold = 1
@@ -11,29 +19,31 @@ local function CalcKillGoldReward(target)
   return gold
 end
 
-local function OnKilled(inst, data)
-  if not inst:HasTag("player") then
-    return
-  end
-  local target = data.victim
-  if not target then
-    return
-  end
-  if not inst.components.ark_currency then
-    return
-  end
-  -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的金币
-  if not target.components.health then
-    return
-  end
-  local gold = CalcKillGoldReward(target)
-  inst.components.ark_currency:AddArkGold(gold)
-end
-
 local ArkCurrency = Class(function(self, inst)
   self.inst = inst
-  self.inst:ListenForEvent("killed", OnKilled)
+  self._killGoldFn = DefaultKillGoldFn
 end)
+
+-- fn(inst, victim, is_kill, is_participated) 返回基础金币；nil 或 0 不发金币。
+-- 设置 nil 表示完全退出击杀及参与奖励结算，不影响其他货币来源。
+function ArkCurrency:SetKillGoldFn(fn)
+  assert(fn == nil or type(fn) == "function", "kill gold calculator must be a function or nil")
+  self._killGoldFn = fn
+end
+
+function ArkCurrency:IsKillRewardEnabled()
+  return self._killGoldFn ~= nil
+end
+
+function ArkCurrency:OnKill(victim, is_kill, is_participated)
+  if not self:IsKillRewardEnabled() or victim == nil or not (is_kill or is_participated) then
+    return
+  end
+  local gold = self._killGoldFn(self.inst, victim, is_kill == true, is_participated == true)
+  if gold ~= nil and gold > 0 then
+    self:AddArkGold(gold)
+  end
+end
 
 function ArkCurrency:OnSave()
   return {
@@ -127,7 +137,6 @@ end
 
 function ArkCurrency:OnRemoveFromEntity()
   TheWorld.components.ark_currency_data:SetPlayerCurrency(self.inst.userid, self.inst.replica.ark_currency:GetArkCurrency())
-  self.inst:RemoveEventCallback("killed", OnKilled)
 end
 
 return ArkCurrency

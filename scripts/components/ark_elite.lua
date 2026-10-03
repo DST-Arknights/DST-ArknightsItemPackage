@@ -302,13 +302,13 @@ function ArkElite:SetKillExpFn(fn)
   self._killExpFn = fn
 end
 
-function ArkElite:IsKillExpEnabled()
+function ArkElite:IsKillRewardEnabled()
   return self._killExpFn ~= nil
 end
 
 -- is_participated 表示死亡前存在有效的非致命命中记录，由世界监听统一合并。
 function ArkElite:OnKill(victim, is_kill, is_participated)
-  if not self:IsKillExpEnabled() or victim == nil or not (is_kill or is_participated) then
+  if not self:IsKillRewardEnabled() or victim == nil or not (is_kill or is_participated) then
     return
   end
   self:AddExp(self._killExpFn(self.inst, victim, is_kill == true, is_participated == true))
