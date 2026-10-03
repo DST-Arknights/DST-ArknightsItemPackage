@@ -122,6 +122,8 @@ modimport('modmain/ark_item')
 -- 技能
 -- 精英化
 modimport('modmain/ark_elite')
+-- 统一击杀归属与参与经验（世界 / health 事件监听）
+modimport('modmain/ark_kill_credit')
 -- 天赋
 modimport('modmain/ark_talent')
 -- 导出全局变量AddSkillLevelUpRecipes

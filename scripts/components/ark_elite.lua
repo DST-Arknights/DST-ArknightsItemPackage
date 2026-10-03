@@ -18,8 +18,6 @@ local function onoverflowExp(self, value)
   self.inst.replica.ark_elite.state.overflowExp = value
 end
 
--- 巨兽参与击杀追踪的有效时间（秒）
-local EPIC_TRACK_TIMEOUT = 60
 local MAX_OVERFLOW_EXP = 2000000
 local HEALTH_BONUS_MODIFIER_KEY = "ark_elite_health_bonus"
 local DAMAGE_BONUS_MODIFIER_KEY = "ark_elite_damage_bonus"
@@ -35,49 +33,17 @@ local function _clampOverflowExp(value)
   return value
 end
 
--- 杀怪回经验
-local function OnKilled(inst, data)
-  local target = data.victim
-  if not target then
-    return
+-- 默认击杀经验：击杀取完整经验，巨兽的有效参与额外获得 0.5 倍。
+local function DefaultKillExpFn(inst, victim, is_kill, is_participated)
+  local health = victim.components and victim.components.health
+  if health == nil then
+    return 0
   end
-  if not inst.components.ark_elite then
-    return
+  local exp = is_kill and math.floor(health.maxhealth) or 0
+  if is_participated and victim:HasTag("epic") then
+    exp = exp + math.floor(health.maxhealth * 0.5)
   end
-  -- 关闭击杀经验时直接跳过
-  if not inst.components.ark_elite.killExpEnabled then
-    return
-  end
-  -- 获取目标血量, 指定用户增加被击杀生物的最大血量数量的经验
-  if not target.components.health then
-    return
-  end
-  local health = target.components.health.maxhealth
-  local exp = math.floor(health)
-  inst.components.ark_elite:AddExp(exp)
-  -- 如果是自己击杀的巨兽，清除追踪（避免死亡回调重复发放）
-  if target:HasTag("epic") then
-    inst.components.ark_elite:_StopTrackingEpic(target)
-  end
-end
-
--- 巨兽被击中时记录参与者
-local function OnHitOther(inst, data)
-  local target = data and data.target
-  if not target or not target:IsValid() then
-    return
-  end
-  if not target:HasTag("epic") then
-    return
-  end
-  if not inst.components.ark_elite then
-    return
-  end
-  -- 关闭击杀经验时不追踪巨兽（避免巨兽死亡时仍通过 epic 加成发放经验）
-  if not inst.components.ark_elite.killExpEnabled then
-    return
-  end
-  inst.components.ark_elite:_TrackEpic(target)
+  return exp
 end
 
 local ArkElite = Class(function(self, inst)
@@ -89,16 +55,13 @@ local ArkElite = Class(function(self, inst)
   self.currentExp = 0
   self.totalExp = 0
   self.overflowExp = 0
-  self._trackedEpics = {} -- { [target] = { deathfn, time } }
   self.externalexpmultipliers = SourceModifierList(inst)
   self.externalexpmultipliers:SetModifier("base", 5)
-  self.killExpEnabled = true -- 击杀获得经验开关（角色可关闭，改用自定义经验来源）
+  self._killExpFn = DefaultKillExpFn
   self._apply_elite_task = self.inst:DoTaskInTime(0, function()
     self._apply_elite_task = nil
     self:ApplyElite()
   end)
-  self.inst:ListenForEvent("killed", OnKilled)
-  self.inst:ListenForEvent("onhitother", OnHitOther)
 end, nil, {
   rarity = onrarity,
   elite = onelite,
@@ -106,71 +69,6 @@ end, nil, {
   currentExp = oncurrentExp,
   overflowExp = onoverflowExp
 })
-----------------------------------------------------------
--- 巨兽参与击杀追踪
-----------------------------------------------------------
-
--- 当追踪的巨兽死亡时，给参与者发放额外 0.5 倍经验
-function ArkElite:_OnTrackedEpicDeath(target)
-  if not target or not target.components or not target.components.health then
-    self:_StopTrackingEpic(target)
-    return
-  end
-  local tracked = self._trackedEpics[target]
-  if not tracked then
-    return
-  end
-  -- 检查是否在有效时间内
-  local now = GetTime()
-  if now - tracked.time > EPIC_TRACK_TIMEOUT then
-    self:_StopTrackingEpic(target)
-    return
-  end
-  local health = target.components.health.maxhealth
-  local bonusExp = math.floor(health * 0.5)
-  if bonusExp > 0 then
-    self:AddExp(bonusExp)
-  end
-  self:_StopTrackingEpic(target)
-end
-
--- 追踪一个巨兽（记录时间戳，监听其死亡事件）
-function ArkElite:_TrackEpic(target)
-  if self._trackedEpics[target] then
-    -- 已在追踪中，刷新时间
-    self._trackedEpics[target].time = GetTime()
-    return
-  end
-  local deathfn = function()
-    self:_OnTrackedEpicDeath(target)
-  end
-  self._trackedEpics[target] = {
-    deathfn = deathfn,
-    time = GetTime(),
-  }
-  self.inst:ListenForEvent("death", deathfn, target)
-end
-
--- 停止追踪某个巨兽
-function ArkElite:_StopTrackingEpic(target)
-  local tracked = self._trackedEpics[target]
-  if not tracked then
-    return
-  end
-  self.inst:RemoveEventCallback("death", tracked.deathfn, target)
-  self._trackedEpics[target] = nil
-end
-
--- 清除所有追踪
-function ArkElite:_ClearAllTrackedEpics()
-  for target, tracked in pairs(self._trackedEpics) do
-    if target:IsValid() then
-      self.inst:RemoveEventCallback("death", tracked.deathfn, target)
-    end
-  end
-  self._trackedEpics = {}
-end
-
 ----------------------------------------------------------
 -- 内部工具函数
 ----------------------------------------------------------
@@ -397,9 +295,23 @@ function ArkElite:SetMaxDefenseBonus(value)
   self.maxDefenseBonus = value or 0
 end
 
--- 设置击杀经验开关（默认开启；关闭后角色仅通过自定义来源获得经验）
-function ArkElite:SetKillExpEnabled(enabled)
-  self.killExpEnabled = enabled ~= false
+-- fn(inst, victim, is_kill, is_participated) 返回基础经验，随后由 AddExp 应用倍率。
+-- 设置 nil 表示完全退出击杀及参与经验结算，不影响其他 AddExp 来源。
+function ArkElite:SetKillExpFn(fn)
+  assert(fn == nil or type(fn) == "function", "kill experience calculator must be a function or nil")
+  self._killExpFn = fn
+end
+
+function ArkElite:IsKillExpEnabled()
+  return self._killExpFn ~= nil
+end
+
+-- is_participated 表示死亡前存在有效的非致命命中记录，由世界监听统一合并。
+function ArkElite:OnKill(victim, is_kill, is_participated)
+  if not self:IsKillExpEnabled() or victim == nil or not (is_kill or is_participated) then
+    return
+  end
+  self:AddExp(self._killExpFn(self.inst, victim, is_kill == true, is_participated == true))
 end
 
 -- 根据累计等级 / 总等级比例，应用属性奖励
@@ -512,9 +424,6 @@ function ArkElite:OnRemoveFromEntity()
     self._apply_elite_task = nil
   end
   self:_StripBonuses()
-  self:_ClearAllTrackedEpics()
-  self.inst:RemoveEventCallback("killed", OnKilled)
-  self.inst:RemoveEventCallback("onhitother", OnHitOther)
 end
 
 return ArkElite
