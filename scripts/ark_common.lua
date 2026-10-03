@@ -10,9 +10,7 @@ local function getPrefabAssetsCode(prefab, withTex)
         animBank = 'ark_item',
         animBuild = 'ark_item',
         atlas = 'images/ark_item.xml',
-        image = image,
-        slotbgatlas = 'images/ark_backpack_slotbg.xml',
-        slotbgimage = prefab .. '.tex'
+        image = image
     }
 end
 

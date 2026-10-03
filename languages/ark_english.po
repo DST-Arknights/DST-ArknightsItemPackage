@@ -265,11 +265,6 @@ msgctxt "STRINGS.NAMES.ARK_DIAMOND"
 msgid "Originite Prime"
 msgstr "Originite Prime"
 
-#. STRINGS.NAMES.ARK_BACKPACK
-msgctxt "STRINGS.NAMES.ARK_BACKPACK"
-msgid "Backpack"
-msgstr "Backpack"
-
 #. STRINGS.NAMES.ARK_TRAINING_ROOM
 msgctxt "STRINGS.NAMES.ARK_TRAINING_ROOM"
 msgid "Training Room"
@@ -315,11 +310,6 @@ msgctxt "STRINGS.RECIPE_DESC.ARK_WORKSHOP"
 msgid "A facility that processes resources at Rhodes Island."
 msgstr "A resource processing facility from Rhodes Island."
 
-#. STRINGS.RECIPE_DESC.ARK_BACKPACK
-msgctxt "STRINGS.RECIPE_DESC.ARK_BACKPACK"
-msgid "A backpack that stores items and resources."
-msgstr "Stores Rhodes Island items and resources."
-
 #. STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM
 msgctxt "STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM"
 msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
@@ -345,11 +335,6 @@ msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.ENHANCE.MATERIAL_AT_MAX"
 msgid "This material has already reached its enhancement limit."
 msgstr "This material has already reached its enhancement limit."
 
-#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK
-msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK"
-msgid "The backpack is full."
-msgstr "The backpack is full."
-
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP"
 msgid "A facility that processes resources at Rhodes Island."
@@ -364,11 +349,6 @@ msgstr "A training facility for Rhodes Island Operators."
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD"
 msgid "A widely used currency issued by Lungmen."
 msgstr "A widely used currency issued by Lungmen."
-
-#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK
-msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK"
-msgid "A backpack that stores items and resources."
-msgstr "Stores Rhodes Island items and resources."
 
 #. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1
 msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1"

@@ -147,4 +147,3 @@
 * Symbol 符号 symbol
 * 热键管理 ark_hotkey
 * 束缚控制系统 component/immobilizable
-* ~~静默打开容器 ark_item_container~~

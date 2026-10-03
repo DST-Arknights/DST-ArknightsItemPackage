@@ -2,7 +2,7 @@ GLOBAL.setmetatable(env, {
   __index = function(t, k) return GLOBAL.rawget(GLOBAL, k) end
 })
 
-PrefabFiles = { "ark_item", "ark_workshop", 'ark_backpack', 'ark_training_room', 'container_silent_opener',
+PrefabFiles = { "ark_item", "ark_workshop", 'ark_training_room',
   'ark_portable_supply', 'ark_portable_supply_range', "area_target_selector", "map_target_selector", "ark_reticules", "sympathetic_pendant", "sympathetic_pendant_light", "ark_buff",
   "armor_construct", 'ark_craft_callback' }
 
@@ -19,8 +19,6 @@ Assets = {
   Asset("ATLAS", "images/ark_emoticon.xml"),
   Asset("ATLAS", "images/ark_elite.xml"),
   Asset("ATLAS", "images/inventoryimages/sympathetic_pendants.xml"),
-  Asset("ANIM", "anim/ark_backpack_slot.zip"),
-  Asset("ANIM", "anim/ark_backpack_bg.zip"),
   Asset("ANIM", "anim/ark_fly.zip"),
   Asset("ANIM", "anim/ark_reticules.zip"),
   Asset("SOUNDPACKAGE", "sound/ark_item.fev"),
@@ -121,8 +119,6 @@ modimport('modmain/ark_tech')
 modimport('modmain/ark_currency')
 -- 物品
 modimport('modmain/ark_item')
--- 背包
-modimport('modmain/ark_item_container')
 -- 技能
 -- 精英化
 modimport('modmain/ark_elite')

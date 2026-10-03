@@ -266,11 +266,6 @@ msgctxt "STRINGS.NAMES.ARK_DIAMOND"
 msgid "Originite Prime"
 msgstr "源石"
 
-#. STRINGS.NAMES.ARK_BACKPACK
-msgctxt "STRINGS.NAMES.ARK_BACKPACK"
-msgid "Backpack"
-msgstr "源石包包"
-
 #. STRINGS.NAMES.ARK_TRAINING_ROOM
 msgctxt "STRINGS.NAMES.ARK_TRAINING_ROOM"
 msgid "Training Room"
@@ -317,11 +312,6 @@ msgctxt "STRINGS.RECIPE_DESC.ARK_WORKSHOP"
 msgid "A facility that processes resources at Rhodes Island."
 msgstr "罗德岛的资源生产设施。"
 
-#. STRINGS.RECIPE_DESC.ARK_BACKPACK
-msgctxt "STRINGS.RECIPE_DESC.ARK_BACKPACK"
-msgid "A backpack that stores items and resources."
-msgstr "存储罗德岛物品和资源的包包。"
-
 #. STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM
 msgctxt "STRINGS.RECIPE_DESC.ARK_TRAINING_ROOM"
 msgid "A training facility for Rhodes Island Operators with various equipment.Upgrade your skills!"
@@ -347,11 +337,6 @@ msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.ENHANCE.MATERIAL_AT_MAX"
 msgid "This material has already reached its enhancement limit."
 msgstr "该材料已达到强化上限"
 
-#. STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK
-msgctxt "STRINGS.CHARACTERS.GENERIC.ACTIONFAIL.GENERIC.ARK_BACKPACK"
-msgid "The backpack is full."
-msgstr "包包已满。"
-
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_WORKSHOP"
 msgid "A facility that processes resources at Rhodes Island."
@@ -366,11 +351,6 @@ msgstr "罗德岛干员的训练设施。精英化，提升技能等级！"
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_GOLD"
 msgid "A widely used currency issued by Lungmen."
 msgstr "由龙门发行的货币，用途广泛。"
-
-#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK
-msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.ARK_BACKPACK"
-msgid "A backpack that stores items and resources."
-msgstr "存储罗德岛物品和资源的背包。"
 
 #. STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1
 msgctxt "STRINGS.RECIPE_DESC.ARK_ITEM_GOLD1"

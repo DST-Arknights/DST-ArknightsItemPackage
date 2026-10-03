@@ -1,6 +1,5 @@
 return {{
   prefab = 'ark_gold', -- 龙门币
-  disablePutInPack = true,
   template = {
     componentArkCurrentItem = {
       currencyType = 'ark_gold',
@@ -9,8 +8,6 @@ return {{
   }
 }, {
   prefab = 'ark_item_gold1', -- 一张龙门币
-  -- 不放入ark_backpack
-  disablePutInPack = true,
   template = {
     componentArkCurrentItem = {
       currencyType = 'ark_gold',
@@ -19,8 +16,6 @@ return {{
   }
 }, {
   prefab = 'ark_item_gold2', -- 一叠龙门币
-  -- 不放入ark_backpack
-  disablePutInPack = true,
   template = {
     componentArkCurrentItem = {
       currencyType = 'ark_gold',
@@ -36,8 +31,6 @@ return {{
   }}}
 }, {
   prefab = 'ark_item_gold3', -- 一箱龙门币
-  -- 不放入ark_backpack
-  disablePutInPack = true,
   template = {
     componentArkCurrentItem = {
       currencyType = 'ark_gold',
@@ -1160,12 +1153,9 @@ return {{
     value = 0.5
   }}
 }, {
-  prefab = 'ark_item_mtl_skill1', -- 技巧概要·卷1
-  disablePutInPack = true
+  prefab = 'ark_item_mtl_skill1' -- 技巧概要·卷1
 }, {
-  prefab = 'ark_item_mtl_skill2', -- 技巧概要·卷2
-  disablePutInPack = true
+  prefab = 'ark_item_mtl_skill2' -- 技巧概要·卷2
 }, {
-  prefab = 'ark_item_mtl_skill3', -- 技巧概要·卷3
-  disablePutInPack = true
+  prefab = 'ark_item_mtl_skill3' -- 技巧概要·卷3
 }}
