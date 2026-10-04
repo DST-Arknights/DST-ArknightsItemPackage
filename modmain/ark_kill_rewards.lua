@@ -42,7 +42,9 @@ end
 
 local function DropEpicWallets(inst)
   if inst == nil or not inst:IsValid()
-      or (not inst:HasTag("epic") and not inst:HasTag("epiccorpse")) then
+      or (not inst:HasTag("epic")
+          and not inst:HasTag("epiccorpse")
+          and not inst:HasTag("wargcorpse")) then
     return
   end
   local lootdropper = inst.components and inst.components.lootdropper
