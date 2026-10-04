@@ -1,4 +1,16 @@
 # 版本更新记录
+## v2.9.0 (2026-10-05)
+
+- 新增击杀归属与参与经验系统，击杀经验与货币奖励可在参与者之间共享。
+- 击杀货币与 wallet 掉落现在可配置。
+- 修复 Epic 击杀战利品无法重复掉落的问题。
+- 改进飞行状态的动画表现。
+---
+- Added kill attribution and participation experience, with kill experience and currency rewards shared among participants.
+- Kill currency and wallet drops are now configurable.
+- Fixed Epic kill loot not dropping repeatedly.
+- Improved flying state animations.
+
 ## v2.8.3 (2026-10-03)
 
 - 添加技能锁定状态阴影效果，优化技能图标显示。

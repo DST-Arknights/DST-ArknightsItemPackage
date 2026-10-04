@@ -63,6 +63,6 @@
 | ![酮凝集组](../imageSource/images/ark_item/ark_item_mtl_sl_ketone3.png) | 酮凝集组 | `ark_item_mtl_sl_ketone3` | `皮弗娄牛(beefalo)`, `钢羊(spat)`, `帝王蟹(crabking)`, `考拉象(koalefant_summer)`, `考拉象(koalefant_winter)`, `熊獾(bearger)`, `龙蝇(dragonfly)`, `独眼巨鹿(deerclops)`, `moose` | `酮凝集(ark_item_mtl_sl_ketone2)`, `龙门币(ark_gold)` |
 | ![酮凝集](../imageSource/images/ark_item/ark_item_mtl_sl_ketone2.png) | 酮凝集 | `ark_item_mtl_sl_ketone2` | `猪人(pigman)`, `猪人守卫(pigguard)`, `兔人(bunnyman)`, `海象(walrus)`, `小海象(little_walrus)`, `高脚鸟(tallbird)`, `小皮弗娄牛(babybeefalo)`, `皮弗娄牛(beefalo)`, `钢羊(spat)`, `帝王蟹(crabking)`, `考拉象(koalefant_summer)`, `考拉象(koalefant_winter)`, `熊獾(bearger)`, `龙蝇(dragonfly)`, `独眼巨鹿(deerclops)`, `moose` | `双酮(ark_item_mtl_sl_ketone1)`, `龙门币(ark_gold)` |
 | ![双酮](../imageSource/images/ark_item/ark_item_mtl_sl_ketone1.png) | 双酮 | `ark_item_mtl_sl_ketone1` | `兔子(rabbit)`, `鼹鼠(mole)`, `穴居猴(monkey)`, `企鸥(penguin)` |  |
-| ![技巧概要·卷1](../imageSource/images/ark_item/ark_item_mtl_skill1.png) | 技巧概要·卷1 | `ark_item_mtl_skill1` |  |  |
-| ![技巧概要·卷2](../imageSource/images/ark_item/ark_item_mtl_skill2.png) | 技巧概要·卷2 | `ark_item_mtl_skill2` |  |  |
-| ![技巧概要·卷3](../imageSource/images/ark_item/ark_item_mtl_skill3.png) | 技巧概要·卷3 | `ark_item_mtl_skill3` |  |  |
+| ![ark_item_mtl_skill1](../imageSource/images/ark_item/ark_item_mtl_skill1.png) | ark_item_mtl_skill1 | `ark_item_mtl_skill1` |  |  |
+| ![ark_item_mtl_skill2](../imageSource/images/ark_item/ark_item_mtl_skill2.png) | ark_item_mtl_skill2 | `ark_item_mtl_skill2` |  |  |
+| ![ark_item_mtl_skill3](../imageSource/images/ark_item/ark_item_mtl_skill3.png) | ark_item_mtl_skill3 | `ark_item_mtl_skill3` |  |  |
