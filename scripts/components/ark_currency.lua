@@ -1,9 +1,6 @@
--- 默认账户货币只奖励玩家最终击杀的普通生物；巨兽改由世界掉落事件生成钱包。
+-- 默认账户货币只奖励玩家的最终击杀；巨兽钱包由世界掉落事件独立处理。
 local function DefaultKillCurrencyFn(inst, victim, is_kill, is_participated)
   if not is_kill or not inst:HasTag("player") then
-    return nil
-  end
-  if victim:HasTag("epic") then
     return nil
   end
   local health = victim.components and victim.components.health
@@ -14,7 +11,8 @@ local function DefaultKillCurrencyFn(inst, victim, is_kill, is_participated)
   if maxhealth <= 0 then
     return nil
   end
-  local gold = math.floor((maxhealth ^ 1.1) * 0.3)
+  local ratio = victim:HasTag("epic") and 0.4 or 0.3
+  local gold = math.floor((maxhealth ^ 1.1) * ratio)
   if gold < 1 then
     gold = 1
   end
