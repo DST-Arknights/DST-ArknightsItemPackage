@@ -10,25 +10,25 @@ name = T({
 })
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.9.1 (2026-10-05)
+- Removed the mod-wide material drop configuration option.
+---
 v2.9.0 (2026-10-05)
 - Added kill attribution and participation experience, with kill experience and currency rewards shared among participants.
 - Kill currency and wallet drops are now configurable.
 - Fixed Epic kill loot not dropping repeatedly.
 - Improved flying state animations.
----
-v2.8.3 (2026-10-03)
-- Added a shadow effect for locked skills and improved skill icon display.
 ]]
 
 local UPDATE_ZH = [[
+v2.9.1 (2026-10-05)
+- 移除了全模组材料掉落配置选项。
+---
 v2.9.0 (2026-10-05)
 - 新增击杀归属与参与经验系统，击杀经验与货币奖励可在参与者之间共享。
 - 击杀货币与 wallet 掉落现在可配置。
 - 修复 Epic 击杀战利品无法重复掉落的问题。
 - 改进飞行状态的动画表现。
----
-v2.8.3 (2026-10-03)
-- 添加技能锁定状态阴影效果，优化技能图标显示。
 ]]
 
 description = T({
@@ -55,7 +55,7 @@ QQ群: 666511586
 欢迎大家积极参与!]]
 })
 author = "让 望月心灵"
-version = "2.9.0"
+version = "2.9.1"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3677284770"
 
 api_version = 10
