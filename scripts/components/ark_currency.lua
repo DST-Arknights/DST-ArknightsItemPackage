@@ -1,4 +1,4 @@
--- 默认账户货币只奖励玩家的最终击杀；额外实体掉落由 ark_kill_loot 独立处理。
+-- 默认账户货币只奖励玩家的最终击杀；巨兽钱包由世界掉落事件独立处理。
 local function DefaultKillCurrencyFn(inst, victim, is_kill, is_participated)
   if not is_kill or not inst:HasTag("player") then
     return nil
@@ -27,7 +27,7 @@ end)
 -- fn(inst, victim, is_kill, is_participated) 返回 { [currency_type] = amount } 或 nil。
 -- 货币种类使用 TUNING.ARK_CURRENCY_TYPES 中已配置的名称；仅正数奖励到账。
 -- 返回 nil 不奖励账户货币；设置 nil 完全退出货币击杀及参与结算。
--- 此接口不影响 ark_kill_loot 的额外实体掉落，也不影响其他货币来源。
+-- 此接口不影响巨兽钱包，也不影响其他货币来源。
 function ArkCurrency:SetKillCurrencyFn(fn)
   assert(fn == nil or type(fn) == "function", "kill currency calculator must be a function or nil")
   self._killCurrencyFn = fn
