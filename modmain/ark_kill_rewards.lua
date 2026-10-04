@@ -42,8 +42,7 @@ end
 
 local function DropEpicWallets(inst)
   if inst == nil or not inst:IsValid()
-      or (not inst:HasTag("epic") and not inst:HasTag("epiccorpse"))
-      or inst._ark_epic_wallet_dropped then
+      or (not inst:HasTag("epic") and not inst:HasTag("epiccorpse")) then
     return
   end
   local lootdropper = inst.components and inst.components.lootdropper
@@ -73,7 +72,6 @@ local function DropEpicWallets(inst)
   if drop_gold3 then
     lootdropper:SpawnLootPrefab("ark_item_gold3")
   end
-  inst._ark_epic_wallet_dropped = true
 end
 
 local function OnEntityDropLoot(world, data)
