@@ -1,37 +1,4 @@
-local function Clamp(value, min_value, max_value)
-  return math.max(min_value, math.min(max_value, value))
-end
-
-local function DropEpicWallets(victim, maxhealth)
-  local lootdropper = victim.components.lootdropper
-  if lootdropper == nil then
-    return
-  end
-  local health = math.max(1, maxhealth or 1)
-  local scale = math.max(1, math.floor(math.sqrt(health) / 25))
-  local drop_ratio = 2 / 3
-  local gold2_min = math.max(1, math.floor((1 + math.floor(scale * 0.5)) * drop_ratio))
-  local gold2_max = math.max(gold2_min, math.floor((2 + scale) * drop_ratio))
-  local gold1_min = math.max(1, math.floor((2 + scale) * drop_ratio))
-  local gold1_max = math.max(gold1_min, math.floor((4 + scale * 2) * drop_ratio))
-  local gold3_chance = Clamp(Clamp(0.08 + scale * 0.02, 0.08, 0.35) * drop_ratio, 0.05, 0.35)
-  local gold2_count = math.random(gold2_min, gold2_max)
-  local gold1_count = math.random(gold1_min, gold1_max)
-  local drop_gold3 = math.random() <= lootdropper:GetChance(gold3_chance)
-
-  -- 直接落地，避免后续 lootsetupfn/SetLoot 清掉钱包；不进入巨兽尸体存储。
-  for _ = 1, gold2_count do
-    lootdropper:SpawnLootPrefab("ark_item_gold2")
-  end
-  for _ = 1, gold1_count do
-    lootdropper:SpawnLootPrefab("ark_item_gold1")
-  end
-  if drop_gold3 then
-    lootdropper:SpawnLootPrefab("ark_item_gold3")
-  end
-end
-
--- 默认只奖励玩家的最终击杀；巨兽钱包也由该函数决定是否掉落。
+-- 默认账户货币只奖励玩家的最终击杀；额外实体掉落由 ark_kill_loot 独立处理。
 local function DefaultKillCurrencyFn(inst, victim, is_kill, is_participated)
   if not is_kill or not inst:HasTag("player") then
     return nil
@@ -49,9 +16,6 @@ local function DefaultKillCurrencyFn(inst, victim, is_kill, is_participated)
   if gold < 1 then
     gold = 1
   end
-  if victim:HasTag("epic") then
-    DropEpicWallets(victim, maxhealth)
-  end
   return { ark_gold = gold }
 end
 
@@ -62,8 +26,8 @@ end)
 
 -- fn(inst, victim, is_kill, is_participated) 返回 { [currency_type] = amount } 或 nil。
 -- 货币种类使用 TUNING.ARK_CURRENCY_TYPES 中已配置的名称；仅正数奖励到账。
--- 函数可自行控制实体掉落并返回 nil；替换默认函数后不再自动掉巨兽钱包。
--- 设置 nil 完全退出货币及默认钱包奖励，不影响其他货币来源。
+-- 返回 nil 不奖励账户货币；设置 nil 完全退出货币击杀及参与结算。
+-- 此接口不影响 ark_kill_loot 的额外实体掉落，也不影响其他货币来源。
 function ArkCurrency:SetKillCurrencyFn(fn)
   assert(fn == nil or type(fn) == "function", "kill currency calculator must be a function or nil")
   self._killCurrencyFn = fn

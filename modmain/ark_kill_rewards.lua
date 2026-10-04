@@ -16,6 +16,7 @@ end
 
 GLOBAL.ArkRegisterKillRewardComponent("ark_elite")
 GLOBAL.ArkRegisterKillRewardComponent("ark_currency")
+GLOBAL.ArkRegisterKillRewardComponent("ark_kill_loot")
 
 -- 世界 -> 目标 -> 奖励组件名 -> 参与者 -> 最近命中时间，所有实体均只作为弱键保存。
 local world_attacks = setmetatable({}, { __mode = "k" })
@@ -148,6 +149,13 @@ end
 local function OnWorldRemoved(world)
   world_attacks[world] = nil
 end
+
+-- 玩家默认拥有额外击杀掉落策略，与经验和账户货币分别配置、分别关闭。
+AddPlayerPostInit(function(inst)
+  if TheWorld.ismastersim and inst.components.ark_kill_loot == nil then
+    inst:AddComponent("ark_kill_loot")
+  end
+end)
 
 -- MakeWorld 在地面和洞穴均设置 prefab 名为 world；此时 TheWorld 已构造完成。
 AddPrefabPostInit("world", function(world)
