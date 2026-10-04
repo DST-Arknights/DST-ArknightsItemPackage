@@ -104,31 +104,6 @@ configuration_options = {{
     }},
     default = "auto"
 }, {
-    -- 开启全模组材料掉落, 默认关闭
-    name = "enable_all_materials_drop",
-    label = T({
-        en = "Enable All Arknights Materials Drop",
-        zh = "开启明日方舟材料掉落"
-    }),
-    hover = T({
-        en = "When enabled, all materials from the Arknights mod will drop.",
-        zh = "开启后, 明日方舟模组中的所有材料都会掉落"
-    }),
-    options = {{
-        description = T({
-            en = "Disable",
-            zh = "关闭"
-        }),
-        data = false
-    }, {
-        description = T({
-            en = "Enable",
-            zh = "开启"
-        }),
-        data = true
-    }},
-    default = false
-}, {
     name = "hand_base_scale",
     label = T({
         en = "Skill Bar Size",
