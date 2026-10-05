@@ -1,0 +1,94 @@
+This mod adds Arknights-themed equipment, Elite progression, and chat emoticons.
+
+For a fuller character experience, consider subscribing to one of the character mods below alongside this pack.
+
+[hr][/hr]
+
+[h2]Character Mods[/h2]
+
+[table noborder=1 equalcells=1]
+[tr]
+[td][img]https://images.steamusercontent.com/ugc/11737724136718286094/9F8BBE056B78AC7F565345EF246229917BF1E699/?imw=64&imh=64&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[td][img]https://images.steamusercontent.com/ugc/16710295591198655734/447A1B98D080FBBE071F367771BFEC48CF2293E2/?imw=64&imh=64&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[td][img]https://images.steamusercontent.com/ugc/10439194859385925803/5C7F2587948DA226E7A55C8FB4E9D45D38F51FE2/?imw=64&imh=64&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[td][img]https://images.steamusercontent.com/ugc/17230713840864887677/A03CE55D603A78A9B73BBE1A8AD2BE5A5DFCCA4D/?imw=64&imh=64&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[td][img]https://images.steamusercontent.com/ugc/18269315554474263004/C7BF129F77F8CB76EC86AF503038236A918BCA11/?imw=64&imh=64&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[td][/td]
+[/tr]
+[tr]
+[td][b]Ling[/b][/td]
+[td][b]Chongyue[/b][/td]
+[td][b]Kal'tsit Esperanta[/b][/td]
+[td][b]Wang[/b][/td]
+[td][b]Mon3tr[/b][/td]
+[td][b]Pepe[/b][/td]
+[/tr]
+[tr]
+[td][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3677314942][b][u][noparse][Mod Link][/noparse][/u][/b][/url][/td]
+[td][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3155732695][b][u][noparse][Mod Link][/noparse][/u][/b][/url][/td]
+[td][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3806774490][b][u][noparse][Mod Link][/noparse][/u][/b][/url][/td]
+[td][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3809778115][b][u][noparse][Mod Link][/noparse][/u][/b][/url][/td]
+[td][i]Unreleased[/i][/td]
+[td][i]Unreleased[/i][/td]
+[/tr]
+[/table]
+
+[hr][/hr]
+
+[h2]Equipment[/h2]
+
+[h3]M3 Cocoon Armor[/h3]
+
+A suit of armor that seems to breathe. It converts health into durability and back, repairing itself when your health is high and spending durability to heal you when it is low.
+
+While it has durability, it reduces incoming damage and prevents hit stun. When you are on the brink of death, it sacrifices itself to restore your health.
+
+[h3]Sympathetic Pendant[/h3]
+
+Changes color and mood in response to combat, solitude, and your companions' condition, granting bonuses to attacks, movement, and work while also keeping you warm.
+
+[b]Resonance with Companions[/b]
+Shares its effects with nearby companions. When you both wear one and adventure together, resonance builds over time, strengthening the effects you share.
+
+[h3]Portable Supply[/h3]
+
+A portable station for recharging skills. Deploy it to quickly charge compatible skills for nearby characters, helping you prepare for battle and keep fighting.
+
+Fuel is consumed only when it actually charges skills. Refuel it as needed, or recover it with a hammer and take it with you, keeping any fuel that remains. Can be crafted by supported Arknights characters.
+
+[url=https://gitee.com/dst-arknights/dst-arknights-item-package/blob/main/docs/%E7%8E%A9%E5%AE%B6%E6%B8%B8%E7%8E%A9%E6%8C%87%E5%8D%97/%E8%A3%85%E5%A4%87%E8%AF%B4%E6%98%8E.md]Read the detailed equipment guide (Chinese)[/url]
+
+[hr][/hr]
+
+[h2]Elite Promotion[/h2]
+
+[b]Gain EXP → Level Up → Elite Promotion → Unlock More Abilities[/b]
+
+Characters that support Elite promotions can earn experience by defeating enemies or taking part in boss battles. Once they reach the level cap for their current stage, use the required materials to promote them and begin the next stage of progression.
+
+Growth, abilities, and recipe unlocks vary by character.
+
+[hr][/hr]
+
+[h2]Arknights Emoticons[/h2]
+
+All players can send Arknights emoticons in chat and share how they're feeling with their companions.
+
+[b]Click the button to open the panel · Scroll to switch categories · Click an emoticon to send it[/b]
+Click the button again to close the panel.
+
+[table noborder=1 equalcells=1]
+[tr]
+[td][img]https://images.steamusercontent.com/ugc/9252446737165604477/CB2DC2C92D55D62E5C85BF1BFDA1B68F06E5059F/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[td][img]https://images.steamusercontent.com/ugc/16291378085702135480/09D36338801A8AAA2FD06B367D2F8BB5F0581D61/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img][/td]
+[/tr]
+[/table]
+
+[hr][/hr]
+
+[h2]Feedback and Suggestions[/h2]
+
+If you encounter a problem or have a suggestion, please get in touch using either option below.
+
+[b]Issue:[/b] [url=https://github.com/DST-Arknights/DST-ArknightsItemPackage/issues]GitHub Issues[/url]
+[b]Email:[/b] tohsakakuro@outlook.com
