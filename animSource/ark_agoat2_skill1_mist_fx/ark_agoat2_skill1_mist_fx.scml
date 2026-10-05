@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='utf-8'?>
+<spriter_data scml_version="1.0" generator="Arknights ground mist builder" generator_version="1.0">
+  <folder id="0" name="mist">
+    <file id="0" name="mist/mist-0.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="1" name="mist/mist-1.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="2" name="mist/mist-2.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="3" name="mist/mist-3.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="4" name="mist/mist-4.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="5" name="mist/mist-5.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="6" name="mist/mist-6.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="7" name="mist/mist-7.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="8" name="mist/mist-8.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="9" name="mist/mist-9.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="10" name="mist/mist-10.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="11" name="mist/mist-11.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="12" name="mist/mist-12.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="13" name="mist/mist-13.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="14" name="mist/mist-14.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="15" name="mist/mist-15.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="16" name="mist/mist-16.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="17" name="mist/mist-17.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="18" name="mist/mist-18.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="19" name="mist/mist-19.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="20" name="mist/mist-20.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="21" name="mist/mist-21.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="22" name="mist/mist-22.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="23" name="mist/mist-23.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="24" name="mist/mist-24.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="25" name="mist/mist-25.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="26" name="mist/mist-26.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="27" name="mist/mist-27.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="28" name="mist/mist-28.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="29" name="mist/mist-29.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="30" name="mist/mist-30.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="31" name="mist/mist-31.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="32" name="mist/mist-32.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="33" name="mist/mist-33.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="34" name="mist/mist-34.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="35" name="mist/mist-35.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="36" name="mist/mist-36.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="37" name="mist/mist-37.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="38" name="mist/mist-38.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="39" name="mist/mist-39.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="40" name="mist/mist-40.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="41" name="mist/mist-41.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="42" name="mist/mist-42.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="43" name="mist/mist-43.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="44" name="mist/mist-44.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="45" name="mist/mist-45.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="46" name="mist/mist-46.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+    <file id="47" name="mist/mist-47.png" width="256" height="256" pivot_x="0.5" pivot_y="0.5" />
+  </folder>
+  <entity id="0" name="ark_agoat2_skill1_mist_fx">
+    <animation id="0" name="mist" length="1584" interval="33" looping="true">
+      <mainline>
+        <key id="0" time="0">
+          <object_ref id="0" timeline="0" key="0" z_index="0" />
+        </key>
+        <key id="1" time="33">
+          <object_ref id="0" timeline="0" key="1" z_index="0" />
+        </key>
+        <key id="2" time="66">
+          <object_ref id="0" timeline="0" key="2" z_index="0" />
+        </key>
+        <key id="3" time="99">
+          <object_ref id="0" timeline="0" key="3" z_index="0" />
+        </key>
+        <key id="4" time="132">
+          <object_ref id="0" timeline="0" key="4" z_index="0" />
+        </key>
+        <key id="5" time="165">
+          <object_ref id="0" timeline="0" key="5" z_index="0" />
+        </key>
+        <key id="6" time="198">
+          <object_ref id="0" timeline="0" key="6" z_index="0" />
+        </key>
+        <key id="7" time="231">
+          <object_ref id="0" timeline="0" key="7" z_index="0" />
+        </key>
+        <key id="8" time="264">
+          <object_ref id="0" timeline="0" key="8" z_index="0" />
+        </key>
+        <key id="9" time="297">
+          <object_ref id="0" timeline="0" key="9" z_index="0" />
+        </key>
+        <key id="10" time="330">
+          <object_ref id="0" timeline="0" key="10" z_index="0" />
+        </key>
+        <key id="11" time="363">
+          <object_ref id="0" timeline="0" key="11" z_index="0" />
+        </key>
+        <key id="12" time="396">
+          <object_ref id="0" timeline="0" key="12" z_index="0" />
+        </key>
+        <key id="13" time="429">
+          <object_ref id="0" timeline="0" key="13" z_index="0" />
+        </key>
+        <key id="14" time="462">
+          <object_ref id="0" timeline="0" key="14" z_index="0" />
+        </key>
+        <key id="15" time="495">
+          <object_ref id="0" timeline="0" key="15" z_index="0" />
+        </key>
+        <key id="16" time="528">
+          <object_ref id="0" timeline="0" key="16" z_index="0" />
+        </key>
+        <key id="17" time="561">
+          <object_ref id="0" timeline="0" key="17" z_index="0" />
+        </key>
+        <key id="18" time="594">
+          <object_ref id="0" timeline="0" key="18" z_index="0" />
+        </key>
+        <key id="19" time="627">
+          <object_ref id="0" timeline="0" key="19" z_index="0" />
+        </key>
+        <key id="20" time="660">
+          <object_ref id="0" timeline="0" key="20" z_index="0" />
+        </key>
+        <key id="21" time="693">
+          <object_ref id="0" timeline="0" key="21" z_index="0" />
+        </key>
+        <key id="22" time="726">
+          <object_ref id="0" timeline="0" key="22" z_index="0" />
+        </key>
+        <key id="23" time="759">
+          <object_ref id="0" timeline="0" key="23" z_index="0" />
+        </key>
+        <key id="24" time="792">
+          <object_ref id="0" timeline="0" key="24" z_index="0" />
+        </key>
+        <key id="25" time="825">
+          <object_ref id="0" timeline="0" key="25" z_index="0" />
+        </key>
+        <key id="26" time="858">
+          <object_ref id="0" timeline="0" key="26" z_index="0" />
+        </key>
+        <key id="27" time="891">
+          <object_ref id="0" timeline="0" key="27" z_index="0" />
+        </key>
+        <key id="28" time="924">
+          <object_ref id="0" timeline="0" key="28" z_index="0" />
+        </key>
+        <key id="29" time="957">
+          <object_ref id="0" timeline="0" key="29" z_index="0" />
+        </key>
+        <key id="30" time="990">
+          <object_ref id="0" timeline="0" key="30" z_index="0" />
+        </key>
+        <key id="31" time="1023">
+          <object_ref id="0" timeline="0" key="31" z_index="0" />
+        </key>
+        <key id="32" time="1056">
+          <object_ref id="0" timeline="0" key="32" z_index="0" />
+        </key>
+        <key id="33" time="1089">
+          <object_ref id="0" timeline="0" key="33" z_index="0" />
+        </key>
+        <key id="34" time="1122">
+          <object_ref id="0" timeline="0" key="34" z_index="0" />
+        </key>
+        <key id="35" time="1155">
+          <object_ref id="0" timeline="0" key="35" z_index="0" />
+        </key>
+        <key id="36" time="1188">
+          <object_ref id="0" timeline="0" key="36" z_index="0" />
+        </key>
+        <key id="37" time="1221">
+          <object_ref id="0" timeline="0" key="37" z_index="0" />
+        </key>
+        <key id="38" time="1254">
+          <object_ref id="0" timeline="0" key="38" z_index="0" />
+        </key>
+        <key id="39" time="1287">
+          <object_ref id="0" timeline="0" key="39" z_index="0" />
+        </key>
+        <key id="40" time="1320">
+          <object_ref id="0" timeline="0" key="40" z_index="0" />
+        </key>
+        <key id="41" time="1353">
+          <object_ref id="0" timeline="0" key="41" z_index="0" />
+        </key>
+        <key id="42" time="1386">
+          <object_ref id="0" timeline="0" key="42" z_index="0" />
+        </key>
+        <key id="43" time="1419">
+          <object_ref id="0" timeline="0" key="43" z_index="0" />
+        </key>
+        <key id="44" time="1452">
+          <object_ref id="0" timeline="0" key="44" z_index="0" />
+        </key>
+        <key id="45" time="1485">
+          <object_ref id="0" timeline="0" key="45" z_index="0" />
+        </key>
+        <key id="46" time="1518">
+          <object_ref id="0" timeline="0" key="46" z_index="0" />
+        </key>
+        <key id="47" time="1551">
+          <object_ref id="0" timeline="0" key="47" z_index="0" />
+        </key>
+      </mainline>
+      <timeline id="0" name="mist" object_type="sprite">
+        <key id="0" time="0" curve_type="instant">
+          <object folder="0" file="0" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="1" time="33" curve_type="instant">
+          <object folder="0" file="1" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="2" time="66" curve_type="instant">
+          <object folder="0" file="2" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="3" time="99" curve_type="instant">
+          <object folder="0" file="3" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="4" time="132" curve_type="instant">
+          <object folder="0" file="4" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="5" time="165" curve_type="instant">
+          <object folder="0" file="5" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="6" time="198" curve_type="instant">
+          <object folder="0" file="6" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="7" time="231" curve_type="instant">
+          <object folder="0" file="7" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="8" time="264" curve_type="instant">
+          <object folder="0" file="8" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="9" time="297" curve_type="instant">
+          <object folder="0" file="9" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="10" time="330" curve_type="instant">
+          <object folder="0" file="10" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="11" time="363" curve_type="instant">
+          <object folder="0" file="11" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="12" time="396" curve_type="instant">
+          <object folder="0" file="12" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="13" time="429" curve_type="instant">
+          <object folder="0" file="13" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="14" time="462" curve_type="instant">
+          <object folder="0" file="14" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="15" time="495" curve_type="instant">
+          <object folder="0" file="15" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="16" time="528" curve_type="instant">
+          <object folder="0" file="16" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="17" time="561" curve_type="instant">
+          <object folder="0" file="17" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="18" time="594" curve_type="instant">
+          <object folder="0" file="18" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="19" time="627" curve_type="instant">
+          <object folder="0" file="19" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="20" time="660" curve_type="instant">
+          <object folder="0" file="20" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="21" time="693" curve_type="instant">
+          <object folder="0" file="21" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="22" time="726" curve_type="instant">
+          <object folder="0" file="22" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="23" time="759" curve_type="instant">
+          <object folder="0" file="23" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="24" time="792" curve_type="instant">
+          <object folder="0" file="24" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="25" time="825" curve_type="instant">
+          <object folder="0" file="25" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="26" time="858" curve_type="instant">
+          <object folder="0" file="26" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="27" time="891" curve_type="instant">
+          <object folder="0" file="27" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="28" time="924" curve_type="instant">
+          <object folder="0" file="28" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="29" time="957" curve_type="instant">
+          <object folder="0" file="29" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="30" time="990" curve_type="instant">
+          <object folder="0" file="30" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="31" time="1023" curve_type="instant">
+          <object folder="0" file="31" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="32" time="1056" curve_type="instant">
+          <object folder="0" file="32" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="33" time="1089" curve_type="instant">
+          <object folder="0" file="33" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="34" time="1122" curve_type="instant">
+          <object folder="0" file="34" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="35" time="1155" curve_type="instant">
+          <object folder="0" file="35" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="36" time="1188" curve_type="instant">
+          <object folder="0" file="36" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="37" time="1221" curve_type="instant">
+          <object folder="0" file="37" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="38" time="1254" curve_type="instant">
+          <object folder="0" file="38" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="39" time="1287" curve_type="instant">
+          <object folder="0" file="39" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="40" time="1320" curve_type="instant">
+          <object folder="0" file="40" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="41" time="1353" curve_type="instant">
+          <object folder="0" file="41" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="42" time="1386" curve_type="instant">
+          <object folder="0" file="42" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="43" time="1419" curve_type="instant">
+          <object folder="0" file="43" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="44" time="1452" curve_type="instant">
+          <object folder="0" file="44" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="45" time="1485" curve_type="instant">
+          <object folder="0" file="45" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="46" time="1518" curve_type="instant">
+          <object folder="0" file="46" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+        <key id="47" time="1551" curve_type="instant">
+          <object folder="0" file="47" x="0.000000" y="0.000000" angle="0" scale_x="1.25" scale_y="1.25" />
+        </key>
+      </timeline>
+    </animation>
+  </entity>
+</spriter_data>
