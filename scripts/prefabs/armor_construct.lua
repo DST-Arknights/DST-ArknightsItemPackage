@@ -31,32 +31,33 @@ local function DoArmorHealthExchange(inst)
     return
   end
 
-  local max_health = owner.components.health:GetMaxWithPenalty()
-  local current_health = owner.components.health.currenthealth
-  local half_health = max_health * 0.5
+  local health = owner.components.health
+  local current_health = health.currenthealth
+  local target_health = math.min(ARMOR_CONSTRUCT.EXCHANGE_HEALTH_TARGET, health:GetMaxWithPenalty())
+  local health_delta = current_health - target_health
+  if math.abs(health_delta) <= ARMOR_CONSTRUCT.EXCHANGE_HEALTH_EPSILON then
+    return
+  end
 
-  if current_health < half_health then
+  local max_exchange = math.min(
+    ARMOR_CONSTRUCT.EXCHANGE_RATE_PER_SECOND * ARMOR_CONSTRUCT.EXCHANGE_TICK,
+    math.abs(health_delta)
+  )
+
+  if health_delta < 0 then
     if armor.condition <= 0 then
       return
     end
-    local max_heal = half_health - current_health
-    local heal = math.floor(math.min(ARMOR_CONSTRUCT.EXCHANGE_RATE_PER_SECOND * ARMOR_CONSTRUCT.EXCHANGE_TICK, armor.condition, max_heal))
-    if heal <= 0 then
-      return
-    end
-    owner.components.health:DoDelta(heal, nil, "armor_construct_heal", true, inst)
+    local heal = math.min(max_exchange, armor.condition)
+    health:DoDelta(heal, nil, "armor_construct_heal", true, inst)
     armor:SetCondition(armor.condition - heal)
-  elseif current_health > half_health then
+  else
     local missing = armor.maxcondition - armor.condition
     if missing <= 0 then
       return
     end
-    local max_drain = current_health - half_health
-    local drain = math.floor(math.min(ARMOR_CONSTRUCT.EXCHANGE_RATE_PER_SECOND * ARMOR_CONSTRUCT.EXCHANGE_TICK, missing, max_drain))
-    if drain <= 0 then
-      return
-    end
-    owner.components.health:DoDelta(-drain, nil, "armor_construct_repair", true, inst)
+    local drain = math.min(max_exchange, missing)
+    health:DoDelta(-drain, nil, "armor_construct_repair", true, inst)
     armor:Repair(drain)
   end
 end
