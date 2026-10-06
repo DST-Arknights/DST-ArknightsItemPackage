@@ -1,4 +1,5 @@
 local ARMOR_CONSTRUCT = TUNING.ARMOR_CONSTRUCT
+local HEAL_TO_CONDITION_RATE = 0.25
 
 RegisterInventoryItemAtlas("images/inventoryimages/armor_construct.xml", "armor_construct.tex")
 local assets =
@@ -90,6 +91,7 @@ local function onequip(inst, owner)
   inst:ListenForEvent("blocked", OnBlocked, owner)
   inst:PriorityListenForEvent("minhealth", inst._OnMinHealth, owner, { priority = 2 })
   inst:ListenForEvent("attacked", inst._OnOwnerAttacked, owner)
+  inst:ListenForEvent("mon3tr_healed", inst._OnMon3trSkillHeal, owner)
   StartExchangeTask(inst)
 end
 
@@ -101,6 +103,7 @@ local function onunequip(inst, owner)
   inst:RemoveEventCallback("blocked", OnBlocked, owner)
   inst:PriorityRemoveEventCallback("minhealth", inst._OnMinHealth, owner)
   inst:RemoveEventCallback("attacked", inst._OnOwnerAttacked, owner)
+  inst:RemoveEventCallback("mon3tr_healed", inst._OnMon3trSkillHeal, owner)
   StopExchangeTask(inst)
 
   local skin_build = inst:GetSkinBuild()
@@ -172,6 +175,12 @@ local function fn()
   inst:AddComponent("equippable")
   inst.components.equippable.equipslot = EQUIPSLOTS.BODY
 
+  inst._OnMon3trSkillHeal = function(_, data)
+    if data == nil or data.amount == nil or data.amount <= 0 then
+      return
+    end
+    inst.components.armor:Repair(data.amount * HEAL_TO_CONDITION_RATE)
+  end
   inst._OnOwnerAttacked = function(owner, data)
     inst._exchange_pause_until = GetTime() + ARMOR_CONSTRUCT.EXCHANGE_PAUSE_AFTER_DAMAGE
   end
