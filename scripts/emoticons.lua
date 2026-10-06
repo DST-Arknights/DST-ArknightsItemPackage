@@ -50,6 +50,18 @@ local emotion_groups = {
             "weiweimei_5",
             "weiweimei_6",
         },
+    },{
+        key = "mon3tr",
+        name = "Mon3tr",
+        atlas = atlas,
+        icons = {
+            "mon3tr_1",
+            "mon3tr_2",
+            "mon3tr_3",
+            "mon3tr_4",
+            "mon3tr_5",
+            "mon3tr_6",
+        },
     },
 }
 
