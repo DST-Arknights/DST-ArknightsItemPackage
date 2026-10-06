@@ -6,11 +6,16 @@ return ArkMakeFx({
   anim = "mist",
   loop = true,
   transform = Vector3(range_scale, range_scale, range_scale),
-  tint = Vector3(0.20, 0.58, 1.00),
+  tint = Vector3(0.30, 0.70, 1.00),
+  tintalpha = 0.42,
   fn = function (inst)
+    -- FX 子实体仍会让鼠标命中父物体，范围图使用 DECOR 排除悬停。
+    inst:RemoveTag("FX")
+    inst:AddTag("DECOR")
+    inst:AddTag("NOCLICK")
     inst.AnimState:SetDeltaTimeMultiplier(0.5)
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-    inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    inst.AnimState:SetSortOrder(1)
+    -- inst.AnimState:SetLayer(LAYER_BACKGROUND)
+    -- inst.AnimState:SetSortOrder(1)
   end,
 })
