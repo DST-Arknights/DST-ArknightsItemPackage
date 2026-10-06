@@ -2,36 +2,42 @@
 <Atlas>
     <Texture filename="ark_emoticon.tex"/>
     <Elements>
-        <Element name="autochess_g2_1.tex" u1="0.244629" u2="0.36084" v1="0.0107422" v2="0.243164"/>
-        <Element name="autochess_g2_2.tex" u1="0.252441" u2="0.368652" v1="0.766602" v2="0.999023"/>
-        <Element name="autochess_g2_3.tex" u1="0.252441" u2="0.368652" v1="0.530273" v2="0.762695"/>
-        <Element name="autochess_g2_4.tex" u1="0.252441" u2="0.368652" v1="0.293945" v2="0.526367"/>
-        <Element name="autochess_g2_5.tex" u1="0.362793" u2="0.479004" v1="0.0576172" v2="0.290039"/>
-        <Element name="autochess_g2_6.tex" u1="0.370605" u2="0.486816" v1="0.766602" v2="0.999023"/>
-        <Element name="cooperate_battle.tex" u1="0.370605" u2="0.486816" v1="0.530273" v2="0.762695"/>
-        <Element name="happy_battle.tex" u1="0.000488281" u2="0.120605" v1="0.00292969" v2="0.243164"/>
-        <Element name="mimizi_1.tex" u1="0.48877" u2="0.595215" v1="0.540039" v2="0.762695"/>
-        <Element name="mimizi_2.tex" u1="0.48877" u2="0.595215" v1="0.313477" v2="0.536133"/>
-        <Element name="mimizi_3.tex" u1="0.597168" u2="0.703613" v1="0.540039" v2="0.762695"/>
-        <Element name="mimizi_4.tex" u1="0.606934" u2="0.713379" v1="0.776367" v2="0.999023"/>
-        <Element name="mimizi_5.tex" u1="0.597168" u2="0.708496" v1="0.313477" v2="0.536133"/>
-        <Element name="mimizi_6.tex" u1="0.705566" u2="0.812012" v1="0.549805" v2="0.772461"/>
-        <Element name="mon3tr_1.tex" u1="0.000488281" u2="0.124512" v1="0.750977" v2="0.999023"/>
-        <Element name="mon3tr_2.tex" u1="0.000488281" u2="0.124512" v1="0.499023" v2="0.74707"/>
-        <Element name="mon3tr_3.tex" u1="0.000488281" u2="0.124512" v1="0.24707" v2="0.495117"/>
-        <Element name="mon3tr_4.tex" u1="0.126465" u2="0.250488" v1="0.750977" v2="0.999023"/>
-        <Element name="mon3tr_5.tex" u1="0.126465" u2="0.250488" v1="0.499023" v2="0.74707"/>
-        <Element name="mon3tr_6.tex" u1="0.126465" u2="0.250488" v1="0.24707" v2="0.495117"/>
-        <Element name="scared_battle.tex" u1="0.370605" u2="0.486816" v1="0.293945" v2="0.526367"/>
-        <Element name="sorry_battle.tex" u1="0.122559" u2="0.242676" v1="0.00292969" v2="0.243164"/>
-        <Element name="thanks_battle.tex" u1="0.480957" u2="0.597168" v1="0.0576172" v2="0.290039"/>
-        <Element name="thinking_battle.tex" u1="0.48877" u2="0.60498" v1="0.766602" v2="0.999023"/>
-        <Element name="weiweimei_1.tex" u1="0.715332" u2="0.82373" v1="0.776367" v2="0.999023"/>
-        <Element name="weiweimei_2.tex" u1="0.599121" u2="0.70752" v1="0.0869141" v2="0.30957"/>
-        <Element name="weiweimei_3.tex" u1="0.709473" u2="0.817871" v1="0.0869141" v2="0.30957"/>
-        <Element name="weiweimei_4.tex" u1="0.710449" u2="0.818848" v1="0.323242" v2="0.545898"/>
-        <Element name="weiweimei_5.tex" u1="0.813965" u2="0.922363" v1="0.549805" v2="0.772461"/>
-        <Element name="weiweimei_6.tex" u1="0.825684" u2="0.934082" v1="0.776367" v2="0.999023"/>
+        <Element name="autochess_g2_1.tex" u1="0.000488281" u2="0.116699" v1="0.00146484" v2="0.117676"/>
+        <Element name="autochess_g2_2.tex" u1="0.118652" u2="0.234863" v1="0.00146484" v2="0.117676"/>
+        <Element name="autochess_g2_3.tex" u1="0.236816" u2="0.353027" v1="0.757324" v2="0.873535"/>
+        <Element name="autochess_g2_4.tex" u1="0.35498" u2="0.471191" v1="0.757324" v2="0.873535"/>
+        <Element name="autochess_g2_5.tex" u1="0.473145" u2="0.589355" v1="0.757324" v2="0.873535"/>
+        <Element name="autochess_g2_6.tex" u1="0.591309" u2="0.70752" v1="0.757324" v2="0.873535"/>
+        <Element name="cooperate_battle.tex" u1="0.709473" u2="0.825684" v1="0.757324" v2="0.873535"/>
+        <Element name="happy_battle.tex" u1="0.866699" u2="0.986816" v1="0.879395" v2="0.999512"/>
+        <Element name="ling_1.tex" u1="0.000488281" u2="0.124512" v1="0.875488" v2="0.999512"/>
+        <Element name="ling_2.tex" u1="0.000488281" u2="0.124512" v1="0.749512" v2="0.873535"/>
+        <Element name="ling_3.tex" u1="0.000488281" u2="0.124512" v1="0.623535" v2="0.747559"/>
+        <Element name="ling_4.tex" u1="0.000488281" u2="0.124512" v1="0.497559" v2="0.621582"/>
+        <Element name="ling_5.tex" u1="0.000488281" u2="0.124512" v1="0.371582" v2="0.495605"/>
+        <Element name="ling_6.tex" u1="0.000488281" u2="0.124512" v1="0.245605" v2="0.369629"/>
+        <Element name="mimizi_1.tex" u1="0.126465" u2="0.23291" v1="0.193848" v2="0.305176"/>
+        <Element name="mimizi_2.tex" u1="0.234863" u2="0.341309" v1="0.193848" v2="0.305176"/>
+        <Element name="mimizi_3.tex" u1="0.236816" u2="0.343262" v1="0.0805664" v2="0.191895"/>
+        <Element name="mimizi_4.tex" u1="0.244629" u2="0.351074" v1="0.644043" v2="0.755371"/>
+        <Element name="mimizi_5.tex" u1="0.244629" u2="0.355957" v1="0.530762" v2="0.64209"/>
+        <Element name="mimizi_6.tex" u1="0.353027" u2="0.459473" v1="0.644043" v2="0.755371"/>
+        <Element name="mon3tr_1.tex" u1="0.000488281" u2="0.124512" v1="0.119629" v2="0.243652"/>
+        <Element name="mon3tr_2.tex" u1="0.236816" u2="0.36084" v1="0.875488" v2="0.999512"/>
+        <Element name="mon3tr_3.tex" u1="0.362793" u2="0.486816" v1="0.875488" v2="0.999512"/>
+        <Element name="mon3tr_4.tex" u1="0.48877" u2="0.612793" v1="0.875488" v2="0.999512"/>
+        <Element name="mon3tr_5.tex" u1="0.614746" u2="0.73877" v1="0.875488" v2="0.999512"/>
+        <Element name="mon3tr_6.tex" u1="0.740723" u2="0.864746" v1="0.875488" v2="0.999512"/>
+        <Element name="scared_battle.tex" u1="0.126465" u2="0.242676" v1="0.543457" v2="0.659668"/>
+        <Element name="sorry_battle.tex" u1="0.866699" u2="0.986816" v1="0.757324" v2="0.877441"/>
+        <Element name="thanks_battle.tex" u1="0.126465" u2="0.242676" v1="0.425293" v2="0.541504"/>
+        <Element name="thinking_battle.tex" u1="0.126465" u2="0.242676" v1="0.307129" v2="0.42334"/>
+        <Element name="weiweimei_1.tex" u1="0.126465" u2="0.234863" v1="0.888184" v2="0.999512"/>
+        <Element name="weiweimei_2.tex" u1="0.126465" u2="0.234863" v1="0.774902" v2="0.88623"/>
+        <Element name="weiweimei_3.tex" u1="0.126465" u2="0.234863" v1="0.661621" v2="0.772949"/>
+        <Element name="weiweimei_4.tex" u1="0.244629" u2="0.353027" v1="0.41748" v2="0.528809"/>
+        <Element name="weiweimei_5.tex" u1="0.343262" u2="0.45166" v1="0.304199" v2="0.415527"/>
+        <Element name="weiweimei_6.tex" u1="0.35498" u2="0.463379" v1="0.41748" v2="0.528809"/>
     </Elements>
     <StraightAlpha>false</StraightAlpha>
 </Atlas>
