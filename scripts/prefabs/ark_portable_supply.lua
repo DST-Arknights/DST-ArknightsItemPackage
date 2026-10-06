@@ -14,11 +14,7 @@ local DEFAULT_CHARGE_AMOUNT = 5
 RegisterInventoryItemAtlas("images/inventoryimages/ark_portable_supply.xml", "ark_portable_supply.tex")
 
 local function ClampNonNegative(value)
-  value = tonumber(value) or 0
-  if value < 0 then
-    return 0
-  end
-  return value
+  return math.max(tonumber(value) or 0, 0)
 end
 
 local function GetFuelPercent(inst)
@@ -49,22 +45,31 @@ local function GetIdleAnimation(inst)
   return "idle_3"
 end
 
-local function PlayIdleAnimation(inst)
-  inst.AnimState:PlayAnimation(GetIdleAnimation(inst), true)
+local function PlayStateAnimation(inst)
+  local anim = inst._isdeployed and GetIdleAnimation(inst) or "place"
+  inst.AnimState:PlayAnimation(anim, true)
+end
+
+local function PlayTransientAnimation(inst, anim)
+  inst._playingtransientanim = true
+  inst.AnimState:PlayAnimation(anim)
 end
 
 local function OnFuelDirty(inst)
-  if inst._restoreidle then
-    return
+  if not inst._playingtransientanim then
+    PlayStateAnimation(inst)
   end
-  PlayIdleAnimation(inst)
 end
 
 local function OnAnimOver(inst)
-  if inst._restoreidle then
-    inst._restoreidle = nil
-    PlayIdleAnimation(inst)
+  if inst._playingtransientanim then
+    inst._playingtransientanim = nil
+    PlayStateAnimation(inst)
   end
+end
+
+local function StopFuelConsumption(inst)
+  inst.components.fueled:StopConsuming()
 end
 
 local function ConfigureFuel(inst)
@@ -73,14 +78,8 @@ local function ConfigureFuel(inst)
   inst.components.fueled.accepting = true
   inst.components.fueled.bonusmult = 5
   inst.components.fueled.secondaryfueltype = FUELTYPE.CHEMICAL
-  inst.components.fueled:SetDepletedFn(function(owner)
-    owner.components.fueled:StopConsuming()
-    OnFuelDirty(owner)
-  end)
-  inst.components.fueled:SetTakeFuelFn(function(owner)
-    owner.components.fueled:StopConsuming()
-    OnFuelDirty(owner)
-  end)
+  inst.components.fueled:SetDepletedFn(StopFuelConsumption)
+  inst.components.fueled:SetTakeFuelFn(StopFuelConsumption)
   inst.components.fueled:StopConsuming()
 end
 
@@ -99,7 +98,6 @@ local function ConsumePortableSupplyFuel(inst, amount)
 
   fueled:DoDelta(-consumed)
   fueled:StopConsuming()
-  OnFuelDirty(inst)
   return consumed
 end
 
@@ -109,7 +107,6 @@ local function CopyFuelPercent(source, target)
   end
   target.components.fueled:SetPercent(GetFuelPercent(source))
   target.components.fueled:StopConsuming()
-  OnFuelDirty(target)
 end
 
 local function SpawnCollapsedFx(inst)
@@ -161,75 +158,61 @@ local function OnHammered(inst, worker)
 end
 
 local function OnHit(inst, worker)
-  inst.AnimState:PlayAnimation("hit")
-  inst._restoreidle = true
+  PlayTransientAnimation(inst, "hit")
 end
 
-local function SetInventoryState(inst)
-  if not inst._isdeployed then
+local function SetDeploymentState(inst, deployed, playopen)
+  if inst._isdeployed == deployed then
+    if not inst._playingtransientanim then
+      PlayStateAnimation(inst)
+    end
     return
   end
 
-  inst._isdeployed = false
-  inst:RemoveTag("structure")
+  inst._isdeployed = deployed
+  inst._playingtransientanim = nil
 
   RemovePhysicsColliders(inst)
-  MakeInventoryPhysics(inst)
-  inst.Physics:Stop()
 
-  if inst.components.inventoryitem ~= nil then
-    inst.components.inventoryitem.nobounce = false
-  end
+  if deployed then
+    inst:AddTag("structure")
+    MakeObstaclePhysics(inst, 0.8)
 
-  inst.components.workable:SetWorkable(false)
-  inst.components.sanityaura.aura = 0
-  inst.components.ark_supply_charger:SetEnabled(false)
-  RemoveRangeFx(inst)
-
-  inst.AnimState:PlayAnimation("place", true)
-end
-
-local function SetDeployedState(inst, playopen)
-  if inst._isdeployed then
-    return
-  end
-
-  inst._isdeployed = true
-  inst:AddTag("structure")
-
-  RemovePhysicsColliders(inst)
-  MakeObstaclePhysics(inst, 0.8)
-  inst.Physics:Stop()
-
-  if inst.components.inventoryitem ~= nil then
     inst.components.inventoryitem.nobounce = true
+
+    inst.components.workable:SetWorkable(true)
+    inst.components.sanityaura.aura = TUNING.SANITYAURA_TINY
+    inst.components.ark_supply_charger:SetEnabled(true)
+    EnsureRangeFx(inst)
+  else
+    inst:RemoveTag("structure")
+    MakeInventoryPhysics(inst)
+
+    inst.components.inventoryitem.nobounce = false
+
+    inst.components.workable:SetWorkable(false)
+    inst.components.sanityaura.aura = 0
+    inst.components.ark_supply_charger:SetEnabled(false)
+    RemoveRangeFx(inst)
   end
 
-  inst.components.workable:SetWorkable(true)
-  inst.components.sanityaura.aura = TUNING.SANITYAURA_TINY
-  inst.components.ark_supply_charger:SetEnabled(true)
-  EnsureRangeFx(inst)
+  inst.Physics:Stop()
 
-  if playopen then
-    inst.AnimState:PlayAnimation("open")
-    inst._restoreidle = true
+  if deployed and playopen then
+    PlayTransientAnimation(inst, "open")
   else
-    PlayIdleAnimation(inst)
+    PlayStateAnimation(inst)
   end
 end
 
 local function OnDeploy(inst, pt, deployer)
   inst.Physics:Stop()
   inst.Physics:Teleport(pt:Get())
-  SetDeployedState(inst, true)
+  SetDeploymentState(inst, true, true)
 end
 
-local function OnPutInInventory(inst)
-  SetInventoryState(inst)
-end
-
-local function OnDropped(inst)
-  SetInventoryState(inst)
+local function OnBecomeInventoryItem(inst)
+  SetDeploymentState(inst, false)
 end
 
 local function fn()
@@ -253,13 +236,14 @@ local function fn()
     return inst
   end
 
-  inst._isdeployed = false
+  inst._isdeployed = nil
+  inst._playingtransientanim = nil
   inst._rangefx = nil
 
   inst:AddComponent("inspectable")
   inst:AddComponent("inventoryitem")
-  inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
-  inst.components.inventoryitem:SetOnDroppedFn(OnDropped)
+  inst.components.inventoryitem:SetOnPutInInventoryFn(OnBecomeInventoryItem)
+  inst.components.inventoryitem:SetOnDroppedFn(OnBecomeInventoryItem)
 
   ConfigureFuel(inst)
 
@@ -301,14 +285,10 @@ local function fn()
     data.isdeployed = owner._isdeployed or nil
   end
   inst.OnLoad = function(owner, data)
-    if data ~= nil and data.isdeployed then
-      SetDeployedState(owner, false)
-    else
-      PlayIdleAnimation(owner)
-    end
+    SetDeploymentState(owner, data ~= nil and data.isdeployed == true)
   end
 
-  PlayIdleAnimation(inst)
+  SetDeploymentState(inst, false)
 
   return inst
 end
