@@ -8,23 +8,11 @@ local emotion_groups = {
         atlas = atlas,
         icons = {
             "cooperate_battle",
-            "happy_battle",
-            "scared_battle",
             "sorry_battle",
             "thanks_battle",
-            "thinking_battle",
-        },
-    },{
-        key = "autochess_guard",
-        name = "AutoChessGuard",
-        atlas = atlas,
-        icons = {
-            "autochess_g2_1",
             "autochess_g2_2",
-            "autochess_g2_3",
-            "autochess_g2_4",
-            "autochess_g2_5",
             "autochess_g2_6",
+            "autochess_g2_1",
         },
     },{
         key = "mimizi",
@@ -61,6 +49,18 @@ local emotion_groups = {
             "mon3tr_4",
             "mon3tr_5",
             "mon3tr_6",
+        },
+    },{
+        key = "ling",
+        name = "Ling",
+        atlas = atlas,
+        icons = {
+            "ling_1",
+            "ling_2",
+            "ling_3",
+            "ling_4",
+            "ling_5",
+            "ling_6",
         },
     },
 }
