@@ -19,7 +19,12 @@ AddPlayerPostInit(function(inst)
       inst:AddComponent("ark_supply_rechargeable")
     end
 
-    inst.components.ark_supply_rechargeable:AddRechargeGroup(DEFAULT_RECHARGE_GROUP, {
+    local rechargeable = inst.components.ark_supply_rechargeable
+    if rechargeable.getrechargeamountfn ~= nil or rechargeable.rechargefn ~= nil then
+      return
+    end
+
+    rechargeable:AddRechargeGroup(DEFAULT_RECHARGE_GROUP, {
       getrechargeamountfn = function(target, charger, data)
       local arkSkill = target.components.ark_skill
       if arkSkill == nil then
