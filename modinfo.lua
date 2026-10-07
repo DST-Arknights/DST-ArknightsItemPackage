@@ -8,29 +8,31 @@ name = T({
     en = "Arknights Item Package",
     zh = "明日方舟 物品包"
 })
-version = "2.9.1"
+version = "2.10.0"
 
 -- 版本更新说明（由发布脚本自动维护，请勿手动编辑）
 local UPDATE_EN = [[
+v2.10.0 (2026-10-08)
+- Supply Station recharge now shows the actual accepted amount as a popup at the target and syncs it to other clients; the popup follows the target, stays at its last position to fade out if the target is gone, and uses adjusted font size and italic number font.
+- Supply Stations now consume fuel based on each target's actual total usage and show only one cumulative recharge number; default skill recharge consumes fuel only when skill progress or charges actually change.
+- Character select and player profile cards now support animated big portraits: they can be registered, play animations in sequence, automatically loop the last segment, and fall back to static portraits.
+- Added healing recharge for Construct Armor; adjusted M3 Cocoon Armor's health exchange to a fixed 20 Health balance line, limited each exchange to move toward the boundary, and made Mon3tr chain healing charge equipped Cocoon Armor at 25% of theoretical healing.
+- Added new emote icons and the Mon3tr emote group, removed extra emotes, adjusted AutoChess group icon order; fixed false RemoveSkill failed / ID mismatch errors on entity destruction, and improved Portable Supply Station animation, fuel management, VFX color, and label settings.
+---
 v2.9.1 (2026-10-05)
 - Removed the mod-wide material drop configuration option.
----
-v2.9.0 (2026-10-05)
-- Added kill attribution and participation experience, with kill experience and currency rewards shared among participants.
-- Kill currency and wallet drops are now configurable.
-- Fixed Epic kill loot not dropping repeatedly.
-- Improved flying state animations.
 ]]
 
 local UPDATE_ZH = [[
+v2.10.0 (2026-10-08)
+- 补给站充能现在会在目标处显示实际接受量的飘字，并同步给其他客户端；飘字会跟随目标，目标失效后保留最后位置淡出，同时调整了字号与斜体数字字体。
+- 充能站现在按目标实际总用量扣除燃料，并只显示一次累计充能数值；默认技能充能仅在进度或层数实际变化时消耗燃料。
+- 选人界面和玩家资料卡支持动态大立绘：可注册并顺序播放动画，自动循环最后一段，兼容静态立绘降级。
+- 新增“构造护甲”治疗充能；调整 M3茧甲生命交换机制为固定 20 点生命平衡线，限制单次交换向边界靠拢，并让 Mon3tr 链式治疗按理论治疗量的 25% 为已装备茧甲充能。
+- 新增表情图标与 Mon3tr 表情组，移除多余表情并调整 AutoChess 组图标顺序；修复实体销毁时的 RemoveSkill failed / ID mismatch 误报，并优化便携式补给站的动画、燃料管理、特效颜色和标签。
+---
 v2.9.1 (2026-10-05)
 - 移除了全模组材料掉落配置选项。
----
-v2.9.0 (2026-10-05)
-- 新增击杀归属与参与经验系统，击杀经验与货币奖励可在参与者之间共享。
-- 击杀货币与 wallet 掉落现在可配置。
-- 修复 Epic 击杀战利品无法重复掉落的问题。
-- 改进飞行状态的动画表现。
 ]]
 
 description = T({
