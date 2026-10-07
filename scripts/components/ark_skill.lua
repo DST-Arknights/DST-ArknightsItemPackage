@@ -1248,7 +1248,9 @@ function ArkSkill:RemoveSkill(id)
     end
   end
   self.inst:RemoveTag(common.genArkSkillInstalledTagById(id))
-  self.inst.replica.ark_skill:RemoveSkill(id)
+  if not self._removingEntity then
+    self.inst.replica.ark_skill:RemoveSkill(id)
+  end
   self.skillsById[id] = nil
   table.removearrayvalue(self.installedSkills, id)
   if #self.installedSkills == 0 then
@@ -1300,8 +1302,10 @@ function ArkSkill:SyncSkillStatus(id)
     limitTimeInitial = s.data.limitTimeInitial or 0,
     limitRemaining = s.data.limitRemaining or 0,
   }
-  self.inst.replica.ark_skill:SyncSkillStatus(id, data)
-  -- 对外统一提供已同步的运行态，生命周期事件仍保留原有语义。
+  if not self._removingEntity then
+    self.inst.replica.ark_skill:SyncSkillStatus(id, data)
+  end
+  -- 对外提供运行态；实体销毁期间仍保留生命周期事件。
   self.inst:PushEvent("ark_skill_status_changed", data)
 end
 
@@ -1416,6 +1420,8 @@ function ArkSkill:OnPreRemoveFromEntity()
 end
 
 function ArkSkill:OnRemoveEntity()
+  -- onremove 已先让 NetState 脱离 classified，销毁清理不再写入 replica。
+  self._removingEntity = true
   self:_CleanupSkills()
 end
 
