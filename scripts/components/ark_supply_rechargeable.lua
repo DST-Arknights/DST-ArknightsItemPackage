@@ -1,179 +1,74 @@
-local function ClampNonNegative(value)
-  value = tonumber(value) or 0
-  if value < 0 then
+local function NonNegative(value)
+  if type(value) ~= "number" or value ~= value or value <= 0 or value == math.huge then
     return 0
-  end
-  return value
-end
-
-local function ClampAcceptedAmount(value, limit)
-  value = ClampNonNegative(value)
-  if limit ~= nil then
-    value = math.min(value, ClampNonNegative(limit))
   end
   return value
 end
 
 local ArkSupplyRechargeable = Class(function(self, inst)
   self.inst = inst
-  self.canrechargefn = nil
-  self.getrechargeamountfn = nil
-  self.rechargefn = nil
-  self.rechargeamountproviders = {}
   self.rechargehandlers = {}
-  self.rechargegroups = {}
+  self.rechargeorder = {}
 end)
 
-function ArkSupplyRechargeable:SetCanRechargeFn(fn)
-  self.canrechargefn = fn
-end
-
-function ArkSupplyRechargeable:SetGetRechargeAmountFn(fn)
-  self.getrechargeamountfn = fn
-end
-
-function ArkSupplyRechargeable:SetRechargeFn(fn)
-  self.rechargefn = fn
-end
-
-function ArkSupplyRechargeable:AddRechargeGroup(key, defs)
-  if key == nil then
-    return
-  end
-
-  if defs == nil then
-    self.rechargegroups[key] = nil
-    return
-  end
-
-  self.rechargegroups[key] = {
-    getrechargeamountfn = defs.getrechargeamountfn,
-    rechargefn = defs.rechargefn,
-  }
-end
-
-function ArkSupplyRechargeable:RemoveRechargeGroup(key)
-  self.rechargegroups[key] = nil
-end
-
-function ArkSupplyRechargeable:AddRechargeAmountProvider(key, fn)
-  self.rechargeamountproviders[key] = fn
-end
-
-function ArkSupplyRechargeable:RemoveRechargeAmountProvider(key)
-  self.rechargeamountproviders[key] = nil
-end
-
+-- AddRechargeHandler(key, fn) or AddRechargeHandler(fn).
+-- fn(inst, charger, availableCharge) returns consumedCharge.
+-- A fresh opaque key makes anonymous registrations independent without collisions.
 function ArkSupplyRechargeable:AddRechargeHandler(key, fn)
+  if type(key) == "function" and fn == nil then
+    fn = key
+    key = nil
+  end
+  assert(type(fn) == "function", "Recharge handler must be a function.")
+  if key == nil then
+    key = {}
+  end
+
+  if self.rechargehandlers[key] == nil then
+    self.rechargeorder[#self.rechargeorder + 1] = key
+  end
   self.rechargehandlers[key] = fn
+  return key
 end
 
 function ArkSupplyRechargeable:RemoveRechargeHandler(key)
+  if self.rechargehandlers[key] == nil then
+    return
+  end
   self.rechargehandlers[key] = nil
+  for index, registered in ipairs(self.rechargeorder) do
+    if registered == key then
+      table.remove(self.rechargeorder, index)
+      return
+    end
+  end
 end
 
-function ArkSupplyRechargeable:GetRechargeAmount(charger, data)
+function ArkSupplyRechargeable:Recharge(charger, availableCharge)
+  local remaining = NonNegative(availableCharge)
+  if remaining <= 0 then
+    return 0
+  end
+
+  -- Keep this round's order stable if a callback changes registrations.
+  local order = {}
+  for index, key in ipairs(self.rechargeorder) do
+    order[index] = key
+  end
+
   local total = 0
-
-  if self.getrechargeamountfn ~= nil then
-    total = total + ClampNonNegative(self.getrechargeamountfn(self.inst, charger, data))
-  end
-
-  for _, fn in pairs(self.rechargeamountproviders) do
-    total = total + ClampNonNegative(fn(self.inst, charger, data))
-  end
-
-  for _, group in pairs(self.rechargegroups) do
-    if group.getrechargeamountfn ~= nil then
-      total = total + ClampNonNegative(group.getrechargeamountfn(self.inst, charger, data))
-    end
-  end
-
-  return total
-end
-
-function ArkSupplyRechargeable:CanRecharge(charger, amount, data)
-  amount = ClampNonNegative(amount)
-  if amount <= 0 then
-    return false
-  end
-
-  if self.canrechargefn ~= nil then
-    return self.canrechargefn(self.inst, charger, amount, data) == true
-  end
-
-  local hasgroupamountprovider = false
-  for _, group in pairs(self.rechargegroups) do
-    if group.getrechargeamountfn ~= nil then
-      hasgroupamountprovider = true
-      break
-    end
-  end
-
-  local hasamountprovider = self.getrechargeamountfn ~= nil
-    or next(self.rechargeamountproviders) ~= nil
-    or hasgroupamountprovider
-  if hasamountprovider then
-    return self:GetRechargeAmount(charger, data) > 0
-  end
-
-  if self.rechargefn ~= nil or next(self.rechargehandlers) ~= nil then
-    return true
-  end
-
-  for _, group in pairs(self.rechargegroups) do
-    if group.rechargefn ~= nil then
-      return true
-    end
-  end
-
-  return false
-end
-
-function ArkSupplyRechargeable:Recharge(charger, amount, data)
-  amount = ClampNonNegative(amount)
-  if amount <= 0 or not self:CanRecharge(charger, amount, data) then
-    return 0
-  end
-
-  local rechargeamount = self:GetRechargeAmount(charger, data)
-  if rechargeamount > 0 then
-    amount = math.min(amount, rechargeamount)
-  end
-  if amount <= 0 then
-    return 0
-  end
-
-  local accepted = 0
-  local remaining = amount
-
-  if self.rechargefn ~= nil and remaining > 0 then
-    local used = ClampAcceptedAmount(self.rechargefn(self.inst, charger, remaining, data), remaining)
-    accepted = accepted + used
-    remaining = remaining - used
-  end
-
-  for _, fn in pairs(self.rechargehandlers) do
+  for _, key in ipairs(order) do
     if remaining <= 0 then
       break
     end
-    local used = ClampAcceptedAmount(fn(self.inst, charger, remaining, data), remaining)
-    accepted = accepted + used
-    remaining = remaining - used
-  end
-
-  for _, group in pairs(self.rechargegroups) do
-    if remaining <= 0 then
-      break
-    end
-    if group.rechargefn ~= nil then
-      local used = ClampAcceptedAmount(group.rechargefn(self.inst, charger, remaining, data), remaining)
-      accepted = accepted + used
-      remaining = remaining - used
+    local fn = self.rechargehandlers[key]
+    if fn ~= nil then
+      local consumedCharge = math.min(remaining, NonNegative(fn(self.inst, charger, remaining)))
+      total = total + consumedCharge
+      remaining = remaining - consumedCharge
     end
   end
-
-  return accepted
+  return math.min(total, availableCharge)
 end
 
 return ArkSupplyRechargeable

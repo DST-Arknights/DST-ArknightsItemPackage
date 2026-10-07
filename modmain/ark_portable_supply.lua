@@ -11,7 +11,31 @@ AddRecipe2("ark_portable_supply", {
   builder_tag = "ark_character",
 }, { "ARK_TECHNOLOGY" })
 
-local DEFAULT_RECHARGE_GROUP = "default_skill_charge"
+local DEFAULT_RECHARGE_KEY = "default_skill_charge"
+
+local function RechargeSkills(inst, charger, availableCharge)
+  if availableCharge < 1 then
+    return 0
+  end
+  local arkSkill = inst.components.ark_skill
+  if arkSkill == nil then
+    return 0
+  end
+
+  local changed = false
+  for _, skill in pairs(arkSkill:GetAllSkills()) do
+    local lvl = skill:GetLevelConfig()
+    if lvl ~= nil and skill.data.activationStacks < lvl.maxActivationStacks then
+      local beforeProgress = skill.data.energyProgress
+      local beforeStacks = skill.data.activationStacks
+      skill:AddEnergyProgress(1)
+      if skill.data.energyProgress ~= beforeProgress or skill.data.activationStacks ~= beforeStacks then
+        changed = true
+      end
+    end
+  end
+  return changed and 1 or 0
+end
 
 AddPlayerPostInit(function(inst)
   if TheWorld.ismastersim then
@@ -20,48 +44,10 @@ AddPlayerPostInit(function(inst)
     end
 
     local rechargeable = inst.components.ark_supply_rechargeable
-    if rechargeable.getrechargeamountfn ~= nil or rechargeable.rechargefn ~= nil then
+    if rechargeable.rechargehandlers[DEFAULT_RECHARGE_KEY] ~= nil then
       return
     end
 
-    rechargeable:AddRechargeGroup(DEFAULT_RECHARGE_GROUP, {
-      getrechargeamountfn = function(target, charger, data)
-      local arkSkill = target.components.ark_skill
-      if arkSkill == nil then
-        return 0
-      end
-
-      for _, skill in pairs(arkSkill:GetAllSkills()) do
-        local lvl = skill:GetLevelConfig()
-        if lvl ~= nil and skill.data.activationStacks < lvl.maxActivationStacks then
-          return 1
-        end
-      end
-
-      return 0
-      end,
-
-      rechargefn = function(target, charger, amount, data)
-      if amount < 1 then
-        return 0
-      end
-
-      local arkSkill = target.components.ark_skill
-      if arkSkill == nil then
-        return 0
-      end
-
-      local changed = false
-      for _, skill in pairs(arkSkill:GetAllSkills()) do
-        local lvl = skill:GetLevelConfig()
-        if lvl ~= nil and skill.data.activationStacks < lvl.maxActivationStacks then
-          skill:AddEnergyProgress(1)
-          changed = true
-        end
-      end
-
-      return changed and 1 or 0
-      end,
-    })
+    rechargeable:AddRechargeHandler(DEFAULT_RECHARGE_KEY, RechargeSkills)
   end
 end)

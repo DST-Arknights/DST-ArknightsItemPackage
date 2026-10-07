@@ -1,75 +1,73 @@
 # 充能站接入：ark_supply_rechargeable
 
-其他 DST 模组可通过此组件接入便携式补给站，无需 `ark_character` 标签，也无需使用方舟技能系统。
+其他 DST 模组可在被充能实体上添加 `ark_supply_rechargeable`，接入便携式补给站。通过检查组件文件实现可选兼容，无需声明物品包依赖。
 
-接入方仅做可选兼容，无需声明物品包依赖，也不主动添加此组件。在服务端检查目标是否已有 `ark_supply_rechargeable`，有组件才注册，没有就跳过。物品包启用时会为所有玩家添加此组件。
-
-物品包安装默认技能充能分组时，若组件已设置 `getrechargeamountfn` 或 `rechargefn` 任一回调，就跳过默认分组。此判断只在初始化时执行，之后设置回调不会自动移除已经安装的默认分组。
-
-## 两个回调接口
-
-| 设置接口 | 回调签名 | 作用与返回值 |
-| --- | --- | --- |
-| `SetGetRechargeAmountFn(fn)` | `fn(target, charger, data)` | 查询当前需求，返回非负数；无需求返回 `0`。查询可能重复调用，不应修改资源或产生其他副作用。 |
-| `SetRechargeFn(fn)` | `fn(target, charger, amount, data)` | 执行充能，返回实际接受量 `accepted`，范围为 `0` 到 `amount`；未充能返回 `0`。充能站按此值扣燃料。 |
-
-- `target`：接收充能的实体；`charger`：充能站实体。
-- 需求、`amount`、`accepted` 均以**充能站燃料单位**计量。自己的技能能量、耐久等资源如何换算，由接入方决定。
-- `data.charger` 是充能站实体，`data.requested` 是本次报价；执行时以 `amount` 为准，它可能因其他处理器先接收充能而减少。
-- 执行回调必须返回数值。返回 `nil`、`false` 或负数会按 `0` 处理；不要已经增加资源却漏掉返回值，否则充能站不会扣燃料。
-
-## 推荐：成组注册，避免覆盖其他模组
-
-上述 `Set...` 会替换同名接口此前设置的回调。多模组共存时，推荐用 `AddRechargeGroup(key, defs)` 同时注册两项回调；移除时调用 `RemoveRechargeGroup(key)`。`key` 使用包含自己模组名的唯一字符串，同一 `key` 重复注册会替换原分组。
-
-以下示例放在接入方 `modmain.lua`，仅对已有 `ark_supply_rechargeable` 和 `fueled` 组件的实体生效，按 1 点供能换 1 点目标燃料；将 `your_prefab` 和分组名替换成自己的名称。
-
-物品包通过 `AddPlayerPostInit` 添加玩家组件，其执行晚于指定角色的 `AddPrefabPostInit`。因此示例用 `DoTaskInTime(0, ...)` 等当前初始化结束后再检查，避免漏掉兼容注册。
+## 注册与移除
 
 ```lua
-local RECHARGE_GROUP = "your_mod:fuel_charge"
-
-AddPrefabPostInit("your_prefab", function(inst)
-    if not GLOBAL.TheWorld.ismastersim then
-        return
-    end
-
-    inst:DoTaskInTime(0, function()
-        local rechargeable = inst.components.ark_supply_rechargeable
-        if rechargeable == nil then
-            return
-        end
-
-        rechargeable:AddRechargeGroup(RECHARGE_GROUP, {
-            getrechargeamountfn = function(target, charger, data)
-                local fuel = target.components.fueled
-                return fuel ~= nil and math.max(0, fuel.maxfuel - fuel.currentfuel) or 0
-            end,
-            rechargefn = function(target, charger, amount, data)
-                local fuel = target.components.fueled
-                if fuel == nil then
-                    return 0
-                end
-                local before = fuel.currentfuel
-                local accepted = math.min(amount, math.max(0, fuel.maxfuel - before))
-                if accepted > 0 then
-                    fuel:DoDelta(accepted)
-                end
-                return math.max(0, fuel.currentfuel - before)
-            end,
-        })
-    end)
-end)
-
--- 停用自己的接入逻辑时，在对应实体上移除自己的分组：
--- local rechargeable = inst.components.ark_supply_rechargeable
--- if rechargeable ~= nil then
---     rechargeable:RemoveRechargeGroup(RECHARGE_GROUP)
--- end
+-- 匿名注册，返回的 key 可按需保存。
+local key = inst.components.ark_supply_rechargeable:AddRechargeHandler(fn)
+-- 指定 key 注册，同 key 再次注册会覆盖回调。
+inst.components.ark_supply_rechargeable:AddRechargeHandler("my_mod:charge", fn)
+-- 按 key 移除。
+inst.components.ark_supply_rechargeable:RemoveRechargeHandler(key)
 ```
 
-多个分组共享本次供能预算，分组间执行顺序不保证；执行回调仍需检查资源是否已满、当前状态是否允许充能。组件不会保存这些回调，读档后通过初始化代码重新注册。
+`fn` 必填，`key` 可选。省略 `key` 时自动生成独立 key，每次匿名注册互不覆盖；接口返回传入或生成的 key，可按需保存用于移除。
 
-## 扫描条件
+各回调按首次注册顺序执行；同 `key` 覆盖时保留原位置，移除后重新注册则排到末尾。
 
-补给站部署且有燃料时才充能，当前每秒扫描半径 `16`，每个目标每次最多提供 `5` 单位。扫描排除带 `INLIMBO`、`FX`、`NOCLICK`、`DECOR`、`playerghost` 标签的实体；背包或装备中的物品不会直接被扫描，可在持有者的组件上注册回调，再操作其物品资源。配方的 `ark_character` 限制只影响制作资格。
+只需提供一个执行回调：
+
+```lua
+fn(inst, charger, availableCharge) -- 返回 consumedCharge
+```
+
+| 参数 / 返回值 | 含义 |
+| --- | --- |
+| `inst` | 被充能实体，即组件所属实体。 |
+| `charger` | 提供充能的充能站实体。 |
+| `availableCharge` | 轮到本组时，充能站本次还能提供的额度。 |
+| `consumedCharge` | 本组实际使用的额度，返回 `0` 到 `availableCharge`；未充能返回 `0`。 |
+
+额度和返回值均以**充能站燃料单位**计量。回调自行检查需求、补充自己的资源，并返回实际使用的额度；无需充能时返回 `0`。
+
+## 触发流程
+
+充电桩部署且有燃料时，会定期扫描附近实体；发现已接入的实体后，按注册顺序执行其充能回调。每个回调收到的是本轮剩余可提供额度。
+
+充电桩累计该实体各回调返回的实际使用量，统一扣除燃料，并在实体头顶显示一次 `+总量`。燃料扣除和数值提示由充电桩负责。
+
+## 可选兼容示例
+
+以下是被充能实体的最简完整 prefab。回调定义在顶层，供各实体共用；外观与自身资源由接入方补充，示例回调仅展示参数和处理步骤。
+
+```lua
+local function OnRecharge(inst, charger, availableCharge)
+    -- inst：当前被充能实体；charger：提供充能的实体。
+    -- availableCharge：本次还能提供的额度。
+    -- 根据自身需求，在额度内补充技能能量、耐久等资源。
+    -- 返回实际使用的额度（0 到 availableCharge），无需充能返回 0。
+    return 0
+end
+
+local function fn()
+    local inst = CreateEntity()
+    inst.entity:AddTransform()
+    inst.entity:AddNetwork()
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+    -- 接受充能站充能. 由充能站调用回调函数
+    if softresolvefilepath("scripts/components/ark_supply_rechargeable.lua", true) ~= nil then
+        inst:AddComponent("ark_supply_rechargeable")
+        inst.components.ark_supply_rechargeable:AddRechargeHandler(OnRecharge)
+    end
+
+    return inst
+end
+
+return Prefab("xxx", fn)
+```

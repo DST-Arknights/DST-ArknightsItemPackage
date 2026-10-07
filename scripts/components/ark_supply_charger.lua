@@ -1,20 +1,10 @@
-local EXCLUDE_TAGS = {"INLIMBO", "FX", "NOCLICK", "DECOR", "playerghost"}
+local EXCLUDE_TAGS = { "INLIMBO", "FX", "NOCLICK", "DECOR", "playerghost" }
 
-local function ClampNonNegative(value)
-  value = tonumber(value) or 0
-  if value < 0 then
+local function NonNegative(value)
+  if type(value) ~= "number" or value ~= value or value <= 0 or value == math.huge then
     return 0
   end
   return value
-end
-
-local function GetFuelAmount(inst)
-  local fueled = inst.components.fueled
-  if fueled == nil then
-    return 0
-  end
-
-  return math.max(0, fueled.currentfuel or 0)
 end
 
 local ArkSupplyCharger = Class(function(self, inst)
@@ -43,123 +33,86 @@ function ArkSupplyCharger:SetEnabled(enabled)
 end
 
 function ArkSupplyCharger:SetRange(range)
-  self.range = math.max(0, ClampNonNegative(range))
+  self.range = NonNegative(range)
 end
 
 function ArkSupplyCharger:SetScanInterval(interval)
-  self.scanInterval = math.max(0.1, ClampNonNegative(interval))
+  self.scanInterval = math.max(0.1, NonNegative(interval))
   self:_RefreshTask()
 end
 
-function ArkSupplyCharger:SetChargeAmount(amount)
-  self.chargeAmount = math.max(0, ClampNonNegative(amount))
+function ArkSupplyCharger:SetChargeAmount(availableCharge)
+  self.chargeAmount = NonNegative(availableCharge)
 end
 
 function ArkSupplyCharger:GetFuelAmount()
   if self.getfuelamountfn ~= nil then
-    return ClampNonNegative(self.getfuelamountfn(self.inst))
+    return NonNegative(self.getfuelamountfn(self.inst))
   end
-  return GetFuelAmount(self.inst)
+  local fueled = self.inst.components.fueled
+  return fueled ~= nil and NonNegative(fueled.currentfuel) or 0
 end
 
-function ArkSupplyCharger:ConsumeFuel(amount)
-  amount = ClampNonNegative(amount)
-  if amount <= 0 then
+function ArkSupplyCharger:ConsumeFuel(consumedCharge)
+  consumedCharge = math.min(NonNegative(consumedCharge), self:GetFuelAmount())
+  if consumedCharge <= 0 then
     return 0
   end
 
   if self.consumefuelfn ~= nil then
-    return ClampNonNegative(self.consumefuelfn(self.inst, amount))
+    return math.min(consumedCharge, NonNegative(self.consumefuelfn(self.inst, consumedCharge)))
   end
-
   local fueled = self.inst.components.fueled
   if fueled == nil then
     return 0
   end
-
-  local consumed = math.min(amount, self:GetFuelAmount())
-  if consumed <= 0 then
-    return 0
-  end
-
-  fueled:DoDelta(-consumed)
+  fueled:DoDelta(-consumedCharge)
   fueled:StopConsuming()
-  return consumed
-end
-
-function ArkSupplyCharger:GetRechargeOffer(target)
-  local rechargeable = target ~= nil and target.components ~= nil and target.components.ark_supply_rechargeable or nil
-  if rechargeable == nil then
-    return 0
-  end
-
-  local offered = math.min(self.chargeAmount, self:GetFuelAmount())
-  if offered <= 0 then
-    return 0
-  end
-
-  local demand = rechargeable:GetRechargeAmount(self.inst, {
-    charger = self.inst,
-    requested = offered,
-  })
-  if demand > 0 then
-    offered = math.min(offered, demand)
-  end
-  return offered
+  return consumedCharge
 end
 
 function ArkSupplyCharger:TryChargeTarget(target)
-  local rechargeable = target ~= nil and target.components ~= nil and target.components.ark_supply_rechargeable or nil
+  if target == nil or target == self.inst or not target:IsValid() then
+    return 0
+  end
+  local rechargeable = target.components.ark_supply_rechargeable
   if rechargeable == nil then
     return 0
   end
 
-  local offered = self:GetRechargeOffer(target)
-  if offered <= 0 then
+  local availableCharge = math.min(self.chargeAmount, self:GetFuelAmount())
+  if availableCharge <= 0 then
     return 0
   end
 
-  local data = {
-    charger = self.inst,
-    requested = offered,
-  }
-  if not rechargeable:CanRecharge(self.inst, offered, data) then
+  local total = math.min(availableCharge, NonNegative(rechargeable:Recharge(self.inst, availableCharge)))
+  if total <= 0 then
     return 0
   end
 
-  local accepted = ClampNonNegative(rechargeable:Recharge(self.inst, offered, data))
-  if accepted <= 0 then
-    return 0
-  end
-
-  accepted = math.min(accepted, offered)
-  local consumed = self:ConsumeFuel(accepted)
-  if target:IsValid() then
+  -- Recharge returns the sum of all handlers for this entity, so settle and show it once.
+  local consumedCharge = self:ConsumeFuel(total)
+  if consumedCharge > 0 and target:IsValid() then
     local fx = SpawnPrefab("ark_supply_charge_number")
     if fx ~= nil then
-      fx:SetCharge(target, accepted)
+      fx:SetCharge(target, consumedCharge)
     end
   end
-  return consumed
+  return consumedCharge
 end
 
 function ArkSupplyCharger:ScanAndCharge()
-  if not self.enabled or self.range <= 0 or self.chargeAmount <= 0 then
-    return
-  end
-  if self:GetFuelAmount() <= 0 then
+  if not self.enabled or self.range <= 0 or self.chargeAmount <= 0 or self:GetFuelAmount() <= 0 then
     return
   end
 
   local x, y, z = self.inst.Transform:GetWorldPosition()
   local targets = TheSim:FindEntities(x, y, z, self.range, nil, EXCLUDE_TAGS)
   for _, target in ipairs(targets) do
-    if self:GetFuelAmount() <= 0 then
+    if not self.enabled or not self.inst:IsValid() or self:GetFuelAmount() <= 0 then
       break
     end
-    if target ~= self.inst then
-      self:TryChargeTarget(target)
-    end
+    self:TryChargeTarget(target)
   end
 end
 
@@ -168,8 +121,7 @@ function ArkSupplyCharger:_RefreshTask()
     self._task:Cancel()
     self._task = nil
   end
-
-  if self.enabled and self.scanInterval > 0 then
+  if self.enabled then
     self._task = self.inst:DoPeriodicTask(self.scanInterval, function()
       self:ScanAndCharge()
     end)
@@ -177,10 +129,8 @@ function ArkSupplyCharger:_RefreshTask()
 end
 
 function ArkSupplyCharger:OnRemoveFromEntity()
-  if self._task ~= nil then
-    self._task:Cancel()
-    self._task = nil
-  end
+  self.enabled = false
+  self:_RefreshTask()
 end
 
 return ArkSupplyCharger
