@@ -6,6 +6,8 @@ local assets =
   Asset("ATLAS", "images/inventoryimages/ark_portable_supply.xml"),
 }
 
+local prefabs = { "ark_supply_charge_number" }
+
 local MAX_FUEL = TUNING.TOTAL_DAY_TIME
 local DEFAULT_SCAN_RANGE = 16
 local DEFAULT_SCAN_INTERVAL = 1
@@ -293,5 +295,5 @@ local function fn()
   return inst
 end
 
-return Prefab("ark_portable_supply", fn, assets),
+return Prefab("ark_portable_supply", fn, assets, prefabs),
     MakePlacer("ark_portable_supply_placer", "ark_portable_supply", "ark_portable_supply", "place")

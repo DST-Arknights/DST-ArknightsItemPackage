@@ -133,7 +133,14 @@ function ArkSupplyCharger:TryChargeTarget(target)
   end
 
   accepted = math.min(accepted, offered)
-  return self:ConsumeFuel(accepted)
+  local consumed = self:ConsumeFuel(accepted)
+  if target:IsValid() then
+    local fx = SpawnPrefab("ark_supply_charge_number")
+    if fx ~= nil then
+      fx:SetCharge(target, accepted)
+    end
+  end
+  return consumed
 end
 
 function ArkSupplyCharger:ScanAndCharge()
