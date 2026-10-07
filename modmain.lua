@@ -101,6 +101,8 @@ modimport('modmain/ark_reticuleaoe')
 modimport('modmain/ark_make_buff')
 -- badge 管理
 modimport('modmain/ark_badge')
+-- 选人界面动态大立绘（保留原 Image）
+modimport('modmain/ark_bigportrait')
 -- widget 扩展
 modimport('modmain/widget_extension')
 -- 聊天表情
