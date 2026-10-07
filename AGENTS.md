@@ -6,6 +6,12 @@
 
 在新增功能或修复逻辑时，优先复用本仓库已经安装的扩展，不要直接覆写底层组件字段，尤其是战斗、生命、防御相关属性。
 
+## Steam 工坊介绍
+
+中文和英文介绍分别直接编辑 `docs/workshop_description_zh-steam.txt` 和 `docs/workshop_description_en-steam.txt`，使用 Steam BBCode，并同步更新两种语言。
+
+这两份文件是工坊介绍的唯一来源，不再维护对应 Markdown，也不要通过 Markdown 转换覆盖手工排版。
+
 ## 属性修改器总规则
 
 1. 临时加成、装备加成、Buff 加成都应优先使用 modifier，而不是直接改写组件当前字段。
