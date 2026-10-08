@@ -148,7 +148,7 @@ function Convert-LocalDepsToWorkshop {
     将 modinfo.lua 中的本地模组依赖转换为 Steam Workshop 依赖。
     发布前必须执行，否则用户安装后会因找不到本地模组而报错。
 
-    例如: {["DST-ArknightsItemPackage"] = false} → { workshop = "workshop-3677284770" }
+    例如: {["DST-Arknights-Nexus"] = false} → { workshop = "workshop-3677284770" }
 
     .PARAMETER WorkshopDeps
     映射表: @{ 'LocalModName' = 'workshop-XXXXXXXXX' }
