@@ -167,6 +167,12 @@ local function fn()
   inst.components.armor.condition = 0
   -- InitCondition 设置了满额吸收率；直接改 condition 不会触发耐久变化事件。
   inst.components.armor:SetAbsorption(0)
+  -- 原版 armor 在满耐久时省略存档；茧甲初始耐久为 0，必须显式保存满耐久。
+  local armor = inst.components.armor
+  local original_on_save = armor.OnSave
+  armor.OnSave = function(self)
+    return original_on_save(self) or { condition = self.condition }
+  end
   -- 被击一段时间内暂停任务
   inst.components.armor.ontakedamage = OnTakeDamage
   -- 耐久为0时不吸收伤害
