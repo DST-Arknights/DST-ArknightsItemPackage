@@ -1,4 +1,10 @@
 # 版本更新记录
+## v2.10.1 (2026-10-08)
+
+- 修复 M3茧甲在满耐久时回档后耐久被清零的问题。
+---
+- Fixed M3 Cocoon Armor durability being reset to zero after a rollback when at full durability.
+
 ## v2.10.0 (2026-10-08)
 
 - 补给站充能现在会在目标处显示实际接受量的飘字，并同步给其他客户端；飘字会跟随目标，目标失效后保留最后位置淡出，同时调整了字号与斜体数字字体。
